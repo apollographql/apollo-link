@@ -1,0 +1,59 @@
+{
+  "name": "apollo-fetcher",
+  "version": "0.0.0",
+  "description": "",
+  "author": "Evans Hauser <evanshauser@gmail.com>",
+  "contributors": [
+    "Jonas Helfer <jonas@helfer.email>"
+  ],
+  "license": "MIT",
+  "main": "./dist/src/index.js",
+  "typings": "./dist/src/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apollographql/apollo-fetcher.git"
+  },
+  "bugs": {
+    "url": "https://github.com/apollographql/apollo-fetcher/issues"
+  },
+  "homepage": "https://github.com/apollographql/apollo-fetcher#readme",
+  "scripts": {
+    "pretest": "npm run build",
+    "test": "npm run test-only --",
+    "posttest": "npm run lint",
+    "test-only": "mocha --reporter spec --full-trace dist/tests/index.js",
+    "test-watch": "mocha --reporter spec --full-trace dist/tests/index.js --watch",
+    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot --full-trace dist/tests/index.js",
+    "postcoverage": "remap-istanbul --input coverage/coverage.json --type lcovonly --output coverage/lcov.info",
+    "lint": "tslint --type-check --project tsconfig.json src/*.ts && tslint --type-check --project tsconfig.json tests/*.ts",
+    "prebuild": "npm run clean:dist",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "npm run clean:dist && npm run clean:coverage",
+    "clean:dist": "rimraf dist/*",
+    "clean:coverage": "rimraf coverage/*",
+    "prepublish": "npm run clean && npm run build"
+  },
+  "peerDependencies": {
+    "apollo-client": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.0.0",
+    "@types/mocha": "^2.2.31",
+    "apollo-client": "^1.0.0",
+    "chai": "^4.0.2",
+    "istanbul": "^0.4.4",
+    "lodash": "^4.17.2",
+    "mocha": "^3.2.0",
+    "remap-istanbul": "^0.9.0",
+    "rimraf": "^2.5.4",
+    "source-map-support": "^0.4.5",
+    "tslint": "^5.0.0",
+    "typescript": "^2.2.1"
+  },
+  "dependencies": {
+    "graphql": "^0.10.0",
+    "graphql-tools": "^1.0.0",
+    "graphql-tag": "^2.0.0"
+  }
+}

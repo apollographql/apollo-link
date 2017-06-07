@@ -1,0 +1,21 @@
+sudo: false
+
+language: node_js
+
+node_js:
+  - 6
+
+cache:
+  directories:
+    - node_modules
+
+notifications:
+  email: false
+
+before_install:
+  - npm prune
+  - npm install -g coveralls
+
+after_success:
+  - npm run coverage
+  - coveralls < ./coverage/lcov.info || true
