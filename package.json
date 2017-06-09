@@ -1,7 +1,7 @@
 {
   "name": "apollo-fetcher",
   "version": "0.0.0",
-  "description": "",
+  "description": "Flexible, lightweight transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
     "Jonas Helfer <jonas@helfer.email>"
