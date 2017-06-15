@@ -32,16 +32,21 @@
     "clean": "npm run clean:dist && npm run clean:coverage",
     "clean:dist": "rimraf dist/*",
     "clean:coverage": "rimraf coverage/*",
-    "prepublish": "npm run clean && npm run build"
+    "prepublishOnly": "npm run clean && npm run build"
   },
   "devDependencies": {
     "@types/chai": "^4.0.0",
     "@types/mocha": "^2.2.31",
     "chai": "^4.0.2",
+    "fetch-mock": "^5.11.0",
+    "graphql": "^0.10.1",
+    "graphql-tag": "^2.2.2",
+    "isomorphic-fetch": "^2.2.1",
     "istanbul": "^0.4.4",
     "mocha": "^3.2.0",
     "remap-istanbul": "^0.9.0",
     "rimraf": "^2.5.4",
+    "sinon": "^2.3.4",
     "source-map-support": "^0.4.5",
     "tslint": "^5.0.0",
     "typescript": "^2.2.1"

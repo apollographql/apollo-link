@@ -1,7 +1,5 @@
-class ApolloFetcher {
-  public canTest(): boolean {
-      return true;
-  }
-}
+import * as ApolloFetcher from './types';
+import HttpFetcher from './httpFetcher';
 
+export { HttpFetcher };
 export default ApolloFetcher;
