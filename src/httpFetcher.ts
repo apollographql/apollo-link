@@ -4,7 +4,7 @@ import { print } from 'graphql';
 import { DocumentNode, DefinitionNode, OperationDefinitionNode } from 'graphql/language/ast';
 import 'isomorphic-fetch';
 
-class HttpObservable implements Observable {
+export class HttpObservable implements Observable {
   private _request: () => Promise<Response>;
   private subscribers: Array<Subscriber<FetchResult>>;
   private state: State;
