@@ -1,6 +1,8 @@
 import { assert } from 'chai';
 import * as sinon from 'sinon';
 import HttpFetcher from '../src/httpFetcher';
+import { HttpObservable } from '../src/httpFetcher';
+import { State } from '../src/types';
 import gql from 'graphql-tag';
 import * as fetchMock from 'fetch-mock';
 
@@ -27,7 +29,11 @@ describe('HttpFetcher', () => {
       operationName: 'SampleQuery',
     });
     //observableToPromise return a promise
-    observable.subscribe(next, (error) => assert(false), () => { assert(next.calledOnce); done(); });
+    observable.subscribe({
+      next,
+      error: (error) => assert(false),
+      complete: () => { assert(next.calledOnce); done(); },
+    });
 
     fetchMock.restore();
   });
@@ -51,6 +57,19 @@ describe('HttpFetcher', () => {
     );
 
     fetchMock.restore();
+  });
+
+  it('changes status to STOPPED after stop call', () => {
+    const mockError = {throws: new TypeError('mock me')};
+    fetchMock.get('*', mockError);
+    const fetcher = new HttpFetcher('', fetch);
+    const observable = <HttpObservable>fetcher.request({
+      query: sampleQuery,
+      operationName: 'SampleQuery',
+    });
+    observable.stop();
+    assert.equal(observable.status().state, State.STOPPED);
+    assert.equal(observable.status().numberSubscribers, 0);
   });
 
 //future tests:
