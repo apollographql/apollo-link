@@ -28,11 +28,12 @@ export class HttpObservable implements Observable {
   }
 
   public stop() {
-    if (this.state === State.COMPLETED || this.state === State.ERRORED) {
+    if (this.state !== State.COLD && this.state !== State.STARTED) {
       throw Error('Observer already terminated');
     }
 
-    this.subscribers.forEach(subscriber => subscriber.complete ? setTimeout(subscriber.complete, 0) : null);
+    this.onComplete();
+    this.subscribers = [];
     this.state = State.STOPPED;
   }
 
@@ -55,7 +56,13 @@ export class HttpObservable implements Observable {
       this.start();
     }
 
-    return () => this.subscribers.filter(sub => sub !== subscriber);
+    return () => {
+      //remove the first matching subscriber, since a subscriber could subscribe multiple times a filter will not work
+      this.subscribers.splice(this.subscribers.indexOf(subscriber), 1);
+      if (this.subscribers.length === 0) {
+        this.stop();
+      }
+    };
   }
 
   public status() {
