@@ -18,7 +18,6 @@ export interface Observable {
       error?: (error: any) => void,
       complete?: () => void,
     ): UnsubscribeHandler;
-    status(): object;
 }
 
 export interface Subscriber<T> {
@@ -35,12 +34,3 @@ export interface FetchResult {
 }
 
 export type UnsubscribeHandler = () => void;
-
-//Up for debate:
-export enum State {
-  COLD,
-  STARTED,
-  STOPPED,
-  ERRORED,
-  COMPLETED,
-}

@@ -1,113 +1,29 @@
-import { ApolloFetcher, Observable, FetchResult, Subscriber, Operation, State } from './types';
-import { toSubscriber } from './subscriber';
+import {
+  ApolloFetcher,
+  Operation,
+  Observable,
+} from './types';
 import { print } from 'graphql';
-import { DocumentNode, DefinitionNode, OperationDefinitionNode } from 'graphql/language/ast';
+import {
+  DocumentNode,
+  DefinitionNode,
+  OperationDefinitionNode,
+} from 'graphql/language/ast';
+import HttpObservable from './httpObservable';
 import 'isomorphic-fetch';
-
-export class HttpObservable implements Observable {
-  private _request: () => Promise<Response>;
-  private subscribers: Array<Subscriber<FetchResult>>;
-  private state: State;
-
-  constructor(request: () => Promise<Response>) {
-    this._request = request;
-    this.subscribers = [];
-    this.state = State.COLD;
-    this.onNext = this.onNext.bind(this);
-    this.onError = this.onError.bind(this);
-    this.onComplete = this.onComplete.bind(this);
-  }
-
-  public start() {
-    if (this.state !== State.COLD) {
-      throw Error('Observer already started');
-    }
-
-    this.handleResponse(this._request());
-    this.state = State.STARTED;
-  }
-
-  public stop() {
-    if (this.state !== State.COLD && this.state !== State.STARTED) {
-      throw Error('Observer already terminated');
-    }
-
-    this.onComplete();
-    this.subscribers = [];
-    this.state = State.STOPPED;
-  }
-
-  public subscribe(
-    nextOrSubscriber: Subscriber<FetchResult> | ((result: FetchResult) => void),
-    error?: (error: any) => void,
-    complete?: () => void) {
-
-    const subscriber = toSubscriber<FetchResult>(nextOrSubscriber, error, complete);
-
-    if (this.state !== State.COLD && this.state !== State.STARTED ) {
-      //could also throw error
-      subscriber.complete();
-      return null;
-    }
-
-    this.subscribers.push(subscriber);
-
-    if (this.state === State.COLD) {
-      this.start();
-    }
-
-    return () => {
-      //remove the first matching subscriber, since a subscriber could subscribe multiple times a filter will not work
-      this.subscribers.splice(this.subscribers.indexOf(subscriber), 1);
-      if (this.subscribers.length === 0) {
-        this.stop();
-      }
-    };
-  }
-
-  public status() {
-    return {
-      state: this.state,
-      numberSubscribers: this.subscribers.length,
-    };
-  }
-
-  private handleResponse(response: Promise<Response>) {
-      response.then( result => result.json() )
-      .then(
-        data => {
-          this.onNext(data);
-          this.onComplete();
-        },
-      )
-      .catch(this.onError);
-  }
-
-  private onNext = (data) => {
-    this.subscribers.forEach(subscriber => setTimeout(() => subscriber.next({ data }), 0));
-  }
-
-  private onError = (error) => {
-    this.subscribers.forEach(subscriber => subscriber.error ? setTimeout(() => subscriber.error(error), 0) : null);
-    this.state = State.ERRORED;
-  }
-
-  private onComplete = () => {
-    this.subscribers.forEach(subscriber => subscriber.complete ? setTimeout(subscriber.complete, 0) : null);
-    this.state = State.COMPLETED;
-  }
-}
 
 export default class HttpFetcher implements ApolloFetcher {
 
-  private fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
+  private _fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
+  private _uri: string;
 
-  constructor(
-    private uri?: string,
-    customFetch?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
+  constructor(fetchParams?: {
+    uri?: string,
+    fetch?: (input: RequestInfo, init?: RequestInit) => Promise<Response>,
+  }) {
 
-    this.fetch = customFetch ? customFetch : fetch;
-
+    this._fetch = fetchParams && fetchParams.fetch ? fetchParams.fetch : fetch;
+    this._uri = fetchParams && fetchParams.uri ? fetchParams.uri : '';
   }
 
   public request(operation: Operation): Observable {
@@ -126,8 +42,8 @@ export default class HttpFetcher implements ApolloFetcher {
     }
 
     return new HttpObservable(
-      () => this.fetch(
-        method === 'GET' ? this.buildURI(this.uri, operation) : this.uri,
+      () => this._fetch(
+        method === 'GET' ? this.buildURI(this._uri, operation) : this._uri,
         {
           body: JSON.stringify({
             query: print(query),
