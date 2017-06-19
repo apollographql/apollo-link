@@ -1,8 +1,7 @@
 import { assert } from 'chai';
 import * as sinon from 'sinon';
 import HttpFetcher from '../src/httpFetcher';
-import { HttpObservable } from '../src/httpFetcher';
-import { State } from '../src/types';
+import HttpObservable from '../src/httpObservable';
 import { print } from 'graphql';
 import gql from 'graphql-tag';
 import * as fetchMock from 'fetch-mock';
@@ -17,7 +16,7 @@ query SampleQuery {
 
 const sampleMutation = gql`
 mutation SampleMutation {
-  stub(param: 1){
+  stub(param: "value"){
     id
   }
 }
@@ -44,7 +43,7 @@ describe('HttpFetcher', () => {
 
   it('calls next and then complete', (done) => {
     const next = sinon.spy();
-    const fetcher = new HttpFetcher('data', fetch);
+    const fetcher = new HttpFetcher({uri: 'data', fetch});
     const observable = fetcher.request({
       query: sampleQuery,
       operationName: 'SampleQuery',
@@ -58,8 +57,7 @@ describe('HttpFetcher', () => {
   });
 
   it('calls error when fetch fails', (done) => {
-
-    const fetcher = new HttpFetcher('error', fetch);
+    const fetcher = new HttpFetcher({uri: 'error', fetch});
     const observable = fetcher.request({
       query: sampleQuery,
     });
@@ -74,25 +72,14 @@ describe('HttpFetcher', () => {
   });
 
   it('complains when additional arguments to Operation', () => {
-    const fetcher = new HttpFetcher('', fetch);
+    const fetcher = new HttpFetcher({uri: '', fetch});
     assert.throws(() => fetcher.request(<any>{
       error: 'cause throw',
     }));
   });
 
-  it('changes status to STOPPED after stop call', () => {
-    const fetcher = new HttpFetcher('', fetch);
-    const observable = <HttpObservable>fetcher.request({
-      query: sampleQuery,
-      operationName: 'SampleQuery',
-    });
-    observable.stop();
-    assert.equal(observable.status().state, State.STOPPED);
-    assert.equal(observable.status().numberSubscribers, 0);
-  });
-
   it('fails to start after stop', () => {
-    const fetcher = new HttpFetcher('', fetch);
+    const fetcher = new HttpFetcher({uri: '', fetch});
     const observable = <HttpObservable>fetcher.request({
       query: sampleQuery,
       operationName: 'SampleQuery',
@@ -102,7 +89,7 @@ describe('HttpFetcher', () => {
   });
 
   it('fails to stop after termination', () => {
-    const fetcher = new HttpFetcher('', fetch);
+    const fetcher = new HttpFetcher({uri: '', fetch});
     const observable = <HttpObservable>fetcher.request({
       query: sampleQuery,
       operationName: 'SampleQuery',
@@ -112,7 +99,7 @@ describe('HttpFetcher', () => {
   });
 
   it('call immediate next when terminated', (done) => {
-    const fetcher = new HttpFetcher('', fetch);
+    const fetcher = new HttpFetcher({uri: '', fetch});
     const observable = <HttpObservable>fetcher.request({
       query: sampleQuery,
       operationName: 'SampleQuery',
@@ -123,7 +110,7 @@ describe('HttpFetcher', () => {
   });
 
   it('unsubscribes without calling subscriber', (done) => {
-    const fetcher = new HttpFetcher('data', fetch );
+    const fetcher = new HttpFetcher({uri: 'data', fetch});
     const observable = <HttpObservable>fetcher.request({
       query: sampleQuery,
       operationName: 'SampleQuery',
@@ -134,7 +121,7 @@ describe('HttpFetcher', () => {
   });
 
   it('immediate stop no subsequent calling of subscriber', (done) => {
-    const fetcher = new HttpFetcher('data', fetch );
+    const fetcher = new HttpFetcher({uri: 'data', fetch});
     const observable = <HttpObservable>fetcher.request({
       query: sampleQuery,
       operationName: 'SampleQuery',
@@ -146,7 +133,7 @@ describe('HttpFetcher', () => {
 
   it('uses POST request on Mutation', (done) => {
     const next = sinon.spy();
-    const fetcher = new HttpFetcher('data', fetch);
+    const fetcher = new HttpFetcher({uri: 'data', fetch});
     const observable = fetcher.request({
       query: sampleMutation,
       operationName: 'SampleMutation',
@@ -164,7 +151,7 @@ describe('HttpFetcher', () => {
 
   it('passes all arguments to fetch uri for query', (done) => {
     const next = sinon.spy();
-    const fetcher = new HttpFetcher('data', fetch);
+    const fetcher = new HttpFetcher({uri: 'data', fetch});
     const context = {info: 'stub'};
     const variables = {params: 'stub'};
     const operationName = 'sampleQuery';
@@ -199,7 +186,7 @@ describe('HttpFetcher', () => {
 
   it('passes all arguments to fetch body for mutation', (done) => {
     const next = sinon.spy();
-    const fetcher = new HttpFetcher('data', fetch);
+    const fetcher = new HttpFetcher({uri: 'data', fetch});
     const context = {info: 'stub'};
     const variables = {params: 'stub'};
     const operationName = 'SampleMutation';
@@ -225,13 +212,11 @@ describe('HttpFetcher', () => {
     });
   });
 
-
-
   it('calls multiple subscribers', (done) => {
     const next = sinon.spy();
     const error = sinon.spy();
     const complete = sinon.spy();
-    const fetcher = new HttpFetcher('data', fetch);
+    const fetcher = new HttpFetcher({uri: 'data', fetch});
     const context = {info: 'stub'};
     const variables = {params: 'stub'};
     const operationName = 'SampleMutation';
@@ -263,7 +248,7 @@ describe('HttpFetcher', () => {
     const next = sinon.spy();
     const error = sinon.spy();
     const complete = sinon.spy();
-    const fetcher = new HttpFetcher('data', fetch);
+    const fetcher = new HttpFetcher({uri: 'data', fetch});
     const context = {info: 'stub'};
     const variables = {params: 'stub'};
     const operationName = 'SampleMutation';
