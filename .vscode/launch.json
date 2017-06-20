@@ -10,10 +10,9 @@
                 "--reporter",
                 "spec",
                 "--full-trace",
-                "${workspaceRoot}/dist/tests/index.js"
+                "${workspaceRoot}/dist/tests/tests.js"
             ],
             "outFiles": ["${workspaceRoot}/dist/**/*.js"],
-            "preLaunchTask": "tsc",
             "sourceMaps": true,
             "internalConsoleOptions": "openOnSessionStart",
             "stopOnEntry": false,

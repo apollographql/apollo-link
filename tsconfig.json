@@ -14,8 +14,8 @@
     "noUnusedLocals": true,
     "skipLibCheck": true
   },
-  "files": [
-    "src/index.ts",
-    "tests/index.ts"
+  "include": [
+    "src/**/*.ts",
+    "tests/**/*.ts"
   ]
 }

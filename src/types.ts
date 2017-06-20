@@ -5,7 +5,7 @@ export interface ApolloFetcher {
 }
 
 export interface Operation {
-  query: DocumentNode;
+  query?: DocumentNode;
   variables?: object;
   operationName?: string;
   context?: object;

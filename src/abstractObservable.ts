@@ -47,16 +47,16 @@ export default abstract class AbstractObservable implements Observable {
     };
   }
 
-  protected onNext(data: FetchResult) {
-    this.subscribers.forEach(subscriber => setTimeout(() => subscriber.next({ data }), 0));
+  protected onNext = (data: FetchResult) => {
+    this.subscribers.forEach(subscriber => setTimeout(() => subscriber.next(data), 0));
   }
 
-  protected onError(error) {
+  protected onError = (error) => {
     this.subscribers.forEach(subscriber => subscriber.error ? setTimeout(() => subscriber.error(error), 0) : null);
     this.terminated = true;
   }
 
-  protected onComplete() {
+  protected onComplete = () => {
     this.subscribers.forEach(subscriber => subscriber.complete ? setTimeout(subscriber.complete, 0) : null);
     this.terminated = true;
   }

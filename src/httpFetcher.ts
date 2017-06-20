@@ -3,16 +3,18 @@ import {
   Operation,
   Observable,
 } from './types';
-import { print } from 'graphql';
 import {
   DocumentNode,
   DefinitionNode,
   OperationDefinitionNode,
 } from 'graphql/language/ast';
+import { print } from 'graphql';
 import HttpObservable from './httpObservable';
+import { validateOperation } from './apolloFetchHelpers';
 import 'isomorphic-fetch';
 
 export default class HttpFetcher implements ApolloFetcher {
+
 
   private _fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
   private _uri: string;
@@ -27,72 +29,90 @@ export default class HttpFetcher implements ApolloFetcher {
   }
 
   public request(operation: Operation): Observable {
-    if (!this.checkOperation(operation)) {
-      //TODO provide exact argument
-      throw new Error('illegal argument');
-    }
+    console.log(operation);
+    validateOperation(operation);
     const { query, variables, operationName, context } = operation;
 
     //Queries sent with GET requests
-    const method = this.getRequestType(query);
+    const method = HttpUtils.getRequestType(query);
 
     const headers = { 'Accept': '*/*' };
-    if (method !== 'GET') {
-      headers['Content-Type'] = 'application/json';
-    }
-
-    return new HttpObservable(
-      () => this._fetch(
-        method === 'GET' ? this.buildURI(this._uri, operation) : this._uri,
-        {
-          body: JSON.stringify({
-            query: print(query),
-            variables: variables || {},
-            operationName,
-            context,
-          }),
-          method,
+    switch (method) {
+      case 'GET':
+        const uri = HttpUtils.buildURI(this._uri, operation);
+        return this.createHttpObservable({
+          uri,
           headers,
-      }),
-    );
-  }
-
-  private queryParameters(op: Operation): string {
-    const query = encodeURIComponent(print(op.query).replace(/\s\s+/g, ' '));
-
-    let params = `query=${query}`;
-    params += op.operationName ? `&operationName=${encodeURIComponent(op.operationName)}` : '';
-    params += op.variables ? `&variables=${encodeURIComponent(JSON.stringify(op.variables))}` : '';
-    params += op.context ? `&context=${encodeURIComponent(JSON.stringify(op.context))}` : '';
-
-    return params;
-  }
-
-  private buildURI(uri: string, operation: Operation): string {
-    return `${uri}?${this.queryParameters(operation)}`;
-  }
-
-  private isQuery(definition: DefinitionNode): boolean {
-    if (definition.kind !== 'OperationDefinition') {
-      return false;
+          method,
+        });
+      case 'POST':
+        headers['Content-Type'] = 'application/json';
+        const body = JSON.stringify({
+          query: print(query),
+          variables,
+          operationName,
+          context,
+        });
+        return this.createHttpObservable({
+          uri: this._uri,
+          headers,
+          method,
+          body,
+        });
+      default:
+        throw new Error('');
     }
-    const operationNode = <OperationDefinitionNode>definition;
-    return operationNode.operation === 'query';
   }
 
-  private getRequestType(query: DocumentNode) {
+  private createHttpObservable(fetchParams: {
+    uri?: string,
+    body?: string,
+    method: string,
+    headers?: object,
+  }) {
+    const { uri, body, method, headers } =  fetchParams;
+    const fetchFunction = () => this._fetch(uri, {headers, body, method});
+    return new HttpObservable(fetchFunction);
+  }
+
+}
+
+
+class HttpUtils {
+
+  public static buildURI(uri: string, operation: Operation): string {
+    return `${uri}?${HttpUtils.queryParameters(operation)}`;
+  }
+
+  public static getRequestType(query: DocumentNode) {
     const definitions = query.definitions;
     const nonQuery = definitions.find(def => !this.isQuery(def));
     return nonQuery ? 'POST' : 'GET';
   }
 
-  private checkOperation(operation: Operation): boolean {
-    let count = 0;
-    count += operation.hasOwnProperty('query') ? 1 : 0;
-    count += operation.hasOwnProperty('operationName') ? 1 : 0;
-    count += operation.hasOwnProperty('variables') ? 1 : 0;
-    count += operation.hasOwnProperty('context') ? 1 : 0;
+  private static queryParameters(op: Operation): string {
+    let params = [];
+    if (op.query) {
+      params.push(`query=${encodeURIComponent(print(op.query))}`);
+    }
+    if (op.operationName) {
+      params.push(`operationName=${encodeURIComponent(op.operationName)}`);
+    }
+    if (op.variables) {
+      params.push(`variables=${encodeURIComponent(JSON.stringify(op.variables))}`);
+    }
+    if (op.context) {
+      params.push(`context=${encodeURIComponent(JSON.stringify(op.context))}`);
+    }
 
-    return count === Object.keys(operation).length;
+    return params.join('&');
+  }
+
+  private static isQuery(definition: DefinitionNode): boolean {
+    if (definition.kind !== 'OperationDefinition') {
+      return false;
+    }
+    const operationNode = <OperationDefinitionNode>definition;
+    return operationNode.operation === 'query';
   }
 }

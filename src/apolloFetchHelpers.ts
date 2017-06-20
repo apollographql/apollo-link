@@ -1,8 +1,22 @@
-import { Subscriber } from './types';
+import {
+  Subscriber,
+  Operation,
+} from './types';
+
 
 function isSubscriber<T>(object: any): object is Subscriber<T> {
   return typeof object !== 'function';
 }
+
+export function validateOperation(operation: Operation): void {
+  const OPERATION_FIELDS = ['query', 'operationName', 'variables', 'context'];
+  for (let key of Object.keys(operation) {
+    if (OPERATION_FIELDS.indexOf(key) < 0) {
+      throw new Error(`illegal argument: ${key}`);
+    }
+  }
+}
+
 
 export function toSubscriber<T>(
   nextOrSubscriber: Subscriber<T> | ((result: T) => void),

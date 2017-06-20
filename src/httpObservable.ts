@@ -19,17 +19,17 @@ export default class HttpObservable extends AbstractObservable {
   }
 
   public stop() {
-    super.onComplete();
+    this.onComplete();
   }
 
   private handleResponse(response: Promise<Response>) {
       response.then( result => result.json() )
       .then(
         data => {
-          super.onNext(data);
-          super.onComplete();
+          this.onNext(data);
+          this.onComplete();
         },
       )
-      .catch(super.onError);
+      .catch(this.onError);
   }
 }

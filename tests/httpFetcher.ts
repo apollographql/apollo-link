@@ -43,7 +43,10 @@ describe('HttpFetcher', () => {
 
   it('calls next and then complete', (done) => {
     const next = sinon.spy();
-    const fetcher = new HttpFetcher({uri: 'data', fetch});
+    const fetcher = new HttpFetcher({
+      uri: 'data',
+      fetch,
+    });
     const observable = fetcher.request({
       query: sampleQuery,
       operationName: 'SampleQuery',
@@ -72,14 +75,14 @@ describe('HttpFetcher', () => {
   });
 
   it('complains when additional arguments to Operation', () => {
-    const fetcher = new HttpFetcher({uri: '', fetch});
+    const fetcher = new HttpFetcher({uri: 'data', fetch});
     assert.throws(() => fetcher.request(<any>{
       error: 'cause throw',
     }));
   });
 
   it('fails to start after stop', () => {
-    const fetcher = new HttpFetcher({uri: '', fetch});
+    const fetcher = new HttpFetcher({uri: 'data', fetch});
     const observable = <HttpObservable>fetcher.request({
       query: sampleQuery,
       operationName: 'SampleQuery',
@@ -89,24 +92,13 @@ describe('HttpFetcher', () => {
   });
 
   it('fails to stop after termination', () => {
-    const fetcher = new HttpFetcher({uri: '', fetch});
+    const fetcher = new HttpFetcher({uri: 'data', fetch});
     const observable = <HttpObservable>fetcher.request({
       query: sampleQuery,
       operationName: 'SampleQuery',
     });
     observable.stop();
     assert.throws(observable.stop);
-  });
-
-  it('call immediate next when terminated', (done) => {
-    const fetcher = new HttpFetcher({uri: '', fetch});
-    const observable = <HttpObservable>fetcher.request({
-      query: sampleQuery,
-      operationName: 'SampleQuery',
-    });
-    observable.stop();
-    assert.doesNotThrow(
-      observable.subscribe(() => assert(false), () => assert(false), done ));
   });
 
   it('unsubscribes without calling subscriber', (done) => {
@@ -117,17 +109,6 @@ describe('HttpFetcher', () => {
     });
     const unsubscribe = observable.subscribe(() => assert(false), () => assert(false), () => assert(false));
     unsubscribe();
-    setTimeout(done, 1000);
-  });
-
-  it('immediate stop no subsequent calling of subscriber', (done) => {
-    const fetcher = new HttpFetcher({uri: 'data', fetch});
-    const observable = <HttpObservable>fetcher.request({
-      query: sampleQuery,
-      operationName: 'SampleQuery',
-    });
-    observable.subscribe(() => assert(false), () => assert(false));
-    observable.stop();
     setTimeout(done, 1000);
   });
 
@@ -174,7 +155,7 @@ describe('HttpFetcher', () => {
         for (let i = 0; i < keys.length; i++) {
           body[keys[i]] = values[i];
         }
-        assert.equal(body['query'].replace(/\s/g, ''), print(sampleQuery).replace(/\s/g, ''));
+        assert.equal(body['query'], print(sampleQuery));
         assert.deepEqual(JSON.parse(body['context']), context);
         assert.deepEqual(body['operationName'], operationName);
         assert.deepEqual(JSON.parse(body['variables']), variables);
