@@ -4,6 +4,10 @@ export interface ApolloFetcher {
   request (operation: Operation): Observable;
 }
 
+export interface PromiseFetcher {
+  request (operation: Operation): Promise<FetchResult>;
+}
+
 export interface Operation {
   query?: DocumentNode;
   variables?: object;

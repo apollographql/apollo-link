@@ -4,7 +4,7 @@ import {
   Subscriber,
   UnsubscribeHandler,
 } from './types';
-import { toSubscriber } from './subscriber';
+import { toSubscriber } from './subscriberUtils';
 
 export default abstract class AbstractObservable implements Observable {
   private subscribers: Array<Subscriber<FetchResult>>;

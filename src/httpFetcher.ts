@@ -15,7 +15,6 @@ import 'isomorphic-fetch';
 
 export default class HttpFetcher implements ApolloFetcher {
 
-
   private _fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
   private _uri: string;
 
@@ -75,7 +74,6 @@ export default class HttpFetcher implements ApolloFetcher {
   }
 
 }
-
 
 class HttpUtils {
 
