@@ -29,7 +29,6 @@ export default class HttpFetcher implements ApolloFetcher {
   }
 
   public request(operation: Operation): Observable {
-    console.log(operation);
     validateOperation(operation);
     const { query, variables, operationName, context } = operation;
 

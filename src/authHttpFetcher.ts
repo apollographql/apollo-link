@@ -20,7 +20,7 @@ export default class AuthHttpFetcher implements ApolloFetcher {
     return this.httpFetcher.request(operation);
   }
 
-  private myFetch (input: RequestInfo, init: RequestInit = {}): Promise<Response> {
+  private myFetch = (input: RequestInfo, init: RequestInit = {}): Promise<Response> => {
     //Middleware
     init.body = init.body || {};
     init.body.headers = init.body.headers || {};
