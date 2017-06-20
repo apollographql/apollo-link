@@ -10,7 +10,7 @@ function isSubscriber<T>(object: any): object is Subscriber<T> {
 
 export function validateOperation(operation: Operation): void {
   const OPERATION_FIELDS = ['query', 'operationName', 'variables', 'context'];
-  for (let key of Object.keys(operation) {
+  for (let key of Object.keys(operation)) {
     if (OPERATION_FIELDS.indexOf(key) < 0) {
       throw new Error(`illegal argument: ${key}`);
     }

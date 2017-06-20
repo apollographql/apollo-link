@@ -17,7 +17,7 @@ describe('authHttpFetcher', () => {
   const unauthorized = {hello: 'world', status: 401};
 
   before(() => {
-    fetchMock.post('begin:auth', authorized);
+    fetchMock.get('begin:auth', authorized);
     fetchMock.get('begin:unauth', unauthorized);
   });
 
