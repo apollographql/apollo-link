@@ -13,6 +13,46 @@ import HttpObservable from './httpObservable';
 import { validateOperation } from './apolloFetchHelpers';
 import 'isomorphic-fetch';
 
+class HttpUtils {
+
+  public static buildURI(uri: string, operation: Operation): string {
+    return `${uri}?${HttpUtils.queryParameters(operation)}`;
+  }
+
+  public static getRequestType(query: DocumentNode) {
+    const definitions = query.definitions;
+    const nonQuery = definitions.find(def => !this.isOperationType(def, 'query'));
+    return nonQuery ? 'POST' : 'GET';
+  }
+
+  private static queryParameters(op: Operation): string {
+    let params = [];
+    if (op.query) {
+      params.push(`query=${encodeURIComponent(print(op.query))}`);
+    }
+    if (op.operationName) {
+      params.push(`operationName=${encodeURIComponent(op.operationName)}`);
+    }
+    if (op.variables) {
+      params.push(`variables=${encodeURIComponent(JSON.stringify(op.variables))}`);
+    }
+    if (op.context) {
+      params.push(`context=${encodeURIComponent(JSON.stringify(op.context))}`);
+    }
+
+    return params.join('&');
+  }
+
+  private static isOperationType(definition: DefinitionNode, operationType: string): boolean {
+    if (definition.kind !== 'OperationDefinition') {
+      return false;
+    }
+    const operationNode = <OperationDefinitionNode>definition;
+    return operationNode.operation === operationType;
+  }
+
+}
+
 export default class HttpFetcher implements ApolloFetcher {
 
   private _fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
@@ -23,7 +63,7 @@ export default class HttpFetcher implements ApolloFetcher {
     fetch?: (input: RequestInfo, init?: RequestInit) => Promise<Response>,
   }) {
 
-    this._fetch = fetchParams && fetchParams.fetch ? fetchParams.fetch : fetch;
+    this._fetch = fetchParams && fetchParams.fetch;
     this._uri = fetchParams && fetchParams.uri ? fetchParams.uri : '';
   }
 
@@ -62,54 +102,16 @@ export default class HttpFetcher implements ApolloFetcher {
     }
   }
 
-  private createHttpObservable(fetchParams: {
+  private createHttpObservable = (fetchParams: {
     uri?: string,
     body?: string,
     method: string,
     headers?: object,
-  }) {
+  }) => {
     const { uri, body, method, headers } =  fetchParams;
-    const fetchFunction = () => this._fetch(uri, {headers, body, method});
+    const fetchFunction = () => this._fetch ? this._fetch(uri, {headers, body, method}) : fetch(uri, {headers, body, method});
     return new HttpObservable(fetchFunction);
   }
 
 }
 
-class HttpUtils {
-
-  public static buildURI(uri: string, operation: Operation): string {
-    return `${uri}?${HttpUtils.queryParameters(operation)}`;
-  }
-
-  public static getRequestType(query: DocumentNode) {
-    const definitions = query.definitions;
-    const nonQuery = definitions.find(def => !this.isQuery(def));
-    return nonQuery ? 'POST' : 'GET';
-  }
-
-  private static queryParameters(op: Operation): string {
-    let params = [];
-    if (op.query) {
-      params.push(`query=${encodeURIComponent(print(op.query))}`);
-    }
-    if (op.operationName) {
-      params.push(`operationName=${encodeURIComponent(op.operationName)}`);
-    }
-    if (op.variables) {
-      params.push(`variables=${encodeURIComponent(JSON.stringify(op.variables))}`);
-    }
-    if (op.context) {
-      params.push(`context=${encodeURIComponent(JSON.stringify(op.context))}`);
-    }
-
-    return params.join('&');
-  }
-
-  private static isQuery(definition: DefinitionNode): boolean {
-    if (definition.kind !== 'OperationDefinition') {
-      return false;
-    }
-    const operationNode = <OperationDefinitionNode>definition;
-    return operationNode.operation === 'query';
-  }
-}

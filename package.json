@@ -1,6 +1,6 @@
 {
   "name": "apollo-fetchers",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Flexible, lightweight transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -21,8 +21,8 @@
     "pretest": "npm run build",
     "test": "npm run test-only --",
     "posttest": "npm run lint",
-    "test-only": "mocha --reporter spec --full-trace dist/tests/index.js",
-    "test-watch": "mocha --reporter spec --full-trace dist/tests/index.js --watch",
+    "test-only": "mocha --reporter spec --full-trace dist/tests/tests.js",
+    "test-watch": "mocha --reporter spec --full-trace dist/tests/tests.js --watch",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot --full-trace dist/tests/tests.js",
     "postcoverage": "remap-istanbul --input coverage/coverage.json --type lcovonly --output coverage/lcov.info",
     "lint": "tslint --type-check -p tsconfig.json src/*.ts && tslint --type-check -p tsconfig.json tests/*.ts",
