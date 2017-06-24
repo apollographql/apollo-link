@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 // import * as sinon from 'sinon';
 import HttpFetcher from '../src/httpFetcher';
-import FetcherPromiseWrapper from '../src/fetcher-as-promise';
+import { fetcherPromiseWrapper } from '../src/fetcher-as-promise';
 // import { print } from 'graphql';
 import gql from 'graphql-tag';
 import * as fetchMock from 'fetch-mock';
@@ -36,7 +36,7 @@ describe('promiseFetcher', () => {
 
   //TODO should use a mock implementaiton of a Fetcher
   it('completes a GET request', (done) => {
-    let fetcherPromise = FetcherPromiseWrapper(new HttpFetcher({uri: 'data'}));
+    let fetcherPromise = fetcherPromiseWrapper(new HttpFetcher({uri: 'data'}));
     fetcherPromise.request(operation).then((result) => {
       assert.equal(JSON.stringify(getData), JSON.stringify(result));
       done();

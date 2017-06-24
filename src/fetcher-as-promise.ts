@@ -1,5 +1,5 @@
-export default function FetcherPromiseWrapper(fetcher) {
-  const operationToPromise = (operation) => {
+const operationToPromise = (fetcher) => {
+  return (operation) => {
     const observable = fetcher.request(operation);
     return new Promise((resolve, reject) => {
       observable.subscribe({
@@ -8,8 +8,17 @@ export default function FetcherPromiseWrapper(fetcher) {
       });
     });
   };
+};
+
+export function fetcherToNetworkInterface(fetcher) {
+  const request = operationToPromise(fetcher);
   return {
-    query: operationToPromise, // to conform with Apollo Client's NetworkInterface
-    request: operationToPromise,
+    query: request,
+  };
+}
+
+export function fetcherPromiseWrapper(fetcher) {
+  return {
+    request: operationToPromise(fetcher),
   };
 }
