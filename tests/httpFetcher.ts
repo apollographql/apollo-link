@@ -31,6 +31,7 @@ describe('HttpFetcher', () => {
     fetchMock.get('begin:data', getData);
     fetchMock.post('begin:data', postData);
     fetchMock.get('begin:error', mockError);
+    fetchMock.post('begin:error', mockError);
   });
 
   after(() => {
@@ -63,6 +64,21 @@ describe('HttpFetcher', () => {
     const fetcher = new HttpFetcher({uri: 'error', fetch});
     const observable = fetcher.request({
       query: sampleQuery,
+    });
+    observable.subscribe(
+      (result) => assert(false),
+      (error) => {
+        assert.equal(error, mockError.throws);
+        done();
+      },
+      () => { assert(false); done(); },
+    );
+  });
+
+  it('calls error when fetch fails', (done) => {
+    const fetcher = new HttpFetcher({uri: 'error', fetch});
+    const observable = fetcher.request({
+      query: sampleMutation,
     });
     observable.subscribe(
       (result) => assert(false),
@@ -107,9 +123,9 @@ describe('HttpFetcher', () => {
       query: sampleQuery,
       operationName: 'SampleQuery',
     });
-    const unsubscribe = observable.subscribe(() => assert(false), () => assert(false), () => assert(false));
-    unsubscribe();
-    setTimeout(done, 1000);
+    const subscription = observable.subscribe(() => assert(false), () => assert(false), () => assert(false));
+    subscription.unsubscribe();
+    setTimeout(done, 50);
   });
 
   it('uses POST request on Mutation', (done) => {
@@ -222,7 +238,7 @@ describe('HttpFetcher', () => {
       assert(error.notCalled);
       assert(complete.calledTwice);
       done();
-    }, 1000);
+    }, 50);
   });
 
   it('calls remaining subscribers after unsubscription', (done) => {
@@ -247,15 +263,15 @@ describe('HttpFetcher', () => {
       variables,
     });
     observable.subscribe(subscriber);
-    const unsubscribe = observable.subscribe(subscriber);
-    unsubscribe();
+    const subscription = observable.subscribe(subscriber);
+    subscription.unsubscribe();
 
     setTimeout(() => {
       assert(next.calledOnce);
       assert(error.notCalled);
       assert(complete.calledOnce);
       done();
-    }, 1000);
+    }, 50);
   });
 
 //future tests:
