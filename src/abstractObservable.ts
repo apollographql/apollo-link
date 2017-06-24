@@ -2,9 +2,9 @@ import {
   Observable,
   FetchResult,
   Subscriber,
-  UnsubscribeHandler,
+  Subscription,
 } from './types';
-import { toSubscriber } from './subscriberUtils';
+import { toSubscriber } from './fetcherUtils';
 
 export default abstract class AbstractObservable implements Observable {
   private subscribers: Array<Subscriber<FetchResult>>;
@@ -24,13 +24,22 @@ export default abstract class AbstractObservable implements Observable {
   public subscribe(
     nextOrSubscriber: Subscriber<FetchResult> | ((result: FetchResult) => void),
     error?: (error: any) => void,
-    complete?: () => void): UnsubscribeHandler {
+    complete?: () => void): Subscription {
 
-    if (this.terminated) {
-      throw new Error('Observer already terminated');
-    }
 
     const subscriber = toSubscriber<FetchResult>(nextOrSubscriber, error, complete);
+
+    //Could throw an error instead of immediate complete
+    if (this.terminated) {
+      if (subscriber.complete) {
+        subscriber.complete();
+      }
+
+      return {
+        get closed() { return true; },
+        unsubscribe: () => void 0,
+      };
+    }
 
     this.subscribers.push(subscriber);
 
@@ -38,13 +47,19 @@ export default abstract class AbstractObservable implements Observable {
       this.start();
     }
 
-    return () => {
-      //remove the first matching subscriber, since a subscriber could subscribe multiple times a filter will not work
-      this.subscribers.splice(this.subscribers.indexOf(subscriber), 1);
-      if (this.subscribers.length === 0) {
-        this.stop();
-      }
-    };
+    return (function (subscribers) {
+      let stopped = false;
+      return {
+        get closed() {
+          return stopped;
+        },
+        unsubscribe: () => {
+          //remove the first matching subscriber, since a subscriber could subscribe multiple times a filter will not work
+          subscribers.splice(subscribers.indexOf(subscriber), 1);
+          stopped = true;
+        },
+      };
+    })(this.subscribers);
   }
 
   protected onNext = (data: FetchResult) => {
@@ -53,11 +68,16 @@ export default abstract class AbstractObservable implements Observable {
 
   protected onError = (error) => {
     this.subscribers.forEach(subscriber => subscriber.error ? setTimeout(() => subscriber.error(error), 0) : null);
-    this.terminated = true;
+    this.terminate();
   }
 
   protected onComplete = () => {
     this.subscribers.forEach(subscriber => subscriber.complete ? setTimeout(subscriber.complete, 0) : null);
+    this.terminate();
+  }
+
+  private terminate = () => {
+    this.subscribers = [];
     this.terminated = true;
   }
 }

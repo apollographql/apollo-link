@@ -1,35 +1,43 @@
 import AbstractObservable from './abstractObservable';
+import { FetchResult } from './types';
 
 export default class HttpObservable extends AbstractObservable {
-  private request: () => Promise<Response>;
-  private started: boolean;
 
-  constructor(request: () => Promise<Response>) {
+  private result: Promise<FetchResult>;
+  private started: boolean;
+  private stopped: boolean;
+
+  constructor(result: Promise<FetchResult>) {
     super();
-    this.request = request;
+    this.result = result;
+    this.started = false;
+    this.stopped = false;
   }
 
+  //Called on first subscribe
   public start() {
     if (this.started) {
-      throw Error('Observer already started');
+      return; //Could throw an error
     }
 
-    this.handleResponse(this.request());
+    this.result.then(data => {
+      if (!this.stopped) {
+        this.onNext(data);
+        this.onComplete();
+      }
+    })
+    .catch(error => {
+      if (!this.stopped) {
+        this.onError(error);
+      }
+    });
+
     this.started = true;
   }
 
   public stop() {
+    //cancel the fetch if possible
     this.onComplete();
-  }
-
-  private handleResponse(response: Promise<Response>) {
-      response.then( result => result.json() )
-      .then(
-        data => {
-          this.onNext(data);
-          this.onComplete();
-        },
-      )
-      .catch(this.onError);
+    this.stopped = true;
   }
 }
