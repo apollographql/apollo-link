@@ -54,38 +54,6 @@ describe('BatchHttpFetcher', () => {
     assert.doesNotThrow(() => new BatchHttpFetcher());
   });
 
-  it('calls next and then complete', (done) => {
-    const next = sinon.spy();
-    const fetcher = new BatchHttpFetcher({
-      uri: 'data',
-      fetch,
-    });
-    const observable = fetcher.request({
-      query: sampleQuery,
-      operationName: 'SampleQuery',
-    });
-    observable.subscribe({
-      next,
-      error: (error) => assert(false),
-      complete: () => { assert(next.calledOnce); done(); },
-    });
-  });
-
-  it('calls error when fetch fails', (done) => {
-    const fetcher = new BatchHttpFetcher({uri: 'error', fetch});
-    const observable = fetcher.request({
-      query: sampleQuery,
-    });
-    observable.subscribe(
-      (result) => assert(false),
-      (error) => {
-        assert.equal(error, mockError.throws);
-        done();
-      },
-      () => { assert(false); done(); },
-    );
-  });
-
   it('complains when additional arguments to Operation', () => {
     const fetcher = new BatchHttpFetcher({uri: 'data', fetch});
     assert.throws(() => fetcher.request(<any>{
@@ -93,24 +61,19 @@ describe('BatchHttpFetcher', () => {
     }));
   });
 
-  it('fails to start after stop', () => {
+  it('does not callback to Observable after stop', () => {
     const fetcher = new BatchHttpFetcher({uri: 'data', fetch});
     const observable = <HttpObservable>fetcher.request({
       query: sampleQuery,
       operationName: 'SampleQuery',
     });
     observable.stop();
-    assert.throws(observable.start);
-  });
-
-  it('fails to stop after termination', () => {
-    const fetcher = new BatchHttpFetcher({uri: 'data', fetch});
-    const observable = <HttpObservable>fetcher.request({
-      query: sampleQuery,
-      operationName: 'SampleQuery',
-    });
-    observable.stop();
-    assert.throws(observable.stop);
+    observable.subscribe(subscriber);
+    setTimeout(() => {
+      assert(subscriber.next.notCalled);
+      assert(subscriber.error.notCalled);
+      assert(subscriber.complete.notCalled);
+    }, 50);
   });
 
   it('unsubscribes without calling subscriber', (done) => {
@@ -119,104 +82,12 @@ describe('BatchHttpFetcher', () => {
       query: sampleQuery,
       operationName: 'SampleQuery',
     });
-    const subscription = observable.subscribe(() => assert(false), () => assert(false), () => assert(false));
+    const assertFalse = () => assert(false);
+    const subscription = observable.subscribe(assertFalse, assertFalse, assertFalse);
     subscription.unsubscribe();
     setTimeout(done, 50);
   });
 
-  it('uses POST request on Mutation', (done) => {
-    const next = sinon.spy();
-    const fetcher = new BatchHttpFetcher({uri: 'data', fetch});
-    const observable = fetcher.request({
-      query: sampleMutation,
-      operationName: 'SampleMutation',
-    });
-    observable.subscribe({
-      next,
-      error: (error) => assert(false),
-      complete: () => {
-        assert.equal(fetchMock.lastCall()[1]['method'], 'POST');
-        assert(next.calledOnce);
-        done();
-      },
-    });
-  });
-
-  it('passes all arguments to fetch', (done) => {
-    const next = sinon.spy();
-    const fetcher = new BatchHttpFetcher({uri: 'data', fetch});
-    const context = {info: 'stub'};
-    const variables = {params: 'stub'};
-    const operationName = 'SampleMutation';
-
-    const observable = fetcher.request({
-      query: sampleMutation,
-      operationName,
-      context,
-      variables,
-    });
-    observable.subscribe({
-      next,
-      error: (error) => assert(false),
-      complete: () => {
-        const body = JSON.parse(fetchMock.lastCall()[1]['body']);
-        assert.equal(body[0].query, print(sampleMutation));
-        assert.deepEqual(body[0].context, context);
-        assert.deepEqual(body[0].operationName, operationName);
-        assert.deepEqual(body[0].variables, variables);
-        assert(next.calledOnce);
-        done();
-      },
-    });
-  });
-
-  it('calls multiple subscribers', (done) => {
-    const fetcher = new BatchHttpFetcher({uri: 'data', fetch});
-    const context = {info: 'stub'};
-    const variables = {params: 'stub'};
-    const operationName = 'SampleMutation';
-
-
-    const observable = fetcher.request({
-      query: sampleMutation,
-      operationName,
-      context,
-      variables,
-    });
-    observable.subscribe(subscriber);
-    observable.subscribe(subscriber);
-
-    setTimeout(() => {
-      assert(subscriber.next.calledTwice);
-      assert(subscriber.error.notCalled);
-      assert(subscriber.complete.calledTwice);
-      done();
-    }, 50);
-  });
-
-  it('calls remaining subscribers after unsubscription', (done) => {
-    const fetcher = new BatchHttpFetcher({uri: 'data', fetch});
-    const context = {info: 'stub'};
-    const variables = {params: 'stub'};
-    const operationName = 'SampleMutation';
-
-    const observable = fetcher.request({
-      query: sampleMutation,
-      operationName,
-      context,
-      variables,
-    });
-    observable.subscribe(subscriber);
-    const subscription = observable.subscribe(subscriber);
-    subscription.unsubscribe();
-
-    setTimeout(() => {
-      assert(subscriber.next.calledOnce);
-      assert(subscriber.error.notCalled);
-      assert(subscriber.complete.calledOnce);
-      done();
-    }, 50);
-  });
 
   const runQuery = (uri: string, results: object[] | object, operations: Operation[], {next, error, complete}) => {
     fetchMock.post(uri, results);
@@ -411,6 +282,56 @@ describe('BatchHttpFetcher', () => {
         done();
       }, 50);
 
+    });
+  });
+
+  describe('Multiple Subscribers', () => {
+    it('calls multiple subscribers', (done) => {
+      const fetcher = new BatchHttpFetcher({ uri: 'data', fetch });
+      const context = { info: 'stub' };
+      const variables = { params: 'stub' };
+      const operationName = 'SampleMutation';
+
+
+      const observable = fetcher.request({
+        query: sampleMutation,
+        operationName,
+        context,
+        variables,
+      });
+      observable.subscribe(subscriber);
+      observable.subscribe(subscriber);
+
+      setTimeout(() => {
+        assert(subscriber.next.calledTwice);
+        assert(subscriber.error.notCalled);
+        assert(subscriber.complete.calledTwice);
+        done();
+      }, 50);
+    });
+
+    it('calls remaining subscribers after unsubscription', (done) => {
+      const fetcher = new BatchHttpFetcher({ uri: 'data', fetch });
+      const context = { info: 'stub' };
+      const variables = { params: 'stub' };
+      const operationName = 'SampleMutation';
+
+      const observable = fetcher.request({
+        query: sampleMutation,
+        operationName,
+        context,
+        variables,
+      });
+      observable.subscribe(subscriber);
+      const subscription = observable.subscribe(subscriber);
+      subscription.unsubscribe();
+
+      setTimeout(() => {
+        assert(subscriber.next.calledOnce);
+        assert(subscriber.error.notCalled);
+        assert(subscriber.complete.calledOnce);
+        done();
+      }, 50);
     });
   });
 });
