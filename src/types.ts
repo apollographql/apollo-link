@@ -16,12 +16,12 @@ export interface Operation {
 }
 
 export interface Observable {
-    subscribe(subscriber: Subscriber<FetchResult>): UnsubscribeHandler;
+    subscribe(subscriber: Subscriber<FetchResult>): Subscription;
     subscribe(
       next: (result: FetchResult) => void,
       error?: (error: any) => void,
       complete?: () => void,
-    ): UnsubscribeHandler;
+    ): Subscription;
 }
 
 export interface Subscriber<T> {
@@ -37,4 +37,7 @@ export interface FetchResult {
   context?: object;
 }
 
-export type UnsubscribeHandler = () => void;
+export interface Subscription {
+  unsubscribe: () => void;
+  closed: boolean;
+}
