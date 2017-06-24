@@ -1,11 +1,22 @@
 import * as ApolloFetcher from './types';
 import HttpFetcher from './httpFetcher';
-import HttpPromiseFetcher from './httpPromiseFetcher';
-import FetcherPromiseWrapper from './fetcher-as-promise';
+import BatchHttpFetcher from './batchHttpFetcher';
+import createHttpFetcherNetworkInterface from './httpFetcherNetworkInterface';
+import createBatchHttpFetcherNetworkInterface from './batchHttpFetcherNetworkInterface';
+
+import {
+  fetcherPromiseWrapper,
+  fetcherToNetworkInterface,
+}  from './fetcher-as-promise';
 
 export {
+  fetcherPromiseWrapper,
+  fetcherToNetworkInterface,
+
   HttpFetcher,
-  FetcherPromiseWrapper,
-  HttpPromiseFetcher,
+  createHttpFetcherNetworkInterface,
+
+  BatchHttpFetcher,
+  createBatchHttpFetcherNetworkInterface,
 };
 export default ApolloFetcher;
