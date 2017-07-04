@@ -1,7 +1,7 @@
 import AbstractObservable from './abstractObservable';
 import { FetchResult } from './types';
 
-export default class HttpObservable extends AbstractObservable {
+export default class OneTimeObservable extends AbstractObservable {
 
   private result: Promise<FetchResult>;
   private started: boolean;

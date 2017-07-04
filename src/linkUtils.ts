@@ -1,5 +1,6 @@
 import {
   Operation,
+  NextLink,
   Subscriber,
 } from './types';
 
@@ -31,3 +32,10 @@ export function validateOperation(operation: Operation): void {
     }
   }
 }
+
+export function ensureNext(next?: NextLink): void {
+  if (next || typeof next !== 'function') {
+      throw new Error(`next link should be present`);
+  }
+}
+

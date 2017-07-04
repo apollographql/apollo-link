@@ -9,6 +9,7 @@
             "args": [
                 "--reporter",
                 "spec",
+                "--trace-warnings",
                 "--full-trace",
                 "${workspaceRoot}/dist/tests/tests.js"
             ],

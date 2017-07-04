@@ -1,22 +1,20 @@
-import * as ApolloFetcher from './types';
-import HttpFetcher from './httpFetcher';
-import BatchHttpFetcher from './batchHttpFetcher';
-import createHttpFetcherNetworkInterface from './httpFetcherNetworkInterface';
-import createBatchHttpFetcherNetworkInterface from './batchHttpFetcherNetworkInterface';
+import * as ApolloLink from './types';
+import SingleRequestLink from './singleRequestLink';
+import { createHttpLink } from './httpLink';
+import BatchHttpLink from './batch/batchHttpLink';
 
 import {
-  fetcherPromiseWrapper,
-  fetcherToNetworkInterface,
-}  from './fetcher-as-promise';
+  linkPromiseWrapper,
+  linkToNetworkInterface,
+}  from './link-as-promise';
 
 export {
-  fetcherPromiseWrapper,
-  fetcherToNetworkInterface,
+  linkPromiseWrapper,
+  linkToNetworkInterface,
 
-  HttpFetcher,
-  createHttpFetcherNetworkInterface,
+  SingleRequestLink,
+  createHttpLink,
 
-  BatchHttpFetcher,
-  createBatchHttpFetcherNetworkInterface,
+  BatchHttpLink,
 };
-export default ApolloFetcher;
+export default ApolloLink;

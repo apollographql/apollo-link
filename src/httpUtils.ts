@@ -7,7 +7,6 @@ import {
   OperationDefinitionNode,
 } from 'graphql/language/ast';
 import { print } from 'graphql';
-import 'isomorphic-fetch';
 
 export default class HttpUtils {
 

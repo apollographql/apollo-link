@@ -1,6 +1,6 @@
 {
-  "name": "apollo-fetchers",
-  "version": "0.0.2",
+  "name": "apollo-link",
+  "version": "0.0.0",
   "description": "Flexible, lightweight transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -11,12 +11,12 @@
   "typings": "./dist/src/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/apollographql/apollo-fetcher.git"
+    "url": "git+https://github.com/apollographql/apollo-link.git"
   },
   "bugs": {
-    "url": "https://github.com/apollographql/apollo-fetcher/issues"
+    "url": "https://github.com/apollographql/apollo-link/issues"
   },
-  "homepage": "https://github.com/apollographql/apollo-fetcher#readme",
+  "homepage": "https://github.com/apollographql/apollo-link#readme",
   "scripts": {
     "pretest": "npm run build",
     "test": "npm run test-only --",
@@ -35,14 +35,19 @@
     "prepublishOnly": "npm run clean && npm run build"
   },
   "devDependencies": {
+    "graphql": "^0.10.1",
+    "apollo-fetch": "^0.0.0"
+  },
+  "devDependencies": {
     "@types/chai": "^4.0.0",
+    "@types/chai-as-promised": "0.0.31",
     "@types/mocha": "^2.2.31",
     "chai": "^4.0.2",
+    "chai-as-promised": "^7.0.0",
     "fetch-mock": "^5.11.0",
-    "graphql": "^0.10.1",
     "graphql-tag": "^2.2.2",
-    "isomorphic-fetch": "^2.2.1",
     "istanbul": "^0.4.4",
+    "lodash": "^4.17.4",
     "mocha": "^3.2.0",
     "remap-istanbul": "^0.9.0",
     "rimraf": "^2.5.4",

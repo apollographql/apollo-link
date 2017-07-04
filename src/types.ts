@@ -1,10 +1,21 @@
 import { DocumentNode } from 'graphql/language/ast';
 
-export interface ApolloFetcher {
-  request (operation: Operation): Observable;
+export interface ApolloChainLink {
+  request (operation: ExternalOperation): Observable;
 }
 
-export interface PromiseFetcher {
+export interface ExternalOperation {
+  query?: string | DocumentNode;
+  variables?: object;
+  operationName?: string;
+  context?: object;
+}
+
+export interface ApolloLink {
+  request (operation: Operation, next?: NextLink): Observable;
+}
+
+export interface PromiseLink {
   request (operation: Operation): Promise<FetchResult>;
 }
 
@@ -41,3 +52,5 @@ export interface Subscription {
   unsubscribe: () => void;
   closed: boolean;
 }
+
+export type NextLink = (opration: Operation) => Observable;

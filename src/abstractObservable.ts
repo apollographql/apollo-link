@@ -4,7 +4,7 @@ import {
   Subscriber,
   Subscription,
 } from './types';
-import { toSubscriber } from './fetcherUtils';
+import { toSubscriber } from './linkUtils';
 
 export default abstract class AbstractObservable implements Observable {
   private subscribers: Array<Subscriber<FetchResult>>;
@@ -48,30 +48,33 @@ export default abstract class AbstractObservable implements Observable {
     }
 
     return (function (subscribers) {
-      let stopped = false;
+      let finished = false;
       return {
         get closed() {
-          return stopped;
+          return finished;
         },
         unsubscribe: () => {
           //remove the first matching subscriber, since a subscriber could subscribe multiple times a filter will not work
           subscribers.splice(subscribers.indexOf(subscriber), 1);
-          stopped = true;
+          if (subscribers.length === 0) {
+            this.stop();
+          }
+          finished = true;
         },
       };
-    })(this.subscribers);
+    }).bind(this)(this.subscribers);
   }
 
-  protected onNext = (data: FetchResult) => {
+  protected onNext(data: FetchResult) {
     this.subscribers.forEach(subscriber => setTimeout(() => subscriber.next(data), 0));
   }
 
-  protected onError = (error) => {
+  protected onError(error) {
     this.subscribers.forEach(subscriber => subscriber.error ? setTimeout(() => subscriber.error(error), 0) : null);
     this.terminate();
   }
 
-  protected onComplete = () => {
+  protected onComplete() {
     this.subscribers.forEach(subscriber => subscriber.complete ? setTimeout(subscriber.complete, 0) : null);
     this.terminate();
   }

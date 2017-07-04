@@ -1,5 +1,2 @@
-
-import './batchHttpFetcher';
-import './httpFetcher';
-import './authHttpFetcher';
-import './fetcher-as-promise';
+import './httpLink';
+import './link-as-promise';
