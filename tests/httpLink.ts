@@ -1,10 +1,16 @@
 import { assert } from 'chai';
 import * as sinon from 'sinon';
-import { createHttpLink } from '../src/httpLink';
+import HttpLink, {
+  createHttpLink,
+} from '../src/httpLink';
+
 import OneTimeObservable from '../src/oneTimeObservable';
 import { print } from 'graphql';
 import gql from 'graphql-tag';
 import * as fetchMock from 'fetch-mock';
+import {
+  ApolloLink,
+} from '../src/types';
 
 const sampleQuery = gql`
 query SampleQuery {
@@ -51,12 +57,16 @@ describe('HttpLink', () => {
   });
 
   it('does not need any constructor arguments', () => {
-    assert.doesNotThrow(() => createHttpLink(''));
+    assert.doesNotThrow(() => new HttpLink());
+  });
+
+  it('does not need any arguments to wrapped constructor', () => {
+    assert.doesNotThrow(() => createHttpLink());
   });
 
   it('calls next and then complete', (done) => {
     const next = sinon.spy();
-    const link = createHttpLink('data');
+    const link = createHttpLink({uri: 'data'});
     const observable = link.request({
       query: sampleQuery,
       operationName: 'SampleQuery',
@@ -69,7 +79,7 @@ describe('HttpLink', () => {
   });
 
   it('calls error when fetch fails', (done) => {
-    const link = createHttpLink('error');
+    const link = createHttpLink({uri: 'error'});
     const observable = link.request({
       query: sampleQuery,
     });
@@ -84,7 +94,7 @@ describe('HttpLink', () => {
   });
 
   it('calls error when fetch fails', (done) => {
-    const link = createHttpLink('error');
+    const link = createHttpLink({uri: 'error'});
     const observable = link.request({
       query: sampleMutation,
     });
@@ -99,14 +109,14 @@ describe('HttpLink', () => {
   });
 
   it('complains when additional arguments to Operation', () => {
-    const link = createHttpLink('data');
+    const link = createHttpLink({uri: 'data'});
     assert.throws(() => link.request(<any>{
       error: 'cause throw',
     }));
   });
 
   it('fails to start after stop', () => {
-    const link = createHttpLink('data');
+    const link = createHttpLink({uri: 'data'});
     const observable = <OneTimeObservable>link.request({
       query: sampleQuery,
       operationName: 'SampleQuery',
@@ -116,7 +126,7 @@ describe('HttpLink', () => {
   });
 
   it('fails to stop after termination', () => {
-    const link = createHttpLink('data');
+    const link = createHttpLink({uri: 'data'});
     const observable = <OneTimeObservable>link.request({
       query: sampleQuery,
       operationName: 'SampleQuery',
@@ -126,18 +136,52 @@ describe('HttpLink', () => {
   });
 
   it('unsubscribes without calling subscriber', (done) => {
-    const link = createHttpLink('data');
+    const link = createHttpLink({uri: 'data'});
     const observable = <OneTimeObservable>link.request({
       query: sampleQuery,
       operationName: 'SampleQuery',
     });
     const subscription = observable.subscribe(() => assert(false), () => assert(false), () => assert(false));
     subscription.unsubscribe();
+    assert(subscription.closed);
     setTimeout(done, 50);
   });
 
+  it('subscriber after observable termination gets immediate completion', (done) => {
+    const link = createHttpLink({
+      uri: 'data',
+    });
+    const observable = <OneTimeObservable>link.request({
+      query: sampleQuery,
+      operationName: 'SampleQuery',
+    });
+    const subscription = observable.subscribe(() => assert(false), () => assert(false), () => assert(false));
+    subscription.unsubscribe();
+    assert(subscription.closed);
 
-  const verifyRequest = (link, continuation) => {
+    observable.subscribe(() => assert(false), () => assert(false), done);
+  });
+
+  it('subscription after observable termination should be closed and unsubscribe should have no effects', () => {
+    const link = createHttpLink({
+      uri: 'data',
+    });
+    const observable = <OneTimeObservable>link.request({
+      query: sampleQuery,
+      operationName: 'SampleQuery',
+    });
+    let subscription = observable.subscribe(() => assert(false), () => assert(false), () => assert(false));
+    subscription.unsubscribe();
+    assert(subscription.closed);
+
+    subscription = observable.subscribe({});
+    assert(subscription.closed);
+    assert.doesNotThrow(subscription.unsubscribe);
+    assert(subscription.closed);
+  });
+
+
+  const verifyRequest = (link: ApolloLink, after: () => void) => {
     const next = sinon.spy();
     const context = {info: 'stub'};
     const variables = {params: 'stub'};
@@ -161,18 +205,18 @@ describe('HttpLink', () => {
 
         assert.equal(next.callCount, 1);
 
-        continuation();
+        after();
       },
     });
   };
 
   it('passes all arguments to multiple fetch body', (done) => {
-    const link = createHttpLink('data');
+    const link = createHttpLink({uri: 'data'});
     verifyRequest(link, () => verifyRequest(link, done));
   });
 
   it('calls multiple subscribers', (done) => {
-    const link = createHttpLink('data');
+    const link = createHttpLink({uri: 'data'});
     const context = {info: 'stub'};
     const variables = {params: 'stub'};
     const operationName = 'SampleMutation';
@@ -194,8 +238,8 @@ describe('HttpLink', () => {
     }, 50);
   });
 
-  it('calls remaining subscribers after unsubscription', (done) => {
-    const link = createHttpLink('data');
+  it('calls remaining subscribers after unsubscribe', (done) => {
+    const link = createHttpLink({uri: 'data'});
     const context = {info: 'stub'};
     const variables = {params: 'stub'};
     const operationName = 'SampleMutation';
@@ -225,7 +269,7 @@ describe('HttpLink', () => {
 //   metadata
 //   variables
 //   operationName
-//   etcc..
+//   etc..
 //argument is undefinded, then not passed to the request
 //  operationName
 

@@ -36,7 +36,7 @@ export interface Observable {
 }
 
 export interface Subscriber<T> {
-  next: (result: T) => void;
+  next?: (result: T) => void;
   error?: (error: any) => void;
   complete?: () => void;
 }
