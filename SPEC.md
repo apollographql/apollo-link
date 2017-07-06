@@ -1,13 +1,20 @@
-## Apollo Fetchers
+## Apollo Links
 
-The purpose of apollo-fetcher is to define an extensible standard interface for fetching GraphQL results. To that end, apollo-fetcher describes an interface containing a single method that connects a GraphQL `Operation` (also called request), to an `Observable` which delivers the results of the operation. Operations that return a single result can easily be mapped to a promise, since the observable's `next` function is called only once. In the general case, Apollo Fetcher uses observables to support GraphQL subscriptions and live queries. The apollo-fetcher's `Observable` follows the ECMAScript [proposal](https://github.com/tc39/proposal-observable). A basic fetcher is visualized as follows:
+The purpose of apollo-link is to define an extensible standard interface for fetching GraphQL results.
+To that end, apollo-link describes an interface containing a single method, `request`, that connects a GraphQL `Operation` to an `Observable` which delivers the results of the operation.
+Operations that return a single result can easily be mapped to a promise, since the observable's `next` function is called only once.
+In the general case, Apollo Link uses observables to support GraphQL subscriptions and live queries.
+The apollo-link's `Observable` follows the ECMAScript [proposal](https://github.com/tc39/proposal-observable).
+A basic link is visualized as follows:
 
 <p align="center">
   <br>
-  <img src="images/apollo-fetcher.png" alt="Apollo Fetcher"/>
+  <img src="images/apollo-link.png" alt="Apollo Link"/>
 </p>
 
-Apollo Fetchers are designed to be used as an isomorphic stand-alone extensible GraphQL client. In addition, fetchers fit all current and anticipated needs of Apollo Client. As such, fetchers are targetted towards the following use-cases:
+Apollo Links are designed to be used as an isomorphic stand-alone extensible GraphQL client.
+In addition, links fit all current and anticipated needs of Apollo Client.
+As such, links are targetted towards the following use-cases:
 
 * Do a simple GraphQL query with it that resolves only once
 * Do a simple GraphQL mutation that resolves only once
@@ -38,15 +45,16 @@ Apollo Fetchers are designed to be used as an isomorphic stand-alone extensible 
   * File System
   * DDP
 * Mock partial or full response
-* Route of requests to alternate endpoints
-  * Partial requests to REST endpoint
-  * Partial requests to Mock
-* Split single request into multiple requests
-  * one request to local storage and
+* Route operations to alternate endpoints
+  * Partial operations to REST endpoint
+  * Partial operations to GraphQL endpoint
+  * Partial operations to Mock
+* Split single operation into multiple operations
+  * Race one operation to local storage and another to network
 * Per request retries based on network status or response
 * Polling
-* Batching at the transport layer
-* Deduplicate on-the-wire requests
+* Batching at the transport/fetch layer
+* Deduplicate of on-the-wire requests
 
 <br>
 
@@ -54,30 +62,36 @@ Apollo Fetchers are designed to be used as an isomorphic stand-alone extensible 
   * Denormalized
   * Normalized
   * Local Storage
+  * IndexDB
 
 If you can think of more use-cases, please open a PR adding to this list and make sure to clearly explain your use-case.
 
-In order to support all these use cases with a simple fetcher design, we want to use a modular architecture that composition of fetchers to stack functionality. An Intermediate Fetcher that modifies the operation passed down or the response received is represented below:
+In order to support all these use cases with a simple link design, we want to use a modular architecture that composition of links to chain together functionality.
+An Intermediate Link that modifies the operation passed down or the response received is represented below:
 
 <p align="center">
   <br>
-  <img src="images/generic-stack.png" alt="Generic Fetcher Stack"/>
+  <img src="images/generic-stack.png" alt="Generic Link Stack"/>
 </p>
-
 
 ## Examples
 
-http-fetcher sends an operation over HTTP to a server at a constructor specified URI. Additionally, the constructor accepts an optional fetch function and defaults to isomorphic-fetch. A custom fetch function would contain the HTTP specific behavior normally found in middleware or afterware. In this manner, http-fetcher can function as a stand-alone GraphQL client:
+### Stand Alone Client
+
+http-link sends an operation over HTTP to a server at a constructor specified URI.
+Additionally, the constructor accepts an optional fetch function and defaults to isomorphic-fetch.
+A custom fetch function would contain the HTTP specific behavior normally found in middleware or afterware.
+In this manner, http-link can function as a stand-alone GraphQL client:
 
 <p align="center">
   <br>
-  <img src="images/http-fetcher.png" alt="Http Fetcher"/>
+  <img src="images/http-link.png" alt="Http Link"/>
 </p>
 
 ```js
-const httpFetcher = new HTTPFetcher({ uri: 'http://api.githunt.com/graphql' });
+const httpLink = new HttpLink({ uri: 'http://api.githunt.com/graphql' });
 
-const responseObservable = httpFetcher.request({
+const responseObservable = httpLink.request({
   query,
   variables,
   operationName,
@@ -85,28 +99,61 @@ const responseObservable = httpFetcher.request({
 });
 
 responseObservable.subscribe({
-  next(data){ console.log('received data', data); },
-  error(error){ console.error(error); },
-  complete(){ console.error('request complete'); },
+  next: data => console.log('received data', data),
+  error: error => console.error(error),
+  complete: () => console.log('request complete'),
 });
 ```
 
-To illustrate composing fetchers, a polling fetcher can send a query operation to an http fetcher on a specified interval. Each request is routed through the http fetcher and returned through the observable from the polling fetcher. Using this type of delegation, fetchers of discrete functionality can form stacks.
+### Composing Links
+
+To illustrate composing links, this example shows a polling link that sends an operation to an http link on a specified interval.
 
 <p align="center">
   <br>
-  <img src="images/polling-stack.png" alt="Polling Fetcher Stack"/>
+  <img src="images/polling-stack.png" alt="Polling Link Stack"/>
 </p>
 
+`Link` is a library of static helper functions that connects links together to form a `chain`.
 
 ```js
-const pollingFetcher = new PollingFetcher(
-  10000, //Polling Interval in ms
-  new HTTPFetcher({ uri: 'http://api.githunt.com/graphql' })
-);
+import { Link } from 'apollo-link';
+
+Link.chain([
+  new PollingLink({
+    interval: 10000, //Polling Interval in ms
+  }),
+  new HttpLink({ uri: 'http://api.githunt.com/graphql' }),
+])
 ```
 
-In addition to the query, operationName, and variables, `Operation` includes a context, which is modified and passed down the stack of fetchers. In addition, this context is sent to the server to through the query body. In this example, `context` is used by a polling fetcher to tell a caching fetcher whether a request should be returned from the cache or the network.
+Every link has access to the next link in the chain with a callback passed to `request`.
+In this example, each operation is routed through the polling link to the http link and returned as an observable to the polling link.
+The operation enters the polling link's `request` method, which would utilize the `next` callback to pass the operation to the http link.
+This snippet shows the general flow of the polling request, omiting the details around how `subscriber` notifies `pollingObservable` and error/completion handling.
+
+```js
+//Inside PollingLink class
+request(operation, next){
+  //next makes a request call on the next link in the chain
+  const httpResult = next(operation);
+
+  //subscriber would notifiy pollingObservable of the result
+  httpResult.subscribe(this.subscriber);
+
+  //next can be called multiple times, so make the request on the interval
+  setTimeout(() => this.request(operation, next), this.interval);
+
+  //subscriber passes results to the pollingObservable
+  return this.pollingObservable;
+}
+```
+
+### Communicating within a Chain
+
+In addition to the query, operationName, and variables, `Operation` includes a context, which is modified and passed down the chain of links.
+In addition, this context is sent to the server to through the query body.
+In this example, `context` is used by a polling link to tell a caching link whether a request should be returned from the cache or the network.
 
 <p align="center">
   <br>
@@ -115,11 +162,11 @@ In addition to the query, operationName, and variables, `Operation` includes a c
 
 ## API
 
-The fetcher interface contains a single method:
+The link interface contains a single method:
 
 ```js
-ApolloFetcher{
-  request: (Operation) => Observable<FetchResult>
+ApolloLink {
+  request: (Operation, NextLink) => Observable<FetchResult>
 }
 ```
 
@@ -180,7 +227,7 @@ FetchResult{
 
 ## More examples
 
-Here is a list of planned fetchers with selected diagrams:
+Here is a list of planned links with selected diagrams:
 
 Base:
 
@@ -189,7 +236,7 @@ Base:
 
 <p align="center">
   <br>
-  <img src="images/batch-fetcher.png" alt="Batch Fetcher"/>
+  <img src="images/batch-link.png" alt="Batch Link"/>
 </p>
 
 Intermediate:
@@ -198,39 +245,66 @@ Intermediate:
 
 <p align="center">
   <br>
-  <img src="images/polling-fetcher.png" alt="Polling Fetcher"/>
+  <img src="images/polling-link.png" alt="Polling Link"/>
 </p>
 
 * Caching: returns data if result in the cache and stores data in cache on response
-* Compose: combines a list of fetchers (would require additional semantics around constructor argument order)
+* Compose: combines a list of links (would require additional semantics around constructor argument order)
 * Dedup: saves query signatures that are currently on the wire and returns the result for all of those queries
 * Retry: error callback causes the request to retry
-* Mock: returns fake data for all or part of a request ← implement with BaseFetcher (eg. executes `graphql`)
+* Mock: returns fake data for all or part of a request ← implement with BaseLink (eg. executes `graphql`)
 
 Fork:
 
-* Split: split operations between fetchers depending on a function passed in
-* Hybrid: uses split-fetcher to fill query and mutations with http and subscriptions with websockets
+* Split: split operations between links depending on a function passed in
+* Hybrid: uses split-link to fill query and mutations with http and subscriptions with websockets
 
 <p align="center">
   <br>
-  <img src="images/hybrid-fetcher.png" alt="Hybrid Fetcher"/>
+  <img src="images/hybrid-link.png" alt="Hybrid Link"/>
 </p>
 
-Adapter (not a Fetcher):
+The planned design for split adding another static funtion to `Link` with the following signature.
+<!-- inspired by [recompose](https://github.com/acdlite/recompose/blob/master/docs/API.md#branch) -->
+
+```js
+  Link.split(
+    test: (Operation) => boolean,
+    left: ApolloLink[],
+    right: ApolloLink[],
+  ),
+```
+
+Suggestions are welcome, including other strategies or naming schemes.
+
+An example usage would be:
+
+```js
+Link.chain([
+  new RetryLink(),
+  Link.split(
+    isQueryOrMutation,
+    [ new HttpLink() ],
+    [ new WebSocketLink() ],
+  ),
+])
+```
+
+Adapter (not a Link):
 
 * Promise Wrapper
 
 <p align="center">
   <br>
-  <img src="images/fetcher-as-promise.png" alt="Fetcher Promise Wrapper"/>
+  <img src="images/link-as-promise.png" alt="Link Promise Wrapper"/>
 </p>
 
 * Backwards-compatablility Wrapper: exposes `query`, `mutate`, and `subscribe`
 
 ## Open questions, discussion
 
-Throughout the design process, a couple questions have surfaced that may prompt conversation. If you want to see something here, please open a PR with your proposed change or an Issue for discussion.
+Throughout the design process, a couple questions have surfaced that may prompt conversation.
+If you want to see something here, please open a PR with your proposed change or an Issue for discussion.
 
 ### How should we pass context to `next` callback along with the query data?
 
@@ -258,7 +332,7 @@ next({
 })
 ```
 
-### Should we include `status()` the Fetcher interface that could contain user defined data and an enum for state?
+### Should we include `status()` the Link interface that could contain user defined data and an enum for state?
 
 ```js
 enum State{
@@ -284,11 +358,15 @@ The suggested behavior of dealing with the overload is found in `AbstractObserva
 
 The current functions provided:
 
-* toSubscriber
+* Link
+  * chain
+  * asPromisWrapper
+* LinkUtils
+  * toSubscriber
 
 Proposed additions include:
 
-* Pull information from the Operation as part of `Operation` or `FetcherUtil` library
+* Pull information from the Operation as part of `Operation` or `LinkUtil` library
   * hasQuery
   * hasMutation
   * hasSubscription
@@ -301,22 +379,25 @@ Proposed additions include:
   * `filter`
   * `catch`
   * `finally`
-* Library to compose fetchers together ex: `Fetcher.of(httpFetcher).concat(pollingFetcher)` or `Fetcher.first(pollingFetcher).next(httpFetcher)`
-  * [original proposal](https://github.com/apollographql/apollo-fetcher/pull/6#discussion_r122868492)
-  * [spliting wtih a filter](https://github.com/apollographql/apollo-fetcher/pull/6#discussion_r122869654)
-  * [another splitting option](https://github.com/apollographql/apollo-fetcher/pull/6#issuecomment-310239651)
 
 ### Should GraphQL errors be propagated up the stack with `next` or `error`?
 
 Currently GraphQL errors are returned as data to `next`.
 In the case of a network error, `error` is called.
 
-### Should Fetcher be functions or classes with wrapped constructors?
+### Should Link be functions or classes with wrapped constructors?
 
 ```js
-const httpFetcher = HttpFetcher({uri: 'localhost'});
+const httpLink = HttpLink({uri: 'localhost'});
 //or
-const httpFetcher = new HttpFetcher({uri: 'localhost'});
-const httpFetcher = createHttpFetcher({uri: 'localhost'});
+const httpLink = new HttpLink({uri: 'localhost'});
+const httpLink = createHttpLink({uri: 'localhost'});
 ```
+
+### Should Link include some form of synchronous adapter/behavior? What use cases warent this?
+
+Currently, everything in `apollo-link` is asynchronous.
+There have been some abstract thoughts around providing some sort of synchronnous adapter or cache.
+Use cases and other thoughts are welcome!
+
 

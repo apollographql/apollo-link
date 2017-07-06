@@ -1,16 +1,20 @@
 # apollo-link
 
-apollo-link is a standard interface for fetching GraphQL results, designed to provide a simple GraphQL client that is capable of extensions. High level use cases are:
+`apollo-link` is a standard interface for fetching GraphQL results, designed to provide a simple GraphQL client that is capable of extensions.
+High level use cases are:
 
 * fetch queries directly without normalized cache
 * network interface for Apollo Client
 * network interface for Relay Modern
 * fetcher for GraphiQL
-* enable multiple transports and spliting queries
+
+## Specification
 
 Currently the specification can be found in [SPEC.md](SPEC.md) and your feedback is appreciated.
 
-Additionally, apollo-link strives to follow the Apollo principles:
+## Apollo Principles
+
+`apollo-link` strives to follow the Apollo design principles:
 
 1. **Incrementally adoptable**
 2. **Universally compatible**
