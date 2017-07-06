@@ -150,6 +150,7 @@ request(operation, next){
 ```
 
 Additionally, `Link.chain` adds a compatibility layer that accepts a string as well as a GraphQL AST.
+Before passing the `Operation` to the first link, `Link.chain` parses the query string, ensuring links only need to deal with an AST.
 With this interface, a chain can be the network stack for most GraphQL clients, including GraphiQL and Apollo Client.
 
 ### Communicating within a Chain
