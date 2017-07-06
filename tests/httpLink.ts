@@ -6,8 +6,6 @@ import { print } from 'graphql';
 import gql from 'graphql-tag';
 import * as fetchMock from 'fetch-mock';
 
-// import { createApolloFetch } from 'apollo-fetch';
-
 const sampleQuery = gql`
 query SampleQuery {
   stub{

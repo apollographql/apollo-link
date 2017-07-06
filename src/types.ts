@@ -53,4 +53,5 @@ export interface Subscription {
   closed: boolean;
 }
 
-export type NextLink = (opration: Operation) => Observable;
+export type NextLink = (operation: Operation) => Observable;
+export type RequestHandler = (operation: Operation, next?: NextLink) => Observable;

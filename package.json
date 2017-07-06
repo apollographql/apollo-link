@@ -4,7 +4,9 @@
   "description": "Flexible, lightweight transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
-    "Jonas Helfer <jonas@helfer.email>"
+    "James Baxley <james@meteor.com>",
+    "Jonas Helfer <jonas@helfer.email>",
+    "Sashko Stubailo <sashko@stubailo.com>"
   ],
   "license": "MIT",
   "main": "./dist/src/index.js",
@@ -34,14 +36,15 @@
     "clean:coverage": "rimraf coverage/*",
     "prepublishOnly": "npm run clean && npm run build"
   },
-  "devDependencies": {
-    "graphql": "^0.10.1",
-    "apollo-fetch": "^0.0.0"
+  "dependencies": {
+    "apollo-fetch": "^0.3.0",
+    "graphql": "^0.10.3"
   },
   "devDependencies": {
     "@types/chai": "^4.0.0",
     "@types/chai-as-promised": "0.0.31",
     "@types/mocha": "^2.2.31",
+    "@types/sinon": "^2.3.2",
     "chai": "^4.0.2",
     "chai-as-promised": "^7.0.0",
     "fetch-mock": "^5.11.0",

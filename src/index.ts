@@ -3,14 +3,10 @@ import SingleRequestLink from './singleRequestLink';
 import { createHttpLink } from './httpLink';
 import BatchHttpLink from './batch/batchHttpLink';
 
-import {
-  linkPromiseWrapper,
-  linkToNetworkInterface,
-}  from './link-as-promise';
+import Link from './link';
 
 export {
-  linkPromiseWrapper,
-  linkToNetworkInterface,
+  Link,
 
   SingleRequestLink,
   createHttpLink,

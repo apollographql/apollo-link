@@ -5,12 +5,17 @@ import {
 
 export default class SuccessObservable extends AbstractObservable {
 
-  constructor(private data?: FetchResult) {
+  constructor(private data?: FetchResult, private count?: number) {
     super();
   }
 
   public start() {
-    this.onNext(this.data);
+    let i = this.count || 0;
+
+    do {
+      this.onNext(this.data);
+    } while (--i > 0);
+
     this.onComplete();
   }
 
