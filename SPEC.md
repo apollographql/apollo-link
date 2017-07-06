@@ -1,7 +1,7 @@
 ## Apollo Links
 
-The purpose of apollo-link is to define an extensible standard interface for fetching GraphQL results.
-To that end, apollo-link describes an interface containing a single method, `request`, that connects a GraphQL `Operation` to an `Observable` which delivers the results of the operation.
+The purpose of Apollo Link is to define an extensible standard interface for modifying control flow of GraphQL queries and fetching GraphQL results.
+To that end, Apollo Link describes an interface containing a single method, `request`, that connects a GraphQL `Operation` to an `Observable` containing the results of the operation.
 Operations that return a single result can easily be mapped to a promise, since the observable's `next` function is called only once.
 In the general case, Apollo Link uses observables to support GraphQL subscriptions and live queries.
 The apollo-link's `Observable` follows the ECMAScript [proposal](https://github.com/tc39/proposal-observable).
@@ -11,6 +11,25 @@ A basic link is visualized as follows:
   <br>
   <img src="images/apollo-link.png" alt="Apollo Link"/>
 </p>
+
+### Modular Architecture
+
+To support a range of use cases with simple links, Apollo Links are designed as a modular system that composes links, chaining together their functionality.
+Links communicate down their chain using a `forward` callback that passes an operation to the next link's `request` and returns the resulting observable.
+
+This example chain contains an Intermediate Link that modifies the operation and passes it to `forward`.
+`forward` then calls the Base Link's `request` on the operation, which returns an Observable.
+This Observable is returned from `forward` and the Intermediate Link can subscribe and respond to the result.
+
+This interaction is visualized below:
+
+<p align="center">
+  <br>
+  <img src="images/generic-stack.png" alt="Generic Link Stack"/>
+</p>
+
+
+### Use cases
 
 Apollo Links are designed to be used as an isomorphic stand-alone extensible GraphQL client.
 In addition, links fit all current and anticipated needs of Apollo Client.
@@ -66,21 +85,13 @@ As such, links are targeted towards the following use-cases:
 
 If you think of more use-cases, please open a PR adding to this list and make sure to clearly explain your use-case.
 
-In order to support all these use cases with a simple link design, we want to use a modular architecture that composition of links to chain together functionality.
-An Intermediate Link that modifies the operation passed down or the response received is represented below:
-
-<p align="center">
-  <br>
-  <img src="images/generic-stack.png" alt="Generic Link Stack"/>
-</p>
-
 ## Examples
 
 ### Stand Alone Client
 
 http-link sends an operation over HTTP to a server at a constructor specified URI.
-Additionally, the constructor accepts an optional fetch function and defaults to isomorphic-fetch.
-A custom fetch function would contain the HTTP specific behavior normally found in middleware or afterware.
+Additionally, the constructor accepts an optional fetch function and defaults to `ApolloFetch` from [apollo-fetch](https://github.com/apollographql/apollo-fetch).
+HTTP specific behavior, such as middleware or afterware, is encapsulated in this fetch function.
 In this manner, http-link can function as a stand-alone GraphQL client:
 
 <p align="center">
@@ -105,7 +116,7 @@ responseObservable.subscribe({
 });
 ```
 
-### Composing Links
+### Composing Links in a Chain
 
 To illustrate composing links, this example shows a polling link that sends an operation to an http link on a specified interval.
 
@@ -129,20 +140,20 @@ Link.chain([
 
 Every link has access to the next link in the chain with a callback passed to `request`.
 In this example, each operation is routed through the polling link to the http link and returned as an observable to the polling link.
-The operation enters the polling link's `request` method, which would utilize the `next` callback to pass the operation to the http link.
+The operation enters the polling link's `request` method, which would utilize the `forward` callback to pass the operation to the http link.
 This snippet shows the general flow of the polling request, omitting the details around how `subscriber` notifies `pollingObservable` and error/completion handling.
 
 ```js
 //Inside PollingLink class
-request(operation, next){
-  //next makes a request call on the next link in the chain
-  const httpResult = next(operation);
+request(operation, forward) {
+  //forward makes a request call on the next link in the chain
+  const httpResult = forward(operation);
 
   //subscriber would notify pollingObservable of the result
   httpResult.subscribe(this.subscriber);
 
   //next can be called multiple times, so make the request on the interval
-  setTimeout(() => this.request(operation, next), this.interval);
+  setTimeout(() => this.request(operation, forward), this.interval);
 
   //subscriber passes results to the pollingObservable
   return this.pollingObservable;
@@ -150,8 +161,10 @@ request(operation, next){
 ```
 
 Additionally, `Link.chain` adds a compatibility layer that accepts a string as well as a GraphQL AST.
-Before passing the `Operation` to the first link, `Link.chain` parses the query string, ensuring links only need to deal with an AST.
+Before passing the `Operation` to the first link, `Link.chain` parses the query string, ensuring links only need to work with an AST.
 With this interface, a chain can be the network stack for most GraphQL clients, including GraphiQL and Apollo Client.
+
+The behavior of `Link.chain` can also be modified to include operations that occurring in between each link, such as logging.
 
 ### Communicating within a Chain
 
@@ -170,8 +183,10 @@ The link interface contains a single method:
 
 ```js
 ApolloLink {
-  request: (operation?: Operation, next?: NextLink) => Observable<FetchResult>
+  request: (operation: Operation, forward?: NextLink) => Observable<FetchResult>
 }
+
+NextLink = (operation: Operation) => Observable<FetchResult>
 ```
 
 An `Operation` contains all the information necessary to execute a GraphQL query, including the GraphQL AST:
@@ -350,13 +365,15 @@ enum State {
 
 If `status` exists and an `Observable` has terminated, should `subscribe` throw an error or call complete immediately, avoiding memory leaks.
 
-### Does the subscribe method need to be overloaded?
+<!--
+### Does the subscribe method need to be overloaded? -> Yes, to make the Observable compatible
 
 Currently the `subscribe` method has two different signatures, one that takes three functions `next`, `error`, and `complete` and another that takes a `Subscriber`.
 Positional arguments are more prone to errors than passing object containing arguments.
 The three function signature is present for compatibility with GraphiQL.
 
 The suggested behavior of dealing with the overload is found in `AbstractObservable`.
+-->
 
 ### Which convenience functions would you like?
 
@@ -389,7 +406,8 @@ Proposed additions include:
 Currently GraphQL errors are returned as data to `next`.
 In the case of a network error, `error` is called.
 
-### Should Link be functions or classes with wrapped constructors?
+<!--
+### Should Link be functions or classes with wrapped constructors? -> class due to extensions and containing state
 
 Links will be a class to provide the opportunity for extension and better describe that links can contain state.
 
@@ -399,6 +417,7 @@ const httpLink = HttpLink({ uri: 'localhost' });
 const httpLink = new HttpLink({ uri: 'localhost' });
 const httpLink = createHttpLink({ uri: 'localhost' });
 ```
+-->
 
 ### Should Link include some form of synchronous adapter/behavior? What use cases warrant this?
 
