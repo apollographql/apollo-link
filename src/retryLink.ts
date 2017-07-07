@@ -8,8 +8,7 @@ import {
 } from './types';
 import AbstractObservable from './abstractObservable';
 import {
-  validateOperation,
-  ensureNext,
+  ensureForward,
 } from './linkUtils';
 
 
@@ -18,7 +17,7 @@ class RetryObservable extends AbstractObservable {
   private runRequest: () => Observable;
   private queryCount: number = 0;
   private retryDelay: number;
-  private maxQueries: number = 10;
+  private maxRetries: number = 10;
 
   private subscriber: Subscriber<FetchResult> = {
     next: data => {
@@ -26,7 +25,7 @@ class RetryObservable extends AbstractObservable {
       this.queryCount = 0;
     },
     error: error => {
-      if (this.queryCount < this.maxQueries) {
+      if (this.queryCount < this.maxRetries) {
         setTimeout(() => this.runRequest().subscribe(this.subscriber), Math.pow(this.retryDelay, this.queryCount));
       } else {
         this.onError(error);
@@ -35,14 +34,14 @@ class RetryObservable extends AbstractObservable {
     complete: this.onComplete,
   };
 
-  constructor (runRequest: () => Observable, params?: {maxQueries?: number, delay?: number}) {
+  constructor (runRequest: () => Observable, params?: {maxRetries?: number, delay?: number}) {
     super();
     this.runRequest = () => {
       this.queryCount++;
       return runRequest();
     };
     this.retryDelay = (params && params.delay) || 2;
-    this.maxQueries = (params && params.maxQueries) || 10;
+    this.maxRetries = (params && params.maxRetries) || 10;
   }
 
   public start() {
@@ -56,14 +55,13 @@ class RetryObservable extends AbstractObservable {
 
 export default class RetryLink implements ApolloLink {
 
-  constructor (private params?: {maxQueries?: number, delay?: number}) {
+  constructor (private params?: {maxRetries?: number, delay?: number}) {
 
   }
 
-  public request(operation: Operation, next?: NextLink): Observable {
-    validateOperation(operation);
-    ensureNext(next);
+  public request(operation: Operation, forward?: NextLink): Observable {
+    ensureForward(forward);
 
-    return new RetryObservable(() => next(operation), this.params);
+    return new RetryObservable(() => forward(operation), this.params);
   }
 }

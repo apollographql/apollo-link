@@ -33,8 +33,8 @@ export function validateOperation(operation: Operation): void {
   }
 }
 
-export function ensureNext(next?: NextLink): void {
-  if (!next || typeof next !== 'function') {
+export function ensureForward(forward?: NextLink): void {
+  if (!forward || typeof forward !== 'function') {
       throw new Error(`next link should be present`);
   }
 }

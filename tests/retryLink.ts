@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import RetryLink from '../src/retryLink';
-import * as Link from '../src/link';
+import * as Links from '../src/links';
 import ErrorObservable from './observables/errorObservable';
 import SuccessObservable from './observables/successObservable';
 
@@ -10,18 +10,18 @@ describe('RetryLink', () => {
   it('can be initialized', () => assert(true));
 
   it('should fail with unreachable endpoint', () => {
-    const maxQueries = 10;
-    const retry = new RetryLink({delay: 1, maxQueries});
+    const maxRetries = 10;
+    const retry = new RetryLink({delay: 1, maxRetries});
     const error = new Error('I never work');
     const stubNext = sinon.stub().callsFake(() => new ErrorObservable(error));
 
-    const promisedLink = Link.asPromiseWrapper(retry);
+    const promisedLink = Links.asPromiseWrapper(retry);
     return promisedLink.request({}, stubNext)
       .then(() => {
         expect.fail();
       })
       .catch(actualError => {
-        assert.deepEqual(stubNext.callCount, maxQueries);
+        assert.deepEqual(stubNext.callCount, maxRetries);
         assert.deepEqual(error, actualError);
       });
   });
@@ -36,7 +36,7 @@ describe('RetryLink', () => {
     const stubNext = sinon.stub();
     stubNext.returns(new SuccessObservable(data));
 
-    const promisedLink = Link.asPromiseWrapper(retry);
+    const promisedLink = Links.asPromiseWrapper(retry);
     return promisedLink.request({}, stubNext)
       .then(actualData => {
         assert(stubNext.calledOnce);
@@ -44,7 +44,7 @@ describe('RetryLink', () => {
       });
   });
 
-  it('should return data from the underlying link on a succesful retry', () => {
+  it('should return data from the underlying link on a successful retry', () => {
     const retry = new RetryLink({delay: 1});
     const error = new Error('I never work');
     const data = {
@@ -56,7 +56,7 @@ describe('RetryLink', () => {
     stubNext.onFirstCall().returns(new ErrorObservable(error));
     stubNext.onSecondCall().returns(new SuccessObservable(data));
 
-    const promisedLink = Link.asPromiseWrapper(retry);
+    const promisedLink = Links.asPromiseWrapper(retry);
     return promisedLink.request({}, stubNext)
       .then(actualData => {
         assert.deepEqual(stubNext.callCount, 2);

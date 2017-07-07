@@ -32,12 +32,6 @@ export function chain(links: ApolloLink[]): ApolloChainLink {
   };
 }
 
-export function asPromiseWrapper(link) {
-  return {
-    request: toPromise(link),
-  };
-}
-
 const toPromise = (link) => {
   return (operation: Operation, next?: NextLink) => {
     const observable = link.request(operation, next);
@@ -49,6 +43,12 @@ const toPromise = (link) => {
     });
   };
 };
+
+export function asPromiseWrapper(link) {
+  return {
+    request: toPromise(link),
+  };
+}
 
 function buildLinkChain(links: ApolloLink[]): NextLink {
   const _links = [...links];

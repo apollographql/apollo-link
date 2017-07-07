@@ -1,6 +1,6 @@
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
-import * as Link from '../src/link';
+import * as Links from '../src/links';
 import ErrorObservable from './observables/errorObservable';
 import SuccessObservable from './observables/successObservable';
 import ColdObservable from './observables/coldObservable';
@@ -26,15 +26,15 @@ describe('Link static library', () => {
     };
 
     it('throws an error on empty array', () => {
-      assert.throws(() => Link.chain([]), 'Must have at least one link to form a chain');
+      assert.throws(() => Links.chain([]), 'Must have at least one link to form a chain');
     });
 
     it('can create chain of one', () => {
-      assert.doesNotThrow(() => Link.chain([ new MockLink() ]));
+      assert.doesNotThrow(() => Links.chain([ new MockLink() ]));
     });
 
     it('can create chain of two', () => {
-      assert.doesNotThrow(() => Link.chain([ new MockLink(), new MockLink() ]));
+      assert.doesNotThrow(() => Links.chain([ new MockLink(), new MockLink() ]));
     });
 
     it('should receive result of one link', (done) => {
@@ -43,7 +43,7 @@ describe('Link static library', () => {
           hello: 'world',
         },
       };
-      const chain = Link.chain([ new MockLink(() => new SuccessObservable(data)) ]);
+      const chain = Links.chain([ new MockLink(() => new SuccessObservable(data)) ]);
       const observable = chain.request(uniqueOperation);
       observable.subscribe({
         next: actualData => {
@@ -71,7 +71,7 @@ describe('Link static library', () => {
         done();
       });
 
-      const chain = Link.chain([ new MockLink(stub) ]);
+      const chain = Links.chain([ new MockLink(stub) ]);
       chain.request(operation);
     });
 
@@ -87,13 +87,13 @@ describe('Link static library', () => {
         done();
       });
 
-      const chain = Link.chain([ new MockLink(stub) ]);
+      const chain = Links.chain([ new MockLink(stub) ]);
       chain.request(astOperation);
     });
 
     it('should pass operation from one link to next with modifications', (done) => {
-      const chain = Link.chain([
-        new MockLink((op, next) => next({
+      const chain = Links.chain([
+        new MockLink((op, forward) => forward({
           ...op,
           query: parse(sampleQuery),
         })),
@@ -106,16 +106,16 @@ describe('Link static library', () => {
 
     });
 
-    it('should pass result of one link to another with next', (done) => {
+    it('should pass result of one link to another with forward', (done) => {
       const data: FetchResult = {
         data: {
           hello: 'world',
         },
       };
 
-      const chain = Link.chain([
-        new MockLink((op, next) => {
-          const observable = next(op);
+      const chain = Links.chain([
+        new MockLink((op, forward) => {
+          const observable = forward(op);
 
           observable.subscribe({
             next: actualData => {
@@ -139,9 +139,9 @@ describe('Link static library', () => {
         },
       };
 
-      const chain = Link.chain([
-        new MockLink((op, next) => {
-          const observable = next(op);
+      const chain = Links.chain([
+        new MockLink((op, forward) => {
+          const observable = forward(op);
 
           const coldObservable = new ColdObservable(() => {
             observable.subscribe({
@@ -196,7 +196,7 @@ describe('Link static library', () => {
     it('return next call as Promise resolution', () => {
       const stubRequest = sinon.stub().withArgs(operation).callsFake(() => new SuccessObservable(data));
 
-      let linkPromise = Link.asPromiseWrapper({
+      let linkPromise = Links.asPromiseWrapper({
         request: stubRequest,
       });
 
@@ -207,7 +207,7 @@ describe('Link static library', () => {
     it('return error call as Promise resolution', () => {
        const stubRequest = sinon.stub().withArgs(operation).callsFake(() => new ErrorObservable(error));
 
-      let linkPromise = Link.asPromiseWrapper({
+      let linkPromise = Links.asPromiseWrapper({
         request: stubRequest,
       });
 

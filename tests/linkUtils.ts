@@ -66,13 +66,13 @@ describe('Link utilities:', () => {
 
   });
 
-  describe('ensureNext', () => {
+  describe('ensureForward', () => {
     it('should throw on when next is undefined', () => {
-      assert.throws(() => LinkUtils.ensureNext(undefined as any));
+      assert.throws(() => LinkUtils.ensureForward(undefined as any));
     });
 
     it('should not throw on when next is defined', () => {
-      assert.doesNotThrow(() => LinkUtils.ensureNext((operation) => <Observable>{}));
+      assert.doesNotThrow(() => LinkUtils.ensureForward((operation) => <Observable>{}));
     });
   });
 

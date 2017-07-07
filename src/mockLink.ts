@@ -15,9 +15,9 @@ export default class MockLink implements ApolloLink {
 
   }
 
-  public request(operation: Operation, next?: NextLink): Observable {
+  public request(operation: Operation, forward?: NextLink): Observable {
     validateOperation(operation);
 
-    return this.handleRequest(operation, next);
+    return this.handleRequest(operation, forward);
   }
 }
