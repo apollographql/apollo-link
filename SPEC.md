@@ -43,19 +43,19 @@ As such, links are targeted towards the following use-cases:
 
 <br>
 
-* Modify headers as middleware currently does
-  * Add authentication headers
 * Modify query, variables, operationName and context
   * Use persistent queries
-* Support afterware to modify response or add side effects
-  * Log queries
-  * Perform analytics
-  * Logout on 401
 * Include extra metadata to server along with queries
   * Include component sending query
   * Send time stamp of query leaving transport
 * Receive extra metadata with the query result
   * Send caching information
+* Modify headers as middleware currently does (uses [apollo-fetch](https://github.com/apollographql/apollo-fetch))
+  * Add authentication headers
+* Support afterware to modify response or add side effects (uses [apollo-fetch](https://github.com/apollographql/apollo-fetch))
+  * Log queries
+  * Perform analytics
+  * Logout on 401
 
 <br>
 
