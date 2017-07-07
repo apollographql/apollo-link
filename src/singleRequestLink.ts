@@ -5,7 +5,6 @@ import {
   FetchResult,
 } from './types';
 import OneTimeObservable from './oneTimeObservable';
-import { validateOperation } from './linkUtils';
 import {
   createApolloFetch,
   ApolloFetch,
@@ -24,8 +23,6 @@ export default class SingleRequestLink implements ApolloLink {
   }
 
   public request(operation: Operation): Observable {
-    validateOperation(operation);
-
     const request = {
       ...operation,
       query: print(operation.query),

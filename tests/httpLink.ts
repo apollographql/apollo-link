@@ -108,13 +108,6 @@ describe('HttpLink', () => {
     );
   });
 
-  it('complains when additional arguments to Operation', () => {
-    const link = createHttpLink({uri: 'data'});
-    assert.throws(() => link.request(<any>{
-      error: 'cause throw',
-    }));
-  });
-
   it('fails to start after stop', () => {
     const link = createHttpLink({uri: 'data'});
     const observable = <OneTimeObservable>link.request({

@@ -3,7 +3,7 @@ import SingleRequestLink from './singleRequestLink';
 import HttpLink, { createHttpLink } from './httpLink';
 import RetryLink from './retryLink';
 
-import Link from './link';
+import * as Link from './link';
 
 export {
   Link,

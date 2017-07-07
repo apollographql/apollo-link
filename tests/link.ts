@@ -1,6 +1,6 @@
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
-import Link from '../src/link';
+import * as Link from '../src/link';
 import ErrorObservable from './observables/errorObservable';
 import SuccessObservable from './observables/successObservable';
 import ColdObservable from './observables/coldObservable';
@@ -16,7 +16,6 @@ const sampleQuery = `query SampleQuery{
     id
   }
 }`;
-
 
 describe('Link static library', () => {
 

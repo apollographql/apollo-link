@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import RetryLink from '../src/retryLink';
-import Link from '../src/link';
+import * as Link from '../src/link';
 import ErrorObservable from './observables/errorObservable';
 import SuccessObservable from './observables/successObservable';
 

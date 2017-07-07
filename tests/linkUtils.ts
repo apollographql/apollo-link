@@ -49,14 +49,29 @@ describe('Link utilities:', () => {
 
   describe('validateOperation', () => {
 
+    it('should throw when invalid field in operation', () => {
+      assert.throws(() => LinkUtils.validateOperation(<any>{
+        quer: '',
+      }));
+    });
+
+    it('should not throw when valid fields in operation', () => {
+      assert.doesNotThrow(() => LinkUtils.validateOperation({
+        query: '',
+        operationName: '',
+        context: {},
+        variables: {},
+      }));
+    });
+
   });
 
   describe('ensureNext', () => {
-    it('should throw on when next undefined', () => {
+    it('should throw on when next is undefined', () => {
       assert.throws(() => LinkUtils.ensureNext(undefined as any));
     });
 
-    it('should throw on when next undefined', () => {
+    it('should not throw on when next is defined', () => {
       assert.doesNotThrow(() => LinkUtils.ensureNext((operation) => <Observable>{}));
     });
   });
