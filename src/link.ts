@@ -48,15 +48,10 @@ export default class Link {
 
   private static buildLinkChain(links: ApolloLink[]): NextLink {
     const _links = [...links];
-    const next: NextLink = (operation) => {
-      const link = _links.shift();
-      if (_links.length > 0) {
-        return link.request(operation, next);
-      } else {
-        return link.request(operation);
-      }
-    };
-    return next;
+
+    const forwards = _links.map((link, i) => operation => link.request(operation, forwards[i + 1]));
+
+    return forwards[0];
   }
 
   private static transformOperation(operation) {
