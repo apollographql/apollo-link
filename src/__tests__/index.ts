@@ -31,7 +31,7 @@ const poll = interval =>
           });
         }
         observer.error(
-          new Error('polling link should be used after a request link')
+          new Error('polling link should be used after a request link'),
         );
       }, 10);
 

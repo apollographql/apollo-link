@@ -36,11 +36,13 @@
       "git add"
     ]
   },
+  "pre-commit": "lint-staged",
   "devDependencies": {
     "@types/graphql": "^0.9.3",
     "@types/jest": "^20.0.2",
     "@types/zen-observable": "^0.5.1",
     "jest": "^20.0.4",
+    "lint-staged": "^4.0.1",
     "pre-commit": "^1.2.2",
     "prettier": "^1.5.2",
     "rimraf": "^2.5.4",

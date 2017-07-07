@@ -3,34 +3,29 @@ import * as Observable from 'zen-observable';
 import { ExecutionResult } from 'graphql';
 
 export interface LinkResult extends ExecutionResult {
-  context?: object,
-  extensions?: any,
+  context?: object;
+  extensions?: any;
 }
 
 export interface OperationRequest {
-  query: string,
-  context?: any,
+  query: string;
+  context?: any;
 }
 
 export type Linker = (
   request: OperationRequest,
-  prev?: Link
+  prev?: Link,
 ) => Observable<LinkResult | void>;
 
 export default class Link {
-  __value: Linker;
-  constructor(f) {
-    if (!(this instanceof Link)) return new Link(f);
-    this.__value = f;
-  }
+  value: Linker;
 
-  // static from(links: (request: OperationRequest, prev?: Link) => Observable<LinkResult | void>[])
   static from(links: Link[]) {
     return new Link(operation => {
       return links
         .reduce(
           (x, y) => x.concat(y),
-          this instanceof Link ? this : Link.empty()
+          this instanceof Link ? this : Link.empty(),
         )
         .request(operation);
     });
@@ -45,16 +40,21 @@ export default class Link {
     });
   }
 
+  constructor(f) {
+    if (!(this instanceof Link)) return new Link(f);
+    this.value = f;
+  }
+
   request(
     operation: OperationRequest,
-    prev?: Link
+    prev?: Link,
   ): Observable<LinkResult | void> {
-    return this.__value(
+    return this.value(
       {
         ...operation,
         context: operation.context ? operation.context : {},
       },
-      prev
+      prev,
     ).map((result: void | LinkResult) => {
       if (!result) return;
       return {
@@ -84,7 +84,7 @@ export default class Link {
   split(
     test: (x: OperationRequest) => boolean,
     left: Link,
-    right: Link = Link.empty()
+    right: Link = Link.empty(),
   ) {
     return new Link(operation => {
       const path = test(operation) ? this.concat(left) : this.concat(right);
