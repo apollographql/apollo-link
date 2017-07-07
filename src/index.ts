@@ -34,7 +34,7 @@ export default class Link {
   static empty() {
     return new Link((operation, prev) => {
       // if starting with empty, just return an Observable
-      if (!prev) return Observable.of();
+      if (!prev) return Observable.of(undefined);
       // otherwise just pass along the prev link
       return prev.request(operation);
     });

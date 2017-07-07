@@ -1,5 +1,5 @@
 {
-  "name": "apollo-fetcher",
+  "name": "apollo-link",
   "version": "0.0.0",
   "description": "Flexible, lightweight transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
@@ -42,6 +42,7 @@
     "@types/jest": "^20.0.2",
     "@types/zen-observable": "^0.5.1",
     "jest": "^20.0.4",
+    "jest-fetch-mock": "^1.2.0",
     "lint-staged": "^4.0.1",
     "pre-commit": "^1.2.2",
     "prettier": "^1.5.2",
@@ -60,6 +61,14 @@
       "ts",
       "tsx",
       "js"
+    ],
+    "setupFiles": [
+      "./scripts/jest.js"
     ]
+  },
+  "dependencies": {
+    "apollo-fetch": "^0.3.0",
+    "graphql": "^0.10.3",
+    "graphql-tag": "^2.4.2"
   }
 }
