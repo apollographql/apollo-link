@@ -1,4 +1,4 @@
-## Apollo Links
+## Apollo Link
 
 The purpose of Apollo Link is to define an extensible standard interface for modifying control flow of GraphQL queries and fetching GraphQL results.
 To that end, Apollo Link describes an interface containing a single method, `request`, that connects a GraphQL `Operation` to an `Observable` containing the results of the operation.
@@ -14,7 +14,7 @@ A basic link is visualized as follows:
 
 ### Modular Architecture
 
-To support a range of use cases with simple links, Apollo Links are designed as a modular system that composes links, chaining together their functionality.
+To support a range of use cases with simple links, Apollo Links are designed as a modular system that composes links together into chains.
 Links communicate down their chain using a `forward` callback that passes an operation to the next link's `request` and returns the resulting observable.
 
 This example chain contains an Intermediate Link that modifies the operation and passes it to `forward`.
@@ -74,6 +74,8 @@ As such, links are targeted towards the following use-cases:
 * Polling
 * Batching at the transport/fetch layer
 * Deduplicate of on-the-wire requests
+* Re-route and modify errors
+  * transform network error into GraphQL error
 
 <br>
 
@@ -125,7 +127,7 @@ To illustrate composing links, this example shows a polling link that sends an o
   <img src="images/polling-stack.png" alt="Polling Link Stack"/>
 </p>
 
-`Link` is a library of static helper functions that connects links together to form a `chain`.
+`Link` is a library of static helper functions that connects links together to form a chain.
 
 ```js
 import { Link } from 'apollo-link';
@@ -138,10 +140,9 @@ Link.chain([
 ])
 ```
 
-Every link has access to the next link in the chain with a callback passed to `request`.
-In this example, each operation is routed through the polling link to the http link and returned as an observable to the polling link.
-The operation enters the polling link's `request` method, which would utilize the `forward` callback to pass the operation to the http link.
-This snippet shows the general flow of the polling request, omitting the details around how `subscriber` notifies `pollingObservable` and error/completion handling.
+In this example, each operation is routed through `PollingLink` to `HttpLink` and returned as an observable to `PollingLink`.
+The operation enters `PollingLink`'s `request` method, which would utilize the `forward` callback to pass the operation to the `HttpLink`.
+This snippet shows the general flow of polling a request, omitting the details around how `subscriber` notifies `pollingObservable` and error/completion handling.
 
 ```js
 //Inside PollingLink class
@@ -152,7 +153,7 @@ request(operation, forward) {
   //subscriber would notify pollingObservable of the result
   httpResult.subscribe(this.subscriber);
 
-  //next can be called multiple times, so make the request on the interval
+  //forward can be called multiple times, so make the request on the interval
   setTimeout(() => this.request(operation, forward), this.interval);
 
   //subscriber passes results to the pollingObservable
@@ -168,9 +169,9 @@ The behavior of `Link.chain` can also be modified to include operations that occ
 
 ### Communicating within a Chain
 
-In addition to the query, operationName, and variables, `Operation` includes a context, which is modified and passed down the chain of links.
+In addition to the query, operationName, and variables, `Operation` includes a context, which is modified and passed down the chain.
 In addition, this context is sent to the server to through the query body.
-In this example, `context` is used by a polling link to tell a caching link whether a request should be returned from the cache or the network.
+In this example, `context` is used by a `PollingLink` to tell a `CachingLink` whether a request should be returned from the cache or the network.
 
 <p align="center">
   <br>
@@ -179,7 +180,7 @@ In this example, `context` is used by a polling link to tell a caching link whet
 
 ## API
 
-The link interface contains a single method:
+The Apollo Link interface contains a single method:
 
 ```js
 ApolloLink {
@@ -248,7 +249,7 @@ FetchResult {
 
 Here is a list of planned links with selected diagrams:
 
-Base:
+### Base:
 
 * Websocket: subscriptions support
 * Batching-\*: support for batching operations with a transport
@@ -258,7 +259,7 @@ Base:
   <img src="images/batch-link.png" alt="Batch Link"/>
 </p>
 
-Intermediate:
+### Intermediate:
 
 * Polling: repeats requests on a specified interval
 
@@ -268,12 +269,12 @@ Intermediate:
 </p>
 
 * Caching: returns data if result in the cache and stores data in cache on response
-* Compose: combines a list of links (would require additional semantics around constructor argument order)
+* Catch: catch all errors and modify the Observable to return something else
 * Dedup: saves query signatures that are currently on the wire and returns the result for all of those queries
 * Retry: error callback causes the request to retry
 * Mock: returns fake data for all or part of a request ← implement with BaseLink (eg. executes `graphql`)
 
-Fork:
+### Fork:
 
 * Split: split operations between links depending on a function passed in
 * Hybrid: uses split-link to fill query and mutations with http and subscriptions with websockets
@@ -309,7 +310,7 @@ Link.chain([
 ])
 ```
 
-Adapter (not a Link):
+### Adapter (not a Link):
 
 * Promise Wrapper
 
