@@ -52,8 +52,18 @@ export type Linker = (
   prev?: Link,
 ) => Observable<LinkResult | void>;
 
+// XXX write now the "default" state of observables aren't consistent
+// with this project. Observable.of(undefined) will fire `next` with
+// no value. Observable.of() won't fire next. I'm not sure which to
+// go with or if it is even okay to use both (different use case?)
+// for the defaultLinker it makes sense to fire `next` to keep
+// the chain going, for the end of a filter it makes sense to me
+// to not fire a next event at all. Thoughts?
+
 export const defaultLinker = (operation, prev) => {
   // if starting with empty, just return an Observable
+  // by returning undefined, this will call `next` on any
+  // subscribers
   if (!prev) return Observable.of(undefined);
   // otherwise just pass along the prev link
   return prev.request(operation);
@@ -146,7 +156,7 @@ export default class Link {
   split(
     test: (x: OperationRequest) => boolean,
     left: Link,
-    // rigth path is optional
+    // right path is optional
     right: Link = Link.empty(),
   ) {
     return new Link(operation => {
