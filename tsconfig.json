@@ -15,7 +15,6 @@
     "skipLibCheck": true
   },
   "files": [
-    "src/index.ts",
-    "tests/index.ts"
+    "src/index.ts"
   ]
 }

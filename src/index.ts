@@ -1,7 +1,3 @@
-class ApolloFetcher {
-  public canTest(): boolean {
-      return true;
-  }
-}
-
-export default ApolloFetcher;
+import Link from './Link';
+export * from './Link';
+export default Link;

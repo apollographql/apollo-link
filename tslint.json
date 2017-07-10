@@ -9,7 +9,7 @@
     ],
     "ban": false,
     "class-name": true,
-    "curly": true,
+    "curly": false,
     "eofline": true,
     "forin": true,
     "indent": [
@@ -24,7 +24,7 @@
       true,
       140
     ],
-    "member-access": true,
+    "member-access": false,
     "member-ordering": [
       true,
       "public-before-private",
@@ -82,13 +82,6 @@
       "always"
     ],
     "switch-default": true,
-    "trailing-comma": [
-      true,
-      {
-        "multiline": "always",
-        "singleline": "never"
-      }
-    ],
     "triple-equals": [
       true,
       "allow-null-check"

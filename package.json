@@ -1,5 +1,5 @@
 {
-  "name": "apollo-fetcher",
+  "name": "apollo-link",
   "version": "0.0.0",
   "description": "Flexible, lightweight transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
@@ -18,15 +18,11 @@
   },
   "homepage": "https://github.com/apollographql/apollo-fetcher#readme",
   "scripts": {
-    "pretest": "npm run build",
-    "test": "npm run test-only --",
+    "test": "jest",
     "posttest": "npm run lint",
-    "test-only": "mocha --reporter spec --full-trace dist/tests/index.js",
-    "test-watch": "mocha --reporter spec --full-trace dist/tests/index.js --watch",
-    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot --full-trace dist/tests/index.js",
-    "postcoverage": "remap-istanbul --input coverage/coverage.json --type lcovonly --output coverage/lcov.info",
-    "lint": "tslint --type-check -p tsconfig.json src/*.ts && tslint --type-check -p tsconfig.json tests/*.ts",
-    "prebuild": "npm run clean:dist",
+    "lint": "tslint --type-check -p tsconfig.json src/*.ts",
+    "prelint": "prettier --trailing-comma all --single-quote --write \"src/**/*.ts*\"",
+    "lint-staged": "lint-staged",
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "npm run clean:dist && npm run clean:coverage",
@@ -34,16 +30,45 @@
     "clean:coverage": "rimraf coverage/*",
     "prepublish": "npm run clean && npm run build"
   },
+  "lint-staged": {
+    "*.ts*": [
+      "prettier --trailing-comma all --single-quote --write",
+      "git add"
+    ]
+  },
+  "pre-commit": "lint-staged",
   "devDependencies": {
-    "@types/chai": "^4.0.0",
-    "@types/mocha": "^2.2.31",
-    "chai": "^4.0.2",
-    "istanbul": "^0.4.4",
-    "mocha": "^3.2.0",
-    "remap-istanbul": "^0.9.0",
+    "@types/graphql": "^0.9.3",
+    "@types/jest": "^20.0.2",
+    "@types/zen-observable": "^0.5.1",
+    "jest": "^20.0.4",
+    "jest-fetch-mock": "^1.2.0",
+    "lint-staged": "^4.0.1",
+    "pre-commit": "^1.2.2",
+    "prettier": "^1.5.2",
     "rimraf": "^2.5.4",
-    "source-map-support": "^0.4.5",
+    "ts-jest": "^20.0.6",
     "tslint": "^5.0.0",
-    "typescript": "^2.2.1"
+    "typescript": "^2.2.1",
+    "zen-observable": "^0.5.2"
+  },
+  "jest": {
+    "transform": {
+      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "setupFiles": [
+      "./scripts/jest.js"
+    ]
+  },
+  "dependencies": {
+    "apollo-fetch": "^0.3.0",
+    "graphql": "^0.10.3",
+    "graphql-tag": "^2.4.2"
   }
 }
