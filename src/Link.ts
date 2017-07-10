@@ -52,7 +52,7 @@ export type Linker = (
   prev?: Link,
 ) => Observable<LinkResult | void>;
 
-// XXX write now the "default" state of observables aren't consistent
+// XXX right now the "default" state of observables aren't consistent
 // with this project. Observable.of(undefined) will fire `next` with
 // no value. Observable.of() won't fire next. I'm not sure which to
 // go with or if it is even okay to use both (different use case?)
