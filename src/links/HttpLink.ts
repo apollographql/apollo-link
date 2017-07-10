@@ -1,5 +1,5 @@
 import { createApolloFetch } from 'apollo-fetch';
-import * as Observerable from 'zen-observable';
+import * as Observable from 'zen-observable';
 
 import Link, { OperationRequest } from '../';
 
@@ -12,8 +12,8 @@ export default (uri: string) => {
 
   // create Link from request and previous link
   return new Link((request: OperationRequest, prev = Link.empty()) => {
-    // hook up Observerable
-    return new Observerable(observer => {
+    // hook up Observable
+    return new Observable(observer => {
       const subscription = prev.request(request).subscribe({
         // merge previous data after
         next: (data = {}) => {
