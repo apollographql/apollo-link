@@ -1,6 +1,6 @@
 import * as gql from 'graphql-tag';
 import HttpLink from '../HttpLink';
-import Retry from '../Retry';
+import RetryLink from '../RetryLink';
 
 it('handles rejections correctly', complete => {
   let count = 1;
@@ -9,7 +9,7 @@ it('handles rejections correctly', complete => {
 
   fetch.mockResponseOnce(JSON.stringify({ data: { foo: { bar: true } } }));
   const request = HttpLink('/graphql')
-    .concat(new Retry({ max: 2, delay: 10 }))
+    .concat(new RetryLink({ max: 2, delay: 10 }))
     .request({
       query: gql`
         {
@@ -48,7 +48,7 @@ it('eventually reports errors if over the retry count', complete => {
   fetch.mockResponseOnce(JSON.stringify({ data: { foo: { bar: true } } }));
 
   const request = HttpLink('/graphql')
-    .concat(new Retry({ max: 2, delay: 10 }))
+    .concat(new RetryLink({ max: 2, delay: 10 }))
     .request({
       query: gql`
         {
@@ -65,8 +65,8 @@ it('eventually reports errors if over the retry count', complete => {
     },
     error: e => {
       // this should run after the 2nd retry fails
-      count++;
-      expect(count).toEqual(2);
+      // this just ensures that `next` isn't called
+      expect(count).toEqual(1);
       expect(e.message).toMatch(/offline/);
       complete();
     },
@@ -84,7 +84,7 @@ it('eventually reports the final request after the retry count', complete => {
   fetch.mockResponseOnce(JSON.stringify({ data: { foo: { bar: true } } }));
 
   const request = HttpLink('/graphql')
-    .concat(new Retry({ max: 2, delay: 10 }))
+    .concat(new RetryLink({ max: 2, delay: 10 }))
     .request({
       query: gql`
         {

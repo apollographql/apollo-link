@@ -2,6 +2,8 @@ import * as Observable from 'zen-observable';
 
 import Link, { OperationRequest, LinkResult } from '../';
 
+import poll from '../links/PollingLink';
+
 // request => observable
 const mockLink = (result = { data: {}, errors: null }) => {
   return new Link((request: OperationRequest) => {
@@ -16,86 +18,47 @@ const mockLink = (result = { data: {}, errors: null }) => {
   });
 };
 
-const poll = interval =>
-  new Link((request: OperationRequest, prev) => {
-    return new Observable(observer => {
-      let timer = setInterval(() => {
-        if (prev) {
-          const stack = prev.request(request);
-          return stack.subscribe({
-            next: data => observer.next(data),
-            error: e => observer.error(e),
-            complete: () => {
-              if (stack) stack.unsubscribe();
-            },
-          });
-        }
-        observer.error(
-          new Error('polling link should be used after a request link'),
-        );
-      }, 10);
-
-      return () => {
-        observer.complete();
-        clearInterval(timer);
-      };
-    });
-  });
-
 const logger = new Link((request: OperationRequest, prev) => {
   return new Observable(observer => {
     const subscription = prev
+      // middleware
       .map(x => {
         x.context.logger = {
           start: new Date(),
         };
         return x;
       })
+      // request
       .request(request)
+      // afteware
+      .map(({ context, ...rest }) => {
+        context.logger.end = new Date();
+        // log the duration here
+        const span = context.logger.end - context.logger.start;
+
+        return {
+          ...rest,
+          context,
+        };
+      })
       .subscribe({
-        next: ({ context, ...rest }) => {
-          context.logger.end = new Date();
-          // log the duration here
-          const span = context.logger.end - context.logger.start;
-          observer.next({
-            ...rest,
-            context,
-          });
-        },
-        error: e => {
-          observer.error(e);
-        },
-        complete: () => {
-          observer.complete();
-        },
+        next: x => observer.next(x),
+        error: e => observer.error(e),
+        complete: () => observer.complete(),
       });
+
     return () => subscription.unsubscribe();
   });
 });
 
 const addContext = value =>
   new Link((request, prev) => {
-    if (!prev) return Observable.of({ context: { ...value } });
-    return new Observable(observer => {
-      const subscription = prev.request(request).subscribe({
-        next: ({ context, ...rest }) => {
-          observer.next({
-            ...rest,
-            context: {
-              ...context,
-              ...value,
-            },
-          });
-        },
-        error: e => {
-          observer.error(e);
-        },
-        complete: () => {
-          observer.complete();
-        },
-      });
-      return () => subscription.unsubscribe();
-    });
+    return prev
+      .map(x => {
+        x.context = { ...x.context, ...value };
+        return x;
+      })
+      .request(request);
   });
 
 describe('usecase', () => {

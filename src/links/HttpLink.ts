@@ -1,14 +1,17 @@
 import { createApolloFetch } from 'apollo-fetch';
 import * as Observerable from 'zen-observable';
 
-import Link from '../';
+import Link, { OperationRequest } from '../';
 
+// set an endpoint for requests
 export default (uri: string) => {
-  // create HTTP utility
+  // XXX if apollo-fetch supports context on the request,
+  // we can use `map` to implement middleware and
+  // `map` on the result to implement afterware
   const fetcher = createApolloFetch({ uri });
 
   // create Link from request and previous link
-  return new Link((request, prev = Link.empty()) => {
+  return new Link((request: OperationRequest, prev = Link.empty()) => {
     // hook up Observerable
     return new Observerable(observer => {
       const subscription = prev.request(request).subscribe({
@@ -18,6 +21,7 @@ export default (uri: string) => {
           fetcher(request)
             .then(result => {
               observer.next({ ...data, ...result });
+              // since this only runs once, complete the observer
               observer.complete();
             })
             .catch(error => {
@@ -29,6 +33,7 @@ export default (uri: string) => {
         },
       });
 
+      // can this support cancellation?
       return () => subscription.unsubscribe();
     });
   });
