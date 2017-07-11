@@ -1,9 +1,7 @@
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import * as Links from '../src/links';
-import ErrorObservable from './observables/errorObservable';
-import SuccessObservable from './observables/successObservable';
-import ColdObservable from './observables/coldObservable';
+import * as Observable from 'zen-observable';
 import MockLink from '../src/mockLink';
 import { parse } from 'graphql';
 import {
@@ -43,14 +41,14 @@ describe('Link static library', () => {
           hello: 'world',
         },
       };
-      const chain = Links.chain([ new MockLink(() => new SuccessObservable(data)) ]);
+      const chain = Links.chain([ new MockLink(() => Observable.of(data)) ]);
       const observable = chain.request(uniqueOperation);
       observable.subscribe({
         next: actualData => {
           assert.deepEqual(data, actualData);
         },
-        error: expect.fail,
-        complete: done,
+        error: () => expect.fail(),
+        complete: () => done(),
       });
     });
 
@@ -127,7 +125,7 @@ describe('Link static library', () => {
 
           return observable;
         }),
-        new MockLink(() => new SuccessObservable(data)),
+        new MockLink(() => Observable.of(data)),
       ]);
       chain.request(uniqueOperation);
     });
@@ -143,24 +141,23 @@ describe('Link static library', () => {
         new MockLink((op, forward) => {
           const observable = forward(op);
 
-          const coldObservable = new ColdObservable(() => {
+          return new Observable(observer => {
             observable.subscribe({
                 next: actualData => {
                     assert.deepEqual(data, actualData);
-                    coldObservable.onNext({
+                    observer.next({
                       data: {
                         ...actualData.data,
                         modification: 'unique',
                       },
                     });
                 },
-                error: coldObservable.onError,
-                complete: coldObservable.onComplete,
+                error: (error) => observer.error(error),
+                complete: () => observer.complete(),
             });
           });
-          return coldObservable;
         }),
-        new MockLink(() => new SuccessObservable(data)),
+        new MockLink(() => Observable.of(data)),
       ]);
 
       const result = chain.request(uniqueOperation);
@@ -194,7 +191,7 @@ describe('Link static library', () => {
     const error = new Error('I always error');
 
     it('return next call as Promise resolution', () => {
-      const stubRequest = sinon.stub().withArgs(operation).callsFake(() => new SuccessObservable(data));
+      const stubRequest = sinon.stub().withArgs(operation).callsFake(() => Observable.of(data));
 
       let linkPromise = Links.asPromiseWrapper({
         request: stubRequest,
@@ -204,8 +201,8 @@ describe('Link static library', () => {
         .then(result => assert.deepEqual(data, result));
     });
 
-    it('return error call as Promise resolution', () => {
-       const stubRequest = sinon.stub().withArgs(operation).callsFake(() => new ErrorObservable(error));
+    it('return error call as Promise rejection', () => {
+       const stubRequest = sinon.stub().withArgs(operation).callsFake(() => new Observable(observer => observer.error(error)));
 
       let linkPromise = Links.asPromiseWrapper({
         request: stubRequest,

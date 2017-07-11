@@ -1,7 +1,8 @@
 import { DocumentNode } from 'graphql/language/ast';
+import * as Observable from '@types/zen-observable';
 
 export interface ApolloChainLink {
-  request (operation: ExternalOperation): Observable;
+  request (operation: ExternalOperation): Observable<FetchResult>;
 }
 
 export interface ExternalOperation {
@@ -12,7 +13,7 @@ export interface ExternalOperation {
 }
 
 export interface ApolloLink {
-  request (operation: Operation, next?: NextLink): Observable;
+  request (operation: Operation, next?: NextLink): Observable<FetchResult>;
 }
 
 export interface PromiseLink {
@@ -26,14 +27,7 @@ export interface Operation {
   context?: object;
 }
 
-export interface Observable {
-    subscribe(subscriber: Subscriber<FetchResult>): Subscription;
-    subscribe(
-      next: (result: FetchResult) => void,
-      error?: (error: any) => void,
-      complete?: () => void,
-    ): Subscription;
-}
+export type Observable = Observable<FetchResult>;
 
 export interface Subscriber<T> {
   next?: (result: T) => void;
@@ -53,5 +47,5 @@ export interface Subscription {
   closed: boolean;
 }
 
-export type NextLink = (operation: Operation) => Observable;
-export type RequestHandler = (operation: Operation, next?: NextLink) => Observable;
+export type NextLink = (operation: Operation) => Observable<FetchResult>;
+export type RequestHandler = (operation: Operation, next?: NextLink) => Observable<FetchResult>;

@@ -4,7 +4,7 @@ import HttpLink, {
   createHttpLink,
 } from '../src/httpLink';
 
-import OneTimeObservable from '../src/oneTimeObservable';
+
 import { print } from 'graphql';
 import gql from 'graphql-tag';
 import * as fetchMock from 'fetch-mock';
@@ -108,29 +108,10 @@ describe('HttpLink', () => {
     );
   });
 
-  it('fails to start after stop', () => {
-    const link = createHttpLink({uri: 'data'});
-    const observable = <OneTimeObservable>link.request({
-      query: sampleQuery,
-      operationName: 'SampleQuery',
-    });
-    observable.stop();
-    assert.throws(observable.start);
-  });
-
-  it('fails to stop after termination', () => {
-    const link = createHttpLink({uri: 'data'});
-    const observable = <OneTimeObservable>link.request({
-      query: sampleQuery,
-      operationName: 'SampleQuery',
-    });
-    observable.stop();
-    assert.throws(observable.stop);
-  });
 
   it('unsubscribes without calling subscriber', (done) => {
     const link = createHttpLink({uri: 'data'});
-    const observable = <OneTimeObservable>link.request({
+    const observable = link.request({
       query: sampleQuery,
       operationName: 'SampleQuery',
     });
@@ -139,40 +120,6 @@ describe('HttpLink', () => {
     assert(subscription.closed);
     setTimeout(done, 50);
   });
-
-  it('subscriber after observable termination gets immediate completion', (done) => {
-    const link = createHttpLink({
-      uri: 'data',
-    });
-    const observable = <OneTimeObservable>link.request({
-      query: sampleQuery,
-      operationName: 'SampleQuery',
-    });
-    const subscription = observable.subscribe(() => assert(false), () => assert(false), () => assert(false));
-    subscription.unsubscribe();
-    assert(subscription.closed);
-
-    observable.subscribe(() => assert(false), () => assert(false), done);
-  });
-
-  it('subscription after observable termination should be closed and unsubscribe should have no effects', () => {
-    const link = createHttpLink({
-      uri: 'data',
-    });
-    const observable = <OneTimeObservable>link.request({
-      query: sampleQuery,
-      operationName: 'SampleQuery',
-    });
-    let subscription = observable.subscribe(() => assert(false), () => assert(false), () => assert(false));
-    subscription.unsubscribe();
-    assert(subscription.closed);
-
-    subscription = observable.subscribe({});
-    assert(subscription.closed);
-    assert.doesNotThrow(subscription.unsubscribe);
-    assert(subscription.closed);
-  });
-
 
   const verifyRequest = (link: ApolloLink, after: () => void) => {
     const next = sinon.spy();

@@ -1,10 +1,9 @@
 import {
   ApolloLink,
   Operation,
-  Observable,
   FetchResult,
 } from './types';
-import OneTimeObservable from './oneTimeObservable';
+import * as Observable from 'zen-observable';
 import {
   createApolloFetch,
   ApolloFetch,
@@ -22,13 +21,30 @@ export default class SingleRequestLink implements ApolloLink {
     this._fetch = fetchParams && fetchParams.fetch || createApolloFetch({ uri: fetchParams && fetchParams.uri });
   }
 
-  public request(operation: Operation): Observable {
+  public request(operation: Operation) {
     const request = {
       ...operation,
       query: print(operation.query),
     };
 
-    return new OneTimeObservable(this._fetch(request));
+    return new Observable(observer => {
+      let closed = false;
+
+      this._fetch(request)
+      .then(data => {
+        if (!closed) {
+          observer.next(data);
+          observer.complete();
+        }
+      })
+      .catch(error => {
+        if (!closed) {
+          observer.error(error);
+        }
+      });
+
+      return () => { closed = true; };
+    });
   }
 
 }

@@ -33,8 +33,9 @@ export function chain(links: ApolloLink[]): ApolloChainLink {
 }
 
 const toPromise = (link) => {
-  return (operation: Operation, next?: NextLink) => {
-    const observable = link.request(operation, next);
+  return (operation: Operation, forward?: NextLink) => {
+    const observable = link.request(operation, forward);
+
     return new Promise((resolve, reject) => {
       observable.subscribe({
         next: resolve,
@@ -53,7 +54,11 @@ export function asPromiseWrapper(link) {
 function buildLinkChain(links: ApolloLink[]): NextLink {
   const _links = [...links];
 
-  const forwards = _links.map((link, i) => operation => link.request(operation, forwards[i + 1]));
+  const forwards = _links.map((link, i) => {
+    return operation => {
+      return link.request(operation, forwards[i + 1]);
+    };
+  });
 
   return forwards[0];
 }
