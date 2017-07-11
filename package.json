@@ -41,6 +41,7 @@
     "@types/graphql": "^0.9.3",
     "@types/jest": "^20.0.2",
     "@types/zen-observable": "^0.5.1",
+    "graphql-tools": "^1.1.0",
     "jest": "^20.0.4",
     "jest-fetch-mock": "^1.2.0",
     "lint-staged": "^4.0.1",

@@ -1,4 +1,7 @@
-import { DocumentNode, ExecutionResult } from 'graphql';
+import { graphql, DocumentNode, ExecutionResult } from 'graphql';
+import { parse } from 'graphql/language/parser';
+
+import { makeExecutableSchema } from 'graphql-tools';
 import * as Observable from 'zen-observable';
 
 interface OperationRequest {
@@ -53,22 +56,24 @@ class Link {
 
   // .split :: ((Operation) => bool, Link, Link?) => Link
   split(test, Left, Right = Link.empty()) {
-    return new Link(link => {
-      return new Observable(observer => {
-        const subscription = link.subscribe((data: Operation) => {
-          const newLink = test(data) ? this.concat(Left) : this.concat(Right);
-          newLink.execute(data.request).subscribe({
-            next: x => observer.next(x),
-            error: e => observer.error(e),
-            complete: () => observer.complete(),
+    return this.concat(
+      new Link(link => {
+        return new Observable(observer => {
+          const subscription = link.subscribe((data: Operation) => {
+            const newLink = test(data) ? Left : Right;
+            newLink.execute(data.request).subscribe({
+              next: x => observer.next(x),
+              error: e => observer.error(e),
+              complete: () => observer.complete(),
+            });
           });
-        });
 
-        () => {
-          subscription.unsubscribe();
-        };
-      });
-    });
+          () => {
+            subscription.unsubscribe();
+          };
+        });
+      }),
+    );
   }
 
   // .execute :: OperationRequest => Observable<Operation>
@@ -150,6 +155,108 @@ const FetchLink = fetcher();
 const LogEnd = setContext(({ logging: { time } }) => ({
   logging: { time: new Date() - time },
 }));
+
+const withSchema = schema => setContext(() => ({ schema }));
+
+// Construct a schema, using GraphQL schema language
+const typeDefs = `
+  type Query {
+    hello: String
+  }
+`;
+
+// Provide resolver functions for your schema fields
+const resolvers = {
+  Query: {
+    hello: (root, args, context) => {
+      return 'Hello world!';
+    },
+  },
+};
+
+const clientSchema = makeExecutableSchema({
+  typeDefs,
+  resolvers,
+});
+
+const flatten = array => [].concat.apply([], array);
+
+const filterLocalSchema = ({ request }) => {
+  const { schema } = request.context;
+  // get all potential root level items from the local schema
+  const rootTypes = flatten(
+    [
+      schema.getQueryType(),
+      schema.getMutationType(),
+      schema.getSubscriptionType(),
+    ]
+      .filter(x => !!x)
+      .map(x => x.getFields())
+      .map(x => flatten(Object.keys(x).map(y => x[y].name))),
+  );
+
+  const doc = parse(request.query);
+  // flatten all root level operation fields to determine if this is
+  // a client only operation
+  const fields = flatten(
+    doc.definitions.map(x => x.selectionSet.selections.map(y => y.name.value)),
+  );
+
+  return fields.some(field => rootTypes.includes(field));
+};
+
+const LocalExecution = new Link(
+  link =>
+    new Observable(observer => {
+      let cancelled;
+      link.subscribe(({ request }) => {
+        // don't make request if cancelled prior
+        if (cancelled) return;
+        graphql(request.context.schema, request.query)
+          .then(result => {
+            // don't continue chain if cancelled
+            if (cancelled) return;
+            observer.next({ request, result });
+            observer.complete();
+          })
+          .catch(e => {
+            console.error(e);
+            observer.error(e);
+          });
+      });
+
+      return () => {
+        cancelled = true;
+      };
+    }),
+);
+
+describe('localSchema', () => {
+  it('can reroute a cilent side query to a local execution', complete => {
+    const client = withSchema(clientSchema).split(
+      filterLocalSchema,
+      LocalExecution,
+      FetchLink,
+    );
+
+    const operation1 = client.execute({ query: `{ hello }` });
+    const operation2 = client.execute({ query: `{ foo { bar }}` });
+
+    // makes local query
+    operation1.subscribe(data => {
+      expect(data.result.data).toEqual({ hello: 'Hello world!' });
+    });
+
+    // sends query to the server
+    operation2.subscribe(
+      data => {
+        expect(data.result.data).toEqual({ foo: { bar: true } });
+      },
+      null,
+      () => complete(),
+    );
+  });
+});
 
 describe('concat', () => {
   it('works', complete => {
