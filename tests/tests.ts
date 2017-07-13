@@ -1,4 +1,7 @@
 import './httpLink';
-import './retryLink';
-import './linkUtils';
 import './link';
+import './linkUtils';
+import './pollingLink';
+import './retryLink';
+import './setContextLink';
+import './singleRequestLink';

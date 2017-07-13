@@ -1,16 +1,15 @@
-import { assert } from 'chai';
+import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
-import HttpLink, {
-  createHttpLink,
-} from '../src/httpLink';
+import HttpLink from '../src/httpLink';
 
+import * as Links from '../src/link';
+import { ApolloLink } from '../src/link';
+
+import { createApolloFetch } from 'apollo-fetch';
 
 import { print } from 'graphql';
 import gql from 'graphql-tag';
 import * as fetchMock from 'fetch-mock';
-import {
-  ApolloLink,
-} from '../src/link';
 
 const sampleQuery = gql`
 query SampleQuery {
@@ -29,16 +28,13 @@ mutation SampleMutation {
 `;
 
 describe('HttpLink', () => {
-  const getData = {hello: 'world', method: 'GET'};
-  const postData = {hello: 'world', method: 'POST'};
+  const data = {hello: 'world', method: 'POST'};
   const mockError = { throws: new TypeError('mock me') };
 
   let subscriber;
 
   beforeEach(() => {
-    fetchMock.get('begin:data', getData);
-    fetchMock.post('begin:data', postData);
-    fetchMock.get('begin:error', mockError);
+    fetchMock.post('begin:data', data);
     fetchMock.post('begin:error', mockError);
 
     const next = sinon.spy();
@@ -60,13 +56,9 @@ describe('HttpLink', () => {
     assert.doesNotThrow(() => new HttpLink());
   });
 
-  it('does not need any arguments to wrapped constructor', () => {
-    assert.doesNotThrow(() => createHttpLink());
-  });
-
   it('calls next and then complete', (done) => {
     const next = sinon.spy();
-    const link = createHttpLink({uri: 'data'});
+    const link = new HttpLink({uri: 'data'});
     const observable = link.request({
       query: sampleQuery,
     });
@@ -78,7 +70,7 @@ describe('HttpLink', () => {
   });
 
   it('calls error when fetch fails', (done) => {
-    const link = createHttpLink({uri: 'error'});
+    const link = new HttpLink({uri: 'error'});
     const observable = link.request({
       query: sampleQuery,
     });
@@ -93,7 +85,7 @@ describe('HttpLink', () => {
   });
 
   it('calls error when fetch fails', (done) => {
-    const link = createHttpLink({uri: 'error'});
+    const link = new HttpLink({uri: 'error'});
     const observable = link.request({
       query: sampleMutation,
     });
@@ -109,7 +101,7 @@ describe('HttpLink', () => {
 
 
   it('unsubscribes without calling subscriber', (done) => {
-    const link = createHttpLink({uri: 'data'});
+    const link = new HttpLink({uri: 'data'});
     const observable = link.request({
       query: sampleQuery,
     });
@@ -146,12 +138,12 @@ describe('HttpLink', () => {
   };
 
   it('passes all arguments to multiple fetch body', (done) => {
-    const link = createHttpLink({uri: 'data'});
+    const link = new HttpLink({uri: 'data'});
     verifyRequest(link, () => verifyRequest(link, done));
   });
 
   it('calls multiple subscribers', (done) => {
-    const link = createHttpLink({uri: 'data'});
+    const link = new HttpLink({uri: 'data'});
     const context = {info: 'stub'};
     const variables = {params: 'stub'};
 
@@ -172,7 +164,7 @@ describe('HttpLink', () => {
   });
 
   it('calls remaining subscribers after unsubscribe', (done) => {
-    const link = createHttpLink({uri: 'data'});
+    const link = new HttpLink({uri: 'data'});
     const context = {info: 'stub'};
     const variables = {params: 'stub'};
 
@@ -193,41 +185,23 @@ describe('HttpLink', () => {
     }, 50);
   });
 
-//future tests:
-//http-link calls fetch with proper arguments
-//   simple
-//   proper uri
-//   metadata
-//   variables
-//   etc..
-//argument is undefined, then not passed to the request
+  it('should add headers from the context', (done) => {
 
-//query -> GET and mutation -> POST
+    const fetch = createApolloFetch({
+      customFetch: (request, options) => new Promise((resolve, reject) => {
+        assert.property(options.headers, 'test');
+        assert.deepEqual(options.headers.test, context.headers.test);
+        done();
+      }),
+    });
+    const link = new HttpLink({fetch});
 
-//throw error on subscriptions?
+    const context = {
+      headers: {
+        test: 'header',
+      },
+    };
 
-//status() returns correct values during life cycle
-//  cold?
-//  number subscribers
-//  started? has been called
-//  stopped? has been called explicitly
-//  completed? has notified
-//  errored? has notified
-
-//test after completion all subsequent subscribes call complete to avoid memory leaks (other option is error)
-
-//error called on unsuccessful fetch and next and complete uncalled
-//calls next and complete on subscribers on successful fetch and error uncalled
-//fetch is not called when no subscribe call
-//fetch is called after start is called
-//  if fetch hasn't been called then fail after short timeout
-
-//Can unsubscribe and never get any more events
-
-//call stop and none of the Subscriber is called again
-
-//multiple subscribers and all are called each success/failure
-//multiple subscribers -> others still get events after an unsubscribe
-
-//multiple queries
+    Links.execute(link, { query: sampleQuery, context }).subscribe(expect.fail);
+  });
 });

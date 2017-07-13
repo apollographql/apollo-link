@@ -4,6 +4,7 @@ import {
   Operation,
   RequestHandler,
   FetchResult,
+  Chain,
 } from './types';
 
 import {
@@ -16,9 +17,6 @@ import {
 
 import * as Observable from 'zen-observable';
 
-export interface Chain {
-  request(operation: Operation, forward: NextLink);
-}
 
 export abstract class ApolloLink implements Chain {
 
@@ -96,7 +94,7 @@ export function split(
     return new SplitLink(test, left, right) as Chain;
   }
 
-const toPromise = (link) => {
+const toPromise = (link: ApolloLink) => {
   return (operation: Operation, forward?: NextLink) => {
     const observable = link.request(operation, forward);
 
@@ -109,7 +107,10 @@ const toPromise = (link) => {
   };
 };
 
-export function asPromiseWrapper(link) {
+export function asPromiseWrapper(link: ApolloLink | RequestHandler) {
+  if (typeof link === 'function') {
+    link = new FunctionLink(link);
+  }
   return {
     request: toPromise(link),
   };

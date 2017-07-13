@@ -11,7 +11,7 @@ import {
 
 export default class SetContextLink extends ApolloLink {
 
-  constructor (private context: object) {
+  constructor (private context?: any) {
     super();
   }
 

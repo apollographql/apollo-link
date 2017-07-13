@@ -42,3 +42,7 @@ export interface Subscription {
 
 export type NextLink = (operation: Operation) => Observable<FetchResult>;
 export type RequestHandler = (operation: Operation, forward?: NextLink) => Observable<FetchResult> | null;
+
+export interface Chain {
+  request(operation: Operation, forward: NextLink);
+}

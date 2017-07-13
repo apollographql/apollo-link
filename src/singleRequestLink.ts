@@ -26,7 +26,7 @@ export default class SingleRequestLink extends ApolloLink {
     this._fetch = fetchParams && fetchParams.fetch || createApolloFetch({ uri: fetchParams && fetchParams.uri });
   }
 
-  public request(operation: Operation, forward: NextLink) {
+  public request(operation: Operation, forward?: NextLink) {
     const request = {
       ...operation,
       query: print(operation.query),

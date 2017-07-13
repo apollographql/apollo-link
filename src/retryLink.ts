@@ -1,6 +1,7 @@
 import {
   Operation,
   NextLink,
+  FetchResult,
 } from './types';
 import * as Observable from 'zen-observable';
 import {
@@ -29,7 +30,7 @@ export default class RetryLink extends ApolloLink {
     this.interval =  params && params.interval || this.defaultInterval;
   }
 
-  public request(operation: Operation, forward?: NextLink) {
+  public request(operation: Operation, forward?: NextLink): Observable<FetchResult> {
     ensureForward(forward);
 
 

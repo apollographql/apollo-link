@@ -11,271 +11,239 @@ import {
   Operation,
 } from '../src/types';
 
+import {
+  testLinkResults,
+} from './utils/testingUtils';
+
 const sampleQuery = `query SampleQuery{
   stub{
     id
   }
 }`;
 
-const checkCalls = (calls, results) => {
-  assert.deepEqual(calls.length, results.length);
-  calls.map((call, i) => assert.deepEqual(call.args[0].data, results[i]));
-};
+describe('ApolloLink(abstract class)', () => {
+  describe('concat', () => {
+    it('should concat a function', (done) => {
+      const returnOne = new SetContextLink({ add: 1 });
+      const link = returnOne.concat((operation, forward) => Observable.of({ data: operation.context.add }));
 
-interface TestResultType {
-  link;
-  results?: any[];
-  query?: string;
-  done?: () => void;
-  context?: any;
-}
+      testLinkResults({
+        link,
+        results: [1],
+        done,
+      });
+    });
 
-const testLinkResults = (params: TestResultType) => {
-  const { link, context } = params;
-  const results = params.results || [];
-  const query = params.query || sampleQuery;
-  const done = params.done || (() => void 0);
+    it('should concat a Link', (done) => {
+      const returnOne = new SetContextLink({ add: 1 });
+      const mock = new MockLink((op) => Observable.of({ data: op.context.add }));
+      const link = returnOne.concat(mock);
 
-  const spy = sinon.spy();
-  Links.execute(link, { query, context }).subscribe({
-    next: spy,
-    error: error => {
-      assert(error, results.pop());
-      checkCalls(spy.getCalls(), results);
-      if (done) {
-        done();
-      }
-    },
-    complete: () => {
-      checkCalls(spy.getCalls(), results);
-      if (done) {
-        done();
-      }
-    },
-  });
-};
+      testLinkResults({
+        link,
+        results: [1],
+        done,
+      });
+    });
 
-describe('concat', () => {
-  it('should concat a function', (done) => {
-    const returnOne = new SetContextLink({ add: 1 });
-    const link = returnOne.concat((operation, forward) => Observable.of({data: operation.context.add}));
+    it('should concat a Link and function', (done) => {
+      const returnOne = new SetContextLink({ add: 1 });
+      const mock = new MockLink((op, forward) => {
+        let _op = {
+          ...op,
+          context: {
+            add: op.context.add + 2,
+          },
+        };
+        return forward(_op);
+      });
+      const link = returnOne.concat(mock).concat((op) => {
+        return Observable.of({ data: op.context.add });
+      });
 
-    testLinkResults({
-      link,
-      results: [1],
-      done,
+      testLinkResults({
+        link,
+        results: [3],
+        done,
+      });
+    });
+
+    it('should concat a function and Link', (done) => {
+      const returnOne = new SetContextLink({ add: 1 });
+      const mock = new MockLink((op, forward) => Observable.of({ data: op.context.add }));
+
+      const link = returnOne.concat((operation, forward) => {
+        operation = {
+          ...operation,
+          context: {
+            add: operation.context.add + 2,
+          },
+        };
+        return forward(operation);
+      }).concat(mock);
+      testLinkResults({
+        link,
+        results: [3],
+        done,
+      });
+    });
+
+    it('should concat two functions', (done) => {
+      const returnOne = new SetContextLink({ add: 1 });
+      const link = returnOne.concat((operation, forward) => {
+        operation = {
+          ...operation,
+          context: {
+            add: operation.context.add + 2,
+          },
+        };
+        return forward(operation);
+      }).concat((op, forward) => Observable.of({ data: op.context.add }));
+      testLinkResults({
+        link,
+        results: [3],
+        done,
+      });
+    });
+
+    it('should concat two Links', (done) => {
+      const returnOne = new SetContextLink({ add: 1 });
+      const mock1 = new MockLink((operation, forward) => {
+        operation = {
+          ...operation,
+          context: {
+            add: operation.context.add + 2,
+          },
+        };
+        return forward(operation);
+      });
+      const mock2 = new MockLink((op, forward) => Observable.of({ data: op.context.add }));
+
+      const link = returnOne.concat(mock1).concat(mock2);
+      testLinkResults({
+        link,
+        results: [3],
+        done,
+      });
+    });
+
+    it('should return an link that can be concat\'d multiple times', (done) => {
+      const returnOne = new SetContextLink({ add: 1 });
+      const mock1 = new MockLink((operation, forward) => {
+        operation = {
+          ...operation,
+          context: {
+            add: operation.context.add + 2,
+          },
+        };
+        return forward(operation);
+      });
+      const mock2 = new MockLink((op, forward) => Observable.of({ data: op.context.add + 2 }));
+      const mock3 = new MockLink((op, forward) => Observable.of({ data: op.context.add + 3 }));
+      const link = returnOne.concat(mock1);
+
+      testLinkResults({
+        link: link.concat(mock2),
+        results: [5],
+      });
+      testLinkResults({
+        link: link.concat(mock3),
+        results: [6],
+        done,
+      });
     });
   });
 
-  it('should concat a Link', (done) => {
-    const returnOne = new SetContextLink({ add: 1 });
-    const mock = new MockLink((op) => Observable.of({data: op.context.add}));
-    const link = returnOne.concat(mock);
+  describe('split', () => {
+    it('should split two functions', (done) => {
+      const context = { add: 1 };
+      const returnOne = new SetContextLink(context);
+      const link1 = returnOne.concat((operation, forward) => Observable.of({ data: operation.context.add + 1 }));
+      const link2 = returnOne.concat((operation, forward) => Observable.of({ data: operation.context.add + 2 }));
+      const link = returnOne.split(
+        (operation) => operation.context.add === 1,
+        link1,
+        link2,
+      );
 
-    testLinkResults({
-      link,
-      results: [1],
-      done,
+      testLinkResults({
+        link,
+        results: [2],
+      });
+
+      context.add = 2;
+
+      testLinkResults({
+        link,
+        results: [4],
+        done,
+      });
     });
+
+    it('should split two Links', (done) => {
+      const context = { add: 1 };
+      const returnOne = new SetContextLink(context);
+      const link1 = returnOne.concat(
+        new MockLink((operation, forward) => Observable.of({ data: operation.context.add + 1 })),
+      );
+      const link2 = returnOne.concat(
+        new MockLink((operation, forward) => Observable.of({ data: operation.context.add + 2 })),
+      );
+      const link = returnOne.split(
+        (operation) => operation.context.add === 1,
+        link1,
+        link2,
+      );
+
+      testLinkResults({
+        link,
+        results: [2],
+      });
+
+      context.add = 2;
+
+      testLinkResults({
+        link,
+        results: [4],
+        done,
+      });
+    });
+
+    it('should split a link and a function', (done) => {
+      const context = { add: 1 };
+      const returnOne = new SetContextLink(context);
+      const link1 = returnOne.concat((operation, forward) => Observable.of({ data: operation.context.add + 1 }));
+      const link2 = returnOne.concat(
+        new MockLink((operation, forward) => Observable.of({ data: operation.context.add + 2 })),
+      );
+      const link = returnOne.split(
+        (operation) => operation.context.add === 1,
+        link1,
+        link2,
+      );
+
+      testLinkResults({
+        link,
+        results: [2],
+      });
+
+      context.add = 2;
+
+      testLinkResults({
+        link,
+        results: [4],
+        done,
+      });
+    });
+
   });
 
-  it('should concat a Link and function', (done) => {
-    const returnOne = new SetContextLink({ add: 1 });
-    const mock = new MockLink((op, forward) => {
-      let _op = {
-        ...op,
-        context: {
-          add: op.context.add + 2,
-        },
-      };
-      return forward(_op);
-    });
-    const link = returnOne.concat(mock).concat((op) => {
-      return Observable.of({data: op.context.add});
-    });
-
-    testLinkResults({
-      link,
-      results: [3],
-      done,
-    });
-  });
-
-  it('should concat a function and Link', (done) => {
-    const returnOne = new SetContextLink({ add: 1 });
-    const mock = new MockLink((op, forward) => Observable.of({data: op.context.add}));
-
-    const link = returnOne.concat((operation, forward) => {
-      operation = {
-        ...operation,
-        context: {
-          add: operation.context.add + 2,
-        },
-      };
-      return forward(operation);
-    }).concat(mock);
-    testLinkResults({
-      link,
-      results: [3],
-      done,
-    });
-  });
-
-  it('should concat two functions', (done) => {
-    const returnOne = new SetContextLink({ add: 1 });
-    const link = returnOne.concat((operation, forward) => {
-      operation = {
-        ...operation,
-        context: {
-          add: operation.context.add + 2,
-        },
-      };
-      return forward(operation);
-    }).concat((op, forward) => Observable.of({data: op.context.add}));
-    testLinkResults({
-      link,
-      results: [3],
-      done,
-    });
-  });
-
-  it('should concat two Links', (done) => {
-    const returnOne = new SetContextLink({ add: 1 });
-    const mock1 = new MockLink((operation, forward) => {
-      operation = {
-        ...operation,
-        context: {
-          add: operation.context.add + 2,
-        },
-      };
-      return forward(operation);
-    });
-    const mock2 = new MockLink((op, forward) => Observable.of({ data: op.context.add }));
-
-    const link = returnOne.concat(mock1).concat(mock2);
-    testLinkResults({
-      link,
-      results: [3],
-      done,
-    });
-  });
-
-  it('should return an link that can be concat\'d multiple times', (done) => {
-    const returnOne = new SetContextLink({ add: 1 });
-    const mock1 = new MockLink((operation, forward) => {
-      operation = {
-        ...operation,
-        context: {
-          add: operation.context.add + 2,
-        },
-      };
-      return forward(operation);
-    });
-    const mock2 = new MockLink((op, forward) => Observable.of({ data: op.context.add + 2 }));
-    const mock3 = new MockLink((op, forward) => Observable.of({ data: op.context.add + 3 }));
-    const link = returnOne.concat(mock1);
-
-    testLinkResults({
-      link: link.concat(mock2),
-      results: [5],
-    });
-    testLinkResults({
-      link: link.concat(mock3),
-      results: [6],
-      done,
-    });
-  });
-});
-
-describe('split', () => {
-  it('should split two functions', (done) => {
-    const context = { add: 1 };
-    const returnOne = new SetContextLink(context);
-    const link1 = returnOne.concat((operation, forward) => Observable.of({data: operation.context.add + 1}));
-    const link2 = returnOne.concat((operation, forward) => Observable.of({data: operation.context.add + 2}));
-    const link = returnOne.split(
-      (operation) => operation.context.add === 1,
-      link1,
-      link2,
-    );
-
-    testLinkResults({
-      link,
-      results: [2],
-    });
-
-    context.add = 2;
-
-    testLinkResults({
-      link,
-      results: [4],
-      done,
-    });
-  });
-
-it('should split two Links', (done) => {
-    const context = { add: 1 };
-    const returnOne = new SetContextLink(context);
-    const link1 = returnOne.concat(
-      new MockLink((operation, forward) => Observable.of({data: operation.context.add + 1})),
-    );
-    const link2 = returnOne.concat(
-      new MockLink((operation, forward) => Observable.of({data: operation.context.add + 2})),
-    );
-    const link = returnOne.split(
-      (operation) => operation.context.add === 1,
-      link1,
-      link2,
-    );
-
-    testLinkResults({
-      link,
-      results: [2],
-    });
-
-    context.add = 2;
-
-    testLinkResults({
-      link,
-      results: [4],
-      done,
-    });
-});
-
-  it('should split a link and a function', (done) => {
-    const context = { add: 1 };
-    const returnOne = new SetContextLink(context);
-    const link1 = returnOne.concat((operation, forward) => Observable.of({data: operation.context.add + 1}));
-    const link2 = returnOne.concat(
-      new MockLink((operation, forward) => Observable.of({data: operation.context.add + 2})),
-    );
-    const link = returnOne.split(
-      (operation) => operation.context.add === 1,
-      link1,
-      link2,
-    );
-
-    testLinkResults({
-      link,
-      results: [2],
-    });
-
-    context.add = 2;
-
-    testLinkResults({
-      link,
-      results: [4],
-      done,
-    });
-  });
-
-});
-
-describe('empty', () => {
-  it('should returns an immediately completed Observable', (done) => {
-    testLinkResults({
-      link: ApolloLink.empty(),
-      done,
+  describe('empty', () => {
+    it('should returns an immediately completed Observable', (done) => {
+      testLinkResults({
+        link: ApolloLink.empty(),
+        done,
+      });
     });
   });
 });
@@ -445,18 +413,64 @@ describe('Link static library', () => {
         complete: done,
       });
     });
+
+    it('should chain together a function with links', (done) => {
+      const add1 = (operation, forward) => {
+        operation.context++;
+        return forward(operation);
+      };
+      const add1Link = new MockLink((operation, forward) => {
+        operation.context++;
+        return forward(operation);
+      });
+
+      const link = ApolloLink.from([
+        add1,
+        add1,
+        add1Link,
+        add1,
+        add1Link,
+        (operation) => Observable.of({data: operation.context}),
+      ]);
+      testLinkResults({
+        link,
+        results: [5],
+        context: 0,
+        done,
+      });
+    });
   });
 
   describe('split', () => {
-    it('should split two functions', (done) => {
-      const link1 = (operation, forward) => Observable.of({ data: 1 });
-      const link2 = (operation, forward) => Observable.of({ data: 2 });
+    it('should create filter when single link passed in', (done) => {
       const link = Links.split(
-        (operation) => {
-          return operation.context;
-        },
-        link1,
-        link2,
+        (operation) => operation.context,
+        (operation, forward) => Observable.of({ data: 1 }),
+      );
+
+      let context = true;
+
+      testLinkResults({
+        link,
+        results: [1],
+        context,
+      });
+
+      context = false;
+
+      testLinkResults({
+        link,
+        results: [],
+        context,
+        done,
+      });
+    });
+
+    it('should split two functions', (done) => {
+      const link = Links.split(
+        (operation) => operation.context,
+        (operation, forward) => Observable.of({ data: 1 }),
+        (operation, forward) => Observable.of({ data: 2 }),
       );
 
       let context = true;
@@ -478,12 +492,10 @@ describe('Link static library', () => {
     });
 
     it('should split two Links', (done) => {
-      const link1 = (operation, forward) => Observable.of({ data: 1 });
-      const link2 = new MockLink((operation, forward) => Observable.of({ data: 2 }));
       const link = Links.split(
         (operation) => operation.context,
-        link1,
-        link2,
+        (operation, forward) => Observable.of({ data: 1 }),
+        new MockLink((operation, forward) => Observable.of({ data: 2 })),
       );
 
       let context = true;
@@ -506,12 +518,10 @@ describe('Link static library', () => {
     });
 
     it('should split a link and a function', (done) => {
-      const link1 = (operation, forward) => Observable.of({ data: 1 });
-      const link2 = new MockLink((operation, forward) => Observable.of({ data: 2 }));
       const link = Links.split(
         (operation) => operation.context,
-        link1,
-        link2,
+        (operation, forward) => Observable.of({ data: 1 }),
+        new MockLink((operation, forward) => Observable.of({ data: 2 })),
       );
 
       let context = true;
@@ -535,6 +545,54 @@ describe('Link static library', () => {
 
   });
 
+  describe('execute', () => {
+    it('should return an empty observable when a link returns null', (done) => {
+      testLinkResults({
+        link: new MockLink(),
+        results: [],
+        done,
+      });
+    });
+
+    it('should return an empty observable when a link is empty', (done) => {
+      testLinkResults({
+        link: ApolloLink.empty(),
+        results: [],
+        done,
+      });
+    });
+
+    it('should return an empty observable when a concat\'d link returns null', (done) => {
+      const link = new MockLink((operation, forward) => {
+        return forward(operation);
+      }).concat(() => null);
+      testLinkResults({
+        link,
+        results: [],
+        done,
+      });
+    });
+
+    it('should return an empty observable when a split link returns null', (done) => {
+      let context = true;
+      const link = new SetContextLink(context).split(
+        (op) => op.context,
+        () => Observable.of(),
+        () => null,
+      );
+      testLinkResults({
+        link,
+        results: [],
+      });
+      context = false;
+      testLinkResults({
+        link,
+        results: [],
+        done,
+      });
+    });
+  });
+
   describe('asPromiseWrapper', () => {
     const operation = {
       query: sampleQuery,
@@ -548,27 +606,20 @@ describe('Link static library', () => {
     const error = new Error('I always error');
 
     it('return next call as Promise resolution', () => {
-      const stubRequest = sinon.stub().withArgs(operation).callsFake(() => Observable.of(data));
-
-      let linkPromise = Links.asPromiseWrapper({
-        request: stubRequest,
-      });
+      const linkPromise = Links.asPromiseWrapper(() => Observable.of(data));
 
       return linkPromise.request(operation)
         .then(result => assert.deepEqual(data, result));
     });
 
     it('return error call as Promise rejection', () => {
-       const stubRequest = sinon.stub().withArgs(operation).callsFake(() => new Observable(observer => observer.error(error)));
-
-      let linkPromise = Links.asPromiseWrapper({
-        request: stubRequest,
-      });
+      const linkPromise = Links.asPromiseWrapper(() => new Observable(observer => {
+        throw error;
+      }));
 
       return linkPromise.request(operation)
         .then(expect.fail)
         .catch(actualError => assert.deepEqual(error, actualError));
     });
   });
-
 });

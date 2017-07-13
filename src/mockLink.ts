@@ -14,11 +14,11 @@ import { ApolloLink } from './link';
 
 export default class MockLink extends ApolloLink {
 
-  constructor(private handleRequest?: RequestHandler) {
+  constructor(private handleRequest: RequestHandler = () => null) {
     super();
   }
 
-  public request(operation: Operation, forward?: NextLink): Observable<FetchResult> {
+  public request(operation: Operation, forward?: NextLink): Observable<FetchResult> | null {
     validateOperation(operation);
 
     return this.handleRequest(operation, forward);
