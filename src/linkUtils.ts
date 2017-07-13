@@ -1,5 +1,5 @@
 import {
-  Operation,
+  GraphQLRequest,
   NextLink,
   Subscriber,
 } from './types';
@@ -24,7 +24,7 @@ export function toSubscriber<T>(
   }
 }
 
-export function validateOperation(operation: Operation): void {
+export function validateOperation(operation: GraphQLRequest): void {
   const OPERATION_FIELDS = ['query', 'variables', 'context'];
   for (let key of Object.keys(operation)) {
     if (OPERATION_FIELDS.indexOf(key) < 0) {

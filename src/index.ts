@@ -4,7 +4,7 @@ import RetryLink from './retryLink';
 import PollingLink from './pollingLink';
 import { ApolloLink } from './link';
 
-import * as LinkTypes from './types';
+import { GraphQLRequest, Operation, Chain, FetchResult } from './types';
 import { split, asPromiseWrapper, execute } from './link';
 const Links = { split, asPromiseWrapper, execute };
 
@@ -12,9 +12,12 @@ import * as Observable from 'zen-observable';
 
 export {
   ApolloLink,
-
-  LinkTypes,
   Links,
+
+  GraphQLRequest,
+  Operation,
+  Chain,
+  FetchResult,
 
   Observable,
 

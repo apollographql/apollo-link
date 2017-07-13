@@ -1,9 +1,9 @@
 import { DocumentNode } from 'graphql/language/ast';
 import * as Observable from 'zen-observable';
 
-export interface ExternalOperation {
+export interface GraphQLRequest {
   //This string could be an id for a persisted query
-  query: string | DocumentNode;
+  query?: string | DocumentNode;
   variables?: object;
   context?: object;
 }

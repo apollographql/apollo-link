@@ -1,5 +1,5 @@
 import {
-  ExternalOperation,
+  GraphQLRequest,
   NextLink,
   Operation,
   RequestHandler,
@@ -65,7 +65,7 @@ export abstract class ApolloLink implements Chain {
   public abstract request(operation: Operation, forward?: NextLink): Observable<FetchResult> | null;
 }
 
-export function execute(link: ApolloLink, operation: ExternalOperation): Observable<FetchResult> {
+export function execute(link: ApolloLink, operation: GraphQLRequest): Observable<FetchResult> {
   validateOperation(operation);
 
   if (operation.context === undefined) {
@@ -73,6 +73,17 @@ export function execute(link: ApolloLink, operation: ExternalOperation): Observa
   }
   if (operation.variables === undefined) {
     operation.variables = {};
+  }
+  if (operation.query === undefined) {
+    operation.query = `
+      {
+        __schema {
+          types {
+            name
+          }
+        }
+      }
+    `;
   }
   const _operation = transformOperation(operation);
 
