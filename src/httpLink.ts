@@ -35,7 +35,7 @@ export default class HttpLink extends ApolloLink {
     });
   }
 
-  public request(operation: Operation, forward: NextLink): Observable<FetchResult> | null {
+  public request(operation: Operation, forward?: NextLink): Observable<FetchResult> | null {
     this.headers = operation.context && operation.context.headers || {};
     return this.requestLink.request(operation, forward);
   }
