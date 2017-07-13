@@ -1,8 +1,9 @@
 import { assert } from 'chai';
-import * as LinkUtils from '../src/linkUtils';
 import {
-  Observable,
+  FetchResult,
 } from '../src/types';
+import * as LinkUtils from '../src/linkUtils';
+import * as Observable from 'zen-observable';
 
 describe('Link utilities:', () => {
   describe('toSubscriber', () => {
@@ -51,14 +52,13 @@ describe('Link utilities:', () => {
 
     it('should throw when invalid field in operation', () => {
       assert.throws(() => LinkUtils.validateOperation(<any>{
-        quer: '',
+        qwerty: '',
       }));
     });
 
     it('should not throw when valid fields in operation', () => {
       assert.doesNotThrow(() => LinkUtils.validateOperation({
         query: '',
-        operationName: '',
         context: {},
         variables: {},
       }));
@@ -72,7 +72,7 @@ describe('Link utilities:', () => {
     });
 
     it('should not throw on when next is defined', () => {
-      assert.doesNotThrow(() => LinkUtils.ensureForward((operation) => <Observable>{}));
+      assert.doesNotThrow(() => LinkUtils.ensureForward((operation) => <Observable<FetchResult>>{}));
     });
   });
 

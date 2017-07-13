@@ -25,9 +25,6 @@ export default class HttpUtils {
     if (op.query) {
       params.push(`query=${encodeURIComponent(print(op.query))}`);
     }
-    if (op.operationName) {
-      params.push(`operationName=${encodeURIComponent(op.operationName)}`);
-    }
     if (op.variables) {
       params.push(`variables=${encodeURIComponent(JSON.stringify(op.variables))}`);
     }

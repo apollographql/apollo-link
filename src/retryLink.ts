@@ -1,5 +1,4 @@
 import {
-  ApolloLink,
   Operation,
   NextLink,
 } from './types';
@@ -8,7 +7,11 @@ import {
   ensureForward,
 } from './linkUtils';
 
-export default class RetryLink implements ApolloLink {
+import {
+  ApolloLink,
+} from './link';
+
+export default class RetryLink extends ApolloLink {
 
   private count: number = 0;
   private delay: number;
@@ -20,6 +23,7 @@ export default class RetryLink implements ApolloLink {
     delay?: number,
     interval?: (delay: number, count: number) => number,
   }) {
+    super();
     this.max = params && params.max || 10;
     this.delay =  params && params.delay || 300;
     this.interval =  params && params.interval || this.defaultInterval;

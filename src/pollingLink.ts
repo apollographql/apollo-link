@@ -1,29 +1,35 @@
 import {
-  ApolloLink,
   Operation,
+  NextLink,
 } from './types';
+
 import * as Observable from 'zen-observable';
 
+import {
+  ApolloLink,
+} from './link';
 
-export default class PollingLink implements ApolloLink {
 
-  private link: ApolloLink;
+export default class PollingLink extends ApolloLink {
+
   private pollInterval: number;
 
-  constructor(link: ApolloLink, pollInterval: number) {
-    this.link = link;
+  constructor(pollInterval?: number) {
+    super();
     this.pollInterval = pollInterval || 0;
   }
 
-  public request(operation: Operation) {
+  public request(operation: Operation, forward: NextLink) {
     return new Observable(observer => {
-      setTimeout(() => {
-        if (!observer.closed) {
-          this.link.request(operation).subscribe(observer);
-        }
-      }, this.pollInterval);
+      if (this.pollInterval) {
+        setTimeout(() => {
+          if (!observer.closed) {
+            forward(operation).subscribe(observer);
+          }
+        }, this.pollInterval);
+      }
 
-      this.link.request(operation).subscribe(
+      forward(operation).subscribe(
         observer,
       );
     });

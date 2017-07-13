@@ -1,12 +1,10 @@
-import * as ApolloLink from './types';
 import SingleRequestLink from './singleRequestLink';
 import HttpLink, { createHttpLink } from './httpLink';
 import RetryLink from './retryLink';
-
-import * as Links from './links';
+import { ApolloLink } from './link';
 
 export {
-  Links,
+  ApolloLink,
 
   //Transport Links
   SingleRequestLink,
@@ -17,4 +15,3 @@ export {
   RetryLink,
 
 };
-export default ApolloLink;

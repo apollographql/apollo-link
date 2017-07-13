@@ -1,8 +1,19 @@
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import RetryLink from '../src/retryLink';
-import * as Links from '../src/links';
+import {
+  asPromiseWrapper,
+} from '../src/link';
+import gql from 'graphql-tag';
 import * as Observable from 'zen-observable';
+
+const query = gql`
+  {
+    sample {
+      id
+    }
+  }
+`;
 
 describe('RetryLink', () => {
 
@@ -14,8 +25,8 @@ describe('RetryLink', () => {
     const error = new Error('I never work');
     const stubNext = sinon.stub().callsFake(() => new Observable(observer => observer.error(error)));
 
-    const promisedLink = Links.asPromiseWrapper(retry);
-    return promisedLink.request({}, stubNext)
+    const promisedLink = asPromiseWrapper(retry);
+    return promisedLink.request({ query }, stubNext)
       .then(() => {
         expect.fail();
       })
@@ -35,8 +46,8 @@ describe('RetryLink', () => {
     const stubNext = sinon.stub();
     stubNext.returns(Observable.of(data));
 
-    const promisedLink = Links.asPromiseWrapper(retry);
-    return promisedLink.request({}, stubNext)
+    const promisedLink = asPromiseWrapper(retry);
+    return promisedLink.request({ query }, stubNext)
       .then(actualData => {
         assert(stubNext.calledOnce);
         assert.deepEqual(data, actualData);
@@ -55,8 +66,8 @@ describe('RetryLink', () => {
     stubNext.onFirstCall().returns(new Observable(observer => observer.error(error)));
     stubNext.onSecondCall().returns(Observable.of(data));
 
-    const promisedLink = Links.asPromiseWrapper(retry);
-    return promisedLink.request({}, stubNext)
+    const promisedLink = asPromiseWrapper(retry);
+    return promisedLink.request({ query }, stubNext)
       .then(actualData => {
         assert.deepEqual(stubNext.callCount, 2);
         assert.deepEqual(data, actualData);

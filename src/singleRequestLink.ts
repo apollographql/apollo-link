@@ -1,7 +1,7 @@
 import {
-  ApolloLink,
   Operation,
   FetchResult,
+  NextLink,
 } from './types';
 import * as Observable from 'zen-observable';
 import {
@@ -10,7 +10,11 @@ import {
 } from 'apollo-fetch';
 import { print } from 'graphql/language/printer';
 
-export default class SingleRequestLink implements ApolloLink {
+import {
+  ApolloLink,
+} from './link';
+
+export default class SingleRequestLink extends ApolloLink {
 
   private _fetch: (operation: Operation) => Promise<FetchResult>;
 
@@ -18,16 +22,17 @@ export default class SingleRequestLink implements ApolloLink {
     uri?: string,
     fetch?: ApolloFetch,
   }) {
+    super();
     this._fetch = fetchParams && fetchParams.fetch || createApolloFetch({ uri: fetchParams && fetchParams.uri });
   }
 
-  public request(operation: Operation) {
+  public request(operation: Operation, forward: NextLink) {
     const request = {
       ...operation,
       query: print(operation.query),
     };
 
-    return new Observable(observer => {
+    return new Observable<FetchResult>(observer => {
       let closed = false;
 
       this._fetch(request)

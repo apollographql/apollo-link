@@ -10,7 +10,7 @@ import gql from 'graphql-tag';
 import * as fetchMock from 'fetch-mock';
 import {
   ApolloLink,
-} from '../src/types';
+} from '../src/link';
 
 const sampleQuery = gql`
 query SampleQuery {
@@ -69,7 +69,6 @@ describe('HttpLink', () => {
     const link = createHttpLink({uri: 'data'});
     const observable = link.request({
       query: sampleQuery,
-      operationName: 'SampleQuery',
     });
     observable.subscribe({
       next,
@@ -113,7 +112,6 @@ describe('HttpLink', () => {
     const link = createHttpLink({uri: 'data'});
     const observable = link.request({
       query: sampleQuery,
-      operationName: 'SampleQuery',
     });
     const subscription = observable.subscribe(() => assert(false), () => assert(false), () => assert(false));
     subscription.unsubscribe();
@@ -125,11 +123,9 @@ describe('HttpLink', () => {
     const next = sinon.spy();
     const context = {info: 'stub'};
     const variables = {params: 'stub'};
-    const operationName = 'SampleMutation';
 
     const observable = link.request({
       query: sampleMutation,
-      operationName,
       context,
       variables,
     });
@@ -140,7 +136,6 @@ describe('HttpLink', () => {
         const body = JSON.parse(fetchMock.lastCall()[1]['body']);
         assert.equal(body['query'], print(sampleMutation));
         assert.deepEqual(body['context'], context);
-        assert.deepEqual(body['operationName'], operationName);
         assert.deepEqual(body['variables'], variables);
 
         assert.equal(next.callCount, 1);
@@ -159,11 +154,9 @@ describe('HttpLink', () => {
     const link = createHttpLink({uri: 'data'});
     const context = {info: 'stub'};
     const variables = {params: 'stub'};
-    const operationName = 'SampleMutation';
 
     const observable = link.request({
       query: sampleMutation,
-      operationName,
       context,
       variables,
     });
@@ -182,11 +175,9 @@ describe('HttpLink', () => {
     const link = createHttpLink({uri: 'data'});
     const context = {info: 'stub'};
     const variables = {params: 'stub'};
-    const operationName = 'SampleMutation';
 
     const observable = link.request({
       query: sampleMutation,
-      operationName,
       context,
       variables,
     });
@@ -208,10 +199,8 @@ describe('HttpLink', () => {
 //   proper uri
 //   metadata
 //   variables
-//   operationName
 //   etc..
-//argument is undefinded, then not passed to the request
-//  operationName
+//argument is undefined, then not passed to the request
 
 //query -> GET and mutation -> POST
 

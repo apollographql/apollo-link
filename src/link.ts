@@ -2,8 +2,8 @@ import {
   ExternalOperation,
   NextLink,
   Operation,
+  RequestHandler,
   FetchResult,
-  LinkFunction,
 } from './types';
 
 import {
@@ -14,25 +14,22 @@ import {
   parse,
 } from 'graphql/language/parser';
 
-import FunctionLink from './functionLink';
-
 import * as Observable from 'zen-observable';
 
 export interface Chain {
   request(operation: Operation, forward: NextLink);
-  execute(operation: ExternalOperation): FetchResult;
 }
 
 export abstract class ApolloLink implements Chain {
 
-  private next: ApolloLink;
+  public static from(links: (ApolloLink | RequestHandler)[]) {
+    if (links.length === 0) {
+      return ApolloLink.empty();
+    }
 
-  public static from(links: ApolloLink[]) {
     return links
-      .reduce(
-      (x, y) => x.concat(y),
-      this instanceof ApolloLink ? this : ApolloLink.empty(),
-    );
+      .map(link => typeof link === 'function' ? new FunctionLink(link) : link)
+      .reduce((x, y) => x.concat(y));
   }
 
   //Construct pass through
@@ -41,31 +38,12 @@ export abstract class ApolloLink implements Chain {
   }
 
   // join two Links together
-  public concat(link: ApolloLink | LinkFunction) {
-
+  public concat(link: ApolloLink | RequestHandler): ApolloLink {
     if (typeof link === 'function' ) {
-      return new ConcatLink(this, new FunctionLink(link));
-    } else {
-      return new ConcatLink(this, link);
+      link = new FunctionLink(link);
     }
-
-    // if (this.next) {
-    //   this.next.concat(link);
-    //   return this;
-    // }
-
-    // if (typeof link === 'function' ) {
-    //   this.next = new FunctionLink(link);
-    // } else {
-    //   this.next = link;
-    // }
-
-    // return this;
+    return new ConcatLink(this, link);
   }
-
-  // XXX should there be a `join` method that returns to chains
-  // back together?
-  // Answer: just concat the same Link to the end of each chain
 
   // split allows for creating a split point in an execution chain
   // like filter, it can be used to direct operations based
@@ -73,9 +51,8 @@ export abstract class ApolloLink implements Chain {
   // split allows for new chains to be formed.
   public split(
     test: (op: Operation) => boolean,
-    left: ApolloLink | LinkFunction,
-    // right path is optional
-    right: ApolloLink | LinkFunction = ApolloLink.empty(),
+    left: ApolloLink | RequestHandler,
+    right: ApolloLink | RequestHandler = ApolloLink.empty(),
   ): Chain {
 
     if (typeof left === 'function') {
@@ -84,40 +61,40 @@ export abstract class ApolloLink implements Chain {
     if (typeof right === 'function') {
       right = new FunctionLink(right);
     }
-    return this.concat(new SplitLink(test, left, right));
-
-    // if (this.next) {
-    //   this.next.split(test, left, right);
-    // } else {
-    //   this.next = new FunctionLink((operation) => {
-    //     const next = test(operation) ? <ApolloLink>left : <ApolloLink>right;
-
-    //     const forward = (op) => {
-    //       const _forward = forward.bind(this.next);
-    //       this.next.request(op, _forward);
-    //     };
-    //     return next.request(operation, forward.bind(next));
-    //   });
-    // }
-    // return this as Chain;
+    return this.concat(new SplitLink(test, left, right)) as Chain;
   }
 
-  public abstract request(operation: Operation, forward: NextLink);
+  public abstract request(operation: Operation, forward?: NextLink): Observable<FetchResult> | null;
 }
 
-export function execute(link: ApolloLink, operation: ExternalOperation) {
+export function execute(link: ApolloLink, operation: ExternalOperation): Observable<FetchResult> {
   validateOperation(operation);
+
+  if (operation.context === undefined) {
+    operation.context = {};
+  }
+  if (operation.variables === undefined) {
+    operation.variables = {};
+  }
   const _operation = transformOperation(operation);
-  // const chainStart = this.buildLinkChain();
-  // return chainStart(_operation);
 
-  const forward = (op) => {
-    const _forward = forward.bind(this.next);
-    return this.next.request(op, _forward);
-  };
-
-  return this.request(_operation, forward);
+  return link.request(_operation) || Observable.of();
 }
+
+export function split(
+    test: (op: Operation) => boolean,
+    left: ApolloLink | RequestHandler,
+    right: ApolloLink | RequestHandler = ApolloLink.empty(),
+  ): Chain {
+
+    if (typeof left === 'function') {
+      left = new FunctionLink(left);
+    }
+    if (typeof right === 'function') {
+      right = new FunctionLink(right);
+    }
+    return new SplitLink(test, left, right) as Chain;
+  }
 
 const toPromise = (link) => {
   return (operation: Operation, forward?: NextLink) => {
@@ -138,9 +115,8 @@ export function asPromiseWrapper(link) {
   };
 }
 
-
 function transformOperation(operation) {
-  if (operation.query && typeof operation.query === 'string') {
+  if (typeof operation.query === 'string') {
     return {
       ...operation,
       query: parse(operation.query),
@@ -148,4 +124,47 @@ function transformOperation(operation) {
   }
 
   return operation;
+}
+
+export class FunctionLink extends ApolloLink {
+
+  constructor(public f: RequestHandler) {
+    super();
+  }
+
+  public request(operation: Operation, forward: NextLink): Observable<FetchResult> {
+    return this.f(operation, forward) || Observable.of();
+  }
+}
+
+class ConcatLink extends ApolloLink {
+
+  constructor(private first: ApolloLink, private second: ApolloLink) {
+    super();
+  }
+
+  public request(operation: Operation, forward: NextLink): Observable<FetchResult> {
+    return this.first.request(operation, (op) => this.second.request(op, forward))
+      || Observable.of();
+  }
+
+}
+
+class SplitLink extends ApolloLink {
+
+  constructor(
+    private test: (op: Operation) => boolean,
+    private left: ApolloLink,
+    private right: ApolloLink = ApolloLink.empty(),
+  ) {
+    super();
+  }
+
+  public request(operation: Operation, forward?: NextLink): Observable<FetchResult> {
+    return this.test(operation) ?
+      this.left.request(operation, forward) :
+      this.right.request(operation)
+      || Observable.of();
+  }
+
 }

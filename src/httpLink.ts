@@ -1,4 +1,4 @@
-import { ApolloLink } from './types';
+import { ApolloLink } from './link';
 import SingleRequestLink from './singleRequestLink';
 import { ApolloFetch } from 'apollo-fetch';
 

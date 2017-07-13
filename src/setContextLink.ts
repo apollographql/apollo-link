@@ -1,17 +1,21 @@
 import {
-  ApolloLink,
   Operation,
   NextLink,
-  Observable,
+  FetchResult,
 } from './types';
+import * as Observable from 'zen-observable';
 
-export default class SetContextLink implements ApolloLink {
+import {
+  ApolloLink,
+} from './link';
+
+export default class SetContextLink extends ApolloLink {
 
   constructor (private context: object) {
-
+    super();
   }
 
-  public request(operation: Operation, forward: NextLink): Observable {
+  public request(operation: Operation, forward: NextLink): Observable<FetchResult> {
     if (!operation.context) {
       operation.context = {};
     }
