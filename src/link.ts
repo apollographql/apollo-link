@@ -4,7 +4,6 @@ import {
   Operation,
   RequestHandler,
   FetchResult,
-  Chain,
 } from './types';
 
 import {
@@ -16,9 +15,9 @@ import {
 } from 'graphql/language/parser';
 
 import * as Observable from 'zen-observable';
+import { DocumentNode } from 'graphql/language/ast';
 
-
-export abstract class ApolloLink implements Chain {
+export abstract class ApolloLink {
 
   public static from(links: (ApolloLink | RequestHandler)[]) {
     if (links.length === 0) {
@@ -60,29 +59,29 @@ export abstract class ApolloLink implements Chain {
 
   public static toLink(link: ApolloLink | RequestHandler): ApolloLink {
     if (typeof link === 'function') {
-      return link.length === 1 ? new TerminatedLink(link) : new FunctionLink(link);
+      return link.length <= 1 ? new TerminatedLink(link) : new FunctionLink(link);
     } else {
       return link as ApolloLink;
     }
   }
 
   public static isTerminating(link: ApolloLink): boolean {
-    return link.request.length === 1;
+    return link.request.length <= 1;
   }
 
   public split(
     test: (op: Operation) => boolean,
     left: ApolloLink | RequestHandler,
     right: ApolloLink | RequestHandler = ApolloLink.passthrough(),
-  ): Chain {
-    return this.concat(<ApolloLink>ApolloLink.split(test, left, right)) as Chain;
+  ): ApolloLink {
+    return this.concat(<ApolloLink>ApolloLink.split(test, left, right));
   }
 
   // join two Links together
   public concat(link: ApolloLink | RequestHandler): ApolloLink {
-    if (this.request.length === 1) {
+    if (this.request.length <= 1) {
       const warning = Object.assign(
-        new Error(`You are concating to a terminating link, which will have no effect`),
+        new Error(`You are calling concat a terminating link, which will have no effect`),
         { link : this },
       );
       console.warn(warning);
@@ -90,7 +89,7 @@ export abstract class ApolloLink implements Chain {
     }
     link = ApolloLink.toLink(link);
 
-    return link.request.length === 1 ? new TerminatedConcat(this, link) : new ConcatLink(this, link);
+    return link.request.length <= 1 ? new TerminatedConcat(this, link) : new ConcatLink(this, link);
   }
 
   public abstract request(operation: Operation, forward?: NextLink): Observable<FetchResult> | null;
@@ -99,24 +98,18 @@ export abstract class ApolloLink implements Chain {
 export function execute(link: ApolloLink, operation: GraphQLRequest): Observable<FetchResult> {
   validateOperation(operation);
 
-  if (operation.context === undefined) {
+  if (!operation.context) {
     operation.context = {};
   }
-  if (operation.variables === undefined) {
+  if (!operation.variables) {
     operation.variables = {};
   }
-  if (operation.query === undefined) {
-    operation.query = `
-      {
-        __schema {
-          types {
-            name
-          }
-        }
-      }
-    `;
+  if (!operation.query) {
+    console.warn(`query should either be a sting or GraphQL AST`);
+    operation.query = <DocumentNode>{};
   }
-  const _operation = transformOperation(operation);
+
+  const _operation: Operation = transformOperation(operation);
 
   return link.request(_operation) || Observable.of();
 }
@@ -145,10 +138,16 @@ export function asPromiseWrapper(link: ApolloLink | RequestHandler) {
 
 function transformOperation(operation) {
   if (typeof operation.query === 'string') {
-    return {
+    operation = {
       ...operation,
       query: parse(operation.query),
     };
+  }
+
+  if (!operation.operationName) {
+    operation.operationName = operation.query.definitions &&
+      operation.query.definitions.length &&
+      operation.query.definitions[0].name || '';
   }
 
   return operation;

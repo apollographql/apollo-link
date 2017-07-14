@@ -18,8 +18,13 @@ export interface PromiseLink {
 
 export interface Operation {
   query: DocumentNode;
-  variables?: any;
-  context?: any;
+  variables?: {
+    [variables: string]: any;
+  };
+  operationName?: string;
+  context?: {
+    [meta: string]: any;
+  };
 }
 
 export interface Subscriber<T> {
@@ -42,7 +47,3 @@ export interface Subscription {
 
 export type NextLink = (operation: Operation) => Observable<FetchResult>;
 export type RequestHandler = (operation: Operation, forward?: NextLink) => Observable<FetchResult> | null;
-
-export interface Chain {
-  request(operation: Operation, forward: NextLink);
-}

@@ -52,10 +52,10 @@ describe('HttpLink', () => {
     fetchMock.restore();
   });
 
-  it('raises warning if concated to', () => {
+  it('raises warning if called with concat', () => {
     const link = ApolloLink.from([new HttpLink()]);
     const _warn = console.warn;
-    console.warn = warning => assert.deepEqual(warning.message, `You are concating to a terminating link, which will have no effect`);
+    console.warn = warning => assert.property(warning, 'message');
     assert.deepEqual(link.concat((operation, forward) => forward(operation)), link);
     console.warn = _warn;
   });
