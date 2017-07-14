@@ -35,19 +35,11 @@ export abstract class ApolloLink implements Chain {
     return new FunctionLink((op, forward) => Observable.of());
   }
 
-  // join two Links together
-  public concat(link: ApolloLink | RequestHandler): ApolloLink {
-    if (typeof link === 'function' ) {
-      link = new FunctionLink(link);
-    }
-    return new ConcatLink(this, link);
-  }
-
   // split allows for creating a split point in an execution chain
   // like filter, it can be used to direct operations based
   // on request information. Instead of dead ending an execution,
   // split allows for new chains to be formed.
-  public split(
+  public static split(
     test: (op: Operation) => boolean,
     left: ApolloLink | RequestHandler,
     right: ApolloLink | RequestHandler = ApolloLink.empty(),
@@ -59,9 +51,24 @@ export abstract class ApolloLink implements Chain {
     if (typeof right === 'function') {
       right = new FunctionLink(right);
     }
-    return this.concat(new SplitLink(test, left, right)) as Chain;
+    return new SplitLink(test, left, right) as Chain;
   }
 
+  public split(
+    test: (op: Operation) => boolean,
+    left: ApolloLink | RequestHandler,
+    right: ApolloLink | RequestHandler = ApolloLink.empty(),
+  ): Chain {
+    return this.concat(<ApolloLink>ApolloLink.split(test, left, right)) as Chain;
+  }
+
+  // join two Links together
+  public concat(link: ApolloLink | RequestHandler): ApolloLink {
+    if (typeof link === 'function' ) {
+      link = new FunctionLink(link);
+    }
+    return new ConcatLink(this, link);
+  }
   public abstract request(operation: Operation, forward?: NextLink): Observable<FetchResult> | null;
 }
 
@@ -89,21 +96,6 @@ export function execute(link: ApolloLink, operation: GraphQLRequest): Observable
 
   return link.request(_operation) || Observable.of();
 }
-
-export function split(
-    test: (op: Operation) => boolean,
-    left: ApolloLink | RequestHandler,
-    right: ApolloLink | RequestHandler = ApolloLink.empty(),
-  ): Chain {
-
-    if (typeof left === 'function') {
-      left = new FunctionLink(left);
-    }
-    if (typeof right === 'function') {
-      right = new FunctionLink(right);
-    }
-    return new SplitLink(test, left, right) as Chain;
-  }
 
 const toPromise = (link: ApolloLink) => {
   return (operation: Operation, forward?: NextLink) => {
@@ -178,5 +170,4 @@ class SplitLink extends ApolloLink {
       this.right.request(operation)
       || Observable.of();
   }
-
 }

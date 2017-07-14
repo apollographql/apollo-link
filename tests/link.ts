@@ -1,7 +1,6 @@
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
-import * as Links from '../src/link';
-const ApolloLink = Links.ApolloLink;
+import { execute, asPromiseWrapper, ApolloLink } from '../src/link';
 import * as Observable from 'zen-observable';
 import MockLink from '../src/mockLink';
 import SetContextLink from '../src/setContextLink';
@@ -281,7 +280,7 @@ describe('Link static library', () => {
         },
       };
       const chain = ApolloLink.from([ new MockLink(() => Observable.of(data)) ]);
-      const observable = Links.execute(chain, uniqueOperation);
+      const observable = execute(chain, uniqueOperation);
       observable.subscribe({
         next: actualData => {
           assert.deepEqual(data, actualData);
@@ -309,7 +308,7 @@ describe('Link static library', () => {
       });
 
       const chain = ApolloLink.from([ new MockLink(stub) ]);
-      Links.execute(chain, operation);
+      execute(chain, operation);
     });
 
     it('should accept AST query and pass AST to link', (done) => {
@@ -325,7 +324,7 @@ describe('Link static library', () => {
       });
 
       const chain = ApolloLink.from([ new MockLink(stub) ]);
-      Links.execute(chain, astOperation);
+      execute(chain, astOperation);
     });
 
     it('should pass operation from one link to next with modifications', (done) => {
@@ -339,7 +338,7 @@ describe('Link static library', () => {
           return done();
         }),
       ]);
-      Links.execute(chain, uniqueOperation);
+      execute(chain, uniqueOperation);
     });
 
     it('should pass result of one link to another with forward', (done) => {
@@ -365,7 +364,7 @@ describe('Link static library', () => {
         }),
         new MockLink(() => Observable.of(data)),
       ]);
-      Links.execute(chain, uniqueOperation);
+      execute(chain, uniqueOperation);
     });
 
     it('should receive final result of two link chain', (done) => {
@@ -398,7 +397,7 @@ describe('Link static library', () => {
         new MockLink(() => Observable.of(data)),
       ]);
 
-      const result = Links.execute(chain, uniqueOperation);
+      const result = execute(chain, uniqueOperation);
 
       result.subscribe({
         next: modifiedData => {
@@ -443,7 +442,7 @@ describe('Link static library', () => {
 
   describe('split', () => {
     it('should create filter when single link passed in', (done) => {
-      const link = Links.split(
+      const link = ApolloLink.split(
         (operation) => operation.context,
         (operation, forward) => Observable.of({ data: 1 }),
       );
@@ -467,7 +466,7 @@ describe('Link static library', () => {
     });
 
     it('should split two functions', (done) => {
-      const link = Links.split(
+      const link = ApolloLink.split(
         (operation) => operation.context,
         (operation, forward) => Observable.of({ data: 1 }),
         (operation, forward) => Observable.of({ data: 2 }),
@@ -492,7 +491,7 @@ describe('Link static library', () => {
     });
 
     it('should split two Links', (done) => {
-      const link = Links.split(
+      const link = ApolloLink.split(
         (operation) => operation.context,
         (operation, forward) => Observable.of({ data: 1 }),
         new MockLink((operation, forward) => Observable.of({ data: 2 })),
@@ -518,7 +517,7 @@ describe('Link static library', () => {
     });
 
     it('should split a link and a function', (done) => {
-      const link = Links.split(
+      const link = ApolloLink.split(
         (operation) => operation.context,
         (operation, forward) => Observable.of({ data: 1 }),
         new MockLink((operation, forward) => Observable.of({ data: 2 })),
@@ -606,14 +605,14 @@ describe('Link static library', () => {
     const error = new Error('I always error');
 
     it('return next call as Promise resolution', () => {
-      const linkPromise = Links.asPromiseWrapper(() => Observable.of(data));
+      const linkPromise = asPromiseWrapper(() => Observable.of(data));
 
       return linkPromise.request(operation)
         .then(result => assert.deepEqual(data, result));
     });
 
     it('return error call as Promise rejection', () => {
-      const linkPromise = Links.asPromiseWrapper(() => new Observable(observer => {
+      const linkPromise = asPromiseWrapper(() => new Observable(observer => {
         throw error;
       }));
 
