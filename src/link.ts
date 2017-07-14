@@ -92,8 +92,8 @@ export abstract class ApolloLink implements Chain {
 
     return link.request.length === 1 ? new TerminatedConcat(this, link) : new ConcatLink(this, link);
   }
-  public abstract request(operation: Operation, forward?: NextLink): Observable<FetchResult> | null;
 
+  public abstract request(operation: Operation, forward?: NextLink): Observable<FetchResult> | null;
 }
 
 export function execute(link: ApolloLink, operation: GraphQLRequest): Observable<FetchResult> {

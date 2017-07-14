@@ -628,7 +628,7 @@ describe('Link static library', () => {
 describe('Terminating links', () => {
   const _warn = console.warn;
   const warningStub = sinon.stub().callsFake(warning => {
-    assert.deepEqual(warning.message, `You are concating to a terminating link, which will have no effect`)
+    assert.deepEqual(warning.message, `You are concating to a terminating link, which will have no effect`);
   });
 
   before(() => {
@@ -683,6 +683,20 @@ describe('Terminating links', () => {
         (operation) => Observable.of({ data: 'yo' }),
       );
      assert.deepEqual(split.concat((operation, forward) => forward(operation)), split);
+      assert(warningStub.calledOnce);
+    });
+
+    it('should warn if attempting to split to split two terminating links', () => {
+      const split = ApolloLink.split(
+        () => true,
+        (operation) => Observable.of({ data: 'yo' }),
+        (operation) => Observable.of({ data: 'yo' }),
+      );
+     assert.deepEqual(split.split(
+        () => true,
+       (operation, forward) => forward(operation),
+       (operation, forward) => forward(operation),
+      ), split);
       assert(warningStub.calledOnce);
     });
   });
