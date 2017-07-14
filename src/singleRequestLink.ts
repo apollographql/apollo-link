@@ -16,7 +16,7 @@ import {
 
 export default class SingleRequestLink extends ApolloLink {
 
-  private _fetch: (operation: Operation) => Promise<FetchResult>;
+  private _fetch: ApolloFetch;
 
   constructor(fetchParams?: {
     uri?: string,
@@ -26,7 +26,7 @@ export default class SingleRequestLink extends ApolloLink {
     this._fetch = fetchParams && fetchParams.fetch || createApolloFetch({ uri: fetchParams && fetchParams.uri });
   }
 
-  public request(operation: Operation, forward?: NextLink) {
+  public request(operation: Operation, forward?: NextLink): Observable<FetchResult> {
     const request = {
       ...operation,
       query: print(operation.query),

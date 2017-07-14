@@ -5,7 +5,9 @@ import PollingLink from '../src/pollingLink';
 
 import * as Observable from 'zen-observable';
 
-const query = `
+import gql from 'graphql-tag';
+
+const query = gql`
 query SampleQuery {
   stub{
     id

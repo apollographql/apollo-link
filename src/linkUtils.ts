@@ -25,7 +25,7 @@ export function toSubscriber<T>(
 }
 
 export function validateOperation(operation: GraphQLRequest): void {
-  const OPERATION_FIELDS = ['query', 'variables', 'context'];
+  const OPERATION_FIELDS = ['query', 'operationName', 'variables', 'context'];
   for (let key of Object.keys(operation)) {
     if (OPERATION_FIELDS.indexOf(key) < 0) {
       throw new Error(`illegal argument: ${key}`);

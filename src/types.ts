@@ -1,4 +1,4 @@
-import { DocumentNode } from 'graphql/language/ast';
+import { DocumentNode } from 'graphql';
 import * as Observable from 'zen-observable';
 
 export interface GraphQLRequest {

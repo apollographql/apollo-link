@@ -253,12 +253,12 @@ describe('Link static library', () => {
   describe('from', () => {
 
     const uniqueOperation: Operation = {
-      query: sampleQuery,
+      query: parse(sampleQuery),
       context: 'uniqueName',
     };
 
     it('should create an observable that completes when passed an empty array', (done) => {
-      const observable = ApolloLink.from([]).request({query: sampleQuery});
+      const observable = ApolloLink.from([]).request({query: parse(sampleQuery)});
       observable.subscribe(
         () => assert(false, 'should not call next'),
         () => assert(false, 'should not call error'),
@@ -595,7 +595,7 @@ describe('Link static library', () => {
 
   describe('asPromiseWrapper', () => {
     const operation = {
-      query: sampleQuery,
+      query: parse(sampleQuery),
       context: 'uniqueName',
     };
     const data = {

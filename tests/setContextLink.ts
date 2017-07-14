@@ -1,8 +1,9 @@
 import { assert } from 'chai';
 
 import SetContextLink from '../src/setContextLink';
+import gql from 'graphql-tag';
 
-const query = `
+const query = gql`
 query SampleQuery {
   stub{
     id
