@@ -2,22 +2,21 @@ import SingleRequestLink from './singleRequestLink';
 import HttpLink from './httpLink';
 import RetryLink from './retryLink';
 import PollingLink from './pollingLink';
-import { ApolloLink } from './link';
 
-import { GraphQLRequest, Operation, Chain, FetchResult } from './types';
-import { split, asPromiseWrapper, execute } from './link';
-const Links = { split, asPromiseWrapper, execute };
+// import { GraphQLRequest, Operation, Chain, FetchResult } from './types';
+import { asPromiseWrapper, execute, ApolloLink } from './link';
 
 import * as Observable from 'zen-observable';
 
 export {
   ApolloLink,
-  Links,
+  execute,
+  asPromiseWrapper,
 
-  GraphQLRequest,
-  Operation,
-  Chain,
-  FetchResult,
+  // GraphQLRequest,
+  // Operation,
+  // Chain,
+  // FetchResult,
 
   Observable,
 
