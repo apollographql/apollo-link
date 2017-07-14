@@ -21,6 +21,7 @@ const sampleQuery = `query SampleQuery{
 }`;
 
 describe('ApolloLink(abstract class)', () => {
+
   describe('concat', () => {
     it('should concat a function', (done) => {
       const returnOne = new SetContextLink({ add: 1 });
@@ -151,6 +152,7 @@ describe('ApolloLink(abstract class)', () => {
         done,
       });
     });
+
   });
 
   describe('split', () => {
@@ -619,6 +621,113 @@ describe('Link static library', () => {
       return linkPromise.request(operation)
         .then(expect.fail)
         .catch(actualError => assert.deepEqual(error, actualError));
+    });
+  });
+});
+
+describe('Terminating links', () => {
+  const _warn = console.warn;
+  const warningStub = sinon.stub().callsFake(warning => {
+    assert.deepEqual(warning.message, `You are concating to a terminating link, which will have no effect`)
+  });
+
+  before(() => {
+    console.warn = warningStub;
+  });
+
+  beforeEach(() => {
+    warningStub.reset();
+  });
+
+  after(() => {
+    console.warn = _warn;
+  });
+
+  describe('concat', () => {
+    it('should warn if attempting to concat to a terminating Link from function', () => {
+      const link = ApolloLink.from([(operation) => Observable.of({ data: 'yo' })]);
+      assert.deepEqual(link.concat((operation, forward) => forward(operation)), link);
+      assert(warningStub.calledOnce);
+      assert.deepEqual(warningStub.firstCall.args[0].link, link);
+    });
+
+    it('should warn if attempting to concat to a terminating Link', () => {
+      const link = new MockLink((operation) => Observable.of());
+      assert.deepEqual(link.concat((operation, forward) => forward(operation)), link);
+      assert(warningStub.calledOnce);
+      assert.deepEqual(warningStub.firstCall.args[0].link, link);
+    });
+
+    it('should not warn if attempting concat a terminating Link at end', () => {
+      const link = new MockLink((operation, forward) => forward(operation));
+      link.concat((operation) => Observable.of());
+      assert(warningStub.notCalled);
+    });
+  });
+
+  describe('split', () => {
+    it('should not warn if attempting to split a terminating and non-terminating Link', () => {
+      const split = ApolloLink.split(
+        () => true,
+        (operation) => Observable.of({ data: 'yo' }),
+        (operation, forward) => forward(operation),
+      );
+      split.concat((operation, forward) => forward(operation));
+      assert(warningStub.notCalled);
+    });
+
+    it('should warn if attempting to concat to split two terminating links', () => {
+      const split = ApolloLink.split(
+        () => true,
+        (operation) => Observable.of({ data: 'yo' }),
+        (operation) => Observable.of({ data: 'yo' }),
+      );
+     assert.deepEqual(split.concat((operation, forward) => forward(operation)), split);
+      assert(warningStub.calledOnce);
+    });
+  });
+
+  describe('from', () => {
+    it('should not warn if attempting to form a terminating then non-terminating Link', () => {
+      ApolloLink.from([
+        (operation, forward) => forward(operation),
+        (operation) => Observable.of({ data: 'yo' }),
+      ]);
+      assert(warningStub.notCalled);
+    });
+
+    it('should warn if attempting to add link after termination', () => {
+      ApolloLink.from([
+        (operation, forward) => forward(operation),
+        (operation) => Observable.of({ data: 'yo' }),
+        (operation, forward) => forward(operation),
+      ]);
+      assert(warningStub.calledOnce);
+    });
+
+    it('should warn if attempting to add link after termination', () => {
+      ApolloLink.from([
+        (operation, forward) => forward(operation),
+        (operation) => Observable.of({ data: 'yo' }),
+        (operation, forward) => forward(operation),
+      ]);
+      assert(warningStub.calledOnce);
+    });
+  });
+
+  describe('warning', () => {
+    it('should include link that terminates', () => {
+      const terminatingLink = new MockLink((operation) => Observable.of({ data: 'yo' }));
+      ApolloLink.from([
+        (operation, forward) => forward(operation),
+        (operation, forward) => forward(operation),
+        terminatingLink,
+        (operation, forward) => forward(operation),
+        (operation, forward) => forward(operation),
+        (operation) => Observable.of({ data: 'yo' }),
+        (operation, forward) => forward(operation),
+      ]);
+      assert(warningStub.called);
     });
   });
 });

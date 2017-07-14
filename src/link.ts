@@ -26,13 +26,16 @@ export abstract class ApolloLink implements Chain {
     }
 
     return links
-      .map(link => typeof link === 'function' ? new FunctionLink(link) : link)
+      .map(ApolloLink.toLink)
       .reduce((x, y) => x.concat(y));
   }
 
-  //Construct pass through
-  public static empty() {
+  public static empty(): ApolloLink {
     return new FunctionLink((op, forward) => Observable.of());
+  }
+
+  public static passthrough(): ApolloLink {
+    return new FunctionLink((op, forward) => forward ? forward(op) : Observable.of());
   }
 
   // split allows for creating a split point in an execution chain
@@ -42,34 +45,55 @@ export abstract class ApolloLink implements Chain {
   public static split(
     test: (op: Operation) => boolean,
     left: ApolloLink | RequestHandler,
-    right: ApolloLink | RequestHandler = ApolloLink.empty(),
-  ): Chain {
+    right: ApolloLink | RequestHandler = ApolloLink.passthrough(),
+  ): ApolloLink {
 
-    if (typeof left === 'function') {
-      left = new FunctionLink(left);
+    left = ApolloLink.toLink(left);
+    right = ApolloLink.toLink(right);
+
+    if (ApolloLink.isTerminating(left) && ApolloLink.isTerminating(right)) {
+      return new TerminatedSplit(test, left, right);
     }
-    if (typeof right === 'function') {
-      right = new FunctionLink(right);
+
+    return new SplitLink(test, left, right);
+  }
+
+  public static toLink(link: ApolloLink | RequestHandler): ApolloLink {
+    if (typeof link === 'function') {
+      return link.length === 1 ? new TerminatedLink(link) : new FunctionLink(link);
+    } else {
+      return link as ApolloLink;
     }
-    return new SplitLink(test, left, right) as Chain;
+  }
+
+  public static isTerminating(link: ApolloLink): boolean {
+    return link.request.length === 1;
   }
 
   public split(
     test: (op: Operation) => boolean,
     left: ApolloLink | RequestHandler,
-    right: ApolloLink | RequestHandler = ApolloLink.empty(),
+    right: ApolloLink | RequestHandler = ApolloLink.passthrough(),
   ): Chain {
     return this.concat(<ApolloLink>ApolloLink.split(test, left, right)) as Chain;
   }
 
   // join two Links together
   public concat(link: ApolloLink | RequestHandler): ApolloLink {
-    if (typeof link === 'function' ) {
-      link = new FunctionLink(link);
+    if (this.request.length === 1) {
+      const warning = Object.assign(
+        new Error(`You are concating to a terminating link, which will have no effect`),
+        { link : this },
+      );
+      console.warn(warning);
+      return this;
     }
-    return new ConcatLink(this, link);
+    link = ApolloLink.toLink(link);
+
+    return link.request.length === 1 ? new TerminatedConcat(this, link) : new ConcatLink(this, link);
   }
   public abstract request(operation: Operation, forward?: NextLink): Observable<FetchResult> | null;
+
 }
 
 export function execute(link: ApolloLink, operation: GraphQLRequest): Observable<FetchResult> {
@@ -130,7 +154,46 @@ function transformOperation(operation) {
   return operation;
 }
 
-export class FunctionLink extends ApolloLink {
+export class TerminatedLink extends ApolloLink {
+  constructor(private f: RequestHandler) {
+    super();
+  }
+
+  public request(operation: Operation): Observable<FetchResult> {
+    return this.f(operation) || Observable.of();
+  }
+}
+
+export class TerminatedConcat extends ApolloLink {
+  private concatLink: ApolloLink;
+  constructor(first: ApolloLink, second: ApolloLink) {
+    super();
+    this.concatLink = new ConcatLink(first, second);
+  }
+
+  public request(operation: Operation): Observable<FetchResult> {
+    return this.concatLink.request(operation);
+  }
+}
+
+export class TerminatedSplit extends ApolloLink {
+  private splitLink: ApolloLink;
+
+  constructor(
+    test: (op: Operation) => boolean,
+    left: ApolloLink,
+    right: ApolloLink = ApolloLink.empty(),
+  ) {
+    super();
+    this.splitLink = new SplitLink(test, left, right);
+  }
+
+  public request(operation: Operation): Observable<FetchResult> {
+    return this.splitLink.request(operation);
+  }
+}
+
+class FunctionLink extends ApolloLink {
 
   constructor(public f: RequestHandler) {
     super();
@@ -151,7 +214,6 @@ class ConcatLink extends ApolloLink {
     return this.first.request(operation, (op) => this.second.request(op, forward))
       || Observable.of();
   }
-
 }
 
 class SplitLink extends ApolloLink {
@@ -164,10 +226,10 @@ class SplitLink extends ApolloLink {
     super();
   }
 
-  public request(operation: Operation, forward?: NextLink): Observable<FetchResult> {
+  public request(operation: Operation, forward: NextLink): Observable<FetchResult> {
     return this.test(operation) ?
       this.left.request(operation, forward) :
-      this.right.request(operation)
+      this.right.request(operation, forward)
       || Observable.of();
   }
 }

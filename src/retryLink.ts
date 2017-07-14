@@ -30,7 +30,7 @@ export default class RetryLink extends ApolloLink {
     this.interval =  params && params.interval || this.defaultInterval;
   }
 
-  public request(operation: Operation, forward?: NextLink): Observable<FetchResult> {
+  public request(operation: Operation, forward: NextLink): Observable<FetchResult> {
     ensureForward(forward);
 
 

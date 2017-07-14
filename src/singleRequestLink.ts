@@ -1,7 +1,6 @@
 import {
   Operation,
   FetchResult,
-  NextLink,
 } from './types';
 import * as Observable from 'zen-observable';
 import {
@@ -26,29 +25,25 @@ export default class SingleRequestLink extends ApolloLink {
     this._fetch = fetchParams && fetchParams.fetch || createApolloFetch({ uri: fetchParams && fetchParams.uri });
   }
 
-  public request(operation: Operation, forward?: NextLink): Observable<FetchResult> {
+  public request(operation: Operation): Observable<FetchResult> {
     const request = {
       ...operation,
       query: print(operation.query),
     };
 
     return new Observable<FetchResult>(observer => {
-      let closed = false;
-
       this._fetch(request)
       .then(data => {
-        if (!closed) {
+        if (!observer.closed) {
           observer.next(data);
           observer.complete();
         }
       })
       .catch(error => {
-        if (!closed) {
+        if (!observer.closed) {
           observer.error(error);
         }
       });
-
-      return () => { closed = true; };
     });
   }
 

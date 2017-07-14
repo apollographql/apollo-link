@@ -4,9 +4,6 @@ import {
   NextLink,
   FetchResult,
 } from './types';
-import {
-  validateOperation,
-} from './linkUtils';
 
 import * as Observable from 'zen-observable';
 
@@ -14,13 +11,12 @@ import { ApolloLink } from './link';
 
 export default class MockLink extends ApolloLink {
 
-  constructor(private handleRequest: RequestHandler = () => null) {
+  constructor(handleRequest: RequestHandler = () => null) {
     super();
+    this.request = handleRequest;
   }
 
   public request(operation: Operation, forward?: NextLink): Observable<FetchResult> | null {
-    validateOperation(operation);
-
-    return this.handleRequest(operation, forward);
+    throw Error('should be overridden');
   }
 }

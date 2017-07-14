@@ -1,7 +1,6 @@
 import { ApolloLink } from './link';
 import {
   Operation,
-  NextLink,
   FetchResult,
 } from './types';
 import SingleRequestLink from './singleRequestLink';
@@ -35,8 +34,8 @@ export default class HttpLink extends ApolloLink {
     });
   }
 
-  public request(operation: Operation, forward?: NextLink): Observable<FetchResult> | null {
+  public request(operation: Operation): Observable<FetchResult> | null {
     this.headers = operation.context && operation.context.headers || {};
-    return this.requestLink.request(operation, forward);
+    return this.requestLink.request(operation);
   }
 }
