@@ -8,9 +8,15 @@ High level use cases are:
 * network interface for Relay Modern
 * fetcher for GraphiQL
 
-## Specification
+## Documentation
 
-Currently the specification can be found in [SPEC.md](SPEC.md) and your feedback is appreciated.
+To start, begin by reading the getting started [guide](docs/summary.md).
+
+If you are interested in implementing your own links, read the implementation [information](docs/implementation.md)
+
+The current plans and furture implementation are in the [roadmap](docs/roadmap.md)
+
+Your feedback and contribuitions are welcome.
 
 ## Apollo Principles
 
