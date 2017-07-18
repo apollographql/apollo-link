@@ -363,7 +363,7 @@ describe('Link static library', () => {
       };
 
       const stub = sinon.stub().withArgs(astOperation).callsFake((op) => {
-        assert.deepEqual(astOperation, op);
+        assert.deepEqual({...astOperation, variables: {}}, op);
         done();
       });
 
@@ -379,7 +379,7 @@ describe('Link static library', () => {
       };
 
       const stub = sinon.stub().withArgs(astOperation).callsFake((op) => {
-        assert.deepEqual(astOperation, op);
+        assert.deepEqual({...astOperation, variables: {}}, op);
         done();
       });
 
@@ -394,7 +394,11 @@ describe('Link static library', () => {
           query: parse(sampleQuery),
         })),
         new MockLink((op) => {
-          assert.deepEqual(<Operation>{...uniqueOperation, query: parse(sampleQuery) }, op);
+          assert.deepEqual(<Operation>{
+            ...uniqueOperation,
+            query: parse(sampleQuery),
+            variables: {},
+          }, op);
           return done();
         }),
       ]);
@@ -648,6 +652,20 @@ describe('Link static library', () => {
   });
 
   describe('execute', () => {
+
+    let _warn;
+
+    before(() => {
+      _warn = console.warn;
+      console.warn = sinon.stub().callsFake(warning => {
+        assert.deepEqual(warning, `query should either be a string or GraphQL AST`);
+      });
+    });
+
+    after(() => {
+      console.warn = _warn;
+    });
+
     it('should return an empty observable when a link returns null', (done) => {
       testLinkResults({
         link: new MockLink(),
@@ -694,18 +712,25 @@ describe('Link static library', () => {
       });
     });
 
-    it('should set a default context, variable, query and operationName', () => {
+    it('should set a default context, variable, query and operationName on a copy of operation', (done) => {
+      const operation = {};
       const link = ApolloLink.from([
-        (operation) => {
-          assert.property(operation, 'query');
-          assert.property(operation, 'operationName');
-          assert.property(operation, 'variables');
-          assert.property(operation, 'context');
+        (op) => {
+          assert.notProperty(operation, 'query');
+          assert.notProperty(operation, 'operationName');
+          assert.notProperty(operation, 'variables');
+          assert.notProperty(operation, 'context');
+          assert.property(op, 'query');
+          assert.property(op, 'operationName');
+          assert.property(op, 'variables');
+          assert.property(op, 'context');
           return Observable.of();
         },
       ]);
 
-      execute(link, {}).subscribe({});
+      execute(link, operation).subscribe({
+        complete: done;
+      });
     });
   });
 });

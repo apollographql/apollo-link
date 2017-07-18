@@ -44,7 +44,9 @@ export default class PollingLink extends ApolloLink {
       this.subscription = forward(operation).subscribe(subscriber);
 
       return () => {
-        clearInterval(this.timer);
+        if (this.timer) {
+          clearInterval(this.timer);
+        }
         this.subscription.unsubscribe();
       };
     });

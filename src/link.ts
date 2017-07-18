@@ -11,6 +11,7 @@ import {
   toLink,
   isTerminating,
   LinkError,
+  validateLink,
 } from './linkUtils';
 
 import {
@@ -54,8 +55,8 @@ export abstract class ApolloLink {
     right: ApolloLink | RequestHandler = ApolloLink.passthrough(),
   ): ApolloLink {
 
-    const leftLink = toLink(left);
-    const rightLink = toLink(right);
+    const leftLink = validateLink(toLink(left));
+    const rightLink = validateLink(toLink(right));
 
     if (isTerminating(leftLink) && isTerminating(rightLink)) {
       return new FunctionLink((operation) => {
@@ -82,11 +83,13 @@ export abstract class ApolloLink {
 
   // join two Links together
   public concat(next: ApolloLink | RequestHandler): ApolloLink {
+    validateLink(this);
+
     if (isTerminating(this)) {
       console.warn(new LinkError(`You are calling concat on a terminating link, which will have no effect`, this));
       return this;
     }
-    const nextLink = toLink(next);
+    const nextLink = validateLink(toLink(next));
 
     if (isTerminating(nextLink)) {
       return new FunctionLink((operation) => this.request(operation, (op) => nextLink.request(op) || Observable.of()) || Observable.of());
@@ -103,20 +106,21 @@ export abstract class ApolloLink {
 }
 
 export function execute(link: ApolloLink, operation: GraphQLRequest): Observable<FetchResult> {
-  validateOperation(operation);
+  const copy = { ...operation };
+  validateOperation(copy);
 
-  if (!operation.context) {
-    operation.context = {};
+  if (!copy.context) {
+    copy.context = {};
   }
-  if (!operation.variables) {
-    operation.variables = {};
+  if (!copy.variables) {
+    copy.variables = {};
   }
-  if (!operation.query) {
+  if (!copy.query) {
     console.warn(`query should either be a string or GraphQL AST`);
-    operation.query = <DocumentNode>{};
+    copy.query = <DocumentNode>{};
   }
 
-  return link.request(transformOperation(operation)) || Observable.of();
+  return link.request(transformOperation(copy)) || Observable.of();
 }
 
 function transformOperation(operation: GraphQLRequest): Operation {
