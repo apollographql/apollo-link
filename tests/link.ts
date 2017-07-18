@@ -729,7 +729,7 @@ describe('Link static library', () => {
       ]);
 
       execute(link, operation).subscribe({
-        complete: done;
+        complete: done,
       });
     });
   });
