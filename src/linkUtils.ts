@@ -1,41 +1,44 @@
 import {
   GraphQLRequest,
-  NextLink,
-  Subscriber,
+  RequestHandler,
 } from './types';
 
-function isSubscriber<T>(object: any): object is Subscriber<T> {
-  return typeof object !== 'function';
-}
+import {
+  ApolloLink,
+  FunctionLink,
+} from './link';
 
-export function toSubscriber<T>(
-  nextOrSubscriber: Subscriber<T> | ((result: T) => void),
-  error?: (error: any) => void,
-  complete?: () => void): Subscriber<T> {
 
-  if (isSubscriber(nextOrSubscriber)) {
-    return <Subscriber<T>>nextOrSubscriber;
-  } else {
-    return {
-      next: nextOrSubscriber,
-      error,
-      complete,
-    };
-  }
-}
-
-export function validateOperation(operation: GraphQLRequest): void {
+export function validateOperation(operation: GraphQLRequest): GraphQLRequest {
   const OPERATION_FIELDS = ['query', 'operationName', 'variables', 'context'];
   for (let key of Object.keys(operation)) {
     if (OPERATION_FIELDS.indexOf(key) < 0) {
       throw new Error(`illegal argument: ${key}`);
     }
   }
+
+  return operation;
 }
 
-export function ensureForward(forward?: NextLink): void {
-  if (!forward || typeof forward !== 'function') {
-      throw new Error(`next link should be present`);
+export class LinkError extends Error {
+  public link: ApolloLink;
+  constructor(
+    message?: string,
+    link?: ApolloLink,
+  ) {
+    super(message);
+    this.link = link;
   }
 }
 
+export function toLink(link: ApolloLink | RequestHandler): ApolloLink {
+  if (typeof link === 'function') {
+    return new FunctionLink(link);
+  } else {
+    return link as ApolloLink;
+  }
+}
+
+export function isTerminating(link: ApolloLink): boolean {
+  return link.request.length <= 1;
+}

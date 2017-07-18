@@ -3,16 +3,15 @@ import {
   Operation,
   FetchResult,
 } from './types';
-import SingleRequestLink from './singleRequestLink';
 import { ApolloFetch, createApolloFetch } from 'apollo-fetch';
 
 import * as Observable from 'zen-observable';
+import { print } from 'graphql/language/printer';
 
 export default class HttpLink extends ApolloLink {
 
   private headers = {};
   private _fetch: ApolloFetch;
-  private requestLink: ApolloLink;
 
   constructor (fetchParams?: {
     uri?: string,
@@ -27,15 +26,28 @@ export default class HttpLink extends ApolloLink {
       };
       next();
     });
-
-    this.requestLink = new SingleRequestLink({
-      ...(fetchParams || {}),
-      fetch: this._fetch,
-    });
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
     this.headers = operation.context && operation.context.headers || {};
-    return this.requestLink.request(operation);
+    const request = {
+      ...operation,
+      query: print(operation.query),
+    };
+
+    return new Observable<FetchResult>(observer => {
+      this._fetch(request)
+        .then(data => {
+          if (!observer.closed) {
+            observer.next(data);
+            observer.complete();
+          }
+        })
+        .catch(error => {
+          if (!observer.closed) {
+            observer.error(error);
+          }
+        });
+    });
   }
 }

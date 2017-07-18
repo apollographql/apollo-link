@@ -2,6 +2,9 @@ import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 
 import PollingLink from '../src/pollingLink';
+import {
+  execute,
+} from '../src/link';
 
 import * as Observable from 'zen-observable';
 
@@ -16,12 +19,13 @@ query SampleQuery {
 `;
 
 describe('PollingLink', () => {
-  it('should construct without arguments', () => {
-    assert.doesNotThrow(() => new PollingLink());
+
+  it('should construct with an interval', () => {
+    assert.doesNotThrow(() => new PollingLink(() => null));
   });
 
   it('should construct with an interval', () => {
-    assert.doesNotThrow(() => new PollingLink(1));
+    assert.doesNotThrow(() => new PollingLink(() => 1));
   });
 
   it('should poll request', (done) => {
@@ -35,7 +39,7 @@ describe('PollingLink', () => {
       done();
     };
 
-    const poll = new PollingLink(1).concat((operation) => {
+    const poll = new PollingLink(() => 1).concat((operation) => {
       if (count >= 5) {
         subscription.unsubscribe();
         checkResults();
@@ -43,7 +47,7 @@ describe('PollingLink', () => {
       return Observable.of({data: count++});
     });
 
-    subscription = poll.request({query}).subscribe({
+    subscription = execute(poll, ({query})).subscribe({
       next: spy,
       error: (error) => expect.fail(null, null, error.message),
       complete: () => expect.fail(),
@@ -63,7 +67,7 @@ describe('PollingLink', () => {
       done();
     };
 
-    const poll = new PollingLink(1).concat((operation) => {
+    const poll = new PollingLink(() => 1).concat((operation) => {
       if (count >= 5) {
         return new Observable(observer => {
           throw error;
@@ -72,7 +76,7 @@ describe('PollingLink', () => {
       return Observable.of({data: count++});
     });
 
-    subscription = poll.request({query}).subscribe({
+    subscription = execute(poll, ({query})).subscribe({
       next: spy,
       error: (err) => checkResults(err),
       complete: () => expect.fail(),

@@ -3,11 +3,11 @@ import {
   RequestHandler,
   NextLink,
   FetchResult,
-} from './types';
+} from '../../src/types';
 
 import * as Observable from 'zen-observable';
 
-import { ApolloLink } from './link';
+import { ApolloLink } from '../../src/link';
 
 export default class MockLink extends ApolloLink {
 

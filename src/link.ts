@@ -8,6 +8,9 @@ import {
 
 import {
   validateOperation,
+  toLink,
+  isTerminating,
+  LinkError,
 } from './linkUtils';
 
 import {
@@ -15,7 +18,11 @@ import {
 } from 'graphql/language/parser';
 
 import * as Observable from 'zen-observable';
-import { DocumentNode } from 'graphql/language/ast';
+import {
+  DocumentNode,
+  DefinitionNode,
+  OperationDefinitionNode,
+} from 'graphql/language/ast';
 
 export abstract class ApolloLink {
 
@@ -25,7 +32,7 @@ export abstract class ApolloLink {
     }
 
     return links
-      .map(ApolloLink.toLink)
+      .map(toLink)
       .reduce((x, y) => x.concat(y));
   }
 
@@ -47,26 +54,22 @@ export abstract class ApolloLink {
     right: ApolloLink | RequestHandler = ApolloLink.passthrough(),
   ): ApolloLink {
 
-    left = ApolloLink.toLink(left);
-    right = ApolloLink.toLink(right);
+    const leftLink = toLink(left);
+    const rightLink = toLink(right);
 
-    if (ApolloLink.isTerminating(left) && ApolloLink.isTerminating(right)) {
-      return new TerminatedSplit(test, left, right);
-    }
-
-    return new SplitLink(test, left, right);
-  }
-
-  public static toLink(link: ApolloLink | RequestHandler): ApolloLink {
-    if (typeof link === 'function') {
-      return link.length <= 1 ? new TerminatedLink(link) : new FunctionLink(link);
+    if (isTerminating(leftLink) && isTerminating(rightLink)) {
+      return new FunctionLink((operation) => {
+        return test(operation) ?
+          leftLink.request(operation) || Observable.of() :
+          rightLink.request(operation) || Observable.of();
+      });
     } else {
-      return link as ApolloLink;
+      return new FunctionLink((operation, forward) => {
+        return test(operation) ?
+          leftLink.request(operation, forward) || Observable.of() :
+          rightLink.request(operation, forward) || Observable.of();
+      });
     }
-  }
-
-  public static isTerminating(link: ApolloLink): boolean {
-    return link.request.length <= 1;
   }
 
   public split(
@@ -74,22 +77,26 @@ export abstract class ApolloLink {
     left: ApolloLink | RequestHandler,
     right: ApolloLink | RequestHandler = ApolloLink.passthrough(),
   ): ApolloLink {
-    return this.concat(<ApolloLink>ApolloLink.split(test, left, right));
+    return this.concat(ApolloLink.split(test, left, right));
   }
 
   // join two Links together
-  public concat(link: ApolloLink | RequestHandler): ApolloLink {
-    if (this.request.length <= 1) {
-      const warning = Object.assign(
-        new Error(`You are calling concat a terminating link, which will have no effect`),
-        { link : this },
-      );
-      console.warn(warning);
+  public concat(next: ApolloLink | RequestHandler): ApolloLink {
+    if (isTerminating(this)) {
+      console.warn(new LinkError(`You are calling concat on a terminating link, which will have no effect`, this));
       return this;
     }
-    link = ApolloLink.toLink(link);
+    const nextLink = toLink(next);
 
-    return link.request.length <= 1 ? new TerminatedConcat(this, link) : new ConcatLink(this, link);
+    if (isTerminating(nextLink)) {
+      return new FunctionLink((operation) => this.request(operation, (op) => nextLink.request(op) || Observable.of()) || Observable.of());
+    } else {
+      return new FunctionLink((operation, forward) => {
+        return this.request(operation, (op) => {
+          return nextLink.request(op, forward) || Observable.of();
+        }) || Observable.of();
+      });
+    }
   }
 
   public abstract request(operation: Operation, forward?: NextLink): Observable<FetchResult> | null;
@@ -105,130 +112,56 @@ export function execute(link: ApolloLink, operation: GraphQLRequest): Observable
     operation.variables = {};
   }
   if (!operation.query) {
-    console.warn(`query should either be a sting or GraphQL AST`);
+    console.warn(`query should either be a string or GraphQL AST`);
     operation.query = <DocumentNode>{};
   }
 
-  const _operation: Operation = transformOperation(operation);
-
-  return link.request(_operation) || Observable.of();
+  return link.request(transformOperation(operation)) || Observable.of();
 }
 
-const toPromise = (link: ApolloLink) => {
-  return (operation: Operation, forward?: NextLink) => {
-    const observable = link.request(operation, forward);
+function transformOperation(operation: GraphQLRequest): Operation {
 
-    return new Promise((resolve, reject) => {
-      observable.subscribe({
-        next: resolve,
-        error: reject,
-      });
-    });
-  };
-};
+  let transformedOperation: Operation;
 
-export function asPromiseWrapper(link: ApolloLink | RequestHandler) {
-  if (typeof link === 'function') {
-    link = new FunctionLink(link);
-  }
-  return {
-    request: toPromise(link),
-  };
-}
-
-function transformOperation(operation) {
   if (typeof operation.query === 'string') {
-    operation = {
+    transformedOperation = {
       ...operation,
       query: parse(operation.query),
     };
+  } else {
+    transformedOperation = {
+      ...operation,
+    } as Operation;
   }
 
-  if (!operation.operationName) {
-    operation.operationName = operation.query.definitions &&
-      operation.query.definitions.length &&
-      operation.query.definitions[0].name || '';
+  if (!transformedOperation.operationName) {
+    if (transformedOperation.query && transformedOperation.query.definitions) {
+      const operationTypes = ['query', 'mutation', 'subscription'];
+      const definitions = <OperationDefinitionNode[]>transformedOperation.query.definitions.filter(
+        (x: DefinitionNode) => x.kind === 'OperationDefinition' && (operationTypes.indexOf(x.operation) >= 0),
+      );
+
+      if (definitions.length) {
+        const definition = definitions[0];
+        const hasName = definition.name && definition.name.kind === 'Name';
+        transformedOperation.operationName = hasName ? definitions[0].name.value : '';
+      }
+    } else {
+      transformedOperation.operationName = '';
+    }
   }
 
-  return operation;
+  return transformedOperation;
 }
 
-export class TerminatedLink extends ApolloLink {
-  constructor(private f: RequestHandler) {
-    super();
-  }
-
-  public request(operation: Operation): Observable<FetchResult> {
-    return this.f(operation) || Observable.of();
-  }
-}
-
-export class TerminatedConcat extends ApolloLink {
-  private concatLink: ApolloLink;
-  constructor(first: ApolloLink, second: ApolloLink) {
-    super();
-    this.concatLink = new ConcatLink(first, second);
-  }
-
-  public request(operation: Operation): Observable<FetchResult> {
-    return this.concatLink.request(operation);
-  }
-}
-
-export class TerminatedSplit extends ApolloLink {
-  private splitLink: ApolloLink;
-
-  constructor(
-    test: (op: Operation) => boolean,
-    left: ApolloLink,
-    right: ApolloLink = ApolloLink.empty(),
-  ) {
-    super();
-    this.splitLink = new SplitLink(test, left, right);
-  }
-
-  public request(operation: Operation): Observable<FetchResult> {
-    return this.splitLink.request(operation);
-  }
-}
-
-class FunctionLink extends ApolloLink {
+export class FunctionLink extends ApolloLink {
 
   constructor(public f: RequestHandler) {
     super();
+    this.request = f;
   }
 
   public request(operation: Operation, forward: NextLink): Observable<FetchResult> {
-    return this.f(operation, forward) || Observable.of();
-  }
-}
-
-class ConcatLink extends ApolloLink {
-
-  constructor(private first: ApolloLink, private second: ApolloLink) {
-    super();
-  }
-
-  public request(operation: Operation, forward: NextLink): Observable<FetchResult> {
-    return this.first.request(operation, (op) => this.second.request(op, forward))
-      || Observable.of();
-  }
-}
-
-class SplitLink extends ApolloLink {
-
-  constructor(
-    private test: (op: Operation) => boolean,
-    private left: ApolloLink,
-    private right: ApolloLink = ApolloLink.empty(),
-  ) {
-    super();
-  }
-
-  public request(operation: Operation, forward: NextLink): Observable<FetchResult> {
-    return this.test(operation) ?
-      this.left.request(operation, forward) :
-      this.right.request(operation, forward)
-      || Observable.of();
+    throw Error('should be overridden');
   }
 }

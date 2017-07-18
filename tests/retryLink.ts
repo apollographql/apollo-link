@@ -1,11 +1,16 @@
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import RetryLink from '../src/retryLink';
-import {
-  asPromiseWrapper,
-} from '../src/link';
 import gql from 'graphql-tag';
 import * as Observable from 'zen-observable';
+import {
+  execute,
+  ApolloLink,
+} from '../src/link';
+import {
+  FetchResult,
+} from '../src/types';
+
 
 const query = gql`
   {
@@ -19,62 +24,83 @@ describe('RetryLink', () => {
 
   it('can be initialized', () => assert(true));
 
-  it('should fail with unreachable endpoint', () => {
+  it('should fail with unreachable endpoint', (done) => {
     const max = 10;
     const retry = new RetryLink({delay: 1, max});
     const error = new Error('I never work');
-    const stubNext = sinon.stub().callsFake(() => new Observable(observer => observer.error(error)));
+    const stub = sinon.stub().callsFake(() => {
+      return new Observable(observer => observer.error(error));
+    });
 
-    const promisedLink = asPromiseWrapper(retry);
-    return promisedLink.request({ query }, stubNext)
-      .then(() => {
-        expect.fail();
-      })
-      .catch(actualError => {
-        assert.deepEqual(stubNext.callCount, max);
+    const link = ApolloLink.from([
+      retry,
+      stub,
+    ]);
+
+    execute(link, { query }).subscribe(
+      expect.fail,
+      actualError => {
+        assert.deepEqual(stub.callCount, max);
         assert.deepEqual(error, actualError);
-      });
+        done();
+      },
+      expect.fail,
+    );
   });
 
-  it('should return data from the underlying link on a successful operation', () => {
+  it('should return data from the underlying link on a successful operation', (done) => {
     const retry = new RetryLink();
-    const data = {
+    const data = <FetchResult>{
       data: {
         hello: 'world',
       },
     };
-    const stubNext = sinon.stub();
-    stubNext.returns(Observable.of(data));
+    const stub = sinon.stub();
+    stub.returns(Observable.of(data));
 
-    const promisedLink = asPromiseWrapper(retry);
-    return promisedLink.request({ query }, stubNext)
-      .then(actualData => {
-        assert(stubNext.calledOnce);
+
+
+    const link = ApolloLink.from([
+      retry,
+      stub,
+    ]);
+
+    execute(link, { query }).subscribe(
+      actualData => {
+        assert(stub.calledOnce);
         assert.deepEqual(data, actualData);
-      });
+      },
+      expect.fail,
+      done,
+    );
   });
 
-  it('should return data from the underlying link on a successful retry', () => {
+  it('should return data from the underlying link on a successful retry', (done) => {
     const retry = new RetryLink({delay: 1, max: 2});
     const error = new Error('I never work');
-    const data = {
+    const data = <FetchResult>{
       data: {
         hello: 'world',
       },
     };
-    const stubNext = sinon.stub();
-    stubNext.onFirstCall().returns(new Observable(observer => observer.error(error)));
-    stubNext.onSecondCall().returns(Observable.of(data));
+    const stub = sinon.stub();
+    stub.onFirstCall().returns(new Observable(observer => observer.error(error)));
+    stub.onSecondCall().returns(Observable.of(data));
 
-    const promisedLink = asPromiseWrapper(retry);
-    return promisedLink.request({ query }, stubNext)
-      .then(actualData => {
-        assert.deepEqual(stubNext.callCount, 2);
+
+    const link = ApolloLink.from([
+      retry,
+      stub,
+    ]);
+
+    execute(link, { query }).subscribe(
+      actualData => {
+
+        assert.deepEqual(stub.callCount, 2);
         assert.deepEqual(data, actualData);
-      })
-      .catch(actualError => {
-        expect.fail();
-      });
+      },
+      expect.fail,
+      done,
+    );
   });
-
 });

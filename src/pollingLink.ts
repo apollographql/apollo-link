@@ -13,12 +13,13 @@ import {
 
 export default class PollingLink extends ApolloLink {
 
-  private pollInterval: number;
+  private pollInterval: (Operation) => number | null;
   private timer;
+  private subscription: ZenObservable.Subscription;
 
-  constructor(pollInterval?: number) {
+  constructor(pollInterval: (Operation) => number | null) {
     super();
-    this.pollInterval = pollInterval || 0;
+    this.pollInterval = pollInterval;
   }
 
   public request(operation: Operation, forward: NextLink): Observable<FetchResult> {
@@ -31,17 +32,20 @@ export default class PollingLink extends ApolloLink {
       };
 
       const poll = (() => {
-        forward(operation).subscribe(subscriber);
-      }).bind(this);
+        this.subscription.unsubscribe();
+        this.subscription = forward(operation).subscribe(subscriber);
+      });
 
-      if (this.pollInterval) {
-        this.timer = setInterval(poll, this.pollInterval);
+      const interval = this.pollInterval(operation);
+      if (interval !== null) {
+        this.timer = setInterval(poll, interval);
       }
 
-      forward(operation).subscribe(subscriber);
+      this.subscription = forward(operation).subscribe(subscriber);
 
       return () => {
         clearInterval(this.timer);
+        this.subscription.unsubscribe();
       };
     });
   }

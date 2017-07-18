@@ -3,7 +3,10 @@ import * as sinon from 'sinon';
 import HttpLink from '../src/httpLink';
 
 import * as Links from '../src/link';
-import { ApolloLink } from '../src/link';
+import {
+  ApolloLink,
+  execute,
+} from '../src/link';
 
 import { createApolloFetch } from 'apollo-fetch';
 
@@ -67,7 +70,7 @@ describe('HttpLink', () => {
   it('calls next and then complete', (done) => {
     const next = sinon.spy();
     const link = new HttpLink({uri: 'data'});
-    const observable = link.request({
+    const observable = execute(link, {
       query: sampleQuery,
     });
     observable.subscribe({
@@ -79,7 +82,7 @@ describe('HttpLink', () => {
 
   it('calls error when fetch fails', (done) => {
     const link = new HttpLink({uri: 'error'});
-    const observable = link.request({
+    const observable = execute(link, {
       query: sampleQuery,
     });
     observable.subscribe(
@@ -94,7 +97,7 @@ describe('HttpLink', () => {
 
   it('calls error when fetch fails', (done) => {
     const link = new HttpLink({uri: 'error'});
-    const observable = link.request({
+    const observable = execute(link, {
       query: sampleMutation,
     });
     observable.subscribe(
@@ -110,7 +113,7 @@ describe('HttpLink', () => {
 
   it('unsubscribes without calling subscriber', (done) => {
     const link = new HttpLink({uri: 'data'});
-    const observable = link.request({
+    const observable = execute(link, {
       query: sampleQuery,
     });
     const subscription = observable.subscribe(() => assert(false), () => assert(false), () => assert(false));
@@ -124,7 +127,7 @@ describe('HttpLink', () => {
     const context = {info: 'stub'};
     const variables = {params: 'stub'};
 
-    const observable = link.request({
+    const observable = execute(link, {
       query: sampleMutation,
       context,
       variables,
@@ -155,7 +158,7 @@ describe('HttpLink', () => {
     const context = {info: 'stub'};
     const variables = {params: 'stub'};
 
-    const observable = link.request({
+    const observable = execute(link, {
       query: sampleMutation,
       context,
       variables,
@@ -176,7 +179,7 @@ describe('HttpLink', () => {
     const context = {info: 'stub'};
     const variables = {params: 'stub'};
 
-    const observable = link.request({
+    const observable = execute(link, {
       query: sampleMutation,
       context,
       variables,

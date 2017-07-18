@@ -4,9 +4,6 @@ import {
   FetchResult,
 } from './types';
 import * as Observable from 'zen-observable';
-import {
-  ensureForward,
-} from './linkUtils';
 
 import {
   ApolloLink,
@@ -18,6 +15,8 @@ export default class RetryLink extends ApolloLink {
   private delay: number;
   private max: number;
   private interval: (delay: number, count: number) => number;
+  private subscription: ZenObservable.Subscription;
+  private timer;
 
   constructor (params?: {
     max?: number,
@@ -31,36 +30,37 @@ export default class RetryLink extends ApolloLink {
   }
 
   public request(operation: Operation, forward: NextLink): Observable<FetchResult> {
-    ensureForward(forward);
-
 
     return new Observable(observer => {
       const subscriber = {
         next: data => {
-          observer.next(data);
           this.count = 0;
+          observer.next(data);
         },
         error: error => {
           this.count++;
           if (this.count < this.max) {
-            setTimeout(() => {
+            this.timer = setTimeout(() => {
               const observable = forward(operation);
-              observable.subscribe(subscriber);
+              this.subscription = observable.subscribe(subscriber);
             }, this.interval(this.delay, this.count));
           } else {
             observer.error(error);
           }
         },
-        complete: () => {
-          observer.complete();
-        },
-        // This causes an error, not sure why
-        // complete: observer.complete
+        complete: observer.complete.bind(observer),
       };
 
-      forward(operation).subscribe(subscriber);
+      this.subscription = forward(operation).subscribe(subscriber);
+
+      return () => {
+        this.subscription.unsubscribe();
+        if (this.timer) {
+          clearTimeout(this.timer);
+        }
+      };
     });
   }
 
-  private defaultInterval = (delay, count) => delay;
+  private defaultInterval = (delay) => delay;
 }

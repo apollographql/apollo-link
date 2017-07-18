@@ -37,7 +37,6 @@
     "prepublishOnly": "npm run clean && npm run build"
   },
   "dependencies": {
-    "@types/zen-observable": "^0.5.1",
     "apollo-fetch": "^0.3.0",
     "graphql": "^0.10.3",
     "zen-observable": "^0.5.2"
@@ -62,6 +61,7 @@
     "typescript": "^2.2.1"
   },
   "optionalDependencies": {
-    "@types/graphql": "^0.9.4"
+    "@types/graphql": "^0.9.4",
+    "@types/zen-observable": "^0.5.1"
   }
 }

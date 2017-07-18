@@ -1,8 +1,8 @@
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
-import { execute, asPromiseWrapper, ApolloLink } from '../src/link';
+import { execute, ApolloLink } from '../src/link';
 import * as Observable from 'zen-observable';
-import MockLink from '../src/mockLink';
+import MockLink from './utils/mockLink';
 import SetContextLink from '../src/setContextLink';
 import { parse } from 'graphql';
 import {
@@ -314,10 +314,11 @@ describe('Link static library', () => {
     const uniqueOperation: Operation = {
       query: parse(sampleQuery),
       context: {name: 'uniqueName'},
+      operationName: 'sampleQuery',
     };
 
     it('should create an observable that completes when passed an empty array', (done) => {
-      const observable = ApolloLink.from([]).request({query: parse(sampleQuery)});
+      const observable = execute(ApolloLink.from([]), {query: parse(sampleQuery)});
       observable.subscribe(
         () => assert(false, 'should not call next'),
         () => assert(false, 'should not call error'),
@@ -707,36 +708,6 @@ describe('Link static library', () => {
       execute(link, {}).subscribe({});
     });
   });
-
-  describe('asPromiseWrapper', () => {
-    const operation = {
-      query: parse(sampleQuery),
-      context: {name: 'uniqueName' },
-    };
-    const data = {
-      data: {
-        hello: 'world',
-      },
-    };
-    const error = new Error('I always error');
-
-    it('return next call as Promise resolution', () => {
-      const linkPromise = asPromiseWrapper(() => Observable.of(data));
-
-      return linkPromise.request(operation)
-        .then(result => assert.deepEqual(data, result));
-    });
-
-    it('return error call as Promise rejection', () => {
-      const linkPromise = asPromiseWrapper(() => new Observable(observer => {
-        throw error;
-      }));
-
-      return linkPromise.request(operation)
-        .then(expect.fail)
-        .catch(actualError => assert.deepEqual(error, actualError));
-    });
-  });
 });
 
 describe('Terminating links', () => {
@@ -750,7 +721,7 @@ describe('Terminating links', () => {
   beforeEach(() => {
     warningStub.reset();
     warningStub.callsFake(warning => {
-      assert.deepEqual(warning.message, `You are calling concat a terminating link, which will have no effect`);
+      assert.deepEqual(warning.message, `You are calling concat on a terminating link, which will have no effect`);
     });
   });
 
