@@ -1,5 +1,5 @@
 <!--
-  Thanks for filing an issue on Apollo Fetcher!
+  Thanks for filing an issue on Apollo Link!
 
   Please make sure that you include the following information to ensure that your issue is actionable.
 
