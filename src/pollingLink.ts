@@ -13,11 +13,11 @@ import {
 
 export default class PollingLink extends ApolloLink {
 
-  private pollInterval: (Operation) => number | null;
+  private pollInterval: (opearation: Operation) => number | null;
   private timer;
   private subscription: ZenObservable.Subscription;
 
-  constructor(pollInterval: (Operation) => number | null) {
+  constructor(pollInterval: (opearation: Operation) => number | null) {
     super();
     this.pollInterval = pollInterval;
   }
