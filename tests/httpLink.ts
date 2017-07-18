@@ -136,10 +136,10 @@ describe('HttpLink', () => {
       next,
       error: (error) => assert(false),
       complete: () => {
-        const body = JSON.parse(fetchMock.lastCall()[1]['body']);
-        assert.equal(body['query'], print(sampleMutation));
-        assert.deepEqual(body['context'], context);
-        assert.deepEqual(body['variables'], variables);
+        const body = JSON.parse(fetchMock.lastCall()[1].body);
+        assert.equal(body.query, print(sampleMutation));
+        assert.deepEqual(body.context, context);
+        assert.deepEqual(body.variables, variables);
 
         assert.equal(next.callCount, 1);
 
