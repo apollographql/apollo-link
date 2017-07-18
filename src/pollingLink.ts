@@ -10,7 +10,6 @@ import {
   ApolloLink,
 } from './link';
 
-
 export default class PollingLink extends ApolloLink {
 
   private pollInterval: (opearation: Operation) => number | null;

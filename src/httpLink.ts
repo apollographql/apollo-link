@@ -8,6 +8,9 @@ import { ApolloFetch, createApolloFetch } from 'apollo-fetch';
 import * as Observable from 'zen-observable';
 import { print } from 'graphql/language/printer';
 
+/** Transforms Operation for into HTTP results.
+ * context can include the headers property, which will be passed to the fetch function
+ */
 export default class HttpLink extends ApolloLink {
 
   private headers = {};
