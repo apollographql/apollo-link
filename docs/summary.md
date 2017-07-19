@@ -8,7 +8,7 @@ Links can be used as a stand-alone client or with most major GraphQL clients.
 
 ### Stand-alone
 
-`execute` accepts a standard GraphQL reqeust with a query string or AST.
+`execute` accepts a standard GraphQL request with a query string or AST.
 `execute` returns an [Observable](https://github.com/zenparsing/zen-observable#api) that can be subscribed to.
 Links use observables to support GraphQL subscriptions and live queries, in addition to single response queries and mutations.
 
@@ -23,10 +23,12 @@ const link = new HttpLink({ uri });
 
 execute(link, operation).subscribe({
   next: data => console.log(`received data ${data}`),
-  error: error => console.log(`received errro ${error}`),
+  error: error => console.log(`received error ${error}`),
   complete: () => console.log(`complete`),
 })
 ```
+
+`next` will receive GraphQL errors, while `error` be called on a network error.
 
 ### Apollo Client
 
@@ -80,7 +82,7 @@ Links can composed together to form a new link using `ApolloLink.from`.
 
 ### Retry
 
-Attempts to resends a GraphQL request when failed and fails after a certain time
+Attempts to resend a GraphQL request when failed and fails after a certain time
 
 ```js
 import {
@@ -117,8 +119,10 @@ import {
 } from 'apollo-link'
 
 const uri = 'http://api.githunt.com/graphql';
-const context = {
+const setContext = (context) => {
+  ...context,
   headers: {
+    ...context.headers,
     auth: 'token',
   },
 };
@@ -142,7 +146,7 @@ const link = ApolloLink.from([
 ### Polling
 
 const link = ApolloLink.from([
-  new PollingLink({ pollInteval: 5000 }),
+  new PollingLink({ pollInterval: 5000 }),
   new HttpLink({ uri });
 ])
 
@@ -192,16 +196,8 @@ new RetryLink({ max, delay, interval });
 ### SetContextLink
 
 ```js
-new SetContextLink( context );
+new SetContextLink( setContext );
 ```
 
-* `context` sets the context of the operation, which other links can access
-
-### MockLink
-
-```js
-new MockLink( requestHandler );
-```
-
-* `requestHandler(operation)` returns an Observable of the result
+* `setContext(context)` sets the context of the operation, which the next links can access
 
