@@ -22,9 +22,11 @@ const sampleQuery = `query SampleQuery{
 
 describe('ApolloLink(abstract class)', () => {
 
+  const setContext = () => ({ add: 1 });
+
   describe('concat', () => {
     it('should concat a function', (done) => {
-      const returnOne = new SetContextLink({ add: 1 });
+      const returnOne = new SetContextLink(setContext);
       const link = returnOne.concat((operation, forward) => Observable.of({ data: operation.context.add }));
 
       testLinkResults({
@@ -35,7 +37,7 @@ describe('ApolloLink(abstract class)', () => {
     });
 
     it('should concat a Link', (done) => {
-      const returnOne = new SetContextLink({ add: 1 });
+      const returnOne = new SetContextLink(setContext);
       const mock = new MockLink((op) => Observable.of({ data: op.context.add }));
       const link = returnOne.concat(mock);
 
@@ -47,7 +49,7 @@ describe('ApolloLink(abstract class)', () => {
     });
 
     it('should concat a Link and function', (done) => {
-      const returnOne = new SetContextLink({ add: 1 });
+      const returnOne = new SetContextLink(setContext);
       const mock = new MockLink((op, forward) => {
         let _op = {
           ...op,
@@ -69,7 +71,7 @@ describe('ApolloLink(abstract class)', () => {
     });
 
     it('should concat a function and Link', (done) => {
-      const returnOne = new SetContextLink({ add: 1 });
+      const returnOne = new SetContextLink(setContext);
       const mock = new MockLink((op, forward) => Observable.of({ data: op.context.add }));
 
       const link = returnOne.concat((operation, forward) => {
@@ -89,7 +91,7 @@ describe('ApolloLink(abstract class)', () => {
     });
 
     it('should concat two functions', (done) => {
-      const returnOne = new SetContextLink({ add: 1 });
+      const returnOne = new SetContextLink(setContext);
       const link = returnOne.concat((operation, forward) => {
         operation = {
           ...operation,
@@ -107,7 +109,7 @@ describe('ApolloLink(abstract class)', () => {
     });
 
     it('should concat two Links', (done) => {
-      const returnOne = new SetContextLink({ add: 1 });
+      const returnOne = new SetContextLink(setContext);
       const mock1 = new MockLink((operation, forward) => {
         operation = {
           ...operation,
@@ -128,7 +130,7 @@ describe('ApolloLink(abstract class)', () => {
     });
 
     it('should return an link that can be concat\'d multiple times', (done) => {
-      const returnOne = new SetContextLink({ add: 1 });
+      const returnOne = new SetContextLink(setContext);
       const mock1 = new MockLink((operation, forward) => {
         operation = {
           ...operation,
@@ -158,7 +160,7 @@ describe('ApolloLink(abstract class)', () => {
   describe('split', () => {
     it('should split two functions', (done) => {
       const context = { add: 1 };
-      const returnOne = new SetContextLink(context);
+      const returnOne = new SetContextLink(() => context);
       const link1 = returnOne.concat((operation, forward) => Observable.of({ data: operation.context.add + 1 }));
       const link2 = returnOne.concat((operation, forward) => Observable.of({ data: operation.context.add + 2 }));
       const link = returnOne.split(
@@ -183,7 +185,7 @@ describe('ApolloLink(abstract class)', () => {
 
     it('should split two Links', (done) => {
       const context = { add: 1 };
-      const returnOne = new SetContextLink(context);
+      const returnOne = new SetContextLink(() => context);
       const link1 = returnOne.concat(
         new MockLink((operation, forward) => Observable.of({ data: operation.context.add + 1 })),
       );
@@ -212,7 +214,7 @@ describe('ApolloLink(abstract class)', () => {
 
     it('should split a link and a function', (done) => {
       const context = { add: 1 };
-      const returnOne = new SetContextLink(context);
+      const returnOne = new SetContextLink(() => context);
       const link1 = returnOne.concat((operation, forward) => Observable.of({ data: operation.context.add + 1 }));
       const link2 = returnOne.concat(
         new MockLink((operation, forward) => Observable.of({ data: operation.context.add + 2 })),
@@ -239,7 +241,7 @@ describe('ApolloLink(abstract class)', () => {
 
     it('should allow concat after split to be join', (done) => {
       const context = { test: true, add: 1 };
-      const start = new SetContextLink(context);
+      const start = new SetContextLink(() => ({...context}));
       const link = start.split(
         (operation) => operation.context.test,
         (operation, forward) => {
@@ -270,7 +272,7 @@ describe('ApolloLink(abstract class)', () => {
 
     it('should allow default right to be empty or passthrough when forward available', (done) => {
       let context = { test: true };
-      const start = new SetContextLink(context);
+      const start = new SetContextLink(() => context);
       const link = start.split(
         (operation) => operation.context.test,
         (operation) => Observable.of({data: 1}),
@@ -695,7 +697,7 @@ describe('Link static library', () => {
 
     it('should return an empty observable when a split link returns null', (done) => {
       let context = { test: true };
-      const link = new SetContextLink(context).split(
+      const link = new SetContextLink(() => context).split(
         (op) => op.context.test,
         () => Observable.of(),
         () => null,

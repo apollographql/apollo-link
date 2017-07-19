@@ -15,12 +15,12 @@ class HttpLink extends ApolloLink {
 
   constructor(uri){
     super();
-    this.uri = uri;
+    this.apolloFetch = createApolloFetch({ uri });
   }
 
-  public request(operation) {
+  request(operation) {
     return new Observable(observer => {
-      fetch(uri).then(data => {
+      this.apolloFetch(operation).then(data => {
         observer.next(data);
         observer.complete();
       }).catch(observer.error);
@@ -57,7 +57,7 @@ The Link's `request` method takes an additional parameter, `forward` that passes
 ```js
 class LoggingLink extends ApolloLink {
 
-  public request(operation: Operation, forward: NextLink): Observable<FetchResult> {
+  request(operation, forward) {
     console.log(`Operation: ${operation}`);
 
     const observableResults = forward(operation);
@@ -146,13 +146,25 @@ ApolloLink.split(
 ### Links as Functions
 
 When using `from`, `concat`, or `split`, a Link can be made into a function if a stateless Link is possible.
-For example,
+For example an http link can be implemented as a stateless link and included in a composition:
 
 ```js
+const uri = 'http://api.githunt.com/graphql'
+const apolloFetch = createApolloFetch({ uri });
+
+const http = (operation) => new Observable(observer => {
+  this.apolloFetch(operation)
+    .then(data => {
+      observer.next(data);
+      observer.complete();
+    })
+    .catch(observer.error);
+});
+
 ApolloLink.from([
   (operation, forward) => forward(operation) //passthrough
-  new LoggingLink,
-  (operation) => Observable.of({data: 1})
+  new LoggingLink(),
+  http,
 ])
 
 ## API

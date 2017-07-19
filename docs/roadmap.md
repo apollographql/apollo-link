@@ -66,6 +66,15 @@ As such, links are targeted towards the following use-cases:
   * Normalized
   * Local Storage
   * IndexDB
+  * Native iOS bridge
+
+<br>
+
+* Offline data management
+  * Local client state
+    * local mutations
+    * local queries
+  * Partial local queries
 
 If you think of more use-cases, please open a PR adding to this list and make sure to clearly explain your use-case.
 
@@ -73,34 +82,6 @@ If you think of more use-cases, please open a PR adding to this list and make su
 
 Throughout the design process, a couple questions have surfaced that may prompt conversation.
 If you want to see something here, please open a PR with your proposed change or an Issue for discussion.
-
-<!--
-### How should we pass context to `next` callback along with the query data?
-
-Should we pass the context from the response (for example relevant HTTP headers or status code) to the `next` callback of the observable like this:
-
-```js
-next({
-  data,
-  errors,
-  extensions,
-  context
-})
-```
-
-or like this:
-
-```js
-next({
-  result: {
-    data,
-    errors,
-    extensions
-  },
-  context
-})
-```
--->
 
 ### Should we include `status()` the Link interface that could contain user defined data and an enum for state?
 
@@ -115,16 +96,6 @@ enum State {
 ```
 
 If `status` exists and an `Observable` has terminated, should `subscribe` throw an error or call complete immediately, avoiding memory leaks.
-
-<!--
-### Does the subscribe method need to be overloaded? -> Yes, to make the Observable compatible
-
-Currently the `subscribe` method has two different signatures, one that takes three functions `next`, `error`, and `complete` and another that takes a `Subscriber`.
-Positional arguments are more prone to errors than passing object containing arguments.
-The three function signature is present for compatibility with GraphiQL.
-
-The suggested behavior of dealing with the overload is found in `AbstractObservable`.
--->
 
 ### Which convenience functions would you like?
 
@@ -143,32 +114,6 @@ Proposed additions include:
   * getMutation
   * getSubscription
   * annotation support?
-
-<!--
-* Observable additions as required or optional part of interface and implemented in `AbstractObservable`
-  * `map`
-  * `filter`
-  * `catch`
-  * `finally`
--->
-
-### Should GraphQL errors be propagated up the stack with `next` or `error`?
-
-Currently GraphQL errors are returned as data to `next`.
-In the case of a network error, `error` is called.
-
-<!--
-### Should Link be functions or classes with wrapped constructors? -> class due to extensions and containing state
-
-Links will be a class to provide the opportunity for extension and better describe that links can contain state.
-
-```js
-const httpLink = HttpLink({ uri: 'localhost' });
-//or
-const httpLink = new HttpLink({ uri: 'localhost' });
-const httpLink = createHttpLink({ uri: 'localhost' });
-```
--->
 
 ### Should Link include some form of synchronous adapter/behavior? What use cases warrant this?
 
