@@ -1,5 +1,7 @@
 # apollo-link [![npm version](https://badge.fury.io/js/apollo-link.svg)](https://badge.fury.io/js/apollo-link) [![Get on Slack](https://img.shields.io/badge/slack-join-orange.svg)](http://www.apollostack.com/#slack)
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/apollographql/apollo-link.svg)](https://greenkeeper.io/)
+
 
 `apollo-link` is a standard interface for fetching GraphQL results, designed to provide a simple GraphQL client that is capable of extensions.
 The targeted use cases of `apollo-link` are highlighted below:
