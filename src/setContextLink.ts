@@ -11,7 +11,7 @@ import {
 
 export default class SetContextLink extends ApolloLink {
 
-  constructor (private context?: any) {
+  constructor (private setContext: (context: Record<string, any>) => Record<string, any> = c => c) {
     super();
   }
 
@@ -19,11 +19,7 @@ export default class SetContextLink extends ApolloLink {
     if (!operation.context) {
       operation.context = {};
     }
-    operation.context = {
-      ...operation.context,
-      ...this.context,
-    };
+    operation.context = this.setContext(operation.context);
     return forward(operation);
   }
-
 }

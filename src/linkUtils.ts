@@ -8,6 +8,8 @@ import {
   FunctionLink,
 } from './link';
 
+import * as Observable from 'zen-observable';
+
 export function validateLink(link: ApolloLink): ApolloLink {
   if (link instanceof ApolloLink && typeof link.request === 'function' ) {
     return link;
@@ -48,4 +50,21 @@ export function toLink(link: ApolloLink | RequestHandler): ApolloLink {
 
 export function isTerminating(link: ApolloLink): boolean {
   return link.request.length <= 1;
+}
+
+export function makePromise<R>(observable: Observable<R>): Promise<R> {
+  let completed = false;
+  return new Promise<R>((resolve, reject) => {
+    observable.subscribe({
+      next: data => {
+        if (completed) {
+          console.warn(`Promise Wrapper does not support multiple results from Observable`);
+        } else {
+          completed = true;
+          resolve(data);
+        }
+      },
+      error: reject,
+    });
+  });
 }
