@@ -4,7 +4,7 @@ import { execute, ApolloLink } from '../src/link';
 import * as Observable from 'zen-observable';
 import MockLink from './utils/mockLink';
 import SetContextLink from '../src/setContextLink';
-import { parse } from 'graphql';
+import gql from 'graphql-tag';
 import {
   FetchResult,
   Operation,
@@ -322,13 +322,13 @@ describe('Link static library', () => {
   describe('from', () => {
 
     const uniqueOperation: Operation = {
-      query: parse(sampleQuery),
+      query: gql(sampleQuery),
       context: {name: 'uniqueName'},
       operationName: 'sampleQuery',
     };
 
     it('should create an observable that completes when passed an empty array', (done) => {
-      const observable = execute(ApolloLink.from([]), {query: parse(sampleQuery)});
+      const observable = execute(ApolloLink.from([]), {query: gql(sampleQuery)});
       observable.subscribe(
         () => assert(false, 'should not call next'),
         () => assert(false, 'should not call error'),
@@ -364,7 +364,7 @@ describe('Link static library', () => {
     it('should accept sting query and pass AST to link', (done) => {
       const astOperation = {
         ...uniqueOperation,
-        query: parse(sampleQuery),
+        query: gql(sampleQuery),
       };
 
       const operation = {
@@ -385,7 +385,7 @@ describe('Link static library', () => {
 
       const astOperation = {
         ...uniqueOperation,
-        query: parse(sampleQuery),
+        query: gql(sampleQuery),
       };
 
       const stub = sinon.stub().withArgs(astOperation).callsFake((op) => {
@@ -401,12 +401,12 @@ describe('Link static library', () => {
       const chain = ApolloLink.from([
         new MockLink((op, forward) => forward({
           ...op,
-          query: parse(sampleQuery),
+          query: gql(sampleQuery),
         })),
         new MockLink((op) => {
           assert.deepEqual(<Operation>{
             ...uniqueOperation,
-            query: parse(sampleQuery),
+            query: gql(sampleQuery),
             variables: {},
           }, op);
           return done();
