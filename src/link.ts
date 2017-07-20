@@ -14,9 +14,7 @@ import {
   validateLink,
 } from './linkUtils';
 
-import {
-  parse,
-} from 'graphql/language/parser';
+import gql from 'graphql-tag';
 
 import * as Observable from 'zen-observable';
 import {
@@ -130,7 +128,7 @@ function transformOperation(operation: GraphQLRequest): Operation {
   if (typeof operation.query === 'string') {
     transformedOperation = {
       ...operation,
-      query: parse(operation.query),
+      query: gql(operation.query),
     };
   } else {
     transformedOperation = {
