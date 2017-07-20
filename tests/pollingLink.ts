@@ -34,17 +34,21 @@ describe('PollingLink', () => {
     const spy = sinon.spy();
     const checkResults = () => {
       const calls = spy.getCalls();
-      calls.map((call, i) => assert.deepEqual(call.args[0].data, i));
+      calls.map((call, i) => assert.deepEqual(call.args[0].data.count, i));
       assert.deepEqual(calls.length, 5);
       done();
     };
 
-    const poll = new PollingLink(() => 1).concat((operation) => {
+    const poll = new PollingLink(() => 1).concat(() => {
       if (count >= 5) {
         subscription.unsubscribe();
         checkResults();
       }
-      return Observable.of({data: count++});
+      return Observable.of({
+        data: {
+          count: count++,
+        },
+      });
     });
 
     subscription = execute(poll, ({query})).subscribe({
@@ -62,18 +66,23 @@ describe('PollingLink', () => {
     const checkResults = (actualError) => {
       assert.deepEqual(error, actualError);
       const calls = spy.getCalls();
-      calls.map((call, i) => assert.deepEqual(call.args[0].data, i));
+      calls.map((call, i) => assert.deepEqual(call.args[0].data.count, i));
       assert.deepEqual(calls.length, 5);
       done();
     };
 
-    const poll = new PollingLink(() => 1).concat((operation) => {
+    const poll = new PollingLink(() => 1).concat(() => {
       if (count >= 5) {
         return new Observable(observer => {
           throw error;
         });
       }
-      return Observable.of({data: count++});
+
+      return Observable.of({
+        data: {
+          count: count++,
+        },
+      });
     });
 
     subscription = execute(poll, ({query})).subscribe({
