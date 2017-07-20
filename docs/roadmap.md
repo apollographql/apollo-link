@@ -102,7 +102,7 @@ If `status` exists and an `Observable` has terminated, should `subscribe` throw 
 The current functions provided:
 
 * ApolloLink
-  * asPromiseWrapper
+  * makePromise
 
 Proposed additions include:
 

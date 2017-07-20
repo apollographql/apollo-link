@@ -22,7 +22,7 @@ execute(link, operation).subscribe({
 })
 
 //For single execution operations, a Promise can be used
-new Promise((resolve, reject) => (execute(link, operation)).subscribe(resolve, reject))
+makePromise((execute(link, operation))
   .then(data => console.log(`received data ${data}`))
   .catch(error => console.log(`received error ${error}`))
 ```
@@ -156,12 +156,14 @@ const link = ApolloLink.from([
 ```js
 const link = ApolloLink.from([
   new RetryLink(),
-  new SetContextLink(setContext),
+  new SetContextLink(setContextHeaders),
   new HttpLink({ uri });
 ])
 ```
 
-## External API and Currently Supported Links
+`setContextHeaders` applies the authorization token to `headers` in the Operation's context.
+
+## External API
 
 ### execute
 
@@ -169,13 +171,34 @@ const link = ApolloLink.from([
 execute(
   link: ApolloLink
   operation: {
-  query: DocumentNode | string,
-  operationName?: string
-  variables?: object
-  context?: object
+    query: DocumentNode | string,
+    operationName?: string
+    variables?: Record<string, any>
+    context?: Record<string, any>
   },
-)
+) => Observable<FetchResult>
 ```
+
+### makePromise
+
+```js
+makePromise(observable) => Promise<FetchResult>
+```
+
+### FetchResult
+
+Contains `data` and `errors` that follow GraphQL's standard `ExecutionResult` and `extensions` and `context`.
+
+```js
+FetchResult {
+  data: { [key: string]: any }
+  errors: GraphQLError[]
+  extensions: Record<string, any>
+  context: Record<string, any>
+}
+```
+
+## Currently Supported Links
 
 ### HttpLink
 

@@ -3,6 +3,7 @@ import RetryLink from './retryLink';
 import PollingLink from './pollingLink';
 
 import { execute, ApolloLink } from './link';
+import { makePromise } from './linkUtils';
 
 import * as Observable from 'zen-observable';
 
@@ -19,4 +20,6 @@ export {
   RetryLink,
   PollingLink,
 
+  //Utilities
+  makePromise,
 };

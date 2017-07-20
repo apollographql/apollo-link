@@ -1,4 +1,5 @@
-# apollo-link
+# apollo-link [![npm version](https://badge.fury.io/js/apollo-link.svg)](https://badge.fury.io/js/apollo-link) [![Get on Slack](https://img.shields.io/badge/slack-join-orange.svg)](http://www.apollostack.com/#slack)
+
 
 `apollo-link` is a standard interface for fetching GraphQL results, designed to provide a simple GraphQL client that is capable of extensions.
 The targeted use cases of `apollo-link` are highlighted below:
@@ -12,9 +13,9 @@ The targeted use cases of `apollo-link` are highlighted below:
 
 To start, begin by reading the getting started [guide](docs/summary.md).
 
-If you are interested in implementing your own links, read the implementation [information](docs/implementation.md)
+If you are interested in implementing your own links, read the implementation [information](docs/implementation.md).
 
-The current plans and future implementation are in the [roadmap](docs/roadmap.md)
+The current plans and future implementation are in the [roadmap](docs/roadmap.md).
 
 Your feedback and contributions are welcome.
 

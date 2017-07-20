@@ -203,10 +203,17 @@ Operation {
 `FetchResult` is passed to the `next` callback of the `Observable`
 
 ```js
-FetchResult {
-  data: any;
-  errors?: any;
-  extensions?: any;
-  context?: Record<string, any>;
+FetchResult<C = Record<string, any>, E = Record<string, any>> = ExecutionResult & {
+  extensions?: E,
+  context?: C,
+}
+```
+
+`ExecutionResult` is a type specified by [graphql](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/354cec620daccfa0ad167ba046651fb5fef69e8a/types/graphql/execution/execute.d.ts#L33).
+
+```js
+ExecutionResult {
+    data?: { [key: string]: any },
+    errors?: Array<GraphQLError>,
 }
 ```
