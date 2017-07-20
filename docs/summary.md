@@ -6,12 +6,6 @@ Apollo Link is an extensible standard interface for modifying control flow of Gr
 
 Links can be used as a stand-alone client or with most major GraphQL clients.
 
-### Stand-alone
-
-`execute` accepts a standard GraphQL request with a query string or AST.
-`execute` returns an [Observable](https://github.com/zenparsing/zen-observable#api) that can be subscribed to.
-Links use observables to support GraphQL subscriptions and live queries, in addition to single response queries and mutations.
-
 ```js
 import {
   execute,
@@ -26,7 +20,15 @@ execute(link, operation).subscribe({
   error: error => console.log(`received error ${error}`),
   complete: () => console.log(`complete`),
 })
+
+//For single execution operations, a Promise can be used
+new Promise((resolve, reject) => (execute(link, operation)).subscribe(resolve, reject))
+  .then(data => console.log(`received data ${data}`))
+  .catch(error => console.log(`received error ${error}`))
 ```
+
+`execute` accepts a standard GraphQL request with a query string or AST and returns an [Observable](https://github.com/zenparsing/zen-observable#api) that allows subscribing.
+Links use observables to support GraphQL subscriptions, live queries, and polling, in addition to single response queries and mutations.
 
 `next` will receive GraphQL errors, while `error` be called on a network error.
 
@@ -82,7 +84,7 @@ Links can composed together to form a new link using `ApolloLink.from`.
 
 ### Retry
 
-Attempts to resend a GraphQL request when failed and fails after a certain time
+Attempts to resend a GraphQL request when a network error is received and calls error after a number of retries.
 
 ```js
 import {
@@ -108,7 +110,8 @@ const client = new ApolloClient({
 
 ### Authentication
 
-Adds authentication headers, using the context
+In this example, `SetContextLink` adds headers to the `operation`'s context property.
+`HttpLink` reads the context and adds authentication headers.
 
 ```js
 import {
@@ -135,20 +138,28 @@ const link = ApolloLink.from([
 <GraphiQL fetcher={(operation) => execute(link, operation)}/>,
 ```
 
-### Retry Authenticated Operation
-
-const link = ApolloLink.from([
-  new RetryLink(),
-  new SetContextLink(context),
-  new HttpLink({ uri });
-])
+## More Examples of Link Combinations
 
 ### Polling
 
+This combination polls requests on `pollInterval`.
+
+```js
 const link = ApolloLink.from([
   new PollingLink({ pollInterval: 5000 }),
   new HttpLink({ uri });
 ])
+```
+
+### Retrying an Authenticated Operation
+
+```js
+const link = ApolloLink.from([
+  new RetryLink(),
+  new SetContextLink(setContext),
+  new HttpLink({ uri });
+])
+```
 
 ## External API and Currently Supported Links
 
@@ -173,7 +184,9 @@ new HttpLink({ uri, fetch });
 ```
 
 * `uri` is the GraphQL endpoint, defaults to `/graphql`
-* `fetch` is a custom fetch function, defaults to `ApolloFetch`
+* `fetch(request, options)` is a custom fetch function, defaults to `ApolloFetch`
+
+`HttpLink` checks for `headers` on the context and adds them to the fetch options.
 
 ### PollingLink
 
@@ -191,7 +204,7 @@ new RetryLink({ max, delay, interval });
 
 * `max` is the maximum number of requests for an operation, defaults to 10
 * `delay` is used to calculate the time between retries, defaults to 300
-* `interval(delay, count)` calculates the time defaults to returning `delay`
+* `interval(delay, count) => number` calculates the time between retries, defaults to returning `delay`
 
 ### SetContextLink
 
@@ -200,4 +213,3 @@ new SetContextLink( setContext );
 ```
 
 * `setContext(context)` sets the context of the operation, which the next links can access
-

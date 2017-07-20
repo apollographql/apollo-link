@@ -20,10 +20,12 @@ class HttpLink extends ApolloLink {
 
   request(operation) {
     return new Observable(observer => {
-      this.apolloFetch(operation).then(data => {
-        observer.next(data);
-        observer.complete();
-      }).catch(observer.error);
+      this.apolloFetch(operation)
+        .then(data => {
+          observer.next(data);
+          observer.complete();
+        })
+        .catch(observer.error.bind(observer));
     });
   }
 }
@@ -31,7 +33,7 @@ class HttpLink extends ApolloLink {
 
 <p align="center">
   <br>
-  <img src="images/apollo-link.png" alt="Apollo Link"/>
+  <img src="../images/http-link.png" alt="Http Link"/>
 </p>
 
 ### Creating a Basic Logging Link
@@ -47,12 +49,12 @@ Link.from([
 
 <p align="center">
   <br>
-  <img src="images/logging-stack.png" alt="Polling Link"/>
+  <img src="../images/logging-stack.png" alt="Logging Stack"/>
 </p>
 
-To create the `LoggingLink`, we need a way of connecting the next Link.
-The Link's `request` method takes an additional parameter, `forward` that passes an operation to the next Link and returns the resulting Observable.
-`LoggingLink` calls `forward` after printing the operation, then prints the results with the resulting observable.
+To create the `LoggingLink`, we need a way of communicating with the next Link.
+The Link's `request` method takes an additional parameter, `forward` that passes an operation to the next Link and returns the Observable of the response.
+`LoggingLink` calls `forward` after printing the operation, then prints the results from the returned observable.
 
 ```js
 class LoggingLink extends ApolloLink {
@@ -90,7 +92,7 @@ request(operation) //terminating
 request(operation, forward) //non-terminating
 ```
 
-### Single Path - from and concat
+### Combining Links - from and concat
 
 `from` is a static method of `ApolloLink` that connects links from an array.
 
@@ -121,31 +123,30 @@ ApolloLink.from([first])
 
 ### Split Points
 
-Links may have may have split points.
+Links may have have split points.
 `ApolloLink` contains `split` as a static and instance function.
 A boolean calculated using the operation determines the direction of the split point.
-
-<p align="center">
-  <br>
-  <img src="images/split-link.png" alt="Split Link"/>
-</p>
-
-The default `right` argument is a passthrough link that will call `forward(operation)` and return an empty Observable otherwise.
-A `split` can become a filter by setting `right` to `ApolloLink.empty()`.
 
 ```js
 ApolloLink.split(
   test: (Operation) => boolean,
   left,
-  right? = ApolloLink.passthrough(),
+  right? = ApolloLink.empty(),
 );
 ```
+
+<p align="center">
+  <br>
+  <img src="../images/split-link.png" alt="Split Link"/>
+</p>
+
+`split` becomes a filter when `right` is undefined, since `empty` calls `complete` immediately.
 
 `split` will warn the user when attempting to add a Link after two terminating Links.
 
 ### Links as Functions
 
-When using `from`, `concat`, or `split`, a Link can be made into a function if a stateless Link is possible.
+When using `from`, `concat`, or `split`, a Link be a function if it can be stateless.
 For example an http link can be implemented as a stateless link and included in a composition:
 
 ```js
@@ -166,6 +167,7 @@ ApolloLink.from([
   new LoggingLink(),
   http,
 ])
+```
 
 ## API
 
@@ -176,6 +178,7 @@ abstract class ApolloLink {
   static split: (test: (Operation) => boolean, left: ApolloLink, right: ApolloLink) => ApolloLink
   static from: (links: ApolloLink[]) => ApolloLink
   static empty: () => ApolloLink
+  static passthrough: () => ApolloLink
 
   split: (test: (Operation) => boolean, left: ApolloLink, right: ApolloLink) => ApolloLink
   concat: (next: ApolloLink) => ApolloLink
@@ -192,8 +195,8 @@ An `Operation` contains the GraphQL AST and other standard parameters for a Grap
 Operation {
   query?: DocumentNode,
   operationName?: string,
-  variables?: object,
-  context?: object,
+  variables?: Record<string, any>,
+  context?: Record<string, any>,
 }
 ```
 
@@ -201,10 +204,9 @@ Operation {
 
 ```js
 FetchResult {
-  data?: object,
-  errors?: object[],
-  extensions?: any,
-  context?:object,
+  data: any;
+  errors?: any;
+  extensions?: any;
+  context?: Record<string, any>;
 }
 ```
-
