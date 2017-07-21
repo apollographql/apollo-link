@@ -11,6 +11,13 @@ The targeted use cases of `apollo-link` are highlighted below:
 * network interface for Relay Modern
 * fetcher for GraphiQL
 
+## Installation
+
+`npm install apollo-link --save`
+
+To use apollo-link in a web browser or mobile app, you'll need a build system capable of loading NPM packages on the client.
+Some common choices include Browserify, Webpack, and Meteor +1.3.
+
 ## Documentation
 
 To start, begin by reading the getting started [guide](docs/summary.md).
