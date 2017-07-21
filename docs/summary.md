@@ -35,6 +35,7 @@ Links use observables to support GraphQL subscriptions, live queries, and pollin
 ### Apollo Client
 
 Links can be used as a replacement for the current network interface.
+To use links, update to the latest Apollo Client with `npm i --save apollo-client@latest`
 
 ```js
 import {
