@@ -13,8 +13,14 @@ notifications:
   email: false
 
 before_install:
-  - npm prune
-  - npm install -g coveralls
+  - npm install -g coveralls lerna
+  - lerna run -- prune
+
+install:
+  - lerna bootstrap
+
+script:
+  - npm test
 
 after_success:
   - npm run coverage
