@@ -6,7 +6,7 @@
     "test": "lerna run -- test",
     "lint-fix": "prettier --trailing-comma all --single-quote --write \"packages/*/{src,tests,benchmark}/**/*.{j,t}s*\"",
     "lint-staged": "lint-staged",
-    "coverage": "nyc --reporter=lcov lerna run -- coverage:test"
+    "coverage": "nyc --reporter=lcov lerna run -- test-only -- --reporter dot"
   },
   "lint-staged": {
     "*.ts*": [
@@ -17,7 +17,7 @@
   },
   "pre-commit": "lint-staged",
   "nyc": {
-    "exclude": ["**/tests"]
+    "exclude": ["**/tests", "**/lib/**"]
   },
   "//": {
     "//": "lerna run <script name>",
@@ -27,7 +27,6 @@
       "posttest",
       "test-only",
       "test-watch",
-      "coverage:test",
       "coverage",
       "lint",
       "prebuild",
