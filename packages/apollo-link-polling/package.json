@@ -1,6 +1,6 @@
 {
-  "name": "set-context-link",
-  "version": "0.0.1",
+  "name": "apollo-link-polling",
+  "version": "0.0.0",
   "description": "HTTP transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -38,7 +38,7 @@
     "prepublishOnly": "npm run clean && npm run build"
   },
   "dependencies": {
-    "apollo-link": "0.0.3"
+    "apollo-link": "^0.0.3"
   },
   "devDependencies": {
     "@types/chai": "^4.0.0",

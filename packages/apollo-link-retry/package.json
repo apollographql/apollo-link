@@ -1,6 +1,6 @@
 {
-  "name": "http-link",
-  "version": "0.0.1",
+  "name": "apollo-link-retry",
+  "version": "0.0.0",
   "description": "HTTP transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -38,18 +38,18 @@
     "prepublishOnly": "npm run clean && npm run build"
   },
   "dependencies": {
-    "apollo-fetch": "^0.3.0",
-    "apollo-link": "0.0.3",
-    "graphql": "^0.10.5"
+    "apollo-link": "^0.0.3"
   },
   "devDependencies": {
     "@types/chai": "^4.0.0",
     "@types/chai-as-promised": "0.0.31",
     "@types/mocha": "^2.2.31",
     "@types/sinon": "^2.3.2",
+    "@types/zen-observable": "^0.5.1",
     "chai": "^4.0.2",
     "chai-as-promised": "^7.0.0",
     "fetch-mock": "^5.11.0",
+    "graphql": "^0.10.5",
     "graphql-tag": "^2.2.2",
     "istanbul": "^0.4.4",
     "lodash": "^4.17.4",
@@ -60,9 +60,5 @@
     "source-map-support": "^0.4.5",
     "tslint": "^5.0.0",
     "typescript": "^2.2.1"
-  },
-  "optionalDependencies": {
-    "@types/graphql": "^0.10.0",
-    "@types/zen-observable": "^0.5.1"
   }
 }
