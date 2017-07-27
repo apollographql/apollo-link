@@ -1,8 +1,12 @@
-import { execute, ApolloLink } from './link';
-export { makePromise } from './linkUtils';
-export * from './types';
+import ApolloLink from 'apollo-link-core';
 
-import * as Observable from 'zen-observable';
+import HttpLink from 'apollo-link-http';
+import RetryLink from 'apollo-link-retry';
+import SetContextLink from 'apollo-link-set-context';
+import PollingLink from 'apollo-link-polling';
+
+export * from 'apollo-link-core';
+
+export { HttpLink, RetryLink, SetContextLink, PollingLink };
 
 export default ApolloLink;
-export { Observable, ApolloLink, execute };
