@@ -166,9 +166,25 @@ const link = ApolloLink.from([
 
 ## External API
 
+`apollo-link` is a helper package that exports all Apollo Links currently available.
+The core of `apollo-link`, `execute`, `ApolloLink`, and `makePromise` is in the `apollo-link-core` package.
+Each individual link is in a contained in separate package.
+
+### ApolloLink
+
+```js
+import { ApolloLink } from 'apollo-link-core';
+
+class NewLink extends ApolloLink { ... }
+ApolloLink.from([ ... ])
+ApolloLink.split( ... )
+```
+
 ### execute
 
 ```js
+import { execute } from 'apollo-link-core';
+
 execute(
   link: ApolloLink
   operation: {
@@ -183,6 +199,8 @@ execute(
 ### makePromise
 
 ```js
+import { makePromise } from 'apollo-link-core';
+
 makePromise(observable) => Promise<FetchResult>
 ```
 
@@ -191,6 +209,8 @@ makePromise(observable) => Promise<FetchResult>
 Contains `data` and `errors` that follow GraphQL's standard `ExecutionResult` and `extensions` and `context`.
 
 ```js
+import { FetchResult } from 'apollo-link-core';
+
 FetchResult {
   data: { [key: string]: any }
   errors: GraphQLError[]
@@ -204,6 +224,8 @@ FetchResult {
 ### HttpLink
 
 ```js
+import HttpLink from 'apollo-link-http';
+
 new HttpLink({ uri, fetch });
 ```
 
@@ -215,6 +237,8 @@ new HttpLink({ uri, fetch });
 ### PollingLink
 
 ```js
+import PollingLink from 'apollo-link-polling';
+
 new PollingLink({ interval });
 ```
 
@@ -223,6 +247,8 @@ new PollingLink({ interval });
 ### RetryLink
 
 ```js
+import RetryLink from 'apollo-link-retry';
+
 new RetryLink({ max, delay, interval });
 ```
 
@@ -233,6 +259,8 @@ new RetryLink({ max, delay, interval });
 ### SetContextLink
 
 ```js
+import SetContextLink from 'apollo-link-set-context';
+
 new SetContextLink( setContext );
 ```
 
