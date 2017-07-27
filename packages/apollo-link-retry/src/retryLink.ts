@@ -4,7 +4,7 @@ import {
   Operation,
   NextLink,
   FetchResult,
-} from 'apollo-link';
+} from 'apollo-link-core';
 
 export default class RetryLink extends ApolloLink {
   private count: number = 0;
