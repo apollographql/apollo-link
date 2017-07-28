@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import * as LinkUtils from '../src/linkUtils';
-import * as Observable from 'zen-observable';
+import * as Observable from 'zen-observable-exported';
 
 describe('Link utilities:', () => {
   describe('validateOperation', () => {

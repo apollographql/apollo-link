@@ -1,6 +1,6 @@
 import { Operation, RequestHandler, NextLink, FetchResult } from '../types';
 
-import * as Observable from 'zen-observable';
+import * as Observable from 'zen-observable-exported';
 
 import { ApolloLink } from '../link';
 
