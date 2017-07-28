@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import { execute, ApolloLink } from '../src/link';
-import * as Observable from 'zen-observable';
+import * as Observable from 'zen-observable-exported';
 import { MockLink, SetContextLink } from '../src/test-utils';
 import gql from 'graphql-tag';
 import { FetchResult, Operation } from '../src/types';

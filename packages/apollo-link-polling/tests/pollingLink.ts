@@ -2,7 +2,7 @@ import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 
 import PollingLink from '../src/pollingLink';
-import { execute, Observable } from 'apollo-link';
+import { execute, Observable } from 'apollo-link-core';
 
 import gql from 'graphql-tag';
 

@@ -1,6 +1,6 @@
 {
   "name": "apollo-link",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "Flexible, lightweight transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -39,9 +39,11 @@
     "prepublishOnly": "npm run clean && npm run build"
   },
   "dependencies": {
-    "graphql": "^0.10.3",
-    "graphql-tag": "^2.4.2",
-    "zen-observable": "git+https://github.com/evanshauser/zen-observable.git"
+    "apollo-link-core": "^0.1.0",
+    "apollo-link-http": "^0.1.0",
+    "apollo-link-polling": "^0.1.0",
+    "apollo-link-retry": "^0.1.0",
+    "apollo-link-set-context": "^0.1.0"
   },
   "devDependencies": {
     "@types/chai": "^4.0.0",
@@ -60,9 +62,5 @@
     "source-map-support": "^0.4.5",
     "tslint": "^5.0.0",
     "typescript": "^2.2.1"
-  },
-  "optionalDependencies": {
-    "@types/graphql": "^0.10.0",
-    "@types/zen-observable": "^0.5.1"
   }
 }

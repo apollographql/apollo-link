@@ -2,8 +2,8 @@ import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import HttpLink from '../src/httpLink';
 
-import * as Links from 'apollo-link';
-import { ApolloLink, execute } from 'apollo-link';
+import * as Links from 'apollo-link-core';
+import { ApolloLink, execute } from 'apollo-link-core';
 
 import { createApolloFetch } from 'apollo-fetch';
 
