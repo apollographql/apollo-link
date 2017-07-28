@@ -1,4 +1,4 @@
-import * as Observable from 'zen-observable';
+import * as Observable from 'zen-observable-exported';
 import { ExecutionResult, DocumentNode } from 'graphql';
 
 export interface GraphQLRequest {
