@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-set-context",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "HTTP transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -39,7 +39,7 @@
     "prepublishOnly": "npm run clean && npm run build"
   },
   "dependencies": {
-    "apollo-link-core": "^0.0.0"
+    "apollo-link-core": "^0.1.0"
   },
   "devDependencies": {
     "@types/chai": "^4.0.0",

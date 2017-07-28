@@ -1,7 +1,7 @@
 {
-  "name": "apollo-link-polling",
+  "name": "apollo-link-ws",
   "version": "0.1.0",
-  "description": "HTTP transport layer for GraphQL",
+  "description": "WebSocket transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
     "James Baxley <james@meteor.com>",
@@ -10,8 +10,8 @@
     "Sashko Stubailo <sashko@stubailo.com>"
   ],
   "license": "MIT",
-  "main": "./lib/pollingLink.js",
-  "typings": "./lib/pollingLink.d.ts",
+  "main": "./lib/httpLink.js",
+  "typings": "./lib/httpLink.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-link.git"
@@ -39,18 +39,18 @@
     "prepublishOnly": "npm run clean && npm run build"
   },
   "dependencies": {
-    "apollo-link-core": "^0.1.0"
+    "apollo-link-core": "^0.1.0",
+    "graphql": "^0.10.5",
+    "subscriptions-transport-ws": "^0.8.1"
   },
   "devDependencies": {
     "@types/chai": "^4.0.0",
     "@types/chai-as-promised": "0.0.31",
     "@types/mocha": "^2.2.31",
     "@types/sinon": "^2.3.2",
-    "@types/zen-observable": "^0.5.1",
     "chai": "^4.0.2",
     "chai-as-promised": "^7.0.0",
     "fetch-mock": "^5.11.0",
-    "graphql": "^0.10.5",
     "graphql-tag": "^2.2.2",
     "istanbul": "^0.4.4",
     "lodash": "^4.17.4",
@@ -61,5 +61,9 @@
     "source-map-support": "^0.4.5",
     "tslint": "^5.0.0",
     "typescript": "^2.2.1"
+  },
+  "optionalDependencies": {
+    "@types/graphql": "^0.10.0",
+    "@types/zen-observable": "^0.5.1"
   }
 }
