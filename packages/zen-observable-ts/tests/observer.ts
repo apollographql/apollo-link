@@ -56,6 +56,23 @@ describe('observer', () => {
       .then(() => assert(spy.called));
   });
 
+  it('throws on non function Observer', () => {
+    assert.throws(() => new Observable<number>(<any>1));
+  });
+
+  it('completes after error', () => {
+    const error = new Error('completed');
+    return new Promise((resolve, reject) =>
+      new Observable<number>(observer => {
+        observer.complete();
+      }).subscribe({
+        complete: () => {
+          reject(error);
+        },
+      }),
+    ).catch(err => assert.deepEqual(err, error));
+  });
+
   it('calling without options does not throw', () => {
     new Observable<number>(observer => {
       observer.next(1);

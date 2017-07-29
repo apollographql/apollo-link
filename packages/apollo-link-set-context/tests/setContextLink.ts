@@ -4,7 +4,7 @@ import * as sinon from 'sinon';
 import SetContextLink from '../src/setContextLink';
 import gql from 'graphql-tag';
 
-import { ApolloLink, execute } from 'apollo-link-core';
+import { ApolloLink, execute, Operation } from 'apollo-link-core';
 
 const query = gql`
   query SampleQuery {
@@ -27,6 +27,7 @@ describe('SetContextLink', () => {
     const context = new SetContextLink();
     execute(
       ApolloLink.from([
+        (operation, forward) => forward(<Operation>{}),
         context,
         operation => {
           assert.property(operation, 'context');
