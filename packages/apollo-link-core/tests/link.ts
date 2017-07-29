@@ -1,10 +1,10 @@
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import { execute, ApolloLink } from '../src/link';
-import * as Observable from 'zen-observable-exported';
+import Observable from 'zen-observable-ts';
 import { MockLink, SetContextLink } from '../src/test-utils';
 import gql from 'graphql-tag';
-import { FetchResult, Operation } from '../src/types';
+import { FetchResult, Operation, NextLink } from '../src/types';
 
 import { testLinkResults } from '../src/test-utils';
 
@@ -523,7 +523,7 @@ describe('Link static library', () => {
     });
 
     it('should chain together a function with links', done => {
-      const add1 = (operation, forward) => {
+      const add1 = (operation: Operation, forward: NextLink) => {
         operation.context.num++;
         return forward(operation);
       };
@@ -704,7 +704,7 @@ describe('Link static library', () => {
   });
 
   describe('execute', () => {
-    let _warn;
+    let _warn: (message?: any, ...originalParams: any[]) => void;
 
     before(() => {
       _warn = console.warn;

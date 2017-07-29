@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import * as LinkUtils from '../src/linkUtils';
-import * as Observable from 'zen-observable-exported';
+import Observable from 'zen-observable-ts';
 
 describe('Link utilities:', () => {
   describe('validateOperation', () => {
@@ -50,7 +50,7 @@ describe('Link utilities:', () => {
 
     describe('warnings', () => {
       const spy = sinon.stub();
-      let _warn;
+      let _warn: (message?: any, ...originalParams: any[]) => void;
 
       before(() => {
         _warn = console.warn;

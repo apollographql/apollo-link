@@ -16,7 +16,7 @@ import {
 
 import gql from 'graphql-tag';
 
-import * as Observable from 'zen-observable-exported';
+import Observable from 'zen-observable-ts';
 import {
   DocumentNode,
   DefinitionNode,

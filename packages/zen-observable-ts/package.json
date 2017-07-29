@@ -1,17 +1,12 @@
 {
-  "name": "apollo-link-core",
-  "version": "0.1.1",
-  "description": "Flexible, lightweight transport layer for GraphQL",
+  "name": "zen-observable-ts",
+  "version": "0.0.0",
+  "description": "An Implementation of ES Observables in Typescript",
   "author": "Evans Hauser <evanshauser@gmail.com>",
-  "contributors": [
-    "James Baxley <james@meteor.com>",
-    "Jonas Helfer <jonas@helfer.email>",
-    "jon wong <j@jnwng.com>",
-    "Sashko Stubailo <sashko@stubailo.com>"
-  ],
+  "contributors": [],
   "license": "MIT",
-  "main": "./lib/index.js",
-  "typings": "./lib/index.d.ts",
+  "main": "./lib/zenObservable.js",
+  "typings": "./lib/zenObservable.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-link.git"
@@ -19,7 +14,7 @@
   "bugs": {
     "url": "https://github.com/apollographql/apollo-link/issues"
   },
-  "homepage": "https://github.com/apollographql/apollo-link#readme",
+  "homepage": "https://github.com/zenparsing/zen-observable",
   "scripts": {
     "pretest": "npm run build",
     "test": "npm run test-only --",
@@ -38,21 +33,13 @@
     "clean:coverage": "rimraf coverage/*",
     "prepublishOnly": "npm run clean && npm run build"
   },
-  "dependencies": {
-    "graphql": "^0.10.3",
-    "graphql-tag": "^2.4.2",
-    "zen-observable-ts": "^0.0.0"
-  },
   "devDependencies": {
     "@types/chai": "^4.0.0",
     "@types/chai-as-promised": "0.0.31",
     "@types/mocha": "^2.2.31",
-    "@types/sinon": "^2.3.2",
+    "@types/zen-observable": "^0.5.1",
     "chai": "^4.0.2",
-    "chai-as-promised": "^7.0.0",
-    "fetch-mock": "^5.11.0",
     "istanbul": "^0.4.4",
-    "lodash": "^4.17.4",
     "mocha": "^3.2.0",
     "remap-istanbul": "^0.9.0",
     "rimraf": "^2.5.4",
@@ -60,9 +47,5 @@
     "source-map-support": "^0.4.5",
     "tslint": "^5.0.0",
     "typescript": "^2.2.1"
-  },
-  "optionalDependencies": {
-    "@types/graphql": "~0.9.0",
-    "@types/zen-observable": "^0.5.1"
   }
 }

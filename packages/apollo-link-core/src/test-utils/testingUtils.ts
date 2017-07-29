@@ -10,13 +10,16 @@ query SampleQuery {
 }
 `;
 
-export function checkCalls(calls, results) {
+export function checkCalls<T>(
+  calls: Array<sinon.SinonSpyCall>,
+  results: Array<T>,
+) {
   assert.deepEqual(calls.length, results.length);
   calls.map((call, i) => assert.deepEqual(call.args[0].data, results[i]));
 }
 
 export interface TestResultType {
-  link;
+  link: Links.ApolloLink;
   results?: any[];
   query?: string;
   done?: () => void;
