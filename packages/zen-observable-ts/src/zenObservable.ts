@@ -257,16 +257,19 @@ export default class Observable<T> {
   }
 
   public subscribe(
-    observerOrNext: ZenObservable.Observer<T>,
+    observerOrNext: ((value: T) => void) | ZenObservable.Observer<T>,
     error?: (error: any) => void,
     complete?: () => void,
   ): ZenObservable.Subscription {
     if (typeof observerOrNext === 'function') {
-      observerOrNext = {
-        next: observerOrNext,
-        error,
-        complete,
-      };
+      return new Subscription(
+        {
+          next: observerOrNext,
+          error,
+          complete,
+        },
+        this._subscriber,
+      );
     }
 
     return new Subscription(observerOrNext, this._subscriber);
@@ -278,34 +281,36 @@ export default class Observable<T> {
         return Promise.reject(new TypeError(fn + ' is not a function'));
       }
 
-      this.subscribe({
-        start(subscription) {
-          if (Object(subscription) !== subscription) {
-            throw new TypeError(subscription + ' is not an object');
-          }
+      this.subscribe(
+        <ZenObservable.Observer<T>>{
+          start(subscription: ZenObservable.Subscription) {
+            if (Object(subscription) !== subscription) {
+              throw new TypeError(subscription + ' is not an object');
+            }
 
-          this._subscription = subscription;
+            this._subscription = subscription;
+          },
+
+          next(value: T) {
+            let subscription = this._subscription;
+
+            if (subscription.closed) {
+              return;
+            }
+
+            try {
+              fn(value);
+              return;
+            } catch (err) {
+              reject(err);
+              subscription.unsubscribe();
+            }
+          },
+
+          error: reject,
+          complete: resolve,
         },
-
-        next(value) {
-          let subscription = this._subscription;
-
-          if (subscription.closed) {
-            return;
-          }
-
-          try {
-            fn(value);
-            return;
-          } catch (err) {
-            reject(err);
-            subscription.unsubscribe();
-          }
-        },
-
-        error: reject,
-        complete: resolve,
-      });
+      );
     });
   }
 
@@ -331,7 +336,7 @@ export default class Observable<T> {
 
           observer.next(_value);
         },
-        error(e) {
+        error(e: any) {
           observer.error(e);
         },
         complete() {
@@ -348,7 +353,7 @@ export default class Observable<T> {
 
     return new Observable(observer => {
       this.subscribe({
-        next(value) {
+        next(value: T) {
           if (observer.closed) {
             return;
           }
@@ -367,7 +372,7 @@ export default class Observable<T> {
           observer.next(value);
         },
 
-        error(e) {
+        error(e: any) {
           observer.error(e);
         },
         complete() {
@@ -390,9 +395,9 @@ export default class Observable<T> {
     let seed = arguments[1];
     let acc = seed;
 
-    return new Observable(observer => {
+    return new Observable<R | T>(observer => {
       this.subscribe({
-        next(value) {
+        next(value: R | T) {
           if (observer.closed) {
             return;
           }
@@ -402,7 +407,7 @@ export default class Observable<T> {
 
           if (!first || hasSeed) {
             try {
-              acc = fn(acc, value);
+              acc = fn(acc, <T>value);
             } catch (e) {
               observer.error(e);
               return;
@@ -412,7 +417,7 @@ export default class Observable<T> {
           }
         },
 
-        error(e) {
+        error(e: any) {
           observer.error(e);
         },
 
@@ -442,7 +447,7 @@ export default class Observable<T> {
 
       // Subscribe to the outer Observable
       let outer = this.subscribe({
-        next(value) {
+        next(value: T) {
           let _value: ZenObservable.ObservableLike<R>;
           if (fn) {
             try {
@@ -455,10 +460,10 @@ export default class Observable<T> {
 
           // Subscribe to the inner Observable
           Observable.from(_value).subscribe({
-            start(s) {
+            start(s: ZenObservable.Subscription) {
               subscriptions.push((this._subscription = s));
             },
-            next(data) {
+            next(data: R) {
               observer.next(data);
             },
             error(e) {
