@@ -2,7 +2,7 @@ import { GraphQLRequest, RequestHandler } from './types';
 
 import { ApolloLink, FunctionLink } from './link';
 
-import * as Observable from 'zen-observable-exported';
+import Observable from 'zen-observable-ts';
 
 export function validateLink(link: ApolloLink): ApolloLink {
   if (link instanceof ApolloLink && typeof link.request === 'function') {
