@@ -24,6 +24,22 @@ describe('filter ', () => {
     );
   });
 
+  it('throws on error inside function', done => {
+    const error = new Error('thrown');
+    return assert.doesNotThrow(() =>
+      Observable.from([1, 2, 3, 4])
+        .filter(() => {
+          throw error;
+        })
+        .subscribe({
+          error: err => {
+            assert.equal(err, error);
+            done();
+          },
+        }),
+    );
+  });
+
   it('does not throw on closed subscription', () => {
     const list: Array<number> = [];
     const obs = Observable.from([1, 2, 3, 4]);

@@ -43,6 +43,25 @@ describe('ApolloLink(abstract class)', () => {
       });
     });
 
+    it("should pass error to observable's error", done => {
+      const error = new Error('thrown');
+      const returnOne = new SetContextLink(setContext);
+      const mock = new MockLink(
+        op =>
+          new Observable(observer => {
+            observer.next({ data: op.context.add });
+            observer.error(error);
+          }),
+      );
+      const link = returnOne.concat(mock);
+
+      testLinkResults({
+        link,
+        results: [1, error],
+        done,
+      });
+    });
+
     it('should concat a Link and function', done => {
       const returnOne = new SetContextLink(setContext);
       const mock = new MockLink((op, forward) => {

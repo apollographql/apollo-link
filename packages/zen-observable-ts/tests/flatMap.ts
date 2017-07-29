@@ -37,6 +37,22 @@ describe('flatMap', () => {
     );
   });
 
+  it('throws on error inside function', done => {
+    const error = new Error('thrown');
+    return assert.doesNotThrow(() =>
+      Observable.from([1, 2, 3, 4])
+        .flatMap(() => {
+          throw error;
+        })
+        .subscribe({
+          error: err => {
+            assert.equal(err, error);
+            done();
+          },
+        }),
+    );
+  });
+
   it('calls inner unsubscribe', done => {
     Observable.from(Observable.of(1))
       .flatMap(x => {

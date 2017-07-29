@@ -284,10 +284,6 @@ export default class Observable<T> {
       this.subscribe(
         <ZenObservable.Observer<T>>{
           start(subscription: ZenObservable.Subscription) {
-            if (Object(subscription) !== subscription) {
-              throw new TypeError(subscription + ' is not an object');
-            }
-
             this._subscription = subscription;
           },
 
