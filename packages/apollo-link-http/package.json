@@ -39,7 +39,7 @@
     "prepublishOnly": "npm run clean && npm run build"
   },
   "dependencies": {
-    "apollo-fetch": "^0.3.0",
+    "apollo-fetch": "^0.6.0",
     "apollo-link-core": "^0.1.1",
     "graphql": "^0.10.5"
   },
