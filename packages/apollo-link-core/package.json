@@ -41,7 +41,7 @@
   "dependencies": {
     "graphql": "^0.10.3",
     "graphql-tag": "^2.4.2",
-    "zen-observable-ts": "^0.0.0"
+    "zen-observable-ts": "^0.1.0"
   },
   "devDependencies": {
     "@types/chai": "^4.0.0",
