@@ -12,6 +12,7 @@ export interface Operation {
   variables?: Record<string, any>;
   operationName?: string;
   context?: Record<string, any>;
+  operationType?: string;
 }
 
 export type FetchResult<
