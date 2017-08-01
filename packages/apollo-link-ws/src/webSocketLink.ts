@@ -13,20 +13,26 @@ export type WebSocketParams = {
   uri: string;
   options?: ClientOptions;
   webSocketImpl?: any;
-  client?: SubscriptionClient;
 };
 
 /** Transforms Operation for into HTTP results.
  * context can include the headers property, which will be passed to the fetch function
  */
-export default class WSLink extends ApolloLink {
+export default class WebSocketLink extends ApolloLink {
   private subscriptionClient: SubscriptionClient;
 
-  constructor({ uri, options, webSocketImpl, client }: WebSocketParams) {
+  constructor(paramsOrClient: WebSocketParams | SubscriptionClient) {
     super();
 
-    this.subscriptionClient =
-      client || new SubscriptionClient(uri, options, webSocketImpl);
+    if (paramsOrClient instanceof SubscriptionClient) {
+      this.subscriptionClient = paramsOrClient;
+    } else {
+      this.subscriptionClient = new SubscriptionClient(
+        paramsOrClient.uri,
+        paramsOrClient.options,
+        paramsOrClient.webSocketImpl,
+      );
+    }
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
@@ -35,7 +41,7 @@ export default class WSLink extends ApolloLink {
         const id = this.subscriptionClient.subscribe(
           {
             ...operation,
-            query: print(operation),
+            query: print(operation.query),
           },
           (error, result) => {
             observer.next({
@@ -54,7 +60,7 @@ export default class WSLink extends ApolloLink {
         this.subscriptionClient
           .query({
             ...operation,
-            query: print(operation),
+            query: print(operation.query),
           })
           .then(data => {
             if (!observer.closed) {
