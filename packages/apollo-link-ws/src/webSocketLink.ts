@@ -36,44 +36,9 @@ export default class WebSocketLink extends ApolloLink {
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
-    if (operation.operationType && operation.operationType === 'subscription') {
-      return new Observable(observer => {
-        const id = this.subscriptionClient.subscribe(
-          {
-            ...operation,
-            query: print(operation.query),
-          },
-          (error, result) => {
-            observer.next({
-              data: result,
-              errors: error,
-            });
-          },
-        );
-
-        return () => {
-          this.subscriptionClient.unsubscribe(id);
-        };
-      });
-    } else {
-      return new Observable(observer => {
-        this.subscriptionClient
-          .query({
-            ...operation,
-            query: print(operation.query),
-          })
-          .then(data => {
-            if (!observer.closed) {
-              observer.next(data);
-              observer.complete();
-            }
-          })
-          .catch(error => {
-            if (!observer.closed) {
-              observer.error(error);
-            }
-          });
-      });
-    }
+    return this.subscriptionClient.request({
+      ...operation,
+      query: print(operation.query),
+    }) as Observable<FetchResult>;
   }
 }

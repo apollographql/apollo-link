@@ -7,6 +7,8 @@ import {
   SubscriptionClient,
   OperationOptions,
 } from 'subscriptions-transport-ws';
+import { Observable } from 'apollo-link-core';
+import { ExecutionResult } from 'graphql';
 
 // import * as infuse from 'infuse.js';
 // class MockSubscriptionClient {
@@ -46,7 +48,7 @@ const mutation = `
   }
 `;
 
-const subscripiton = `
+const subscription = `
   subscription SampleSubscription {
     stub {
       id
@@ -82,81 +84,53 @@ describe('WebSocketLink', () => {
   //   assert(link.constructorStub.called);
   // });
 
-  it('should call query on the client for a query', done => {
+  it('should call request on the client for a query', done => {
     const result = { data: { data: 'result' } };
     const client: any = {};
+    const observable = Observable.of(result);
     client.__proto__ = SubscriptionClient.prototype;
-    client.query = sinon
-      .stub()
-      .returns(new Promise(resolve => resolve(result)));
+    client.request = sinon.stub().returns(observable);
     const link = new WebSocketLink(client);
 
-    execute(link, { query }).subscribe(data => {
+    const obs = execute(link, { query });
+    assert.deepEqual(obs, observable);
+    obs.subscribe(data => {
       assert.equal(data, result);
       assert(client.query.calledOnce);
       done();
-    });
-  });
-
-  it("should call Observable's error when query promise fails", () => {
-    const error = new Error('message');
-    const client: any = {};
-    client.__proto__ = SubscriptionClient.prototype;
-    client.query = sinon
-      .stub()
-      .returns(new Promise((resolve, reject) => reject(error)));
-    const link = new WebSocketLink(client);
-
-    return new Promise((resolve, reject) => {
-      execute(link, { query }).subscribe({
-        next: reject,
-        error: err => {
-          assert.equal(err, error);
-          assert(client.query.calledOnce);
-          resolve();
-        },
-        complete: reject,
-      });
     });
   });
 
   it('should call query on the client for a mutation', done => {
     const result = { data: { data: 'result' } };
     const client: any = {};
+    const observable = Observable.of(result);
     client.__proto__ = SubscriptionClient.prototype;
-    client.query = sinon
-      .stub()
-      .returns(new Promise(resolve => resolve(result)));
+    client.request = sinon.stub().returns(observable);
     const link = new WebSocketLink(client);
 
-    execute(link, { query: mutation }).subscribe(data => {
+    const obs = execute(link, { query: mutation });
+    assert.deepEqual(obs, observable);
+    obs.subscribe(data => {
       assert.equal(data, result);
       assert(client.query.calledOnce);
       done();
     });
   });
 
-  it('should call subscribe on the subscriptions client', done => {
+  it('should call request on the subscriptions client for subscription', done => {
     const result = { data: { data: 'result' } };
     const client: any = {};
+    const observable = Observable.of(result);
     client.__proto__ = SubscriptionClient.prototype;
-    client.subscribe = sinon
-      .stub()
-      .callsFake(
-        (
-          operation: OperationOptions,
-          handle: (error: Error[], result?: any) => void,
-        ) => {
-          setTimeout(() => handle([], result), 1);
-          return 'id';
-        },
-      );
-
+    client.request = sinon.stub().returns(observable);
     const link = new WebSocketLink(client);
 
-    execute(link, { query: subscripiton }).subscribe(data => {
-      assert.equal(data.data, result);
-      assert(client.subscribe.calledOnce);
+    const obs = execute(link, { query: mutation });
+    assert.deepEqual(obs, observable);
+    obs.subscribe(data => {
+      assert.equal(data, result);
+      assert(client.query.calledOnce);
       done();
     });
   });
@@ -168,46 +142,22 @@ describe('WebSocketLink', () => {
     ];
     const client: any = {};
     client.__proto__ = SubscriptionClient.prototype;
-    client.subscribe = sinon
-      .stub()
-      .callsFake(
-        (
-          operation: OperationOptions,
-          handle: (error: Error[], result?: any) => void,
-        ) => {
-          const copy = [...results];
-          setTimeout(() => {
-            handle([], copy[0]);
-            setTimeout(() => handle([], copy[1]), 1);
-          }, 1);
-          return 'id';
-        },
-      );
+    client.subscribe = sinon.stub().callsFake(() => {
+      const copy = [...results];
+      return new Observable<ExecutionResult>(observer => {
+        observer.next(copy[0]);
+        observer.next(copy[1]);
+      });
+    });
 
     const link = new WebSocketLink(client);
 
-    execute(link, { query: subscripiton }).subscribe(data => {
+    execute(link, { query: subscription }).subscribe(data => {
       assert(client.subscribe.calledOnce);
       assert.equal(data.data, results.shift());
       if (results.length === 0) {
         done();
       }
     });
-  });
-
-  it('should call unsubscribe on the client with the correct id', done => {
-    const client: any = {};
-    client.__proto__ = SubscriptionClient.prototype;
-    client.subscribe = sinon.stub().returns('id');
-
-    client.unsubscribe = sinon.stub().callsFake((id: string) => {
-      assert(client.subscribe.calledOnce);
-      assert.equal(id, 'id');
-      done();
-    });
-
-    const link = new WebSocketLink(client);
-
-    execute(link, { query: subscripiton }).subscribe({}).unsubscribe();
   });
 });
