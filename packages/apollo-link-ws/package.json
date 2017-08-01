@@ -40,7 +40,6 @@
   },
   "dependencies": {
     "apollo-link-core": "^0.1.1",
-    "graphql": "^0.10.5",
     "subscriptions-transport-ws": "^0.8.2"
   },
   "devDependencies": {
