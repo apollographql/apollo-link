@@ -794,7 +794,7 @@ describe('Link static library', () => {
           assert.notProperty(operation, 'variables');
           assert.notProperty(operation, 'context');
           assert.property(op, 'query');
-          assert.property(op, 'operationName');
+          // assert.property(op, 'operationName'); isn't automatically set if not present
           assert.property(op, 'variables');
           assert.property(op, 'context');
           return Observable.of();

@@ -157,14 +157,7 @@ function transformOperation(operation: GraphQLRequest): Operation {
   }
 
   if (transformedOperation.query && transformedOperation.query.definitions) {
-    if (transformedOperation.operationName) {
-      const operationNode = <OperationDefinitionNode>transformedOperation.query.definitions.find(
-        (x: DefinitionNode) =>
-          x.kind === 'OperationDefinition' &&
-          getName(x) === transformedOperation.operationName,
-      );
-      transformedOperation.operationType = operationNode.operation;
-    } else {
+    if (!transformedOperation.operationName) {
       const operationTypes = ['query', 'mutation', 'subscription'];
       const definitions = <OperationDefinitionNode[]>transformedOperation.query.definitions.filter(
         (x: DefinitionNode) =>
@@ -175,7 +168,6 @@ function transformOperation(operation: GraphQLRequest): Operation {
       if (definitions.length) {
         const definition = definitions[0];
         transformedOperation.operationName = getName(definition);
-        transformedOperation.operationType = definition.operation;
       }
     }
   }

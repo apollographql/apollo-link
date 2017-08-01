@@ -10,8 +10,8 @@
     "Sashko Stubailo <sashko@stubailo.com>"
   ],
   "license": "MIT",
-  "main": "./lib/httpLink.js",
-  "typings": "./lib/httpLink.d.ts",
+  "main": "./lib/webSocketLink.js",
+  "typings": "./lib/webSocketLink.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-link.git"
