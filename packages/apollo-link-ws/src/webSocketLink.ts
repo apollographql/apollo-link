@@ -7,8 +7,6 @@ import {
 
 import { SubscriptionClient, ClientOptions } from 'subscriptions-transport-ws';
 
-import { print } from 'graphql/language/printer';
-
 export type WebSocketParams = {
   uri: string;
   options?: ClientOptions;
@@ -36,9 +34,8 @@ export default class WebSocketLink extends ApolloLink {
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
-    return this.subscriptionClient.request({
-      ...operation,
-      query: print(operation.query),
-    }) as Observable<FetchResult>;
+    return this.subscriptionClient.request(operation) as Observable<
+      FetchResult
+    >;
   }
 }
