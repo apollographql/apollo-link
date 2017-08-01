@@ -1,4 +1,5 @@
 import * as Allpollo from '../src/index';
+import { SubscriptionClient } from 'subscriptions-transport-ws';
 import ApolloLinkAsDefault from '../src/index';
 import { assert } from 'chai';
 
@@ -24,6 +25,14 @@ describe('Exports', () => {
   describe('PollingLink', () => {
     it('constructor', () => {
       assert.doesNotThrow(() => new Allpollo.PollingLink(() => 1));
+    });
+  });
+
+  describe('WebSocketLink', () => {
+    it('constructor', () => {
+      const client: any = {};
+      client.__proto__ = SubscriptionClient.prototype;
+      assert.doesNotThrow(() => new Allpollo.WebSocketLink(client));
     });
   });
 

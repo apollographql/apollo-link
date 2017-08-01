@@ -1,34 +1,9 @@
-/// <reference path="../node_modules/infuse.js/typescript/infusejs.d.ts"/>
-
 import { assert } from 'chai';
 import * as sinon from 'sinon';
 import WebSocketLink from '../src/webSocketLink';
-import {
-  SubscriptionClient,
-  OperationOptions,
-} from 'subscriptions-transport-ws';
+import { SubscriptionClient } from 'subscriptions-transport-ws';
 import { Observable } from 'apollo-link-core';
 import { ExecutionResult } from 'graphql';
-
-// import * as infuse from 'infuse.js';
-// class MockSubscriptionClient {
-
-//   public constructorStub = sinon.spy();
-//   public subscribeStub = sinon.spy();
-//   public queryStub = sinon.spy();
-
-//   constructor(uri: string, options?: ClientOptions, webSocketImpl?: any) {
-//     this.constructorStub(uri, options, webSocketImpl);
-//   }
-
-//   public subscribe(operation, callback) {
-//     return this.subscribeStub(operation, callback);
-//   }
-
-//   public query(operation) {
-//     return this.queryStub(operation);
-//   }
-// }
 
 import { execute } from 'apollo-link-core';
 
@@ -66,22 +41,6 @@ describe('WebSocketLink', () => {
   // TODO some sort of dependency injection
 
   // it('should pass the correct initialization parameters to the Subscription Client', () => {
-  //   const injector = new infuse.Injector();
-  //   const webSocketImpl = <any>{some: 'impl'};
-  //   const options = <any>{some: 'options'};
-  //   injector.mapValue('SubscriptionClient', MockSubscriptionClient);
-  //   if (injector.hasMapping('paramsOrClient')) {
-  //     injector.removeMapping('paramsOrClient');
-  //   }
-  //   injector.mapValue('paramsOrClient', {
-  //     uri: wsURI,
-  //     options,
-  //     webSocketImpl,
-  //   });
-  //   const link = injector.createInstance(WebSocketLink);
-
-  //   assert(link.constructorStub.calledOnce);
-  //   assert(link.constructorStub.called);
   // });
 
   it('should call request on the client for a query', done => {
@@ -96,7 +55,7 @@ describe('WebSocketLink', () => {
     assert.deepEqual(obs, observable);
     obs.subscribe(data => {
       assert.equal(data, result);
-      assert(client.query.calledOnce);
+      assert(client.request.calledOnce);
       done();
     });
   });
@@ -113,7 +72,7 @@ describe('WebSocketLink', () => {
     assert.deepEqual(obs, observable);
     obs.subscribe(data => {
       assert.equal(data, result);
-      assert(client.query.calledOnce);
+      assert(client.request.calledOnce);
       done();
     });
   });
@@ -130,7 +89,7 @@ describe('WebSocketLink', () => {
     assert.deepEqual(obs, observable);
     obs.subscribe(data => {
       assert.equal(data, result);
-      assert(client.query.calledOnce);
+      assert(client.request.calledOnce);
       done();
     });
   });
@@ -142,7 +101,7 @@ describe('WebSocketLink', () => {
     ];
     const client: any = {};
     client.__proto__ = SubscriptionClient.prototype;
-    client.subscribe = sinon.stub().callsFake(() => {
+    client.request = sinon.stub().callsFake(() => {
       const copy = [...results];
       return new Observable<ExecutionResult>(observer => {
         observer.next(copy[0]);
@@ -153,8 +112,8 @@ describe('WebSocketLink', () => {
     const link = new WebSocketLink(client);
 
     execute(link, { query: subscription }).subscribe(data => {
-      assert(client.subscribe.calledOnce);
-      assert.equal(data.data, results.shift());
+      assert(client.request.calledOnce);
+      assert.equal(data, results.shift());
       if (results.length === 0) {
         done();
       }

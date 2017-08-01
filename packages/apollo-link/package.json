@@ -43,7 +43,8 @@
     "apollo-link-http": "^0.1.1",
     "apollo-link-polling": "^0.1.1",
     "apollo-link-retry": "^0.1.1",
-    "apollo-link-set-context": "^0.1.1"
+    "apollo-link-set-context": "^0.1.1",
+    "apollo-link-ws": "^0.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.0.0",
@@ -60,6 +61,7 @@
     "rimraf": "^2.5.4",
     "sinon": "^2.3.4",
     "source-map-support": "^0.4.5",
+    "subscriptions-transport-ws": "^0.8.2",
     "tslint": "^5.0.0",
     "typescript": "^2.2.1"
   }
