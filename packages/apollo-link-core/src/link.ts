@@ -139,7 +139,7 @@ export function execute(
 }
 
 function getName(node: OperationDefinitionNode) {
-  return node.name && node.name.kind === 'Name' && node.name.value;
+  return node && node.name && node.name.kind === 'Name' && node.name.value;
 }
 
 function transformOperation(operation: GraphQLRequest): Operation {
@@ -165,11 +165,10 @@ function transformOperation(operation: GraphQLRequest): Operation {
           operationTypes.indexOf(x.operation) >= 0,
       );
 
-      if (definitions.length) {
-        const definition = definitions[0];
-        transformedOperation.operationName = getName(definition);
-      }
+      transformedOperation.operationName = getName(definitions[0]) || '';
     }
+  } else if (!transformedOperation.operationName) {
+    transformedOperation.operationName = '';
   }
 
   return transformedOperation;
