@@ -13,9 +13,6 @@ export type WebSocketParams = {
   webSocketImpl?: any;
 };
 
-/** Transforms Operation for into HTTP results.
- * context can include the headers property, which will be passed to the fetch function
- */
 export default class WebSocketLink extends ApolloLink {
   private subscriptionClient: SubscriptionClient;
 
