@@ -46,7 +46,6 @@
     "@types/chai-as-promised": "0.0.31",
     "@types/mocha": "^2.2.31",
     "@types/sinon": "^2.3.2",
-    "@types/zen-observable": "^0.5.1",
     "chai": "^4.0.2",
     "chai-as-promised": "^7.0.0",
     "fetch-mock": "^5.11.0",
