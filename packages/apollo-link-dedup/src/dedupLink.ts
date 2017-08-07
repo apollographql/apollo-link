@@ -9,14 +9,16 @@ import {
 import { print } from 'graphql/language/printer';
 
 /*
- * Expects context to contain the deduplicate field
+ * Expects context to contain the forceFetch field if no dedup
  */
-export class DedupLink extends ApolloLink {
-  private inFlightRequestPromises: { [key: string]: Observable<FetchResult> };
+export default class DedupLink extends ApolloLink {
+  private inFlightRequestObservables: {
+    [key: string]: Observable<FetchResult>;
+  };
 
   constructor() {
     super();
-    this.inFlightRequestPromises = {};
+    this.inFlightRequestObservables = {};
   }
 
   public request(
@@ -24,24 +26,24 @@ export class DedupLink extends ApolloLink {
     forward: NextLink,
   ): Observable<FetchResult> {
     // sometimes we might not want to deduplicate a request, for example when we want to force fetch it.
-    if (!operation.context.deduplicate) {
+    if (operation.context.forceFetch) {
       return forward(operation);
     }
 
     const key = this.getKey(operation);
-    if (!this.inFlightRequestPromises[key]) {
-      this.inFlightRequestPromises[key] = forward(operation);
+    if (!this.inFlightRequestObservables[key]) {
+      this.inFlightRequestObservables[key] = forward(operation);
     }
     return new Observable<FetchResult>(observer => {
-      this.inFlightRequestPromises[key].subscribe({
+      this.inFlightRequestObservables[key].subscribe({
         next: observer.next.bind(observer),
         error: error => {
+          delete this.inFlightRequestObservables[key];
           observer.error(error);
-          delete this.inFlightRequestPromises[key];
         },
         complete: () => {
+          delete this.inFlightRequestObservables[key];
           observer.complete();
-          delete this.inFlightRequestPromises[key];
         },
       });
     });
