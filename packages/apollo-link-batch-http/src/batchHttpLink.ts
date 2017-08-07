@@ -5,17 +5,19 @@ import {
   Observable,
 } from 'apollo-link-core';
 import { ApolloFetch, createApolloFetch } from 'apollo-fetch';
-import QueryBatcher from './batching';
+import BatchLink from 'apollo-link-batch';
+
+import { print } from 'graphql/language/printer';
 
 /** Transforms Operation for into HTTP results.
  * context can include the headers property, which will be passed to the fetch function
  */
 export default class BatchHttpLink extends ApolloLink {
   private headers = {};
-  private _fetch: ApolloFetch;
+  private apolloFetch: ApolloFetch;
   private batchInterval: number;
   private batchMax: number;
-  private batcher: QueryBatcher;
+  private batcher: ApolloLink;
 
   constructor(fetchParams?: {
     uri?: string;
@@ -28,11 +30,11 @@ export default class BatchHttpLink extends ApolloLink {
     this.batchInterval = fetchParams.batchInterval || 10;
     this.batchMax = fetchParams.batchMax || 10;
 
-    this._fetch =
+    this.apolloFetch =
       (fetchParams && fetchParams.fetch) ||
       createApolloFetch({ uri: fetchParams && fetchParams.uri });
 
-    this._fetch.batchUse((request, next) => {
+    this.apolloFetch.batchUse((request, next) => {
       request.options.headers = {
         ...request.options.headers,
         ...this.headers,
@@ -40,24 +42,32 @@ export default class BatchHttpLink extends ApolloLink {
       next();
     });
 
-    if (typeof this.batchInterval !== 'number') {
-      throw new Error(
-        `batchInterval must be a number, got ${this.batchInterval}`,
-      );
-    }
+    const batchOperation = (operations: Operation[]) => {
+      return new Observable<FetchResult[]>(observer => {
+        this.apolloFetch(
+          operations.map((operation: Operation) => {
+            return {
+              ...operation,
+              query: print(operation.query),
+            };
+          }),
+        )
+          .then(data => {
+            observer.next(data);
+            observer.complete();
+          })
+          .catch(observer.error.bind(observer));
+      });
+    };
 
-    if (typeof this.batchMax !== 'number') {
-      throw new Error(`batchMax must be a number, got ${this.batchMax}`);
-    }
-
-    this.batcher = new QueryBatcher({
+    this.batcher = new BatchLink({
       batchInterval: this.batchInterval,
       batchMax: this.batchMax,
-      apolloFetch: this._fetch,
+      batchOperation,
     });
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
-    return this.batcher.enqueueRequest(operation);
+    return this.batcher.request(operation);
   }
 }
