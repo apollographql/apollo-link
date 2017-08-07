@@ -1,6 +1,6 @@
 import { Observable, Operation, NextLink, FetchResult } from 'apollo-link-core';
 
-export type BatchOperation = (
+export type BatchHandler = (
   operations: Operation[],
   forward: (NextLink | undefined)[],
 ) => Observable<FetchResult[]>;
@@ -29,21 +29,21 @@ export class OperationBatcher {
   private batchMax: number;
 
   //This function is called to the queries in the queue to the server.
-  private batchOperation: BatchOperation;
+  private batchHandler: BatchHandler;
 
   constructor({
     batchInterval,
     batchMax = 0,
-    batchOperation,
+    batchHandler,
   }: {
     batchInterval: number;
     batchMax?: number;
-    batchOperation: BatchOperation;
+    batchHandler: BatchHandler;
   }) {
     this.queuedRequests = [];
     this.batchInterval = batchInterval;
     this.batchMax = batchMax;
-    this.batchOperation = batchOperation;
+    this.batchHandler = batchHandler;
   }
 
   public enqueueRequest(
@@ -98,7 +98,7 @@ export class OperationBatcher {
 
     this.queuedRequests = [];
 
-    const batchedObservable = this.batchOperation(requests, forwards);
+    const batchedObservable = this.batchHandler(requests, forwards);
 
     batchedObservable.subscribe({
       next: results => {
