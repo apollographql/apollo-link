@@ -5,7 +5,7 @@ export type BatchOperation = (
   forward: (NextLink | undefined)[],
 ) => Observable<FetchResult[]>;
 
-export interface QueryFetchRequest {
+export interface BatchableRequest {
   operation: Operation;
   forward?: NextLink;
 
@@ -21,9 +21,9 @@ export interface QueryFetchRequest {
 // QueryBatcher doesn't fire requests immediately. Requests that were enqueued within
 // a certain amount of time (configurable through `batchInterval`) will be batched together
 // into one query.
-export class QueryBatcher {
+export class OperationBatcher {
   // Queue on which the QueryBatcher will operate on a per-tick basis.
-  public queuedRequests: QueryFetchRequest[] = [];
+  public queuedRequests: BatchableRequest[] = [];
 
   private batchInterval: number;
   private batchMax: number;
@@ -47,19 +47,19 @@ export class QueryBatcher {
   }
 
   public enqueueRequest(
-    operation: Operation,
-    forward?: NextLink,
+    fetchRequest: BatchableRequest,
   ): Observable<FetchResult> {
-    const fetchRequest: QueryFetchRequest = {
-      operation,
-      forward,
-    };
-    this.queuedRequests.push(fetchRequest);
-    fetchRequest.observable = new Observable(observer => {
-      fetchRequest.next = observer.next.bind(observer);
-      fetchRequest.error = observer.error.bind(observer);
-      fetchRequest.complete = observer.complete.bind(observer);
-    });
+    const requestCopy = { ...fetchRequest };
+    this.queuedRequests.push(requestCopy);
+
+    requestCopy.observable =
+      requestCopy.observable ||
+      new Observable<FetchResult>(observer => {
+        requestCopy.next = requestCopy.next || observer.next.bind(observer);
+        requestCopy.error = requestCopy.error || observer.error.bind(observer);
+        requestCopy.complete =
+          requestCopy.complete || observer.complete.bind(observer);
+      });
 
     // The first enqueued request triggers the queue consumption after `batchInterval` milliseconds.
     if (this.queuedRequests.length === 1) {
@@ -71,7 +71,7 @@ export class QueryBatcher {
       this.consumeQueue();
     }
 
-    return fetchRequest.observable;
+    return requestCopy.observable;
   }
 
   // Consumes the queue.
@@ -103,16 +103,24 @@ export class QueryBatcher {
     batchedObservable.subscribe({
       next: results => {
         results.forEach((result, index) => {
-          nexts[index](result);
+          if (nexts[index]) {
+            nexts[index](result);
+          }
         });
       },
       error: error => {
         errors.forEach((rejecter, index) => {
-          errors[index](error);
+          if (errors[index]) {
+            errors[index](error);
+          }
         });
       },
       complete: () => {
-        completes.forEach(complete => complete());
+        completes.forEach(complete => {
+          if (complete) {
+            complete();
+          }
+        });
       },
     });
 
