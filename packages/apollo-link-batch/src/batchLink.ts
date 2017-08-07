@@ -8,16 +8,12 @@ import {
 import { QueryBatcher, BatchOperation } from './batching';
 
 export default class BatchLink extends ApolloLink {
-  private batchOperation: (
-    operations: Operation[],
-    forward?: NextLink[],
-  ) => any;
+  private batchOperation: BatchOperation;
   private batchInterval: number;
   private batchMax: number;
   private batcher: QueryBatcher;
 
   constructor(fetchParams?: {
-    uri?: string;
     batchInterval: number;
     batchMax: number;
     batchOperation?: BatchOperation;

@@ -2,7 +2,7 @@ import { Observable, Operation, NextLink, FetchResult } from 'apollo-link-core';
 
 export type BatchOperation = (
   operations: Operation[],
-  forward: NextLink[],
+  forward: (NextLink | undefined)[],
 ) => Observable<FetchResult[]>;
 
 export interface QueryFetchRequest {
