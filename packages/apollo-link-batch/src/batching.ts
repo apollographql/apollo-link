@@ -48,26 +48,27 @@ export class OperationBatcher {
 
   public enqueueRequest(request: BatchableRequest): Observable<FetchResult> {
     const requestCopy = { ...request };
-    this.queuedRequests.push(requestCopy);
 
     requestCopy.observable =
       requestCopy.observable ||
       new Observable<FetchResult>(observer => {
+        this.queuedRequests.push(requestCopy);
+
         requestCopy.next = requestCopy.next || observer.next.bind(observer);
         requestCopy.error = requestCopy.error || observer.error.bind(observer);
         requestCopy.complete =
           requestCopy.complete || observer.complete.bind(observer);
+
+        // The first enqueued request triggers the queue consumption after `batchInterval` milliseconds.
+        if (this.queuedRequests.length === 1) {
+          this.scheduleQueueConsumption();
+        }
+
+        // When amount of requests reaches `batchMax`, trigger the queue consumption without waiting on the `batchInterval`.
+        if (this.queuedRequests.length === this.batchMax) {
+          this.consumeQueue();
+        }
       });
-
-    // The first enqueued request triggers the queue consumption after `batchInterval` milliseconds.
-    if (this.queuedRequests.length === 1) {
-      this.scheduleQueueConsumption();
-    }
-
-    // When amount of requests reaches `batchMax`, trigger the queue consumption without waiting on the `batchInterval`.
-    if (this.queuedRequests.length === this.batchMax) {
-      this.consumeQueue();
-    }
 
     return requestCopy.observable;
   }
