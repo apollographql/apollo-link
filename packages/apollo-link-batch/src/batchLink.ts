@@ -23,7 +23,7 @@ export default class BatchLink extends ApolloLink {
     super();
 
     this.batchInterval = fetchParams.batchInterval || 10;
-    this.batchMax = fetchParams.batchMax || 10;
+    this.batchMax = fetchParams.batchMax || 0;
 
     if (typeof this.batchInterval !== 'number') {
       throw new Error(

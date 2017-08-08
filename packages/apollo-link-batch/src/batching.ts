@@ -3,7 +3,7 @@ import { Observable, Operation, NextLink, FetchResult } from 'apollo-link-core';
 export type BatchHandler = (
   operations: Operation[],
   forward: (NextLink | undefined)[],
-) => Observable<FetchResult[]>;
+) => Observable<FetchResult[]> | null;
 
 export interface BatchableRequest {
   operation: Operation;
@@ -46,10 +46,8 @@ export class OperationBatcher {
     this.batchHandler = batchHandler;
   }
 
-  public enqueueRequest(
-    fetchRequest: BatchableRequest,
-  ): Observable<FetchResult> {
-    const requestCopy = { ...fetchRequest };
+  public enqueueRequest(request: BatchableRequest): Observable<FetchResult> {
+    const requestCopy = { ...request };
     this.queuedRequests.push(requestCopy);
 
     requestCopy.observable =
@@ -89,16 +87,17 @@ export class OperationBatcher {
     const nexts: any[] = [];
     const errors: any[] = [];
     const completes: any[] = [];
-    this.queuedRequests.forEach((fetchRequest, index) => {
-      observables.push(fetchRequest.observable);
-      nexts.push(fetchRequest.next);
-      errors.push(fetchRequest.error);
-      completes.push(fetchRequest.complete);
+    this.queuedRequests.forEach((batchableRequest, index) => {
+      observables.push(batchableRequest.observable);
+      nexts.push(batchableRequest.next);
+      errors.push(batchableRequest.error);
+      completes.push(batchableRequest.complete);
     });
 
     this.queuedRequests = [];
 
-    const batchedObservable = this.batchHandler(requests, forwards);
+    const batchedObservable =
+      this.batchHandler(requests, forwards) || Observable.of();
 
     batchedObservable.subscribe({
       next: results => {
