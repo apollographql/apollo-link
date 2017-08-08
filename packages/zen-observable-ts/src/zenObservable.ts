@@ -2,11 +2,9 @@ import { ZenObservable } from './types';
 
 export { ZenObservable };
 
-declare global {
-  interface SymbolConstructor {
-    observable: symbol;
-  }
-}
+export type Observer<T> = ZenObservable.Observer<T>;
+export type Subscriber<T> = ZenObservable.Subscriber<T>;
+export type ObservableLike<T> = ZenObservable.ObservableLike<T>;
 
 // === Abstract Operations ===
 function cleanupSubscription(subscription: Subscription) {
@@ -45,7 +43,7 @@ function cleanupFromSubscription(subscription: ZenObservable.Subscription) {
   };
 }
 
-class Subscription implements ZenObservable.Subscription {
+export class Subscription implements ZenObservable.Subscription {
   public _observer?: ZenObservable.Observer<any>;
   public _cleanup: () => void;
 
@@ -115,7 +113,8 @@ class Subscription implements ZenObservable.Subscription {
   }
 }
 
-class SubscriptionObserver<T> implements ZenObservable.SubscriptionObserver<T> {
+export class SubscriptionObserver<T>
+  implements ZenObservable.SubscriptionObserver<T> {
   private _subscription: Subscription;
 
   constructor(subscription: Subscription) {
@@ -506,8 +505,4 @@ export default class Observable<T> {
     // writable: true,
     // configurable: true,
   }
-  // [Symbol.species](){
-  //   return <Observable<T>>this;
-  //   //configurable: true,
-  // }
 }
