@@ -28,6 +28,12 @@ describe('Exports', () => {
     });
   });
 
+  describe('DedupLink', () => {
+    it('constructor', () => {
+      assert.doesNotThrow(() => new Allpollo.DedupLink());
+    });
+  });
+
   describe('WebSocketLink', () => {
     it('constructor', () => {
       const client: any = {};
