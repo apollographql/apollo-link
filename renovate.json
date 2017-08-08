@@ -1,5 +1,6 @@
 {
   "pinVersions": true,
   "semanticCommits": true,
+  "prCreation": "not-pending",
   "depTypes": [{"depType": "dependencies", "pinVersions": false}]
 }
