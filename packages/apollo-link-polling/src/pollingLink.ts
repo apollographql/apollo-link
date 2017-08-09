@@ -4,6 +4,7 @@ import {
   NextLink,
   FetchResult,
   Observable,
+  ZenObservable,
 } from 'apollo-link-core';
 
 export default class PollingLink extends ApolloLink {
