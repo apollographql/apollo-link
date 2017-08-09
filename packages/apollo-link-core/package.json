@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-core",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Flexible, lightweight transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -41,11 +41,12 @@
   "dependencies": {
     "graphql": "^0.10.3",
     "graphql-tag": "^2.4.2",
-    "zen-observable-ts": "^0.2.0"
+    "zen-observable-ts": "^0.3.0"
   },
   "devDependencies": {
     "@types/chai": "^4.0.0",
     "@types/chai-as-promised": "0.0.31",
+    "@types/graphql": "~0.10.2",
     "@types/mocha": "^2.2.31",
     "@types/sinon": "^2.3.2",
     "chai": "^4.0.2",
@@ -60,8 +61,5 @@
     "source-map-support": "^0.4.5",
     "tslint": "^5.0.0",
     "typescript": "^2.2.1"
-  },
-  "optionalDependencies": {
-    "@types/graphql": "~0.10.2"
   }
 }

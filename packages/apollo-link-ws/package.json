@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-ws",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "WebSocket transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -39,12 +39,13 @@
     "prepublishOnly": "npm run clean && npm run build"
   },
   "dependencies": {
-    "apollo-link-core": "^0.3.1",
+    "apollo-link-core": "^0.4.0",
     "subscriptions-transport-ws": "^0.8.2"
   },
   "devDependencies": {
     "@types/chai": "^4.0.0",
     "@types/chai-as-promised": "0.0.31",
+    "@types/graphql": "~0.10.2",
     "@types/mocha": "^2.2.31",
     "@types/sinon": "^2.3.2",
     "chai": "^4.0.2",
@@ -61,8 +62,5 @@
     "source-map-support": "^0.4.5",
     "tslint": "^5.0.0",
     "typescript": "^2.2.1"
-  },
-  "optionalDependencies": {
-    "@types/graphql": "~0.10.2"
   }
 }
