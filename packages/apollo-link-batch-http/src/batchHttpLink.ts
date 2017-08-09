@@ -21,14 +21,14 @@ export default class BatchHttpLink extends ApolloLink {
 
   constructor(fetchParams?: {
     uri?: string;
-    batchInterval: number;
-    batchMax: number;
+    batchInterval?: number;
+    batchMax?: number;
     fetch?: ApolloFetch;
   }) {
     super();
 
-    this.batchInterval = fetchParams.batchInterval || 10;
-    this.batchMax = fetchParams.batchMax || 10;
+    this.batchInterval = (fetchParams && fetchParams.batchInterval) || 10;
+    this.batchMax = (fetchParams && fetchParams.batchMax) || 10;
 
     this.apolloFetch =
       (fetchParams && fetchParams.fetch) ||
@@ -42,16 +42,14 @@ export default class BatchHttpLink extends ApolloLink {
       next();
     });
 
-    const batchOperation = (operations: Operation[]) => {
+    const batchHandler = (operations: Operation[]) => {
       return new Observable<FetchResult[]>(observer => {
-        this.apolloFetch(
-          operations.map((operation: Operation) => {
-            return {
-              ...operation,
-              query: print(operation.query),
-            };
-          }),
-        )
+        const printedOperations = operations.map((operation: Operation) => ({
+          ...operation,
+          query: print(operation.query),
+        }));
+
+        this.apolloFetch(printedOperations)
           .then(data => {
             observer.next(data);
             observer.complete();
@@ -63,7 +61,7 @@ export default class BatchHttpLink extends ApolloLink {
     this.batcher = new BatchLink({
       batchInterval: this.batchInterval,
       batchMax: this.batchMax,
-      batchOperation,
+      batchHandler,
     });
   }
 
