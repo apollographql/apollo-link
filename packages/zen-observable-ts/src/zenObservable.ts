@@ -499,10 +499,4 @@ export default class Observable<T> {
       };
     });
   }
-
-  public [Symbol.observable]() {
-    return <Observable<T>>this;
-    // writable: true,
-    // configurable: true,
-  }
 }
