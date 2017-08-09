@@ -4,6 +4,7 @@ import {
   Operation,
   NextLink,
   FetchResult,
+  ZenObservable,
 } from 'apollo-link-core';
 
 export default class RetryLink extends ApolloLink {
