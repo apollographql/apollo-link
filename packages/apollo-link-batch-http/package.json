@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "apollo-fetch": "^0.6.0",
-    "apollo-link-core": "^0.1.1",
+    "apollo-link-core": "^0.3.1",
     "apollo-link-batch": "^0.0.0",
     "graphql": "^0.10.5"
   },
@@ -56,6 +56,7 @@
     "istanbul": "^0.4.4",
     "lodash": "^4.17.4",
     "mocha": "^3.2.0",
+    "proxyquire": "^1.8.0",
     "remap-istanbul": "^0.9.0",
     "rimraf": "^2.5.4",
     "sinon": "^2.3.4",

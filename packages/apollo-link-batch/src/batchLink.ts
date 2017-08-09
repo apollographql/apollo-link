@@ -10,15 +10,14 @@ import { OperationBatcher, BatchHandler } from './batching';
 export { OperationBatcher, BatchableRequest, BatchHandler } from './batching';
 
 export default class BatchLink extends ApolloLink {
-  private batchHandler: BatchHandler;
   private batchInterval: number;
   private batchMax: number;
   private batcher: OperationBatcher;
 
-  constructor(fetchParams?: {
-    batchInterval: number;
-    batchMax: number;
-    batchHandler?: BatchHandler;
+  constructor(fetchParams: {
+    batchInterval?: number;
+    batchMax?: number;
+    batchHandler: BatchHandler;
   }) {
     super();
 
@@ -38,7 +37,7 @@ export default class BatchLink extends ApolloLink {
     this.batcher = new OperationBatcher({
       batchInterval: this.batchInterval,
       batchMax: this.batchMax,
-      batchHandler: this.batchHandler,
+      batchHandler: fetchParams.batchHandler,
     });
   }
 

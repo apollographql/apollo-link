@@ -356,11 +356,15 @@ describe('OperationBatcher', () => {
 
 describe('BatchLink', () => {
   it('does not need any constructor arguments', () => {
-    assert.doesNotThrow(() => new BatchLink());
+    assert.doesNotThrow(
+      () => new BatchLink({ batchHandler: () => Observable.of() }),
+    );
   });
 
   it('passes forward on', () => {
-    const link = ApolloLink.from([new BatchLink()]);
+    const link = ApolloLink.from([
+      new BatchLink({ batchHandler: () => Observable.of() }),
+    ]);
     execute(link, {});
   });
 });
