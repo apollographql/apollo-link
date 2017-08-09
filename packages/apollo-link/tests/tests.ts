@@ -10,6 +10,20 @@ describe('Exports', () => {
     });
   });
 
+  describe('BatchLink', () => {
+    it('constructor', () => {
+      assert.doesNotThrow(
+        () => new Allpollo.BatchLink({ batchHandler: () => void 0 }),
+      );
+    });
+  });
+
+  describe('BatchHttpLink', () => {
+    it('constructor', () => {
+      assert.doesNotThrow(() => new Allpollo.BatchHttpLink());
+    });
+  });
+
   describe('RetryLink', () => {
     it('constructor', () => {
       assert.doesNotThrow(() => new Allpollo.RetryLink());
