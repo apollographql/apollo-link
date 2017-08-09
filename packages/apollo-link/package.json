@@ -39,6 +39,8 @@
     "prepublishOnly": "npm run clean && npm run build"
   },
   "dependencies": {
+    "apollo-link-batch": "^0.0.0",
+    "apollo-link-batch-http": "^0.0.0",
     "apollo-link-core": "^0.4.1",
     "apollo-link-dedup": "^0.2.1",
     "apollo-link-http": "^0.4.1",
