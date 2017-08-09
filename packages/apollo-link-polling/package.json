@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-polling",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Polling Apollo Link for GraphQL Network Stack",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -39,7 +39,7 @@
     "prepublishOnly": "npm run clean && npm run build"
   },
   "dependencies": {
-    "apollo-link-core": "^0.3.1"
+    "apollo-link-core": "^0.4.0"
   },
   "devDependencies": {
     "@types/chai": "^4.0.0",
