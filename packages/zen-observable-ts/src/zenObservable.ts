@@ -29,9 +29,8 @@ function subscriptionClosed(subscription: Subscription) {
 }
 
 function closeSubscription(subscription: Subscription) {
-  if (subscriptionClosed(subscription)) {
-    return;
-  }
+  if (!subscription) return;
+  if (subscriptionClosed(subscription)) return;
 
   subscription._observer = undefined;
   cleanupSubscription(subscription);
