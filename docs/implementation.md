@@ -1,6 +1,6 @@
 ## Implementing Links
 
-Before implementing your own Link, be sure to read the [usage](usage.md) document.
+Before implementing your own Link, be sure to read the [usage](summary.md) document.
 
 Links implement a `request` method that takes an operation and returns the results in an Observable.
 The apollo-link's `Observable` follows the ECMAScript [proposal](https://github.com/tc39/proposal-observable#api) with some extensions provided by [zen-observable](https://github.com/zenparsing/zen-observable#api).
