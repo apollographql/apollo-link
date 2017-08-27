@@ -1,9 +1,9 @@
 export default {
-  entry: 'dist/index.js',
+  entry: 'dist/setContextLink.js',
   dest: 'dist/bundle.umd.js',
   format: 'umd',
   sourceMap: true,
-  moduleName: 'apolloLink',
+  moduleName: 'setContextLink',
   exports: 'named',
   onwarn
 };

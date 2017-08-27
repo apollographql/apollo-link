@@ -3,7 +3,7 @@ export default {
   dest: 'dist/bundle.umd.js',
   format: 'umd',
   sourceMap: true,
-  moduleName: 'apolloLink',
+  moduleName: 'apolloLinkCore',
   exports: 'named',
   onwarn
 };
