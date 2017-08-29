@@ -39,7 +39,7 @@
     "prepublishOnly": "npm run clean && npm run build"
   },
   "dependencies": {
-    "graphql": "^0.10.3",
+    "graphql": "^0.11.0",
     "graphql-tag": "^2.4.2",
     "zen-observable-ts": "^0.4.0"
   },
