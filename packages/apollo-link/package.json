@@ -67,6 +67,6 @@
     "source-map-support": "0.4.16",
     "subscriptions-transport-ws": "0.8.2",
     "tslint": "5.7.0",
-    "typescript": "2.5.1"
+    "typescript": "2.5.2"
   }
 }
