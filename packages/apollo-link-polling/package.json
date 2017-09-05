@@ -10,10 +10,10 @@
     "Sashko Stubailo <sashko@stubailo.com>"
   ],
   "license": "MIT",
-  "main": "./dist/bundle.umd.js",
-  "module": "./dist/pollingLink.js",
-  "jsnext:main": "./dist/pollingLink.js",
-  "typings": "./dist/pollingLink.d.ts",
+  "main": "./dist/src/bundle.umd.js",
+  "module": "./dist/src/pollingLink.js",
+  "jsnext:main": "./dist/src/pollingLink.js",
+  "typings": "./dist/src/pollingLink.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-link.git"
@@ -38,7 +38,9 @@
     "prebuild": "npm run clean:dist",
     "build": "tsc -p .",
     "build-test": "tsc -p tsconfig.test.json",
-    "postbuild": "rollup -c",
+    "postbuild": "npm run bundle",
+    "postbuild-test": "npm run bundle",
+    "bundle": "rollup -c",
     "watch": "tsc -w -p .",
     "clean": "npm run clean:dist && npm run clean:coverage",
     "clean:dist": "rimraf dist/*",

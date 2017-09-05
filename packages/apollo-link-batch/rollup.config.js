@@ -1,6 +1,6 @@
 export default {
-  entry: 'dist/batchLink.js',
-  dest: 'dist/bundle.umd.js',
+  entry: 'dist/src/batchLink.js',
+  dest: 'dist/src/bundle.umd.js',
   format: 'umd',
   sourceMap: true,
   moduleName: 'batchLink',

@@ -1,6 +1,6 @@
 export default {
-  entry: 'dist/dedupLink.js',
-  dest: 'dist/bundle.umd.js',
+  entry: 'dist/src/dedupLink.js',
+  dest: 'dist/src/bundle.umd.js',
   format: 'umd',
   sourceMap: true,
   moduleName: 'dedupLink',

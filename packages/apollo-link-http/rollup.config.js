@@ -1,6 +1,6 @@
 export default {
-  entry: 'dist/httpLink.js',
-  dest: 'dist/bundle.umd.js',
+  entry: 'dist/src/httpLink.js',
+  dest: 'dist/src/bundle.umd.js',
   format: 'umd',
   sourceMap: true,
   moduleName: 'httpLink',

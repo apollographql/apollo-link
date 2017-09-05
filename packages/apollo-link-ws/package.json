@@ -10,10 +10,10 @@
     "Sashko Stubailo <sashko@stubailo.com>"
   ],
   "license": "MIT",
-  "main": "./dist/bundle.umd.js",
-  "module": "./dist/webSocketLink.js",
-  "jsnext:main": "./dist/webSocketLink.js",
-  "typings": "./dist/webSocketLink.d.ts",
+  "main": "./dist/src/bundle.umd.js",
+  "module": "./dist/src/webSocketLink.js",
+  "jsnext:main": "./dist/src/webSocketLink.js",
+  "typings": "./dist/src/webSocketLink.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-link.git"
@@ -38,7 +38,9 @@
     "prebuild": "npm run clean:dist",
     "build": "tsc -p .",
     "build-test": "tsc -p tsconfig.test.json",
-    "postbuild": "rollup -c",
+    "postbuild": "npm run bundle",
+    "postbuild-test": "npm run bundle",
+    "bundle": "rollup -c",
     "watch": "tsc -w -p .",
     "clean": "npm run clean:dist && npm run clean:coverage",
     "clean:dist": "rimraf dist/*",

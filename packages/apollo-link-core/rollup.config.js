@@ -1,6 +1,6 @@
 export default {
-  entry: 'dist/index.js',
-  dest: 'dist/bundle.umd.js',
+  entry: 'dist/src/index.js',
+  dest: 'dist/src/bundle.umd.js',
   format: 'umd',
   sourceMap: true,
   moduleName: 'apolloLinkCore',

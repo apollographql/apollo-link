@@ -1,6 +1,6 @@
 export default {
-  entry: 'dist/setContextLink.js',
-  dest: 'dist/bundle.umd.js',
+  entry: 'dist/src/setContextLink.js',
+  dest: 'dist/src/bundle.umd.js',
   format: 'umd',
   sourceMap: true,
   moduleName: 'setContextLink',

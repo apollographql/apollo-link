@@ -1,6 +1,6 @@
 export default {
-  entry: 'dist/pollingLink.js',
-  dest: 'dist/bundle.umd.js',
+  entry: 'dist/src/pollingLink.js',
+  dest: 'dist/src/bundle.umd.js',
   format: 'umd',
   sourceMap: true,
   moduleName: 'pollingLink',
