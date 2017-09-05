@@ -22,10 +22,14 @@
     "test": "npm run test-only --",
     "posttest": "npm run lint",
     "test-only": "mocha --reporter spec --full-trace dist/tests/tests.js",
-    "test-watch": "mocha --reporter spec --full-trace dist/tests/tests.js --watch",
-    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot --full-trace dist/tests/tests.js",
-    "postcoverage": "remap-istanbul --input coverage/coverage.json --type lcovonly --output coverage/lcov.info",
-    "lint": "tslint --type-check -p tsconfig.test.json src/*.ts && tslint --type-check -p tsconfig.json tests/*.ts",
+    "test-watch":
+      "mocha --reporter spec --full-trace dist/tests/tests.js --watch",
+    "coverage":
+      "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot --full-trace dist/tests/tests.js",
+    "postcoverage":
+      "remap-istanbul --input coverage/coverage.json --type lcovonly --output coverage/lcov.info",
+    "lint":
+      "tslint --type-check -p tsconfig.test.json src/*.ts && tslint --type-check -p tsconfig.test.json tests/*.ts",
     "prebuild": "npm run clean:dist",
     "build": "tsc -p .",
     "build-test": "tsc -p tsconfig.test.json",
