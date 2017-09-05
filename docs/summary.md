@@ -98,11 +98,11 @@ import {
 const uri = 'http://api.githunt.com/graphql';
 
 const link = ApolloLink.from([
-  new RetryLink();
-  new HttpLink({ uri });
+  new RetryLink(),
+  new HttpLink({ uri }),
 ])
 
-<GraphiQL fetcher={(operation) => execute(link, operation)}/>,
+<GraphiQL fetcher={(operation) => execute(link, operation)}/>
 
 const client = new ApolloClient({
   networkInterface: link,
@@ -123,20 +123,20 @@ import {
 } from 'apollo-link'
 
 const uri = 'http://api.githunt.com/graphql';
-const setContext = (context) => {
+const setContext = (context) => ({
   ...context,
   headers: {
     ...context.headers,
     auth: 'token',
   },
-};
+});
 
 const link = ApolloLink.from([
   new SetContextLink(setContext),
-  new HttpLink({ uri });
-])
+  new HttpLink({ uri }),
+]);
 
-<GraphiQL fetcher={(operation) => execute(link, operation)}/>,
+<GraphiQL fetcher={(operation) => execute(link, operation)}/>
 ```
 
 ## More Examples of Link Combinations
@@ -148,7 +148,7 @@ This combination polls requests on `pollInterval`.
 ```js
 const link = ApolloLink.from([
   new PollingLink({ pollInterval: 5000 }),
-  new HttpLink({ uri });
+  new HttpLink({ uri }),
 ])
 ```
 
@@ -158,7 +158,7 @@ const link = ApolloLink.from([
 const link = ApolloLink.from([
   new RetryLink(),
   new SetContextLink(setContextHeaders),
-  new HttpLink({ uri });
+  new HttpLink({ uri }),
 ])
 ```
 
