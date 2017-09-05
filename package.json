@@ -4,7 +4,8 @@
   "scripts": {
     "bootstrap": "npm i && lerna bootstrap",
     "test": "lerna run -- test",
-    "lint-fix": "prettier --trailing-comma all --single-quote --write \"packages/*/{src,tests,benchmark}/**/*.{j,t}s*\"",
+    "lint-fix":
+      "prettier --trailing-comma all --single-quote --write \"packages/*/{src,tests,benchmark}/**/*.{j,t}s*\"",
     "lint-staged": "lint-staged",
     "coverage": "nyc --reporter=lcov lerna run -- test-only -- --reporter dot"
   },
@@ -17,7 +18,7 @@
   },
   "pre-commit": "lint-staged",
   "nyc": {
-    "exclude": ["**/tests", "**/lib/**"]
+    "exclude": ["**/tests", "**/dist/src/bundle.umd.js"]
   },
   "//": {
     "//": "lerna run <script name>",
