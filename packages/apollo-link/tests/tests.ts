@@ -1,5 +1,4 @@
 import * as Allpollo from '../src/index';
-import { SubscriptionClient } from 'subscriptions-transport-ws';
 import ApolloLinkAsDefault from '../src/index';
 import { assert } from 'chai';
 
@@ -50,9 +49,9 @@ describe('Exports', () => {
 
   describe('WebSocketLink', () => {
     it('constructor', () => {
-      const client: any = {};
-      client.__proto__ = SubscriptionClient.prototype;
-      assert.doesNotThrow(() => new Allpollo.WebSocketLink(client));
+      //Check that WebSocket has ApolloLink Methods
+      assert.property(Allpollo.WebSocketLink, 'split');
+      assert.property(Allpollo.WebSocketLink, 'from');
     });
   });
 
