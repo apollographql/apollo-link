@@ -186,4 +186,45 @@ describe('DedupLink', () => {
     execute(deduper, request2).subscribe({});
     assert.equal(called, 2);
   });
+  it(`unsubscribes as needed`, () => {
+    const document: DocumentNode = gql`
+      query test1($x: String) {
+        test(x: $x)
+      }
+    `;
+    const variables1 = { x: 'Hello World' };
+    const variables2 = { x: 'Hello World' };
+
+    const request1: Operation = {
+      query: document,
+      variables: variables1,
+      operationName: getOperationName(document),
+    };
+
+    const request2: Operation = {
+      query: document,
+      variables: variables2,
+      operationName: getOperationName(document),
+    };
+
+    let unsubscribed = false;
+    const deduper = ApolloLink.from([
+      new DedupLink(),
+      () => {
+        return new Observable(() => {
+          return () => {
+            unsubscribed = true;
+          };
+        });
+      },
+    ]);
+
+    const sub1 = execute(deduper, request1).subscribe({});
+    const sub2 = execute(deduper, request2).subscribe({});
+
+    sub2.unsubscribe();
+    sub1.unsubscribe();
+
+    assert.isTrue(unsubscribed);
+  });
 });
