@@ -34,7 +34,7 @@ export default class DedupLink extends ApolloLink {
     if (!this.inFlightRequestObservables[key]) {
       this.inFlightRequestObservables[key] = forward(operation);
     }
-    return new Observable<FetchResult>(observer => {
+    return new Observable<FetchResult>(observer =>
       this.inFlightRequestObservables[key].subscribe({
         next: observer.next.bind(observer),
         error: error => {
@@ -45,8 +45,8 @@ export default class DedupLink extends ApolloLink {
           delete this.inFlightRequestObservables[key];
           observer.complete();
         },
-      });
-    });
+      }),
+    );
   }
 
   private getKey(operation: Operation) {
