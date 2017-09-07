@@ -1,6 +1,6 @@
 {
   "name": "apollo-link",
-  "version": "0.5.1",
+  "version": "0.5.4",
   "description": "Flexible, lightweight transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -43,15 +43,15 @@
     "prepublishOnly": "npm run clean && npm run build"
   },
   "dependencies": {
-    "apollo-link-batch": "^0.1.1",
-    "apollo-link-batch-http": "^0.1.1",
-    "apollo-link-core": "^0.5.1",
-    "apollo-link-dedup": "^0.3.1",
-    "apollo-link-http": "^0.5.1",
-    "apollo-link-polling": "^0.5.1",
-    "apollo-link-retry": "^0.5.1",
-    "apollo-link-set-context": "^0.5.1",
-    "apollo-link-ws": "^0.3.1"
+    "apollo-link-batch": "^0.1.4",
+    "apollo-link-batch-http": "^0.1.4",
+    "apollo-link-core": "^0.5.4",
+    "apollo-link-dedup": "^0.3.4",
+    "apollo-link-http": "^0.5.4",
+    "apollo-link-polling": "^0.5.4",
+    "apollo-link-retry": "^0.5.4",
+    "apollo-link-set-context": "^0.5.4",
+    "apollo-link-ws": "^0.3.4"
   },
   "devDependencies": {
     "@types/chai": "4.0.4",

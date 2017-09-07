@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-set-context",
-  "version": "0.5.1",
+  "version": "0.5.4",
   "description": "Apollo Link that enables context setting",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -43,7 +43,7 @@
     "prepublishOnly": "npm run clean && npm run build"
   },
   "dependencies": {
-    "apollo-link-core": "^0.5.1"
+    "apollo-link-core": "^0.5.4"
   },
   "devDependencies": {
     "@types/chai": "4.0.4",
