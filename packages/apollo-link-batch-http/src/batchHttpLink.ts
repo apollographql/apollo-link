@@ -66,6 +66,7 @@ export default class BatchHttpLink extends ApolloLink {
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
+    this.headers = (operation.context && operation.context.headers) || {};
     return this.batcher.request(operation);
   }
 }
