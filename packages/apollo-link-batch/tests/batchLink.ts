@@ -8,7 +8,7 @@ import {
   Observable,
   Operation,
   FetchResult,
-} from 'apollo-link-core';
+} from 'apollo-link';
 
 // import { createApolloFetch } from 'apollo-fetch';
 

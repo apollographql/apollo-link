@@ -4,7 +4,7 @@ import BatchHttpLink from '../src/batchHttpLink';
 
 import * as proxy from 'proxyquire';
 
-import { ApolloLink, execute, Observable, makePromise } from 'apollo-link-core';
+import { ApolloLink, execute, Observable, makePromise } from 'apollo-link';
 import { ApolloFetch } from 'apollo-fetch';
 
 import { print } from 'graphql';
