@@ -1,5 +1,9 @@
 import {
   ApolloLink,
+  NextLink,
+  Operation,
+  FetchResult,
+  Observable,
 } from 'apollo-link-core';
 
 import {
