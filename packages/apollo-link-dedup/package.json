@@ -55,7 +55,7 @@
   "devDependencies": {
     "@types/chai": "4.0.4",
     "@types/chai-as-promised": "0.0.31",
-    "@types/graphql": "0.10.2",
+    "@types/graphql": "0.11.4",
     "@types/mocha": "2.2.42",
     "@types/sinon": "2.3.3",
     "chai": "4.1.1",
