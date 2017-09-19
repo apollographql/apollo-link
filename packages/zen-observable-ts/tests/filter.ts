@@ -19,8 +19,9 @@ describe('filter ', () => {
     const list: Array<number> = [];
     return assert.throws(
       () =>
-        Observable.from([1, 2, 3, 4]).filter(<any>1).forEach(x => list.push(x))
-          .then,
+        Observable.from([1, 2, 3, 4])
+          .filter(<any>1)
+          .forEach(x => list.push(x)).then,
     );
   });
 

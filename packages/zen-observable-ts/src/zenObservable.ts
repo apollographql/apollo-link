@@ -280,32 +280,30 @@ export default class Observable<T> {
         return Promise.reject(new TypeError(fn + ' is not a function'));
       }
 
-      this.subscribe(
-        <ZenObservable.Observer<T>>{
-          start(subscription: ZenObservable.Subscription) {
-            this._subscription = subscription;
-          },
-
-          next(value: T) {
-            let subscription = this._subscription;
-
-            if (subscription.closed) {
-              return;
-            }
-
-            try {
-              fn(value);
-              return;
-            } catch (err) {
-              reject(err);
-              subscription.unsubscribe();
-            }
-          },
-
-          error: reject,
-          complete: resolve,
+      this.subscribe(<ZenObservable.Observer<T>>{
+        start(subscription: ZenObservable.Subscription) {
+          this._subscription = subscription;
         },
-      );
+
+        next(value: T) {
+          let subscription = this._subscription;
+
+          if (subscription.closed) {
+            return;
+          }
+
+          try {
+            fn(value);
+            return;
+          } catch (err) {
+            reject(err);
+            subscription.unsubscribe();
+          }
+        },
+
+        error: reject,
+        complete: resolve,
+      });
     });
   }
 

@@ -11,7 +11,6 @@ import {
   toLink,
   isTerminating,
   LinkError,
-  validateLink,
 } from './linkUtils';
 
 import gql from 'graphql-tag';
@@ -51,8 +50,8 @@ export abstract class ApolloLink {
     left: ApolloLink | RequestHandler,
     right: ApolloLink | RequestHandler = ApolloLink.passthrough(),
   ): ApolloLink {
-    const leftLink = validateLink(toLink(left));
-    const rightLink = validateLink(toLink(right));
+    const leftLink = toLink(left);
+    const rightLink = toLink(right);
 
     if (isTerminating(leftLink) && isTerminating(rightLink)) {
       return new FunctionLink(operation => {
@@ -79,8 +78,6 @@ export abstract class ApolloLink {
 
   // join two Links together
   public concat(next: ApolloLink | RequestHandler): ApolloLink {
-    validateLink(this);
-
     if (isTerminating(this)) {
       console.warn(
         new LinkError(
@@ -90,7 +87,7 @@ export abstract class ApolloLink {
       );
       return this;
     }
-    const nextLink = validateLink(toLink(next));
+    const nextLink = toLink(next);
 
     if (isTerminating(nextLink)) {
       return new FunctionLink(
