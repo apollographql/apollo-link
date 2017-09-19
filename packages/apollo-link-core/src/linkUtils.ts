@@ -5,13 +5,14 @@ import { ApolloLink, FunctionLink } from './link';
 import Observable from 'zen-observable-ts';
 
 export function validateLink(link: ApolloLink): ApolloLink {
-  if (link instanceof ApolloLink && typeof link.request === 'function') {
-    return link;
+  if (typeof link.split !== 'function' && typeof link.concat !== 'function') {
+    throw new LinkError('Link does not seem to be a ApolloLink object', link);
   } else {
-    throw new LinkError(
-      'Link does not extend ApolloLink and implement request',
-      link,
-    );
+    if (typeof link.request === 'function') {
+      return link;
+    } else {
+      throw new LinkError('Link does not implement request', link);
+    }
   }
 }
 
