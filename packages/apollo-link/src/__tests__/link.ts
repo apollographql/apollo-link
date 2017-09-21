@@ -1,7 +1,7 @@
 import Observable from 'zen-observable-ts';
 import gql from 'graphql-tag';
 
-import { execute, ApolloLink, fold, split, concat } from '../link';
+import { execute, ApolloLink, from, split, concat } from '../link';
 import { MockLink, SetContextLink, testLinkResults } from '../test-utils';
 import { FetchResult, Operation, NextLink } from '../types';
 
@@ -367,7 +367,7 @@ describe('Link static library', () => {
     };
 
     it('should create an observable that completes when passed an empty array', done => {
-      const observable = execute(fold([]), {
+      const observable = execute(from([]), {
         query: sampleQuery,
       });
       observable.subscribe(() => expect(false), () => expect(false), done);
