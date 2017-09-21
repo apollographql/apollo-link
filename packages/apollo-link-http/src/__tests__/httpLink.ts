@@ -128,9 +128,13 @@ describe('HttpLink', () => {
     setTimeout(done, 50);
   });
 
-  const verifyRequest = (link: ApolloLink, after: () => void) => {
+  const verifyRequest = (
+    link: ApolloLink,
+    after: () => void,
+    includeExtensions: boolean = false,
+  ) => {
     const next = jest.fn();
-    const context = { info: 'stub' };
+    const context = { info: 'stub', includeExtensions: includeExtensions };
     const variables = { params: 'stub' };
 
     const observable = execute(link, {
@@ -144,8 +148,13 @@ describe('HttpLink', () => {
       complete: () => {
         const body = JSON.parse(fetchMock.lastCall()[1].body);
         expect(body.query).toBe(print(sampleMutation));
-        expect(body.context).toEqual(context);
         expect(body.variables).toEqual(variables);
+        expect(body.context).not.toBeDefined();
+        if (includeExtensions) {
+          expect(body.extensions).toBeDefined();
+        } else {
+          expect(body.extensions).not.toBeDefined();
+        }
 
         expect(next).toHaveBeenCalledTimes(1);
 
@@ -154,7 +163,12 @@ describe('HttpLink', () => {
     });
   };
 
-  it('passes all arguments to multiple fetch body', done => {
+  it('passes all arguments to multiple fetch body including extensions', done => {
+    const link = new HttpLink({ uri: 'data' });
+    verifyRequest(link, () => verifyRequest(link, done, true));
+  });
+
+  it('passes all arguments to multiple fetch body excluding extensions', done => {
     const link = new HttpLink({ uri: 'data' });
     verifyRequest(link, () => verifyRequest(link, done));
   });

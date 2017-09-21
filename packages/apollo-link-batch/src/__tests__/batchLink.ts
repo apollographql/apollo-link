@@ -354,6 +354,6 @@ describe('BatchLink', () => {
     const link = ApolloLink.from([
       new BatchLink({ batchHandler: () => Observable.of() }),
     ]);
-    execute(link, {});
+    execute(link, { query: '1234' });
   });
 });

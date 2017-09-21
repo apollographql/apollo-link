@@ -123,7 +123,7 @@ export function execute(
   link: ApolloLink,
   operation: GraphQLRequest,
 ): Observable<FetchResult> {
-  const copy = { context: {}, variables: {}, ...operation };
+  const copy = { context: {}, variables: {}, extensions: {}, ...operation };
   validateOperation(copy);
 
   return link.request(transformOperation(copy)) || Observable.of();
