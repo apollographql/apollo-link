@@ -1,27 +1,25 @@
-sudo: false
-
 language: node_js
-
 node_js:
-  - 6
+  - "8"
 
-cache:
-  directories:
-    - node_modules
+install:
+  - npm run bootstrap
+  - npm prune
+
+script:
+  - npm run danger
+
+    # using jest --coverage also runs the tests so this will cut down CI time
+  - npm run coverage
+
+    # run coverage and file size checks
+  - npm run coverage:upload || true #ignore failures
+
+    # make sure files don't get too large
+  - npm run filesize
+
+# Allow Travis tests to run in containers.
+sudo: false
 
 notifications:
   email: false
-
-before_install:
-  - npm install -g coveralls lerna
-  - lerna run -- prune
-
-install:
-  - lerna bootstrap
-
-script:
-  - npm test
-
-after_success:
-  - npm run coverage
-  - coveralls < ./coverage/lcov.info || true
