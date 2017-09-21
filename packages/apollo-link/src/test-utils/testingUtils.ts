@@ -1,4 +1,4 @@
-import * as Links from '../link';
+import { execute, ApolloLink } from '../link';
 
 const sampleQuery = `
 query SampleQuery {
@@ -14,7 +14,7 @@ export function checkCalls<T>(calls: any[] = [], results: Array<T>) {
 }
 
 export interface TestResultType {
-  link: Links.ApolloLink;
+  link: ApolloLink;
   results?: any[];
   query?: string;
   done?: () => void;
@@ -29,7 +29,7 @@ export function testLinkResults(params: TestResultType) {
   const done = params.done || (() => void 0);
 
   const spy = jest.fn();
-  Links.execute(link, { query, context, variables }).subscribe({
+  execute(link, { query, context, variables }).subscribe({
     next: spy,
     error: error => {
       expect(error).toEqual(results.pop());
