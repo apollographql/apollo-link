@@ -364,6 +364,7 @@ describe('Link static library', () => {
       query: sampleQuery,
       context: { name: 'uniqueName' },
       operationName: 'SampleQuery',
+      extensions: {},
     };
 
     it('should create an observable that completes when passed an empty array', done => {
@@ -781,9 +782,11 @@ describe('Link static library', () => {
           expect(operation['operationName']).toBeUndefined();
           expect(operation['variables']).toBeUndefined();
           expect(operation['context']).toBeUndefined();
+          expect(operation['extensions']).toBeUndefined();
           expect(op['operationName']).toBeDefined();
           expect(op['variables']).toBeDefined();
           expect(op['context']).toBeDefined();
+          expect(op['extensions']).toBeDefined();
           return Observable.of();
         },
       ]);

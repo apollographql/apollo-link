@@ -5,7 +5,13 @@ import { GraphQLRequest, Operation } from './types';
 import { ApolloLink } from './link';
 
 export function validateOperation(operation: GraphQLRequest): GraphQLRequest {
-  const OPERATION_FIELDS = ['query', 'operationName', 'variables', 'context'];
+  const OPERATION_FIELDS = [
+    'query',
+    'operationName',
+    'variables',
+    'context',
+    'extensions',
+  ];
   if (!operation.query) throw new Error('ApolloLink requires a query');
   for (let key of Object.keys(operation)) {
     if (OPERATION_FIELDS.indexOf(key) < 0) {
