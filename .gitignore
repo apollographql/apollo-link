@@ -53,3 +53,6 @@ package-lock.json
 # Compiled
 dist
 lib
+
+
+.idea
