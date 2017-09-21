@@ -4,15 +4,12 @@ import { ExecutionResult, DocumentNode } from 'graphql';
 export interface GraphQLRequest {
   query?: string | DocumentNode;
   variables?: Record<string, any>;
-  context?: Record<string, any>;
-}
-
-export interface Operation {
-  query: DocumentNode;
-  variables?: Record<string, any>;
   operationName?: string;
   context?: Record<string, any>;
 }
+
+// backwards compat
+export type Operation = GraphQLRequest;
 
 export type FetchResult<
   C = Record<string, any>,

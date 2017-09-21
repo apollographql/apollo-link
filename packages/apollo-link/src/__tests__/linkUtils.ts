@@ -11,10 +11,18 @@ describe('Link utilities:', () => {
       ).toThrow();
     });
 
+    it('should throw when missing a query of some kind', () => {
+      expect(() =>
+        LinkUtils.validateOperation(<any>{
+          query: '',
+        }),
+      ).toThrow();
+    });
+
     it('should not throw when valid fields in operation', () => {
       expect(() =>
         LinkUtils.validateOperation({
-          query: '',
+          query: '1234',
           context: {},
           variables: {},
         }),
