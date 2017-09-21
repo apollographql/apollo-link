@@ -1,15 +1,17 @@
 import Observable from 'zen-observable-ts';
 import gql from 'graphql-tag';
 
-import { execute, ApolloLink } from '../link';
+import { execute, ApolloLink, fold, split, concat } from '../link';
 import { MockLink, SetContextLink, testLinkResults } from '../test-utils';
 import { FetchResult, Operation, NextLink } from '../types';
 
-const sampleQuery = `query SampleQuery{
-  stub{
-    id
+const sampleQuery = gql`
+  query SampleQuery {
+    stub {
+      id
+    }
   }
-}`;
+`;
 
 describe('ApolloLink(abstract class)', () => {
   const setContext = () => ({ add: 1 });
@@ -359,14 +361,14 @@ describe('ApolloLink(abstract class)', () => {
 describe('Link static library', () => {
   describe('from', () => {
     const uniqueOperation: Operation = {
-      query: gql(sampleQuery),
+      query: sampleQuery,
       context: { name: 'uniqueName' },
-      operationName: 'sampleQuery',
+      operationName: 'SampleQuery',
     };
 
     it('should create an observable that completes when passed an empty array', done => {
-      const observable = execute(ApolloLink.from([]), {
-        query: gql(sampleQuery),
+      const observable = execute(fold([]), {
+        query: sampleQuery,
       });
       observable.subscribe(() => expect(false), () => expect(false), done);
     });
@@ -403,28 +405,28 @@ describe('Link static library', () => {
       });
     });
 
-    it('should accept sting query and pass AST to link', () => {
-      const astOperation = {
+    it('should accept sting query and pass string to link', () => {
+      const operation1 = {
         ...uniqueOperation,
-        query: gql(sampleQuery),
+        query: '1234',
       };
 
-      const operation = {
+      const operation2 = {
         ...uniqueOperation,
-        query: sampleQuery,
+        query: '1234',
       };
 
       const stub = jest.fn();
       const chain = ApolloLink.from([new MockLink(stub)]);
-      execute(chain, operation);
+      execute(chain, operation1);
 
-      expect(stub).toBeCalledWith({ ...astOperation, variables: {} });
+      expect(stub).toBeCalledWith({ ...operation2, variables: {} });
     });
 
     it('should accept AST query and pass AST to link', () => {
       const astOperation = {
         ...uniqueOperation,
-        query: gql(sampleQuery),
+        query: sampleQuery,
       };
 
       const stub = jest.fn();
@@ -440,13 +442,13 @@ describe('Link static library', () => {
         new MockLink((op, forward) =>
           forward({
             ...op,
-            query: gql(sampleQuery),
+            query: sampleQuery,
           }),
         ),
         new MockLink(op => {
           expect({
             ...uniqueOperation,
-            query: gql(sampleQuery),
+            query: sampleQuery,
             variables: {},
           }).toEqual(op);
           return done();
@@ -560,7 +562,7 @@ describe('Link static library', () => {
 
   describe('split', () => {
     it('should create filter when single link passed in', done => {
-      const link = ApolloLink.split(
+      const link = split(
         operation => operation.context.test,
         (operation, forward) => Observable.of({ data: { count: 1 } }),
       );
@@ -773,14 +775,12 @@ describe('Link static library', () => {
     });
 
     it('should set a default context, variable, query and operationName on a copy of operation', done => {
-      const operation = {};
+      const operation = { query: '1234' };
       const link = ApolloLink.from([
         op => {
-          expect(operation['query']).toBeUndefined();
           expect(operation['operationName']).toBeUndefined();
           expect(operation['variables']).toBeUndefined();
           expect(operation['context']).toBeUndefined();
-          expect(op['query']).toBeDefined();
           expect(op['operationName']).toBeDefined();
           expect(op['variables']).toBeDefined();
           expect(op['context']).toBeDefined();
@@ -820,8 +820,8 @@ describe('Terminating links', () => {
 
   describe('concat', () => {
     it('should warn if attempting to concat to a terminating Link from function', () => {
-      const link = ApolloLink.from([operation => Observable.of({ data })]);
-      expect(link.concat((operation, forward) => forward(operation))).toEqual(
+      const link = new ApolloLink(operation => Observable.of({ data }));
+      expect(concat(link, (operation, forward) => forward(operation))).toEqual(
         link,
       );
       expect(warningStub).toHaveBeenCalledTimes(1);
