@@ -5,10 +5,10 @@
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [],
   "license": "MIT",
-  "main": "./dist/src/bundle.umd.js",
-  "module": "./dist/src/zenObservable.js",
-  "jsnext:main": "./dist/src/zenObservable.js",
-  "typings": "./dist/src/zenObservable.d.ts",
+  "main": "./lib/bundle.umd.js",
+  "module": "./lib/zenObservable.js",
+  "jsnext:main": "./lib/zenObservable.js",
+  "typings": "./lib/zenObservable.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-link.git"
@@ -18,44 +18,38 @@
   },
   "homepage": "https://github.com/zenparsing/zen-observable",
   "scripts": {
-    "pretest": "npm run build-test",
-    "test": "npm run test-only --",
-    "posttest": "npm run lint",
-    "test-only": "mocha --reporter spec --full-trace dist/tests/tests.js",
-    "test-watch":
-      "mocha --reporter spec --full-trace dist/tests/tests.js --watch",
-    "coverage":
-      "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot --full-trace dist/tests/tests.js",
-    "postcoverage":
-      "remap-istanbul --input coverage/coverage.json --type lcovonly --output coverage/lcov.info",
-    "lint":
-      "tslint --type-check -p tsconfig.test.json src/*.ts && tslint --type-check -p tsconfig.test.json tests/*.ts",
-    "prebuild": "npm run clean:dist",
+    "build:browser":
+      "browserify ./lib/bundle.umd.js -o=./lib/bundle.js && npm run minify:browser",
     "build": "tsc -p .",
-    "build-test": "tsc -p tsconfig.test.json",
-    "postbuild": "npm run bundle",
-    "postbuild-test": "npm run bundle",
     "bundle": "rollup -c",
-    "watch": "tsc -w -p .",
-    "clean": "npm run clean:dist && npm run clean:coverage",
-    "clean:dist": "rimraf dist/*",
-    "clean:coverage": "rimraf coverage/*",
-    "prepublishOnly": "npm run clean && npm run build"
+    "clean": "rimraf lib/* && rimraf coverage/*",
+    "filesize": "npm run build && npm run build:browser",
+    "lint":
+      "tslint --type-check -p tsconfig.json -c ../../tslint.json src/*.ts",
+    "minify:browser":
+      "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
+    "postbuild": "npm run bundle",
+    "prebuild": "npm run clean",
+    "prepublishOnly": "npm run clean && npm run build",
+    "test": "jest",
+    "watch": "tsc -w -p ."
   },
   "devDependencies": {
-    "@types/chai": "4.0.4",
-    "@types/chai-as-promised": "0.0.31",
-    "@types/mocha": "2.2.42",
-    "chai": "4.1.1",
-    "chai-as-promised": "7.1.1",
-    "istanbul": "0.4.5",
-    "mocha": "3.5.0",
-    "remap-istanbul": "0.9.5",
+    "@types/jest": "^20.0.8",
+    "browserify": "^14.4.0",
+    "jest": "^21.1.0",
+    "ts-jest": "^21.0.1",
     "rimraf": "2.6.1",
-    "rollup": "0.45.2",
-    "sinon": "4.0.0",
-    "source-map-support": "0.4.16",
+    "rollup": "^0.45.2",
     "tslint": "5.7.0",
-    "typescript": "2.5.3"
+    "typescript": "2.5.1",
+    "uglify-js": "^3.1.1"
+  },
+  "jest": {
+    "transform": {
+      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "moduleFileExtensions": ["ts", "tsx", "js", "json"]
   }
 }
