@@ -6,6 +6,7 @@ export interface GraphQLRequest {
   variables?: Record<string, any>;
   operationName?: string;
   context?: Record<string, any>;
+  extensions?: Record<string, any>;
 }
 
 // backwards compat

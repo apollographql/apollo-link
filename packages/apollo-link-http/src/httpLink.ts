@@ -26,10 +26,16 @@ export default class HttpLink extends ApolloLink {
 
   public request(operation: Operation): Observable<FetchResult> | null {
     this.headers = (operation.context && operation.context.headers) || {};
+    const { operationName, variables, query, extensions } = operation;
     const request = {
-      ...operation,
-      query: print(operation.query),
-    };
+      operationName,
+      variables,
+      query: print(query),
+    } as any;
+
+    if (operation.context.includeExtensions && extensions) {
+      request.extensions = extensions;
+    }
 
     return new Observable<FetchResult>(observer => {
       this._fetch(request)
