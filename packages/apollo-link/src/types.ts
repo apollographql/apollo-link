@@ -2,7 +2,7 @@ import Observable from 'zen-observable-ts';
 import { ExecutionResult, DocumentNode } from 'graphql';
 
 export interface GraphQLRequest {
-  query?: string | DocumentNode;
+  query: string | DocumentNode;
   variables?: Record<string, any>;
   operationName?: string;
   context?: Record<string, any>;

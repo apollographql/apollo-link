@@ -23,7 +23,7 @@ const toLink = (handler: RequestHandler | ApolloLink) =>
 export const empty = (): ApolloLink =>
   new ApolloLink((op, forward) => Observable.of());
 
-export const fold = (links: ApolloLink[]): ApolloLink => {
+export const from = (links: ApolloLink[]): ApolloLink => {
   if (links.length === 0) return empty();
 
   return links.map(toLink).reduce((x, y) => x.concat(y));
@@ -96,9 +96,7 @@ export class ApolloLink {
   }
 
   public static empty = empty;
-  // XXX should we deprecate from in favor of fold?
-  public static from = fold;
-  public static fold = fold;
+  public static from = from;
   public static split = split;
 
   public split(
