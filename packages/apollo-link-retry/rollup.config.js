@@ -1,18 +1,15 @@
 export default {
-  entry: 'dist/src/retryLink.js',
-  dest: 'dist/src/bundle.umd.js',
+  entry: 'lib/retryLink.js',
+  dest: 'lib/bundle.umd.js',
   format: 'umd',
   sourceMap: true,
   moduleName: 'retryLink',
   exports: 'named',
-  onwarn
+  onwarn,
 };
 
 function onwarn(message) {
-  const suppressed = [
-    'UNRESOLVED_IMPORT',
-    'THIS_IS_UNDEFINED'
-  ];
+  const suppressed = ['UNRESOLVED_IMPORT', 'THIS_IS_UNDEFINED'];
 
   if (!suppressed.find(code => message.code === code)) {
     return console.warn(message.message);
