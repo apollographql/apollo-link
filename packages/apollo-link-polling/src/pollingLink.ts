@@ -5,7 +5,7 @@ import {
   FetchResult,
   Observable,
   ZenObservable,
-} from 'apollo-link-core';
+} from 'apollo-link';
 
 export default class PollingLink extends ApolloLink {
   private pollInterval: (operation: Operation) => number | null;

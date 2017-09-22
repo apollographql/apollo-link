@@ -17,7 +17,10 @@ describe('map', () => {
 
   it('throws on not a function', () => {
     return assert.throws(
-      () => Observable.from([1, 2, 3, 4]).map(<any>1).forEach(x => void 0).then,
+      () =>
+        Observable.from([1, 2, 3, 4])
+          .map(<any>1)
+          .forEach(x => void 0).then,
     );
   });
 

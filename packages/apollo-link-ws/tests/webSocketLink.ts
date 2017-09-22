@@ -2,10 +2,10 @@ import { assert } from 'chai';
 import * as sinon from 'sinon';
 import WebSocketLink from '../src/webSocketLink';
 import { SubscriptionClient } from 'subscriptions-transport-ws';
-import { Observable } from 'apollo-link-core';
+import { Observable } from 'apollo-link';
 import { ExecutionResult } from 'graphql';
 
-import { execute } from 'apollo-link-core';
+import { execute } from 'apollo-link';
 
 const query = `
   query SampleQuery {

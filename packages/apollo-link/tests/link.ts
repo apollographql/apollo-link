@@ -419,10 +419,13 @@ describe('Link static library', () => {
         query: sampleQuery,
       };
 
-      const stub = sinon.stub().withArgs(astOperation).callsFake(op => {
-        assert.deepEqual({ ...astOperation, variables: {} }, op);
-        done();
-      });
+      const stub = sinon
+        .stub()
+        .withArgs(astOperation)
+        .callsFake(op => {
+          assert.deepEqual({ ...astOperation, variables: {} }, op);
+          done();
+        });
 
       const chain = ApolloLink.from([new MockLink(stub)]);
       execute(chain, operation);
@@ -434,10 +437,13 @@ describe('Link static library', () => {
         query: gql(sampleQuery),
       };
 
-      const stub = sinon.stub().withArgs(astOperation).callsFake(op => {
-        assert.deepEqual({ ...astOperation, variables: {} }, op);
-        done();
-      });
+      const stub = sinon
+        .stub()
+        .withArgs(astOperation)
+        .callsFake(op => {
+          assert.deepEqual({ ...astOperation, variables: {} }, op);
+          done();
+        });
 
       const chain = ApolloLink.from([new MockLink(stub)]);
       execute(chain, astOperation);

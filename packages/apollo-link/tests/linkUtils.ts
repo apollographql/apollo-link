@@ -7,11 +7,9 @@ describe('Link utilities:', () => {
   describe('validateOperation', () => {
     it('should throw when invalid field in operation', () => {
       assert.throws(() =>
-        LinkUtils.validateOperation(
-          <any>{
-            qwerty: '',
-          },
-        ),
+        LinkUtils.validateOperation(<any>{
+          qwerty: '',
+        }),
       );
     });
 

@@ -4,7 +4,7 @@ import {
   Operation,
   NextLink,
   FetchResult,
-} from 'apollo-link-core';
+} from 'apollo-link';
 
 export default class SetContextLink extends ApolloLink {
   constructor(

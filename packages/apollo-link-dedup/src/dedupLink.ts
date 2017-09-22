@@ -4,7 +4,7 @@ import {
   NextLink,
   FetchResult,
   Observable,
-} from 'apollo-link-core';
+} from 'apollo-link';
 
 import { print } from 'graphql/language/printer';
 
@@ -34,8 +34,8 @@ export default class DedupLink extends ApolloLink {
     if (!this.inFlightRequestObservables[key]) {
       this.inFlightRequestObservables[key] = forward(operation);
     }
-    return new Observable<FetchResult>(observer =>
-      this.inFlightRequestObservables[key].subscribe({
+    return new Observable<FetchResult>(observer => {
+      const subscription = this.inFlightRequestObservables[key].subscribe({
         next: observer.next.bind(observer),
         error: error => {
           delete this.inFlightRequestObservables[key];
@@ -45,8 +45,15 @@ export default class DedupLink extends ApolloLink {
           delete this.inFlightRequestObservables[key];
           observer.complete();
         },
-      }),
-    );
+      });
+
+      return () => {
+        if (subscription) {
+          subscription.unsubscribe();
+        }
+        delete this.inFlightRequestObservables[key];
+      };
+    });
   }
 
   private getKey(operation: Operation) {

@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import DedupLink from '../src/dedupLink';
 
-import { ApolloLink, execute, Operation, Observable } from 'apollo-link-core';
+import { ApolloLink, execute, Operation, Observable } from 'apollo-link';
 
 import gql from 'graphql-tag';
 
