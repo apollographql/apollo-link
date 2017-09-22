@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "apollo-fetch": "^0.6.0",
-    "graphql": "^0.10.5"
+    "graphql": "^0.11.0"
   },
   "peerDependencies": {
     "apollo-link": "^0.6.1-beta.1"
