@@ -67,7 +67,7 @@
     "infuse.js": "2.0.2",
     "istanbul": "0.4.5",
     "lodash": "4.17.4",
-    "mocha": "3.5.0",
+    "mocha": "3.5.3",
     "remap-istanbul": "0.9.5",
     "rimraf": "2.6.1",
     "rollup": "0.45.2",
