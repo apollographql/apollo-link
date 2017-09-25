@@ -134,7 +134,7 @@ describe('HttpLink', () => {
     includeExtensions: boolean = false,
   ) => {
     const next = jest.fn();
-    const context = { info: 'stub', includeExtensions: includeExtensions };
+    const context = { info: 'stub' };
     const variables = { params: 'stub' };
 
     const observable = execute(link, {
@@ -155,7 +155,6 @@ describe('HttpLink', () => {
         } else {
           expect(body.extensions).not.toBeDefined();
         }
-
         expect(next).toHaveBeenCalledTimes(1);
 
         after();
@@ -164,8 +163,8 @@ describe('HttpLink', () => {
   };
 
   it('passes all arguments to multiple fetch body including extensions', done => {
-    const link = new HttpLink({ uri: 'data' });
-    verifyRequest(link, () => verifyRequest(link, done, true));
+    const link = new HttpLink({ uri: 'data', includeExtensions: true });
+    verifyRequest(link, () => verifyRequest(link, done, true), true);
   });
 
   it('passes all arguments to multiple fetch body excluding extensions', done => {
