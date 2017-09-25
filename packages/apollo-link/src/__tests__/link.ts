@@ -1,5 +1,6 @@
 import Observable from 'zen-observable-ts';
 import gql from 'graphql-tag';
+import { print } from 'graphql/language/printer';
 
 import { execute, ApolloLink, from, split, concat } from '../link';
 import { MockLink, SetContextLink, testLinkResults } from '../test-utils';
@@ -19,9 +20,9 @@ describe('ApolloLink(abstract class)', () => {
   describe('concat', () => {
     it('should concat a function', done => {
       const returnOne = new SetContextLink(setContext);
-      const link = returnOne.concat((operation, forward) =>
-        Observable.of({ data: { count: operation.context.add } }),
-      );
+      const link = returnOne.concat((operation, forward) => {
+        return Observable.of({ data: { count: operation.getContext().add } });
+      });
 
       testLinkResults({
         link,
@@ -32,7 +33,9 @@ describe('ApolloLink(abstract class)', () => {
 
     it('should concat a Link', done => {
       const returnOne = new SetContextLink(setContext);
-      const mock = new MockLink(op => Observable.of({ data: op.context.add }));
+      const mock = new MockLink(op =>
+        Observable.of({ data: op.getContext().add }),
+      );
       const link = returnOne.concat(mock);
 
       testLinkResults({
@@ -48,7 +51,7 @@ describe('ApolloLink(abstract class)', () => {
       const mock = new MockLink(
         op =>
           new Observable(observer => {
-            observer.next({ data: op.context.add });
+            observer.next({ data: op.getContext().add });
             observer.error(error);
           }),
       );
@@ -64,16 +67,11 @@ describe('ApolloLink(abstract class)', () => {
     it('should concat a Link and function', done => {
       const returnOne = new SetContextLink(setContext);
       const mock = new MockLink((op, forward) => {
-        let _op = {
-          ...op,
-          context: {
-            add: op.context.add + 2,
-          },
-        };
-        return forward(_op);
+        op.setContext(({ add }) => ({ add: add + 2 }));
+        return forward(op);
       });
       const link = returnOne.concat(mock).concat(op => {
-        return Observable.of({ data: op.context.add });
+        return Observable.of({ data: op.getContext().add });
       });
 
       testLinkResults({
@@ -86,17 +84,14 @@ describe('ApolloLink(abstract class)', () => {
     it('should concat a function and Link', done => {
       const returnOne = new SetContextLink(setContext);
       const mock = new MockLink((op, forward) =>
-        Observable.of({ data: op.context.add }),
+        Observable.of({ data: op.getContext().add }),
       );
 
       const link = returnOne
         .concat((operation, forward) => {
-          operation = {
-            ...operation,
-            context: {
-              add: operation.context.add + 2,
-            },
-          };
+          operation.setContext({
+            add: operation.getContext().add + 2,
+          });
           return forward(operation);
         })
         .concat(mock);
@@ -111,15 +106,12 @@ describe('ApolloLink(abstract class)', () => {
       const returnOne = new SetContextLink(setContext);
       const link = returnOne
         .concat((operation, forward) => {
-          operation = {
-            ...operation,
-            context: {
-              add: operation.context.add + 2,
-            },
-          };
+          operation.setContext({
+            add: operation.getContext().add + 2,
+          });
           return forward(operation);
         })
-        .concat((op, forward) => Observable.of({ data: op.context.add }));
+        .concat((op, forward) => Observable.of({ data: op.getContext().add }));
       testLinkResults({
         link,
         results: [3],
@@ -130,16 +122,13 @@ describe('ApolloLink(abstract class)', () => {
     it('should concat two Links', done => {
       const returnOne = new SetContextLink(setContext);
       const mock1 = new MockLink((operation, forward) => {
-        operation = {
-          ...operation,
-          context: {
-            add: operation.context.add + 2,
-          },
-        };
+        operation.setContext({
+          add: operation.getContext().add + 2,
+        });
         return forward(operation);
       });
       const mock2 = new MockLink((op, forward) =>
-        Observable.of({ data: op.context.add }),
+        Observable.of({ data: op.getContext().add }),
       );
 
       const link = returnOne.concat(mock1).concat(mock2);
@@ -153,19 +142,16 @@ describe('ApolloLink(abstract class)', () => {
     it("should return an link that can be concat'd multiple times", done => {
       const returnOne = new SetContextLink(setContext);
       const mock1 = new MockLink((operation, forward) => {
-        operation = {
-          ...operation,
-          context: {
-            add: operation.context.add + 2,
-          },
-        };
+        operation.setContext({
+          add: operation.getContext().add + 2,
+        });
         return forward(operation);
       });
       const mock2 = new MockLink((op, forward) =>
-        Observable.of({ data: op.context.add + 2 }),
+        Observable.of({ data: op.getContext().add + 2 }),
       );
       const mock3 = new MockLink((op, forward) =>
-        Observable.of({ data: op.context.add + 3 }),
+        Observable.of({ data: op.getContext().add + 3 }),
       );
       const link = returnOne.concat(mock1);
 
@@ -186,13 +172,13 @@ describe('ApolloLink(abstract class)', () => {
       const context = { add: 1 };
       const returnOne = new SetContextLink(() => context);
       const link1 = returnOne.concat((operation, forward) =>
-        Observable.of({ data: operation.context.add + 1 }),
+        Observable.of({ data: operation.getContext().add + 1 }),
       );
       const link2 = returnOne.concat((operation, forward) =>
-        Observable.of({ data: operation.context.add + 2 }),
+        Observable.of({ data: operation.getContext().add + 2 }),
       );
       const link = returnOne.split(
-        operation => operation.context.add === 1,
+        operation => operation.getContext().add === 1,
         link1,
         link2,
       );
@@ -216,16 +202,16 @@ describe('ApolloLink(abstract class)', () => {
       const returnOne = new SetContextLink(() => context);
       const link1 = returnOne.concat(
         new MockLink((operation, forward) =>
-          Observable.of({ data: operation.context.add + 1 }),
+          Observable.of({ data: operation.getContext().add + 1 }),
         ),
       );
       const link2 = returnOne.concat(
         new MockLink((operation, forward) =>
-          Observable.of({ data: operation.context.add + 2 }),
+          Observable.of({ data: operation.getContext().add + 2 }),
         ),
       );
       const link = returnOne.split(
-        operation => operation.context.add === 1,
+        operation => operation.getContext().add === 1,
         link1,
         link2,
       );
@@ -248,15 +234,15 @@ describe('ApolloLink(abstract class)', () => {
       const context = { add: 1 };
       const returnOne = new SetContextLink(() => context);
       const link1 = returnOne.concat((operation, forward) =>
-        Observable.of({ data: operation.context.add + 1 }),
+        Observable.of({ data: operation.getContext().add + 1 }),
       );
       const link2 = returnOne.concat(
         new MockLink((operation, forward) =>
-          Observable.of({ data: operation.context.add + 2 }),
+          Observable.of({ data: operation.getContext().add + 2 }),
         ),
       );
       const link = returnOne.split(
-        operation => operation.context.add === 1,
+        operation => operation.getContext().add === 1,
         link1,
         link2,
       );
@@ -280,17 +266,19 @@ describe('ApolloLink(abstract class)', () => {
       const start = new SetContextLink(() => ({ ...context }));
       const link = start
         .split(
-          operation => operation.context.test,
+          operation => operation.getContext().test,
           (operation, forward) => {
-            operation.context.add++;
+            operation.setContext(({ add }) => ({ add: add + 1 }));
             return forward(operation);
           },
           (operation, forward) => {
-            operation.context.add += 2;
+            operation.setContext(({ add }) => ({ add: add + 2 }));
             return forward(operation);
           },
         )
-        .concat(operation => Observable.of({ data: operation.context.add }));
+        .concat(operation =>
+          Observable.of({ data: operation.getContext().add }),
+        );
 
       testLinkResults({
         link,
@@ -312,7 +300,7 @@ describe('ApolloLink(abstract class)', () => {
       let context = { test: true };
       const start = new SetContextLink(() => context);
       const link = start.split(
-        operation => operation.context.test,
+        operation => operation.getContext().test,
         operation =>
           Observable.of({
             data: {
@@ -406,24 +394,6 @@ describe('Link static library', () => {
       });
     });
 
-    it('should accept sting query and pass string to link', () => {
-      const operation1 = {
-        ...uniqueOperation,
-        query: '1234',
-      };
-
-      const operation2 = {
-        ...uniqueOperation,
-        query: '1234',
-      };
-
-      const stub = jest.fn();
-      const chain = ApolloLink.from([new MockLink(stub)]);
-      execute(chain, operation1);
-
-      expect(stub).toBeCalledWith({ ...operation2, variables: {} });
-    });
-
     it('should accept AST query and pass AST to link', () => {
       const astOperation = {
         ...uniqueOperation,
@@ -435,7 +405,12 @@ describe('Link static library', () => {
       const chain = ApolloLink.from([new MockLink(stub)]);
       execute(chain, astOperation);
 
-      expect(stub).toBeCalledWith({ ...astOperation, variables: {} });
+      expect(stub).toBeCalledWith({
+        query: sampleQuery,
+        operationName: 'SampleQuery',
+        variables: {},
+        extensions: {},
+      });
     });
 
     it('should pass operation from one link to next with modifications', done => {
@@ -448,7 +423,8 @@ describe('Link static library', () => {
         ),
         new MockLink(op => {
           expect({
-            ...uniqueOperation,
+            extensions: {},
+            operationName: 'SampleQuery',
             query: sampleQuery,
             variables: {},
           }).toEqual(op);
@@ -535,12 +511,12 @@ describe('Link static library', () => {
     });
 
     it('should chain together a function with links', done => {
-      const add1 = (operation: Operation, forward: NextLink) => {
-        operation.context.num++;
+      const add1 = new ApolloLink((operation: Operation, forward: NextLink) => {
+        operation.setContext(({ num }) => ({ num: num + 1 }));
         return forward(operation);
-      };
+      });
       const add1Link = new MockLink((operation, forward) => {
-        operation.context.num++;
+        operation.setContext(({ num }) => ({ num: num + 1 }));
         return forward(operation);
       });
 
@@ -550,7 +526,9 @@ describe('Link static library', () => {
         add1Link,
         add1,
         add1Link,
-        operation => Observable.of({ data: operation.context }),
+        new ApolloLink(operation =>
+          Observable.of({ data: operation.getContext() }),
+        ),
       ]);
       testLinkResults({
         link,
@@ -564,7 +542,7 @@ describe('Link static library', () => {
   describe('split', () => {
     it('should create filter when single link passed in', done => {
       const link = split(
-        operation => operation.context.test,
+        operation => operation.getContext().test,
         (operation, forward) => Observable.of({ data: { count: 1 } }),
       );
 
@@ -588,7 +566,7 @@ describe('Link static library', () => {
 
     it('should split two functions', done => {
       const link = ApolloLink.split(
-        operation => operation.context.test,
+        operation => operation.getContext().test,
         (operation, forward) => Observable.of({ data: { count: 1 } }),
         (operation, forward) => Observable.of({ data: { count: 2 } }),
       );
@@ -613,7 +591,7 @@ describe('Link static library', () => {
 
     it('should split two Links', done => {
       const link = ApolloLink.split(
-        operation => operation.context.test,
+        operation => operation.getContext().test,
         (operation, forward) => Observable.of({ data: { count: 1 } }),
         new MockLink((operation, forward) =>
           Observable.of({ data: { count: 2 } }),
@@ -640,7 +618,7 @@ describe('Link static library', () => {
 
     it('should split a link and a function', done => {
       const link = ApolloLink.split(
-        operation => operation.context.test,
+        operation => operation.getContext().test,
         (operation, forward) => Observable.of({ data: { count: 1 } }),
         new MockLink((operation, forward) =>
           Observable.of({ data: { count: 2 } }),
@@ -668,7 +646,7 @@ describe('Link static library', () => {
     it('should allow concat after split to be join', done => {
       const context = { test: true };
       const link = ApolloLink.split(
-        operation => operation.context.test,
+        operation => operation.getContext().test,
         (operation, forward) =>
           forward(operation).map(data => ({
             data: { count: data.data.count + 1 },
@@ -694,7 +672,7 @@ describe('Link static library', () => {
     it('should allow default right to be passthrough', done => {
       const context = { test: true };
       const link = ApolloLink.split(
-        operation => operation.context.test,
+        operation => operation.getContext().test,
         operation => Observable.of({ data: { count: 2 } }),
       ).concat(operation => Observable.of({ data: { count: 1 } }));
 
@@ -759,7 +737,7 @@ describe('Link static library', () => {
     it('should return an empty observable when a split link returns null', done => {
       let context = { test: true };
       const link = new SetContextLink(() => context).split(
-        op => op.context.test,
+        op => op.getContext().test,
         () => Observable.of(),
         () => null,
       );
@@ -776,20 +754,24 @@ describe('Link static library', () => {
     });
 
     it('should set a default context, variable, query and operationName on a copy of operation', done => {
-      const operation = { query: '1234' };
-      const link = ApolloLink.from([
-        op => {
-          expect(operation['operationName']).toBeUndefined();
-          expect(operation['variables']).toBeUndefined();
-          expect(operation['context']).toBeUndefined();
-          expect(operation['extensions']).toBeUndefined();
-          expect(op['operationName']).toBeDefined();
-          expect(op['variables']).toBeDefined();
-          expect(op['context']).toBeDefined();
-          expect(op['extensions']).toBeDefined();
-          return Observable.of();
-        },
-      ]);
+      const operation = {
+        query: gql`
+          {
+            id
+          }
+        `,
+      };
+      const link = new ApolloLink(op => {
+        expect(operation['operationName']).toBeUndefined();
+        expect(operation['variables']).toBeUndefined();
+        expect(operation['context']).toBeUndefined();
+        expect(operation['extensions']).toBeUndefined();
+        expect(op['operationName']).toBeDefined();
+        expect(op['variables']).toBeDefined();
+        expect(op['context']).toBeUndefined();
+        expect(op['extensions']).toBeDefined();
+        return Observable.of();
+      });
 
       execute(link, operation).subscribe({
         complete: done,
@@ -907,9 +889,9 @@ describe('Terminating links', () => {
 
     it('should warn if attempting to add link after termination', () => {
       ApolloLink.from([
-        (operation, forward) => forward(operation),
-        operation => Observable.of({ data }),
-        (operation, forward) => forward(operation),
+        new ApolloLink((operation, forward) => forward(operation)),
+        new ApolloLink(operation => Observable.of({ data })),
+        new ApolloLink((operation, forward) => forward(operation)),
       ]);
       expect(warningStub).toHaveBeenCalledTimes(1);
     });
@@ -921,15 +903,47 @@ describe('Terminating links', () => {
         Observable.of({ data }),
       );
       ApolloLink.from([
-        (operation, forward) => forward(operation),
-        (operation, forward) => forward(operation),
+        new ApolloLink((operation, forward) => forward(operation)),
+        new ApolloLink((operation, forward) => forward(operation)),
         terminatingLink,
-        (operation, forward) => forward(operation),
-        (operation, forward) => forward(operation),
-        operation => Observable.of({ data }),
-        (operation, forward) => forward(operation),
+        new ApolloLink((operation, forward) => forward(operation)),
+        new ApolloLink((operation, forward) => forward(operation)),
+        new ApolloLink(operation => Observable.of({ data })),
+        new ApolloLink((operation, forward) => forward(operation)),
       ]);
       expect(warningStub).toHaveBeenCalledTimes(4);
     });
+  });
+});
+
+describe('execute', () => {
+  it('transforms an opearation with context into something serlizable', done => {
+    const query = gql`
+      {
+        id
+      }
+    `;
+    const link = new ApolloLink(operation => {
+      const str = JSON.stringify({
+        ...operation,
+        query: print(operation.query),
+      });
+
+      expect(str).toBe(
+        JSON.stringify({
+          variables: { id: 1 },
+          extensions: { cache: true },
+          operationName: null,
+          query: print(operation.query),
+        }),
+      );
+      return Observable.of();
+    });
+    const noop = () => {};
+    execute(link, {
+      query,
+      variables: { id: 1 },
+      extensions: { cache: true },
+    }).subscribe(noop, noop, done);
   });
 });

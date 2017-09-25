@@ -13,6 +13,7 @@ import {
   isTerminating,
   LinkError,
   transformOperation,
+  createOperation,
 } from './linkUtils';
 
 const passthrough = (op, forward) => (forward ? forward(op) : Observable.of());
@@ -88,8 +89,6 @@ export const concat = (
   }
 };
 
-// XXX add in type support for context manipulation
-// XXX remove mutability of context
 export class ApolloLink {
   constructor(request?: RequestHandler) {
     if (request) this.request = request;
@@ -123,8 +122,12 @@ export function execute(
   link: ApolloLink,
   operation: GraphQLRequest,
 ): Observable<FetchResult> {
-  const copy = { context: {}, variables: {}, extensions: {}, ...operation };
-  validateOperation(copy);
-
-  return link.request(transformOperation(copy)) || Observable.of();
+  return (
+    link.request(
+      createOperation(
+        operation.context,
+        transformOperation(validateOperation(operation)),
+      ),
+    ) || Observable.of()
+  );
 }
