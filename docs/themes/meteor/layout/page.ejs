@@ -1,0 +1,116 @@
+<% var githubUrl = 'https://github.com/' + config.github_repo +
+    '/tree/master/' + (config.content_root || 'content') + '/' +
+    page.path.replace(/\.html$/, '.md'); %>
+
+<div class="nav dark">
+  <div class="nav-group">
+    <div class="nav-item show-mobile">
+      <span class="js-sidebar-toggle ">
+        <span class="icon-menu"></span>
+      </span>
+    </div>
+    <div class="nav-item">
+      <% logo = config.logo || theme.logo %>
+      <a class="logo-wrapper" href="<%- logo.url %>" title="<%- logo.title %> <%- logo.subtitle %>" <%- logo.target && 'target=' + logo.target %> >
+        <img src="<%- relative_url(page.path, logo.nav_mobile) %>" alt="<%- logo.title %>" class="logo"/><img src="<%- relative_url(page.path, logo.subbrand) %>" class="logo-subbrand" alt="<%- logo.subtitle %>"/>
+      </a>
+    </div>
+  </div>
+
+  <div class="nav-group right">
+    <% _.each(config.nav_links || theme.nav_links, function (link, title) { %>
+      <% active = link.active || config.url === link.url %>
+      <div class="nav-item show-desktop <%- active && 'active' %> <%- link.separator && 'separator' %>">
+        <a class="link" href="<%- link.url || link %>" <%- link.target && 'target=' + link.target %> >
+          <span><%- title %></span>
+        </a>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+<%- partial('partials/sidebar') %>
+<div class="content">
+  <div class="content-wrapper">
+    <div class="header-content">
+      <h1 class="title-page"><%- page.title %></h1>
+      <% if (page.description) { %>
+        <div class="subtitle-page"><%- page.description %></div>
+      <% } %>
+
+      <div class="page-actions">
+        <div class="actions-group">
+          <a class="btn tertiary small round lowercase" href="<%- githubUrl %>" target="_blank"><span class="icon-github"></span> <span>Edit on GitHub</span></a>
+          <% if (page.discourseTopicId) { %>
+            <a class="btn tertiary small round lowercase" href="https://forums.meteor.com/t/<%- page.discourseTopicId %>"><span class="icon-comment"></span> <span>Discuss</span></a>
+          <% } %>
+          <% if (config.social_links.slackInvitePage) { %>
+            <a class="btn tertiary small round lowercase" href="<%- config.social_links.slackInvitePage %>"><img src="<%- relative_url(page.path, 'images/slack.png') %>" style="width: 12px; margin: 0 3px -2px -3px;" /> <span>Discuss on Slack</span></a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <div class="document-formatting">
+      <%- page.content %>
+    </div>
+  </div>
+
+  <div class="pagination">
+    <div class="content-wrapper">
+      <%
+        function findAdjacent (direction) {
+          var pagePaths = _.flatten(_.map(config.sidebar_categories, function(vals) { return vals; }));
+          var pages = _.map(pagePaths, function (val) { return site.pages.findOne({path: val + '.html'}); });
+          var i = pages.length
+          while (i--) {
+            if (pages[i].title === page.title) {
+              break
+            }
+          }
+          return direction > 0
+            ? pages[i + 1]
+            : pages[i - 1]
+        }
+      %>
+      <% var prev = findAdjacent(-1); if (prev) { %>
+        <a class="link primary prev"
+          href="<%- relative_url(page.path, prev.path) %>">
+          <span class="icon-arrow-left-alt"></span>
+          <span class="subtitle-pagination">Previous</span>
+          <%- prev.title %>
+        </a>
+      <% } %>
+      <% var next = findAdjacent(1); if (next) { %>
+        <a class="link primary next"
+          href="<%- relative_url(page.path, next.path) %>">
+          <span class="subtitle-pagination">Next</span>
+          <%- next.title %>
+          <span class="icon-arrow-right-alt"></span>
+        </a>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="github">
+    <a class="link tertiary " href="<%- githubUrl %>" target="_blank">
+      <span class="icon-github"></span>Edit on GitHub</a>
+  </div>
+
+  <% if (page.discourseTopicId) { %>
+    <div class="discourse-comments-wrapper content-wrapper">
+      <div id='discourse-comments'></div>
+    </div>
+
+    <script type="text/javascript">
+      DiscourseEmbed = { discourseUrl: 'http://forums.meteor.com/',
+                         topicId: <%- page.discourseTopicId %> };
+
+      (function() {
+        var d = document.createElement('script'); d.type = 'text/javascript'; d.async = true;
+        d.src = DiscourseEmbed.discourseUrl + 'javascripts/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(d);
+      })();
+    </script>
+  <% } %>
+</div>

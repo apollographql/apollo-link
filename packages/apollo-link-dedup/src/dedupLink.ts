@@ -6,8 +6,6 @@ import {
   Observable,
 } from 'apollo-link';
 
-import { print } from 'graphql/language/printer';
-
 /*
  * Expects context to contain the forceFetch field if no dedup
  */
@@ -30,7 +28,7 @@ export default class DedupLink extends ApolloLink {
       return forward(operation);
     }
 
-    const key = this.getKey(operation);
+    const key = operation.toKey();
     if (!this.inFlightRequestObservables[key]) {
       this.inFlightRequestObservables[key] = forward(operation);
     }
@@ -52,13 +50,5 @@ export default class DedupLink extends ApolloLink {
         delete this.inFlightRequestObservables[key];
       };
     });
-  }
-
-  private getKey(operation: Operation) {
-    // XXX we're assuming here that variables will be serialized in the same order.
-    // that might not always be true
-    return `${print(operation.query)}|${JSON.stringify(
-      operation.variables,
-    )}|${operation.operationName}`;
   }
 }
