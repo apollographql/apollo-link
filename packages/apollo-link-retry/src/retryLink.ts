@@ -12,15 +12,15 @@ const operationFnOrNumber = prop =>
 
 const defaultInterval = delay => delay;
 
-export type ParamFnOrNumber = (Operation) => number | number;
+export type ParamFnOrNumber = (operation: Operation) => number | number;
 
 export default class RetryLink extends ApolloLink {
-  private count: number = 0;
   private delay: ParamFnOrNumber;
   private max: ParamFnOrNumber;
   private interval: (delay: number, count: number) => number;
-  private subscription: ZenObservable.Subscription;
-  private timer;
+  private subscriptions: { [key: string]: ZenObservable.Subscription } = {};
+  private timers = {};
+  private counts: { [key: string]: number } = {};
 
   constructor(params?: {
     max?: ParamFnOrNumber;
@@ -37,19 +37,21 @@ export default class RetryLink extends ApolloLink {
     operation: Operation,
     forward: NextLink,
   ): Observable<FetchResult> {
+    const key = operation.toKey();
+    if (!this.counts[key]) this.counts[key] = 0;
     return new Observable(observer => {
       const subscriber = {
         next: data => {
-          this.count = 0;
+          this.counts[key] = 0;
           observer.next(data);
         },
         error: error => {
-          this.count++;
-          if (this.count < this.max(operation)) {
-            this.timer = setTimeout(() => {
+          this.counts[key]++;
+          if (this.counts[key] < this.max(operation)) {
+            this.timers[key] = setTimeout(() => {
               const observable = forward(operation);
-              this.subscription = observable.subscribe(subscriber);
-            }, this.interval(this.delay(operation), this.count));
+              this.subscriptions[key] = observable.subscribe(subscriber);
+            }, this.interval(this.delay(operation), this.counts[key]));
           } else {
             observer.error(error);
           }
@@ -57,11 +59,11 @@ export default class RetryLink extends ApolloLink {
         complete: observer.complete.bind(observer),
       };
 
-      this.subscription = forward(operation).subscribe(subscriber);
+      this.subscriptions[key] = forward(operation).subscribe(subscriber);
 
       return () => {
-        this.subscription.unsubscribe();
-        if (this.timer) clearTimeout(this.timer);
+        this.subscriptions[key].unsubscribe();
+        if (this.timers[key]) clearTimeout(this.timers[key]);
       };
     });
   }
