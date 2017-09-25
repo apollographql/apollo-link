@@ -3,6 +3,13 @@
 ## Purpose
 An Apollo Link to allow sending a single http request per operation.
 
+## Installation
+
+`npm install apollo-link-http --save`
+
+To use this package in a web browser or mobile app, you'll need a build system capable of loading NPM packages on the client.
+Some common choices include Browserify, Webpack, and Meteor +1.3.
+
 ## Usage
 ```js
 import HttpLink from "apollo-link-http";

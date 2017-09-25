@@ -770,6 +770,7 @@ describe('Link static library', () => {
         expect(op['variables']).toBeDefined();
         expect(op['context']).toBeUndefined();
         expect(op['extensions']).toBeDefined();
+        expect(op.toKey()).toBeDefined();
         return Observable.of();
       });
 

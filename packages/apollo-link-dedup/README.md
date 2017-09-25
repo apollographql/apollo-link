@@ -5,6 +5,13 @@ An Apollo Link to deduplicate matching requests before making a request.
 
 *NOTE* This link is included by default when using apollo-client.
 
+## Installation
+
+`npm install apollo-link-dedup --save`
+
+To use this package in a web browser or mobile app, you'll need a build system capable of loading NPM packages on the client.
+Some common choices include Browserify, Webpack, and Meteor +1.3.
+
 ## Usage
 ```js
 import DedupLink from "apollo-link-dedup";
