@@ -21,23 +21,30 @@ export default class PersistLink extends ApolloLink {
 
     this.queryMap = queryMap;
   }
-    
-  request(
+
+  public request(
     operation?: Operation,
     forward?: NextLink,
   ): Observable<FetchResult> | null {
     const queryDocument = operation.query;
     const queryKey = getQueryDocumentKey(queryDocument);
 
+    // If we are unable to find the query inside the query
+    // map, we error on the returned observable and don't
+    // proceed within the link stack.
     if (!this.queryMap[queryKey]) {
-      // TODO handle the error if the query key is not found
+      return new Observable(observer => {
+        observer.error(new Error('Could not find query inside query map.'));
+      });
     }
 
     return forward({
       query: null,
-      id: this.queryMap[queryKey],
       variables: operation.variables,
       operationName: operation.operationName,
+      context: {
+        queryId: this.queryMap[queryKey],
+      },
     } as Operation);
   }
 }
