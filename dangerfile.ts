@@ -18,7 +18,7 @@ const filesOnly = (file: string) =>
 
 // Custom subsets of known files
 const modifiedAppFiles = modified
-  .filter(p => includes(p, 'src/') || includes(p, 'test/'))
+  .filter(p => includes(p, 'src') || includes(p, '__tests__'))
   .filter(p => filesOnly(p) && typescriptOnly(p));
 
 // Takes a list of file paths, and converts it into clickable links
@@ -71,10 +71,10 @@ if (!isBot) {
 
   // When there are app-changes and it's not a PR marked as trivial, expect
   // there to be CHANGELOG changes.
-  const changelogChanges = modified.some(x => x.indexOf('CHANGELOG') > -1);
-  if (modifiedAppFiles.length > 0 && !trivialPR && !changelogChanges) {
-    fail('No CHANGELOG added.');
-  }
+  // const changelogChanges = modified.some(x => x.indexOf('CHANGELOG') > -1);
+  // if (modifiedAppFiles.length > 0 && !trivialPR && !changelogChanges) {
+  //   fail('No CHANGELOG added.');
+  // }
 
   // No PR is too small to warrant a paragraph or two of summary
   if (pr.body.length === 0) {
