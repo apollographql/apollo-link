@@ -8,10 +8,17 @@ import { print } from 'graphql/language/printer';
  */
 export default class HttpLink extends ApolloLink {
   private headers = {};
+  private includeExtensions: boolean;
   private _fetch: ApolloFetch;
 
-  constructor(fetchParams?: { uri?: string; fetch?: ApolloFetch }) {
+  constructor(fetchParams?: {
+    uri?: string;
+    fetch?: ApolloFetch;
+    includeExtensions?: boolean;
+  }) {
     super();
+    this.includeExtensions =
+      (fetchParams && fetchParams.includeExtensions) || false;
     this._fetch =
       (fetchParams && fetchParams.fetch) ||
       createApolloFetch({ uri: fetchParams && fetchParams.uri });
@@ -25,7 +32,7 @@ export default class HttpLink extends ApolloLink {
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
-    const { headers, includeExtensions } = operation.getContext();
+    const { headers } = operation.getContext();
     this.headers = headers || {};
     const { operationName, variables, query, extensions } = operation;
     const request = {
@@ -34,7 +41,7 @@ export default class HttpLink extends ApolloLink {
       query: print(query),
     } as any;
 
-    if (includeExtensions && extensions) request.extensions = extensions;
+    if (this.includeExtensions) request.extensions = extensions;
 
     return new Observable<FetchResult>(observer => {
       this._fetch(request)
