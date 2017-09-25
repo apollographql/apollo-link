@@ -17,10 +17,7 @@ export default class SetContextLink extends ApolloLink {
     operation: Operation,
     forward: NextLink,
   ): Observable<FetchResult> {
-    if (!operation.context) {
-      operation.context = {};
-    }
-    operation.context = this.setContext(operation.context);
+    operation.setContext(this.setContext(operation.getContext()));
     return forward(operation);
   }
 }

@@ -1,11 +1,12 @@
+import gql from 'graphql-tag';
 import { execute, ApolloLink } from '../link';
 
-const sampleQuery = `
-query SampleQuery {
-  stub{
-    id
+const sampleQuery = gql`
+  query SampleQuery {
+    stub {
+      id
+    }
   }
-}
 `;
 
 export function checkCalls<T>(calls: any[] = [], results: Array<T>) {

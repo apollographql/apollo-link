@@ -1,4 +1,10 @@
-import { ApolloLink, execute, Operation, Observable } from 'apollo-link';
+import {
+  ApolloLink,
+  execute,
+  Operation,
+  GraphQLRequest,
+  Observable,
+} from 'apollo-link';
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 
@@ -24,13 +30,13 @@ describe('DedupLink', () => {
     const variables1 = { x: 'Hello World' };
     const variables2 = { x: 'Goodbye World' };
 
-    const request1: Operation = {
+    const request1: GraphQLRequest = {
       query: document,
       variables: variables1,
       operationName: getOperationName(document),
     };
 
-    const request2: Operation = {
+    const request2: GraphQLRequest = {
       query: document,
       variables: variables2,
       operationName: getOperationName(document),
@@ -39,10 +45,10 @@ describe('DedupLink', () => {
     let called = 0;
     const deduper = ApolloLink.from([
       new DedupLink(),
-      () => {
+      new ApolloLink(() => {
         called += 1;
         return null;
-      },
+      }),
     ]);
 
     execute(deduper, request1);
@@ -61,7 +67,7 @@ describe('DedupLink', () => {
     let error;
     const data = { data: { data: 'some data' } };
 
-    const request: Operation = {
+    const request: GraphQLRequest = {
       query: document,
       variables: variables,
       operationName: getOperationName(document),
@@ -70,7 +76,7 @@ describe('DedupLink', () => {
     let called = 0;
     const deduper = ApolloLink.from([
       new DedupLink(),
-      () => {
+      new ApolloLink(() => {
         called += 1;
         switch (called) {
           case 1:
@@ -87,7 +93,7 @@ describe('DedupLink', () => {
             expect(false);
             return null;
         }
-      },
+      }),
     ]);
 
     execute(deduper, request).subscribe({
@@ -115,13 +121,13 @@ describe('DedupLink', () => {
     const variables1 = { x: 'Hello World' };
     const variables2 = { x: 'Hello World' };
 
-    const request1: Operation = {
+    const request1: GraphQLRequest = {
       query: document,
       variables: variables1,
       operationName: getOperationName(document),
     };
 
-    const request2: Operation = {
+    const request2: GraphQLRequest = {
       query: document,
       variables: variables2,
       operationName: getOperationName(document),
@@ -130,12 +136,12 @@ describe('DedupLink', () => {
     let called = 0;
     const deduper = ApolloLink.from([
       new DedupLink(),
-      () => {
+      new ApolloLink(() => {
         called += 1;
         return new Observable(observer => {
           setTimeout(observer.complete.bind(observer));
         });
-      },
+      }),
     ]);
 
     execute(deduper, request1).subscribe({});
@@ -152,7 +158,7 @@ describe('DedupLink', () => {
     const variables1 = { x: 'Hello World' };
     const variables2 = { x: 'Hello World' };
 
-    const request1: Operation = {
+    const request1: GraphQLRequest = {
       query: document,
       variables: variables1,
       operationName: getOperationName(document),
@@ -161,7 +167,7 @@ describe('DedupLink', () => {
       },
     };
 
-    const request2: Operation = {
+    const request2: GraphQLRequest = {
       query: document,
       variables: variables2,
       operationName: getOperationName(document),
@@ -173,10 +179,10 @@ describe('DedupLink', () => {
     let called = 0;
     const deduper = ApolloLink.from([
       new DedupLink(),
-      () => {
+      new ApolloLink(() => {
         called += 1;
         return null;
-      },
+      }),
     ]);
 
     execute(deduper, request1).subscribe({});
@@ -192,13 +198,13 @@ describe('DedupLink', () => {
     const variables1 = { x: 'Hello World' };
     const variables2 = { x: 'Hello World' };
 
-    const request1: Operation = {
+    const request1: GraphQLRequest = {
       query: document,
       variables: variables1,
       operationName: getOperationName(document),
     };
 
-    const request2: Operation = {
+    const request2: GraphQLRequest = {
       query: document,
       variables: variables2,
       operationName: getOperationName(document),
@@ -207,13 +213,13 @@ describe('DedupLink', () => {
     let unsubscribed = false;
     const deduper = ApolloLink.from([
       new DedupLink(),
-      () => {
+      new ApolloLink(() => {
         return new Observable(() => {
           return () => {
             unsubscribed = true;
           };
         });
-      },
+      }),
     ]);
 
     const sub1 = execute(deduper, request1).subscribe({});
