@@ -2,15 +2,21 @@ import Observable from 'zen-observable-ts';
 import { ExecutionResult, DocumentNode } from 'graphql';
 
 export interface GraphQLRequest {
-  query: string | DocumentNode;
+  query: DocumentNode;
   variables?: Record<string, any>;
   operationName?: string;
   context?: Record<string, any>;
   extensions?: Record<string, any>;
 }
 
-// backwards compat
-export type Operation = GraphQLRequest;
+export interface Operation {
+  query: DocumentNode;
+  variables: Record<string, any>;
+  operationName: string;
+  extensions: Record<string, any>;
+  setContext: (context: Record<string, any>) => Record<string, any>;
+  getContext: () => Record<string, any>;
+}
 
 export type FetchResult<
   C = Record<string, any>,

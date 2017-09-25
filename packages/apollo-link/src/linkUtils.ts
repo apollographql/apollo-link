@@ -9,8 +9,8 @@ export function validateOperation(operation: GraphQLRequest): GraphQLRequest {
     'query',
     'operationName',
     'variables',
-    'context',
     'extensions',
+    'context',
   ];
   if (!operation.query) throw new Error('ApolloLink requires a query');
   for (let key of Object.keys(operation)) {
@@ -53,8 +53,13 @@ export function makePromise<R>(observable: Observable<R>): Promise<R> {
   });
 }
 
-export function transformOperation(operation: GraphQLRequest): Operation {
-  const transformedOperation: Operation = { ...operation };
+export function transformOperation(operation: GraphQLRequest): GraphQLRequest {
+  const transformedOperation: GraphQLRequest = {
+    variables: operation.variables || {},
+    extensions: operation.extensions || {},
+    operationName: operation.operationName,
+    query: operation.query,
+  };
 
   // best guess at an operation name
   if (!transformedOperation.operationName) {
@@ -65,4 +70,31 @@ export function transformOperation(operation: GraphQLRequest): Operation {
   }
 
   return transformedOperation as Operation;
+}
+
+export function createOperation(
+  starting: any,
+  operation: GraphQLRequest,
+): Operation {
+  let context = { ...starting };
+  const setContext = next => {
+    if (typeof next === 'function') {
+      context = next(context);
+    } else {
+      context = { ...next };
+    }
+  };
+  const getContext = () => ({ ...context });
+
+  Object.defineProperty(operation, 'setContext', {
+    enumerable: false,
+    value: setContext,
+  });
+
+  Object.defineProperty(operation, 'getContext', {
+    enumerable: false,
+    value: getContext,
+  });
+
+  return operation as Operation;
 }
