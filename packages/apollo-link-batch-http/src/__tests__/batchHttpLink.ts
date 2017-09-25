@@ -105,10 +105,12 @@ describe('BatchHttpLink', () => {
       },
     ];
 
+    let middleware = [];
     const apolloFetch: any = operations => {
       expect(Array.isArray(operations)).toBeTruthy();
       expect(operations.length).toEqual(1);
       expect(operations[0].query).toEqual(print(operation.query));
+      middleware.forEach(x => x());
       return makePromise(
         new Observable(observer => {
           observer.next(results);
@@ -118,7 +120,13 @@ describe('BatchHttpLink', () => {
     };
     (apolloFetch as any).use = () => void 0;
     (apolloFetch as any).useAfter = () => void 0;
-    (apolloFetch as any).batchUse = () => void 0;
+    (apolloFetch as any).batchUse = fn => {
+      const request = { options: { headers: {} } } as any;
+      const next = () => {
+        expect(request.options.headers.foo).toEqual(true);
+      };
+      middleware.push(() => fn(request, next));
+    };
     (apolloFetch as any).batchUseAfter = () => void 0;
 
     const link = ApolloLink.from([
@@ -129,7 +137,12 @@ describe('BatchHttpLink', () => {
 
     const next = jest.fn();
 
-    execute(link, operation).subscribe({
+    execute(link, {
+      ...operation,
+      context: {
+        headers: { foo: true },
+      },
+    }).subscribe({
       next,
       complete: () => {
         expect(next).toBeCalledWith(results[0]);

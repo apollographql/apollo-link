@@ -26,7 +26,7 @@ export default class DedupLink extends ApolloLink {
     forward: NextLink,
   ): Observable<FetchResult> {
     // sometimes we might not want to deduplicate a request, for example when we want to force fetch it.
-    if (operation.context.forceFetch) {
+    if (operation.getContext().forceFetch) {
       return forward(operation);
     }
 
@@ -48,9 +48,7 @@ export default class DedupLink extends ApolloLink {
       });
 
       return () => {
-        if (subscription) {
-          subscription.unsubscribe();
-        }
+        if (subscription) subscription.unsubscribe();
         delete this.inFlightRequestObservables[key];
       };
     });
