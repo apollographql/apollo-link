@@ -14,7 +14,8 @@ interface Operation {
   operationName: string;
   extensions?: { [key: string]: any };
   getContext(): Context;
-  setContext(newContext: Context | (prevContext: Context) => Context): void
+  setContext(newContext: Context | (prevContext: Context) => Context): void;
+  toKey(): string;
 }
 
 // this is what makes up an Apollo Link
@@ -41,13 +42,13 @@ Since link chains have to fetch data at some point, they have the concept of a `
 
 <h3 id="composition">Compostion</h3>
 
-Links are designed to be composed together to form control flow chains to manage a GraphQL operation request. They can be used as middleware to perform side effects, modify the operation, or even just provide developer tools like logging. They can be afterware which process the result of an operation, handle errors, or even save the data to multiple locations. Links can make network requests including HTTP, websockets, and even across the react-native bridge to the native thread for resolution of some kind. 
+Links are designed to be composed together to form control flow chains to manage a GraphQL operation request. They can be used as middleware to perform side effects, modify the operation, or even just provide developer tools like logging. They can be afterware which process the result of an operation, handle errors, or even save the data to multiple locations. Links can make network requests including HTTP, websockets, and even across the react-native bridge to the native thread for resolution of some kind.
 
 Composition is done using helper functions exported from the `apollo-link` package, or conviently located on the `ApolloLink` class itself. These helpers are explained more [here](./links/composition)
 
 <h3 id="context">Context</h3>
 
-Since links are meant to be composed, they need an easy way to send metadata about the request down the chain of links. They also needed a way for the operation to send specific information to a link no matter where it was added to the chain. To acomplish this, each `Operation` has a `context` object which can be set from the operation while being written and read by each link. The context is read by using `operation.getContext()` and written using `operation.setContext(newContext)` or `operation.setContext((prevContext) => newContext)`. For example:
+Since links are meant to be composed, they need an easy way to send metadata about the request down the chain of links. They also need a way for the operation to send specific information to a link no matter where it was added to the chain. To accomplish this, each `Operation` has a `context` object which can be set from the operation while being written and read by each link. The context is read by using `operation.getContext()` and written using `operation.setContext(newContext)` or `operation.setContext((prevContext) => newContext)`. For example:
 
 ```js
 const link = new ApolloLink((operation, forward) => {
