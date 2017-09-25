@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai';
 import * as sinon from 'sinon';
 import gql from 'graphql-tag';
-import { execute, ApolloLink, Observable, FetchResult } from 'apollo-link-core';
+import { execute, ApolloLink, Observable, FetchResult } from 'apollo-link';
 
 import RetryLink from '../src/retryLink';
 

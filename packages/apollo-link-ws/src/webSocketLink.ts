@@ -1,9 +1,4 @@
-import {
-  ApolloLink,
-  Operation,
-  FetchResult,
-  Observable,
-} from 'apollo-link-core';
+import { ApolloLink, Operation, FetchResult, Observable } from 'apollo-link';
 
 import { SubscriptionClient, ClientOptions } from 'subscriptions-transport-ws';
 

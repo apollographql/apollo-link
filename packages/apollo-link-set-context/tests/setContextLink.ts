@@ -4,7 +4,7 @@ import * as sinon from 'sinon';
 import SetContextLink from '../src/setContextLink';
 import gql from 'graphql-tag';
 
-import { ApolloLink, execute, Operation } from 'apollo-link-core';
+import { ApolloLink, execute, Operation } from 'apollo-link';
 
 const query = gql`
   query SampleQuery {

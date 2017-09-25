@@ -4,17 +4,6 @@ import { ApolloLink, FunctionLink } from './link';
 
 import Observable from 'zen-observable-ts';
 
-export function validateLink(link: ApolloLink): ApolloLink {
-  if (link instanceof ApolloLink && typeof link.request === 'function') {
-    return link;
-  } else {
-    throw new LinkError(
-      'Link does not extend ApolloLink and implement request',
-      link,
-    );
-  }
-}
-
 export function validateOperation(operation: GraphQLRequest): GraphQLRequest {
   const OPERATION_FIELDS = ['query', 'operationName', 'variables', 'context'];
   for (let key of Object.keys(operation)) {

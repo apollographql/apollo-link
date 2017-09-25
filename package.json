@@ -2,6 +2,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
+    "build": "lerna run -- build",
     "bootstrap": "npm i && lerna bootstrap",
     "test": "lerna run -- test",
     "lint-fix":
@@ -47,6 +48,6 @@
     "nyc": "11.1.0",
     "pre-commit": "1.2.2",
     "prettier": "1.6.0",
-    "rollup": "^0.45.2"
+    "rollup": "0.45.2"
   }
 }
