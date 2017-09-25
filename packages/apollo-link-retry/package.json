@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-retry",
-  "version": "0.6.1-beta.2",
+  "version": "0.6.1-beta.3",
   "description": "Retry Apollo Link for GraphQL Network Stack",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -40,12 +40,12 @@
     "watch": "tsc -w -p ."
   },
   "peerDependencies": {
-    "apollo-link": "^0.6.1-beta.2"
+    "apollo-link": "^0.6.1-beta.3"
   },
   "devDependencies": {
     "@types/graphql": "0.10.2",
     "@types/jest": "^20.0.8",
-    "apollo-link": "^0.6.1-beta.2",
+    "apollo-link": "^0.6.1-beta.3",
     "browserify": "^14.4.0",
     "graphql": "0.10.5",
     "graphql-tag": "2.4.2",
