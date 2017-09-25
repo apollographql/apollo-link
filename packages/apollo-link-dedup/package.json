@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-dedup",
-  "version": "0.4.1-beta.3",
+  "version": "0.4.1-beta.5",
   "description": "Deduplicates queries that are currently on the wire",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -43,12 +43,12 @@
     "graphql": "^0.10.5"
   },
   "peerDependencies": {
-    "apollo-link": "^0.6.1-beta.3"
+    "apollo-link": "^0.6.1-beta.5"
   },
   "devDependencies": {
     "@types/graphql": "0.10.2",
     "@types/jest": "^20.0.8",
-    "apollo-link": "^0.6.1-beta.3",
+    "apollo-link": "^0.6.1-beta.5",
     "browserify": "^14.4.0",
     "graphql": "^0.11.3",
     "graphql-tag": "2.4.2",
