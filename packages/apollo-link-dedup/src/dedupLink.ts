@@ -34,15 +34,15 @@ export default class DedupLink extends ApolloLink {
     }
     return new Observable<FetchResult>(observer => {
       const subscription = this.inFlightRequestObservables[key].subscribe({
-        next: observer.next.bind(observer),
+        next: result => {
+          delete this.inFlightRequestObservables[key];
+          observer.next(result);
+        },
         error: error => {
           delete this.inFlightRequestObservables[key];
           observer.error(error);
         },
-        complete: () => {
-          delete this.inFlightRequestObservables[key];
-          observer.complete();
-        },
+        complete: observer.complete.bind(observer),
       });
 
       return () => {
