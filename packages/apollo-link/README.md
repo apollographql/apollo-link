@@ -15,6 +15,3 @@ Apollo Link is the interface for creating new links in your application.
 ## Installation
 
 `npm install apollo-link --save`
-
-To use this package in a web browser or mobile app, you'll need a build system capable of loading NPM packages on the client.
-Some common choices include Browserify, Webpack, and Meteor +1.3.
