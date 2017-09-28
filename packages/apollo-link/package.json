@@ -1,6 +1,6 @@
 {
   "name": "apollo-link",
-  "version": "0.6.1-beta.5",
+  "version": "0.6.1-beta.6",
   "description": "Flexible, lightweight transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
