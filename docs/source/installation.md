@@ -3,7 +3,7 @@ title: Setup and options
 ---
 <h2 id="installation">Installation</h2>
 
-To get started with Apollo Link, install the `apollo-link` npm package. This exports everything you need to get started, though there may already be a link with the functionality you wan't on npm.
+To get started with Apollo Link, install the `apollo-link` npm package. This exports everything you need to get started making your own link!
 
 ```bash
 npm install apollo-link --save
@@ -22,6 +22,7 @@ import HttpLink from 'apollo-link-http';
 const uri = 'http://api.githunt.com/graphql';
 const link = new HttpLink({ uri });
 
+// execute returns an Observable so it can be subscribed to
 execute(link, operation).subscribe({
   next: data => console.log(`received data ${data}`),
   error: error => console.log(`received error ${error}`),
@@ -34,7 +35,7 @@ makePromise((execute(link, operation))
   .catch(error => console.log(`received error ${error}`))
 ```
 
-`execute` accepts a standard GraphQL request with an AST (parsed query string using a library like graphql-tag) and returns an [Observable](https://github.com/zenparsing/zen-observable#api) that allows subscribing.
+`execute` accepts a standard GraphQL request and returns an [Observable](https://github.com/tc39/proposal-observable) that allows subscribing. A GraphQL request is an object with a `query` which is a GraphQL document AST, `variables` which is an object to be sent to the server, an optional `operationName` string to make it easy to debug a query on the server, and a `context` object to send data directly to a link in the chain.
 Links use observables to support GraphQL subscriptions, live queries, and polling, in addition to single response queries and mutations.
 
 `next` will receive GraphQL errors, while `error` be called on a network error.
@@ -57,7 +58,7 @@ Under the hood, Apollo Client uses the `execute` function for each operation req
 
 <h2 id="graphiql">GraphiQL</h2>
 
-GraphiQL provides a simple way of testing a link.
+GraphiQL provides a great way to document and use your GraphQL API and Apollo Link works great with it!
 
 ```js
 import React from 'react';
