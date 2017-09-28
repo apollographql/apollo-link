@@ -2,7 +2,7 @@
 title: Stateful Links
 ---
 
-<h2 id="stateless">Stateless Links</h2>
+<h2 id="stateful">Stateful Links</h2>
 
 Links are created and shared between every request in your application. Some links may share state between requests to provided added functionality. The links are called stateful links and are written using the `ApolloLink` interface. The alternative way to write links is a [stateless link](./links/stateless).
 
@@ -25,28 +25,51 @@ class OperationCountLink extends ApolloLink {
 const link = new OperationCountLink();
 ```
 
-It is important when managing stateful links where the request is being saved to implement a key value store for the requests. Otherwise, it is easy to accidently override an in-flight request with another operation happening. Take the for example a link that captures the time of each operation:
+It is important when managing stateful links where the request is being saved to implement a key value store for the requests. Otherwise, it is easy to accidently override an in-flight request with another operation happening. Take the for example a portion the dedup link:
 
 ```js
 import { ApolloLink } from 'apollo-link';
 
-class OperationTimingLink extends ApolloLink {
+export default class DedupLink extends ApolloLink {
+  private inFlightRequestObservables: {
+    [key: string]: Observable<FetchResult>;
+  };
+
   constructor() {
     super();
-    this.operations = {};
+    this.inFlightRequestObservables = {};
   }
-  request(operation, forward) {
+
+  public request(
+    operation: Operation,
+    forward: NextLink,
+  ): Observable<FetchResult> {
     const key = operation.toKey();
-    if (!this.operations[key]) this.operations[key] = {}
-    this.operations[key].start = new Date();
-    return forward(operation).map((data) => {
-        this.operations[key].elapsed = new Date() - this.operations[key].start;
-        return data;
+    if (!this.inFlightRequestObservables[key]) {
+      this.inFlightRequestObservables[key] = forward(operation);
+    }
+
+    return new Observable<FetchResult>(observer => {
+      const subscription = this.inFlightRequestObservables[key].subscribe({
+        next: (result) => {
+          delete this.inFlightRequestObservables[key];
+          observer.next(result);
+        },
+        error: error => {
+          delete this.inFlightRequestObservables[key];
+          observer.error(error);
+        },
+        complete: observer.complete.bind(observer),
+      });
+
+      return () => {
+        if (subscription) subscription.unsubscribe();
+        delete this.inFlightRequestObservables[key];
+      };
     });
   }
 }
 
-const link = new OperationTimingLink();
 
 ```
 

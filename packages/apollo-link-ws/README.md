@@ -7,9 +7,6 @@ An Apollo Link to allow sending a request over a web socket.
 
 `npm install apollo-link-ws --save`
 
-To use this package in a web browser or mobile app, you'll need a build system capable of loading NPM packages on the client.
-Some common choices include Browserify, Webpack, and Meteor +1.3.
-
 ## Usage
 ```js
 import WSLink from "apollo-link-ws";
