@@ -4,7 +4,7 @@ import { print } from 'graphql';
 import gql from 'graphql-tag';
 import * as fetchMock from 'fetch-mock';
 
-import HttpLink from '../httpLink';
+import { FetchLink as HttpLink, createFetchLink } from '../httpLink';
 
 const sampleQuery = gql`
   query SampleQuery {
@@ -46,9 +46,8 @@ describe('HttpLink', () => {
   afterEach(() => {
     fetchMock.restore();
   });
-
   it('raises warning if called with concat', () => {
-    const link = ApolloLink.from([new HttpLink()]);
+    const link = new HttpLink();
     const _warn = console.warn;
     console.warn = warning => expect(warning['message']).toBeDefined();
     expect(link.concat((operation, forward) => forward(operation))).toEqual(
@@ -215,25 +214,96 @@ describe('HttpLink', () => {
     }, 50);
   });
 
-  it('should add headers from the context', done => {
-    const fetch = createApolloFetch({
-      customFetch: (request, options) =>
-        new Promise((resolve, reject) => {
-          expect(options.headers['test']).toBeDefined();
-          expect(options.headers.test).toEqual(context.headers.test);
-          done();
-        }),
+  // xit('should add headers from the context', done => {
+  //   const fetch = createApolloFetch({
+  //     customFetch: (request, options) =>
+  //       new Promise((resolve, reject) => {
+  //         expect(options.headers['test']).toBeDefined();
+  //         expect(options.headers.test).toEqual(context.headers.test);
+  //         done();
+  //       }),
+  //   });
+  //   const link = new HttpLink({ fetch });
+
+  //   const context = {
+  //     headers: {
+  //       test: 'header',
+  //     },
+  //   };
+
+  //   execute(link, { query: sampleQuery, context }).subscribe(() => {
+  //     throw new Error();
+  //   });
+  // });
+  it('adds headers to the request from the context', done => {
+    const variables = { params: 'stub' };
+    const middleware = new ApolloLink((operation, forward) => {
+      operation.setContext({
+        headers: { authorization: '1234' },
+      });
+      return forward(operation);
     });
-    const link = new HttpLink({ fetch });
+    const link = middleware.concat(createFetchLink({ uri: 'data' }));
+
+    execute(link, { query: sampleQuery, variables }).subscribe(result => {
+      const headers = fetchMock.lastCall()[1].headers;
+      expect(headers.authorization).toBe('1234');
+      expect(headers['content-type']).toBe('application/json');
+      expect(headers.accept).toBe('*/*');
+      done();
+    });
+  });
+  it('adds headers to the request from the context on an operation', done => {
+    const variables = { params: 'stub' };
+    const link = createFetchLink({ uri: 'data' });
 
     const context = {
-      headers: {
-        test: 'header',
-      },
+      headers: { authorization: '1234' },
     };
+    execute(link, {
+      query: sampleQuery,
+      variables,
+      context,
+    }).subscribe(result => {
+      const headers = fetchMock.lastCall()[1].headers;
+      expect(headers.authorization).toBe('1234');
+      expect(headers['content-type']).toBe('application/json');
+      expect(headers.accept).toBe('*/*');
+      done();
+    });
+  });
+  it('adds creds to the request from the context', done => {
+    const variables = { params: 'stub' };
+    const middleware = new ApolloLink((operation, forward) => {
+      operation.setContext({
+        credentials: 'same-team-yo',
+      });
+      return forward(operation);
+    });
+    const link = middleware.concat(createFetchLink({ uri: 'data' }));
 
-    execute(link, { query: sampleQuery, context }).subscribe(() => {
-      throw new Error();
+    execute(link, { query: sampleQuery, variables }).subscribe(result => {
+      const creds = fetchMock.lastCall()[1].credentials;
+      expect(creds).toBe('same-team-yo');
+      done();
+    });
+  });
+  it('adds fetcherOptions to the request from the context', done => {
+    const variables = { params: 'stub' };
+    const middleware = new ApolloLink((operation, forward) => {
+      operation.setContext({
+        fetcherOptions: {
+          signal: 'foo',
+        },
+      });
+      return forward(operation);
+    });
+    const link = middleware.concat(createFetchLink({ uri: 'data' }));
+
+    execute(link, { query: sampleQuery, variables }).subscribe(result => {
+      const signal = fetchMock.lastCall()[1].signal;
+      expect(signal).toBe('foo');
+      done();
     });
   });
 });
