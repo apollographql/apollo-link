@@ -2,16 +2,40 @@ import { ApolloLink, Operation, FetchResult, Observable } from 'apollo-link';
 
 import { print } from 'graphql/language/printer';
 
-const parseResponse = response => {
+type ResponseError = Error | { response?: Response; parseError?: Error };
+const parseAndCheckResponse = response => {
   return response
     .json()
-    .then(parsedResponse => parsedResponse)
+    .then(result => {
+      if (response.status >= 300)
+        throw new Error(
+          `Response not successful: Received status code ${response.status}`,
+        );
+      return result;
+    })
     .catch(e => {
-      throw new Error(`Error parsing response: ${e.message}`);
+      const httpError: ResponseError = new Error(
+        `Network request failed with status ${response.status} - "${response.statusText}"`,
+      );
+      httpError.response = response;
+      httpError.parseError = e;
+
+      throw httpError;
     });
 };
 
-const handleStatusCodeError = response => {};
+const checkFetcher = fetcher => {
+  if (
+    fetcher.use &&
+    fetcher.useAfter &&
+    fetcher.batchUse &&
+    fetcher.batchUseAfter
+  ) {
+    throw new Error(
+      `It looks like you're using apollo-fetch! Apollo Link now uses the native fetch implementation, so apollo-fetch is not needed. If you want to use your existing apollo-fetch middleware, please check this guide to upgrade: https://github.com/apollographql/apollo-link/blob/master/docs/implementation.md`,
+    );
+  }
+};
 
 export interface FetchOptions {
   uri?: string;
@@ -23,10 +47,7 @@ export const createFetchLink = ({
   fetch: fetcher,
   includeExtensions,
 }: FetchOptions) => {
-  // XXX log a warning if you don't have fetch and you didn't pass one in
-  // link you unfetch ponyfill as a solution or node-fetch is no window
   if (!fetcher && typeof fetch === 'undefined') {
-    // link to unfetch
     let link: string = 'https://www.npmjs.com/package/unfetch';
     if (typeof window === 'undefined') {
       link = 'https://www.npmjs.com/package/node-fetch';
@@ -35,6 +56,8 @@ export const createFetchLink = ({
       `fetch is not found globally and no fetcher passed, to fix pass a fetch via ${link}`,
     );
   }
+
+  if (fetcher) checkFetcher(fetcher);
 
   // use default global fetch is nothing passed in
   if (!fetcher) fetcher = fetch;
@@ -77,17 +100,11 @@ export const createFetchLink = ({
          *
          * - support an array of operations (batch)
          * - support canceling
-         * - support error handling for StatusCodes
-         * - add in safety check like making sure request is serializeable X
-         * - add in helpful dev warnings
-         * - add in migration guide warnings
-         *    - useAfter no longer exists....
          *
          */
 
         fetcher(uri, fetchOptions)
-          .then(parseResponse)
-          .then(handleStatusCodeError)
+          .then(parseAndCheckResponse)
           .then(result => {
             // we have data and can send it to back up the link chain
             observer.next(result);
