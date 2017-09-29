@@ -2,6 +2,17 @@ import { ApolloLink, Operation, FetchResult, Observable } from 'apollo-link';
 
 import { print } from 'graphql/language/printer';
 
+const parseResponse = response => {
+  return response
+    .json()
+    .then(parsedResponse => parsedResponse)
+    .catch(e => {
+      throw new Error(`Error parsing response: ${e.message}`);
+    });
+};
+
+const handleStatusCodeError = response => {};
+
 export interface FetchOptions {
   uri?: string;
   fetch?: Fetch;
@@ -16,9 +27,9 @@ export const createFetchLink = ({
   // link you unfetch ponyfill as a solution or node-fetch is no window
   if (!fetcher && typeof fetch === 'undefined') {
     // link to unfetch
-    let link: string = '';
+    let link: string = 'https://www.npmjs.com/package/unfetch';
     if (typeof window === 'undefined') {
-      link = 'some link to node fetch';
+      link = 'https://www.npmjs.com/package/node-fetch';
     }
     throw new Error(
       `fetch is not found globally and no fetcher passed, to fix pass a fetch via ${link}`,
@@ -38,6 +49,14 @@ export const createFetchLink = ({
         const body = { operationName, variables, query: print(query) };
         if (includeExtensions) body.extensions = extensions;
 
+        try {
+          const serializedBody = JSON.stringify(body);
+        } catch (e) {
+          throw new Error(
+            `Network request failed. Payload is not serializable: ${e.message}`,
+          );
+        }
+
         const fetchOptions = {
           method: 'POST',
           headers: {
@@ -45,8 +64,7 @@ export const createFetchLink = ({
             accept: '*/*',
             'content-type': 'application/json',
           },
-          // XXX add error handling
-          body: JSON.stringify(body),
+          body: serializedBody,
         };
         // XXX check for signal API;
 
@@ -60,7 +78,7 @@ export const createFetchLink = ({
          * - support an array of operations (batch)
          * - support canceling
          * - support error handling for StatusCodes
-         * - add in safety check like making sure request is serializeable
+         * - add in safety check like making sure request is serializeable X
          * - add in helpful dev warnings
          * - add in migration guide warnings
          *    - useAfter no longer exists....
@@ -69,7 +87,7 @@ export const createFetchLink = ({
 
         fetcher(uri, fetchOptions)
           .then(parseResponse)
-          .then(handleError)
+          .then(handleStatusCodeError)
           .then(result => {
             // we have data and can send it to back up the link chain
             observer.next(result);
