@@ -1,10 +1,9 @@
-import { ApolloLink, execute } from 'apollo-link';
-import { createApolloFetch } from 'apollo-fetch';
+import { Observable, ApolloLink, execute } from 'apollo-link';
 import { print } from 'graphql';
 import gql from 'graphql-tag';
 import * as fetchMock from 'fetch-mock';
 
-import { FetchLink as HttpLink, createFetchLink } from '../httpLink';
+import { HttpLink, createHttpLink } from '../httpLink';
 
 const sampleQuery = gql`
   query SampleQuery {
@@ -214,27 +213,6 @@ describe('HttpLink', () => {
     }, 50);
   });
 
-  // xit('should add headers from the context', done => {
-  //   const fetch = createApolloFetch({
-  //     customFetch: (request, options) =>
-  //       new Promise((resolve, reject) => {
-  //         expect(options.headers['test']).toBeDefined();
-  //         expect(options.headers.test).toEqual(context.headers.test);
-  //         done();
-  //       }),
-  //   });
-  //   const link = new HttpLink({ fetch });
-
-  //   const context = {
-  //     headers: {
-  //       test: 'header',
-  //     },
-  //   };
-
-  //   execute(link, { query: sampleQuery, context }).subscribe(() => {
-  //     throw new Error();
-  //   });
-  // });
   it('adds headers to the request from the context', done => {
     const variables = { params: 'stub' };
     const middleware = new ApolloLink((operation, forward) => {
@@ -243,7 +221,7 @@ describe('HttpLink', () => {
       });
       return forward(operation);
     });
-    const link = middleware.concat(createFetchLink({ uri: 'data' }));
+    const link = middleware.concat(createHttpLink({ uri: 'data' }));
 
     execute(link, { query: sampleQuery, variables }).subscribe(result => {
       const headers = fetchMock.lastCall()[1].headers;
@@ -255,7 +233,7 @@ describe('HttpLink', () => {
   });
   it('adds headers to the request from the context on an operation', done => {
     const variables = { params: 'stub' };
-    const link = createFetchLink({ uri: 'data' });
+    const link = createHttpLink({ uri: 'data' });
 
     const context = {
       headers: { authorization: '1234' },
@@ -280,7 +258,7 @@ describe('HttpLink', () => {
       });
       return forward(operation);
     });
-    const link = middleware.concat(createFetchLink({ uri: 'data' }));
+    const link = middleware.concat(createHttpLink({ uri: 'data' }));
 
     execute(link, { query: sampleQuery, variables }).subscribe(result => {
       const creds = fetchMock.lastCall()[1].credentials;
@@ -298,12 +276,158 @@ describe('HttpLink', () => {
       });
       return forward(operation);
     });
-    const link = middleware.concat(createFetchLink({ uri: 'data' }));
+    const link = middleware.concat(createHttpLink({ uri: 'data' }));
 
     execute(link, { query: sampleQuery, variables }).subscribe(result => {
       const signal = fetchMock.lastCall()[1].signal;
       expect(signal).toBe('foo');
       done();
     });
+  });
+});
+
+describe('dev warnings', () => {
+  it('warns if no fetch is present', done => {
+    if (typeof fetch !== 'undefined') fetch = undefined;
+    try {
+      const link = createHttpLink({ uri: 'data' });
+      done.fail("warning wasn't called");
+    } catch (e) {
+      expect(e.message).toMatch(/fetch is not found globally/);
+      done();
+    }
+  });
+  it('does not warn if no fetch is present but a fetch is passed', () => {
+    expect(() => {
+      const link = createHttpLink({ uri: 'data', fetch: () => {} });
+    }).not.toThrow();
+  });
+  it('warns if apollo-fetch is used', done => {
+    try {
+      const mockFetch = {
+        use: () => {},
+        useAfter: () => {},
+        batchUse: () => {},
+        batchUseAfter: () => {},
+      };
+      const link = createHttpLink({ uri: 'data', fetch: mockFetch });
+      done.fail("warning wasn't called");
+    } catch (e) {
+      expect(e.message).toMatch(/It looks like you're using apollo-fetch/);
+      done();
+    }
+  });
+});
+
+describe('error handling', () => {
+  const json = jest.fn(() => Promise.resolve({}));
+  const fetch = jest.fn((uri, options) => {
+    return Promise.resolve({ json });
+  });
+  it('throws an error if response code is > 300', done => {
+    fetch.mockReturnValueOnce(Promise.resolve({ status: 400, json }));
+    const link = createHttpLink({ uri: 'data', fetch });
+
+    execute(link, { query: sampleQuery }).subscribe(
+      result => {
+        done.fail('error should have been thrown from the network');
+      },
+      e => {
+        expect(e.parseError.message).toMatch(/Received status code 400/);
+        expect(e.statusCode).toBe(400);
+        done();
+      },
+    );
+  });
+  it('makes it easy to do stuff on a 401', done => {
+    fetch.mockReturnValueOnce(Promise.resolve({ status: 401, json }));
+
+    const middleware = new ApolloLink((operation, forward) => {
+      return new Observable(ob => {
+        const op = forward(operation);
+        const sub = op.subscribe({
+          next: ob.next.bind(ob),
+          error: e => {
+            expect(e.parseError.message).toMatch(/Received status code 401/);
+            expect(e.statusCode).toEqual(401);
+            ob.error(e);
+            done();
+          },
+          complete: ob.complete.bind(ob),
+        });
+
+        return () => {
+          sub.unsubscribe();
+        };
+      });
+    });
+
+    const link = middleware.concat(createHttpLink({ uri: 'data', fetch }));
+
+    execute(link, { query: sampleQuery }).subscribe(
+      result => {
+        done.fail('error should have been thrown from the network');
+      },
+      () => {},
+    );
+  });
+  it("throws if the body can't be stringified", done => {
+    fetch.mockReturnValueOnce(Promise.resolve({ data: {}, json }));
+    const link = createHttpLink({ uri: 'data', fetch });
+
+    let b;
+    const a = { b };
+    b = { a };
+    a.b = b;
+    const variables = {
+      a,
+      b,
+    };
+    execute(link, { query: sampleQuery, variables }).subscribe(
+      result => {
+        done.fail('error should have been thrown from the link');
+      },
+      e => {
+        expect(e.message).toMatch(/Payload is not serializable/);
+        expect(e.parseError.message).toMatch(
+          /Converting circular structure to JSON/,
+        );
+        done();
+      },
+    );
+  });
+  it('supports being cancelled and does not throw', done => {
+    let called;
+    class AbortController {
+      signal: {};
+      abort = () => {
+        called = true;
+      };
+    }
+
+    global.AbortController = AbortController;
+
+    fetch.mockReturnValueOnce(Promise.resolve({ json }));
+    const link = createHttpLink({ uri: 'data', fetch });
+
+    const sub = execute(link, { query: sampleQuery }).subscribe({
+      next: result => {
+        done.fail('result should not have been called');
+      },
+      error: e => {
+        done.fail('error should not have been called');
+      },
+      complete: () => {
+        done.fail('complete should not have been called');
+      },
+    });
+
+    sub.unsubscribe();
+
+    setTimeout(() => {
+      delete global.AbortController;
+      expect(called).toBe(true);
+      done();
+    }, 150);
   });
 });
