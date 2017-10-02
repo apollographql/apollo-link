@@ -24,11 +24,7 @@
   "homepage": "https://github.com/apollographql/apollo-link#readme",
   "scripts": {
     "build:browser":
-<<<<<<< f3b5e38c21a43f2cb71265400e91ccf3998ec5ac
       "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-utilities --i graphql --i zen-observable-ts && npm run minify:browser",
-=======
-      "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i graphql-tag --i zen-observable-ts && npm run minify:browser",
->>>>>>> bring repo to pairity with apollo-client and remove soon to be dead package
     "build": "tsc -p .",
     "bundle": "rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
