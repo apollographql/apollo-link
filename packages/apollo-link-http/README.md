@@ -19,6 +19,9 @@ import { createHttpLink } from "apollo-link-http";
 const link = createHttpLink({ uri: "/graphql" });
 ```
 
+## Global Fetch
+The HTTP Link relies on having `fetch` present in your runtime environement. If you are running on react-native, or modern browsers, this should be no problem. If you are targeting an environement without `fetch` such as older browsers of the server, you will need to pass your own `fetch` to the link through the options. We recommend `unfetch` for older browsers and `node-fetch` for running in node.
+
 ## Options
 HTTP Link takes an object with three options on it to customize the behavoir of the link. If your server supports it, the HTTP link can also send over metadata about the request in the extensions field. To enable this, pass includeExtensions as true
 
@@ -28,7 +31,6 @@ HTTP Link takes an object with three options on it to customize the behavoir of 
 |includeExtensions|boolean|false|false|
 |fetch|fetch|global fetch|false|
 
-By default, this link uses the [Apollo Fetch](https://github.com/apollographql/apollo-fetch) library for the HTTP transport.
 
 ## Context
 The HTTP Link uses the `headers` field on the context to allow passing headers to the HTTP request. It also supports the `credentials` field for defining credentials policy for fetch and `fetchOptions` to allow generic fetch overrides (i.e. method: "GET").
