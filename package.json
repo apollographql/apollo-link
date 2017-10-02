@@ -44,7 +44,7 @@
     {
       "name": "apollo-link-http",
       "path": "./packages/apollo-link-http/lib/bundle.min.js",
-      "threshold": "6 Kb"
+      "threshold": "4 Kb"
     },
     {
       "name": "apollo-link-polling",
