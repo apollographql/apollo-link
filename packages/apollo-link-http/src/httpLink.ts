@@ -167,7 +167,7 @@ export class HttpLink extends ApolloLink {
     this.requester = createHttpLink(opts).request;
   }
 
-  public request(op, f): Observable<ExecutionResult> | null {
-    return this.requester(op, f);
+  public request(op): Observable<ExecutionResult> | null {
+    return this.requester(op);
   }
 }
