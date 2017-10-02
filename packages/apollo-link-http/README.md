@@ -20,10 +20,10 @@ const link = createHttpLink({ uri: "/graphql" });
 ```
 
 ## Global Fetch
-The HTTP Link relies on having `fetch` present in your runtime environement. If you are running on react-native, or modern browsers, this should be no problem. If you are targeting an environement without `fetch` such as older browsers of the server, you will need to pass your own `fetch` to the link through the options. We recommend `unfetch` for older browsers and `node-fetch` for running in node.
+The HTTP Link relies on having `fetch` present in your runtime environment. If you are running on react-native, or modern browsers, this should be no problem. If you are targeting an environment without `fetch` such as older browsers of the server, you will need to pass your own `fetch` to the link through the options. We recommend `unfetch` for older browsers and `node-fetch` for running in node.
 
 ## Options
-HTTP Link takes an object with three options on it to customize the behavoir of the link. If your server supports it, the HTTP link can also send over metadata about the request in the extensions field. To enable this, pass includeExtensions as true
+HTTP Link takes an object with three options on it to customize the behavior of the link. If your server supports it, the HTTP link can also send over metadata about the request in the extensions field. To enable this, pass `includeExtensions` as true.
 
 |name|value|default|required|
 |---|---|---|---|
@@ -39,7 +39,7 @@ The HTTP Link uses the `headers` field on the context to allow passing headers t
 |---|---|---|---|
 |headers|Headers (or object)|{}|false|
 |credentials|string|none|false|
-|fetchOptions|Fetch Options|none|false|
+|fetchOptions|Fetch Options (object)|none|false|
 
 ```js
 import HttpLink from "apollo-link-http";
@@ -57,14 +57,14 @@ client.query({
   context: {
     // example of setting the headers with context per operation
     headers: {
-      authoriztion: Meteor.userId()
+      authorization: Meteor.userId()
     }
   }
 })
 ```
 
-### Upgrading from apollo-fetch / apollo-client 
-If you previously used either apollo-fetch or apollo-client, you will need to change the way `use` and `useAfter` are implemented in your app. They can both be implemented in a link like so:
+### Upgrading from `apollo-fetch` / `apollo-client` 
+If you previously used either `apollo-fetch` or `apollo-client`, you will need to change the way `use` and `useAfter` are implemented in your app. They can both be implemented in a link like so:
 
 #### Middleware
 
@@ -103,7 +103,7 @@ const middlewareLink = new ApolloLink((operation, forward) => {
 })
 
 // use with apollo-client
-const link = middewareLink.concat(httpLink);
+const link = middlewareLink.concat(httpLink);
 ```
 
 #### Afterware (error)
@@ -141,10 +141,10 @@ const errorLink = onError(({ networkError }) => {
 })
 
 // use with apollo-client
-const link = middewareLink.concat(httpLink);
+const link = errorLink.concat(httpLink);
 ```
 
-#### Afterware (data manipuliation)
+#### Afterware (data manipulation)
 *Before*
 ```js
 import ApolloClient, { createNetworkInterface } from 'apollo-client';
