@@ -20,11 +20,9 @@ Some common choices include Browserify, Webpack, and Meteor +1.3.
 
 ## Documentation
 
-To start, begin by reading the getting started [guide](docs/summary.md).
+To start, begin by reading the getting started [guide](docs/source/index.md).
 
-If you are interested in implementing your own links, read the implementation [information](docs/implementation.md).
-
-The current plans and future implementation are in the [roadmap](docs/roadmap.md).
+If you are interested in implementing your own links, read the implementation [information](docs/source/concepts.md).
 
 Your feedback and contributions are welcome.
 
