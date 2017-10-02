@@ -17,8 +17,7 @@
     "coverage:upload": "codecov",
     "danger": "danger run --verbose",
     "predeploy": "npm run build && npm test",
-    "deploy":
-      "lerna publish -m \"chore: Publish\" --independent --cd-version=prerelease --preid=beta --npm-tag=beta"
+    "deploy": "lerna publish -m \"chore: Publish\" --independent"
   },
   "bundlesize": [
     {
