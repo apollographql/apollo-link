@@ -3,7 +3,11 @@ import { print } from 'graphql/language/printer';
 
 import { ApolloFetch } from 'apollo-fetch';
 
-type ResponseError = Error & { response: Response; parseError: Error };
+type ResponseError = Error & {
+  response?: Response;
+  parseError: Error;
+  statusCode?: number;
+};
 
 const parseAndCheckResponse = (response: Response) => {
   return response
@@ -21,6 +25,7 @@ const parseAndCheckResponse = (response: Response) => {
       ) as ResponseError;
       httpError.response = response;
       httpError.parseError = e;
+      httpError.statusCode = response.status;
 
       throw httpError;
     });
@@ -52,7 +57,7 @@ const warnIfNoFetch = fetcher => {
 
       For example:
         import fetch from '${library}';
-        import { createFetchLink } from 'apollo-link-fetch';
+        import { createHttpLink } from 'apollo-link-http';
 
         const link = createFetchLink({ uri: '/graphql', fetch: fetch });
       `,
@@ -60,12 +65,21 @@ const warnIfNoFetch = fetcher => {
   }
 };
 
+const createSignalIfSupported = () => {
+  if (typeof AbortController === 'undefined')
+    return { controller: false, signal: false };
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+  return { controller, signal };
+};
+
 export interface FetchOptions {
   uri?: string;
   fetch?: GlobalFetch['fetch'];
   includeExtensions?: boolean;
 }
-export const createFetchLink = (
+export const createHttpLink = (
   { uri, fetch: fetcher, includeExtensions }: FetchOptions = {},
 ) => {
   // dev warnings to ensure fetch is present
@@ -93,9 +107,11 @@ export const createFetchLink = (
         try {
           serializedBody = JSON.stringify(body);
         } catch (e) {
-          throw new Error(
+          const parseError = new Error(
             `Network request failed. Payload is not serializable: ${e.message}`,
-          );
+          ) as ResponseError;
+          parseError.parseError = e;
+          throw parseError;
         }
 
         const fetchOptions = {
@@ -113,6 +129,9 @@ export const createFetchLink = (
         if (headers)
           fetchOptions.headers = { ...fetchOptions.headers, ...headers };
 
+        const { controller, signal } = createSignalIfSupported();
+        if (controller) fetchOptions.signal = signal;
+
         fetcher(uri, fetchOptions)
           .then(parseAndCheckResponse)
           .then(result => {
@@ -121,21 +140,26 @@ export const createFetchLink = (
             observer.complete();
             return result;
           })
-          .catch(observer.error.bind(observer));
+          .catch(err => {
+            // fetch was cancelled so its already been cleaned up in the unsubscribe
+            if (err.name === 'AbortError') return;
+            observer.error(err);
+          });
 
         return () => {
           // XXX support canceling this request
           // https://developers.google.com/web/updates/2017/09/abortable-fetch
+          if (controller) controller.abort();
         };
       }),
   );
 };
 
-export class FetchLink extends ApolloLink {
+export class HttpLink extends ApolloLink {
   private fetcher: ApolloLink;
   constructor(opts: FetchOptions) {
     super();
-    this.fetcher = createFetchLink(opts);
+    this.fetcher = createHttpLink(opts);
   }
 
   public request(operation) {
