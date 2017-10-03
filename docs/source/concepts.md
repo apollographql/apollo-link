@@ -58,7 +58,7 @@ const timeStartLink = new ApolloLink((operation, forward) => {
   return forward(operation);
 });
 
-const logTimeLink = new ApolloLink((operation, foward) => {
+const logTimeLink = new ApolloLink((operation, forward) => {
   return forward(operation).map((data) => {
     // data from a previous link
     const time = new Date() - operation.getContext().start;
