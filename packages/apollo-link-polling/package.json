@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-polling",
-  "version": "0.6.1-beta.6",
+  "version": "0.7.0",
   "description": "Polling Apollo Link for GraphQL Network Stack",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -40,12 +40,12 @@
     "watch": "tsc -w -p ."
   },
   "peerDependencies": {
-    "apollo-link": "^0.6.1-beta.6"
+    "apollo-link": "^0.7.0"
   },
   "devDependencies": {
     "@types/graphql": "0.11.4",
     "@types/jest": "21.1.1",
-    "apollo-link": "^0.6.1-beta.6",
+    "apollo-link": "^0.7.0",
     "browserify": "14.4.0",
     "graphql": "0.11.6",
     "graphql-tag": "2.4.2",
