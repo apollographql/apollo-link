@@ -41,9 +41,15 @@
       "threshold": "3 Kb"
     },
     {
+      "name": "apollo-link-error",
+      "path": "./packages/apollo-link-error/lib/bundle.min.js",
+      "threshold": "1 Kb"
+    },
+
+    {
       "name": "apollo-link-http",
       "path": "./packages/apollo-link-http/lib/bundle.min.js",
-      "threshold": "4 Kb"
+      "threshold": "3.8 Kb"
     },
     {
       "name": "apollo-link-polling",
