@@ -45,7 +45,7 @@
     "zen-observable-ts": "^0.4.3-beta.4"
   },
   "devDependencies": {
-    "@types/graphql": "0.10.2",
+    "@types/graphql": "0.11.4",
     "@types/jest": "21.1.1",
     "browserify": "14.4.0",
     "graphql-tag": "2.4.2",
