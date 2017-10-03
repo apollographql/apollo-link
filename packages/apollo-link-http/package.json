@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@types/graphql": "0.10.2",
-    "@types/jest": "20.0.8",
+    "@types/jest": "21.1.1",
     "apollo-link": "^0.6.1-beta.6",
     "browserify": "14.4.0",
     "fetch-mock": "5.12.2",
