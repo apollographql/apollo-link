@@ -39,6 +39,21 @@ The `HttpLink` is a replacement for `createNetworkInterface` from Apollo Client 
 
 <h3 id="graphql-tools">graphql-tools</h3>
 
+You can also use Apollo Link with `graphql-tools` to facilitate schema stitching by using `node-fetch` as your request link's fetcher function and passing it to `makeRemoteExecutableSchema`.
+
+```js
+import { HttpLink } from 'apollo-link-http';
+import fetch from 'node-fetch';
+
+const link = new HttpLink({ uri: 'http://api.githunt.com/graphql', fetch });
+
+const schema = await introspectSchema(link);
+
+const executableSchema = makeRemoteExecutableSchema({
+  schema,
+  link,
+});
+```
 
 <h3 id="graphiql">GraphiQL</h3>
 
@@ -96,4 +111,4 @@ If you want to control how you handle errors, `next` will receive GraphQL errors
 
 <h3 id="customization">Customizing your own links</h3>
 
-Our links have you covered for the most common use cases, but what if you want to write your own middleware? What about offline support or persisted queries? The `ApolloLink` interface was designed to be customizable to fit your application's needs. To get started, check out [our guide for building your own links](./buildyourown).
+Our links have you covered for the most common use cases, but what if you want to write your own middleware? What about offline support or persisted queries? The `ApolloLink` interface was designed to be customizable to fit your application's needs. To get started, first read our [concepts guide](./concepts) and then learn how to write your own [stateless link](./stateless).
