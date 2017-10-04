@@ -13,7 +13,7 @@ First, you'll need to install the `apollo-link` npm package.
 npm install apollo-link --save
 ```
 
-Apollo Link has two main exports, the `ApolloLink` interface and the `execute` function. The `ApolloLink` interface is used to create custom links, compose multiple links together, and can be extended to support more powerful use cases. The `execute` function is how to use a link and an operation to create a request.
+Apollo Link has two main exports, the `ApolloLink` interface and the `execute` function. The `ApolloLink` interface is used to create custom links, compose multiple links together, and can be extended to support more powerful use cases. The `execute` function is how to use a link and an operation to create a request. For a deeper dive on how to use links in your application, check out our Apollo Link [concepts guide](./concepts).
 
 <h2 id="apollo-client">Usage</h2>
 
@@ -34,6 +34,8 @@ const client = new ApolloClient({
   cache: new Cache()
 });
 ```
+
+The `HttpLink` is a replacement for `createNetworkInterface` from Apollo Client 1.0. For more information on how to upgrade from 1.0 to 2.0, including examples for using middleware and setting headers, please check out our [upgrade guide](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-http#upgrading-from-apollo-fetch--apollo-client).
 
 <h3 id="graphql-tools">graphql-tools</h3>
 
@@ -60,8 +62,6 @@ ReactDOM.render(
   document.body,
 );
 ```
-
-<h3 id="relay-modern">Relay Modern</h3>
 
 <h3 id="standalone">Standalone</h3>
 
