@@ -6,6 +6,8 @@ title: Composing Links
 
 Links represent small portions of how you want your GraphQL operation to be handled. In order to serve all of the needs of your app, Apollo Link is designed to be composed with other links to build complex actions as needed. Composition is managed in two main ways: additive and directional. Additive composition is how you can combine multiple links into a single chain and directional is how you can control which links are used depending on the operation.
 
+It's important to note that no matter how many links you have in your chain, your [terminating link](./concepts/terminating) has to be last.
+
 *NOTE Future composition mechanisms like `race` are being considered. If you have ideas please submit an issue or PR for the style you need!*
 
 <h3 id="additive">Additive Composition</h3>
