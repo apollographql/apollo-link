@@ -1,8 +1,8 @@
 ---
-title: Concepts
+title: Overview
 ---
 
-<h2 id="concepts">Link Concepts</h2>
+<h2 id="overview">Link Concepts Overview</h2>
 
 Apollo Link is designed to be a powerful way to compose actions around data handling with GraphQL. Each link represents a subset of functionality that can be composed with other links to create complex control flows of data. At a basic level, a link is a function that takes an operation and returns an observable. Described with types, it looks like this:
 
