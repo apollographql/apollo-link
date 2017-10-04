@@ -64,7 +64,7 @@ client.query({
 ```
 
 ### Upgrading from `apollo-fetch` / `apollo-client` 
-If you previously used either `apollo-fetch` or `apollo-client`, you will need to change the way `use` and `useAfter` are implemented in your app. They can both be implemented in a link like so:
+If you previously used either `apollo-fetch` or `apollo-client`, you will need to change the way `use` and `useAfter` are implemented in your app. Both can be implemented by writing a custom link. It's important to note that regardless of whether you're adding middleware or afterware, your HTTP link will always be last in the chain since it's a terminating link.
 
 #### Middleware
 
