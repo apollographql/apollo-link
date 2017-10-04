@@ -15,9 +15,8 @@ versions:
 sidebar_categories:
   null:
     - index
-    - installation
-    - concepts
-  Usage:
+  Concepts:
+    - overview
     - stateless
     - stateful
     - composition
