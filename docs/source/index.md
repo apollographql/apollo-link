@@ -4,7 +4,7 @@ sidebar_title: Introduction
 description: Apollo Link is a standard interface for modifying control flow of GraphQL requests and fetching GraphQL results.
 ---
 
-This is the official guide for getting started with Apollo Link in your application. Apollo Link is a simple yet powerful way to describe how you want to execute a GraphQL operation, and what you want to do with the results. It is completely customizable, which means you can use links with Apollo Client, `graphql-tools`, Relay Modern, GraphiQL, and even as a standalone client.
+This is the official guide for getting started with Apollo Link in your application. Apollo Link is a simple yet powerful way to describe how you want to execute a GraphQL operation, and what you want to do with the results. It is completely customizable, which means you can use links with Apollo Client, `graphql-tools`, GraphiQL, and even as a standalone client.
 
 <h2 id="installation">Installation</h2>
 
@@ -13,7 +13,7 @@ First, you'll need to install the `apollo-link` npm package.
 npm install apollo-link --save
 ```
 
-Apollo Link has two main exports, the `ApolloLink` interface and the `execute` function. The `ApolloLink` interface is used to create custom links, compose multiple links together, and can be extended to support more powerful use cases. The `execute` function is how to use a link and an operation to create a request. For a deeper dive on how to use links in your application, check out our Apollo Link [concepts guide](./concepts).
+Apollo Link has two main exports, the `ApolloLink` interface and the `execute` function. The `ApolloLink` interface is used to create custom links, compose multiple links together, and can be extended to support more powerful use cases. The `execute` function is how to use a link and an operation to create a request. For a deeper dive on how to use links in your application, check out our Apollo Link [concepts guide](./concepts.html).
 
 <h2 id="apollo-client">Usage</h2>
 
@@ -111,4 +111,4 @@ If you want to control how you handle errors, `next` will receive GraphQL errors
 
 <h3 id="customization">Customizing your own links</h3>
 
-Our links have you covered for the most common use cases, but what if you want to write your own middleware? What about offline support or persisted queries? The `ApolloLink` interface was designed to be customizable to fit your application's needs. To get started, first read our [concepts guide](./concepts) and then learn how to write your own [stateless link](./stateless).
+Our links have you covered for the most common use cases, but what if you want to write your own middleware? What about offline support or persisted queries? The `ApolloLink` interface was designed to be customizable to fit your application's needs. To get started, first read our [concepts guide](./concepts.html) and then learn how to write your own [stateless link](./stateless.html).

@@ -47,7 +47,7 @@ Links are designed to be composed together to form control flow chains to manage
 
 When writing a `RequestHandler`, the second argument is the way to call the next link in the chain. We call it `forward` in the docs for a couple reasons. First, `observers` have a `next` function for sending new results to the subscriber. Second, if you think of composed links like a chain, the request goes `forward` until it get data (for example from a server request), then it begins to go `back` up the chain to any subscriptions. The `forward` function allows the `RequestHandler` to continue the process to the next link in the chain.
 
-Composition is done using helper functions exported from the `apollo-link` package, or conveniently located on the `ApolloLink` class itself. These helpers are explained more [here](./composition). We suggest using the helpers directly on the `ApolloLink` however to make it easier to read and reason about what is being done in your code.
+Composition is done using helper functions exported from the `apollo-link` package, or conveniently located on the `ApolloLink` class itself. These helpers are explained more [here](./composition.html). We suggest using the helpers directly on the `ApolloLink` however to make it easier to read and reason about what is being done in your code.
 
 <h3 id="context">Context</h3>
 
