@@ -40,6 +40,11 @@ apis:
     indexName: apollodata
   gtm: GTM-PNFDVBB
 
+logo:
+  nav_mobile: links/logo/logo-apollo-space-left.svg
+  title: Apollo
+  url: http://dev.apollodata.com/
+
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: http://dev.apollodata.com/links
@@ -49,7 +54,7 @@ permalink_defaults:
 
 # Directory
 source_dir: source
-public_dir: public/links
+public_dir: public
 tag_dir: tags
 archive_dir: archives
 category_dir: categories
