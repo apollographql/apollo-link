@@ -53,7 +53,7 @@ permalink_defaults:
 
 # Directory
 source_dir: source
-public_dir: public
+public_dir: public/links
 tag_dir: tags
 archive_dir: archives
 category_dir: categories
