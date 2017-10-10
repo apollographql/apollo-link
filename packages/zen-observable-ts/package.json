@@ -40,7 +40,7 @@
     "jest": "21.2.1",
     "rimraf": "2.6.1",
     "rollup": "0.45.2",
-    "ts-jest": "21.1.0",
+    "ts-jest": "21.1.2",
     "tslint": "5.7.0",
     "typescript": "2.5.1",
     "uglify-js": "3.1.3"
