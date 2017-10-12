@@ -1,25 +1,21 @@
-import { assert } from 'chai';
-import * as sinon from 'sinon';
-import * as Links from '../link';
+import gql from 'graphql-tag';
+import { execute, ApolloLink } from '../link';
 
-const sampleQuery = `
-query SampleQuery {
-  stub{
-    id
+const sampleQuery = gql`
+  query SampleQuery {
+    stub {
+      id
+    }
   }
-}
 `;
 
-export function checkCalls<T>(
-  calls: Array<sinon.SinonSpyCall>,
-  results: Array<T>,
-) {
-  assert.deepEqual(calls.length, results.length);
-  calls.map((call, i) => assert.deepEqual(call.args[0].data, results[i]));
+export function checkCalls<T>(calls: any[] = [], results: Array<T>) {
+  expect(calls.length).toBe(results.length);
+  calls.map((call, i) => expect(call.data).toEqual(results[i]));
 }
 
 export interface TestResultType {
-  link: Links.ApolloLink;
+  link: ApolloLink;
   results?: any[];
   query?: string;
   done?: () => void;
@@ -33,18 +29,18 @@ export function testLinkResults(params: TestResultType) {
   const query = params.query || sampleQuery;
   const done = params.done || (() => void 0);
 
-  const spy = sinon.spy();
-  Links.execute(link, { query, context, variables }).subscribe({
+  const spy = jest.fn();
+  execute(link, { query, context, variables }).subscribe({
     next: spy,
     error: error => {
-      assert(error, results.pop());
-      checkCalls(spy.getCalls(), results);
+      expect(error).toEqual(results.pop());
+      checkCalls(spy.mock.calls[0], results);
       if (done) {
         done();
       }
     },
     complete: () => {
-      checkCalls(spy.getCalls(), results);
+      checkCalls(spy.mock.calls[0], results);
       if (done) {
         done();
       }

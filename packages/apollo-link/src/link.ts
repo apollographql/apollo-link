@@ -1,3 +1,5 @@
+import Observable from 'zen-observable-ts';
+
 import {
   GraphQLRequest,
   NextLink,
@@ -8,179 +10,124 @@ import {
 
 import {
   validateOperation,
-  toLink,
   isTerminating,
   LinkError,
+  transformOperation,
+  createOperation,
 } from './linkUtils';
 
-import gql from 'graphql-tag';
+const passthrough = (op, forward) => (forward ? forward(op) : Observable.of());
 
-import Observable from 'zen-observable-ts';
-import {
-  DocumentNode,
-  DefinitionNode,
-  OperationDefinitionNode,
-} from 'graphql/language/ast';
+const toLink = (handler: RequestHandler | ApolloLink) =>
+  typeof handler === 'function' ? new ApolloLink(handler) : handler;
 
-export abstract class ApolloLink {
-  public static from(links: (ApolloLink | RequestHandler)[]) {
-    if (links.length === 0) {
-      return ApolloLink.empty();
-    }
+export const empty = (): ApolloLink =>
+  new ApolloLink((op, forward) => Observable.of());
 
-    return links.map(toLink).reduce((x, y) => x.concat(y));
+export const from = (links: ApolloLink[]): ApolloLink => {
+  if (links.length === 0) return empty();
+
+  return links.map(toLink).reduce((x, y) => x.concat(y));
+};
+
+export const split = (
+  test: (op: Operation) => boolean,
+  left: ApolloLink | RequestHandler,
+  right: ApolloLink | RequestHandler = new ApolloLink(passthrough),
+): ApolloLink => {
+  const leftLink = toLink(left);
+  const rightLink = toLink(right);
+
+  if (isTerminating(leftLink) && isTerminating(rightLink)) {
+    return new ApolloLink(operation => {
+      return test(operation)
+        ? leftLink.request(operation) || Observable.of()
+        : rightLink.request(operation) || Observable.of();
+    });
+  } else {
+    return new ApolloLink((operation, forward) => {
+      return test(operation)
+        ? leftLink.request(operation, forward) || Observable.of()
+        : rightLink.request(operation, forward) || Observable.of();
+    });
   }
+};
 
-  public static empty(): ApolloLink {
-    return new FunctionLink((op, forward) => Observable.of());
-  }
-
-  public static passthrough(): ApolloLink {
-    return new FunctionLink(
-      (op, forward) => (forward ? forward(op) : Observable.of()),
+// join two Links together
+export const concat = (
+  first: ApolloLink | RequestHandler,
+  second: ApolloLink | RequestHandler,
+) => {
+  const firstLink = toLink(first);
+  if (isTerminating(firstLink)) {
+    console.warn(
+      new LinkError(
+        `You are calling concat on a terminating link, which will have no effect`,
+        firstLink,
+      ),
     );
+    return firstLink;
+  }
+  const nextLink = toLink(second);
+
+  if (isTerminating(nextLink)) {
+    return new ApolloLink(
+      operation =>
+        firstLink.request(
+          operation,
+          op => nextLink.request(op) || Observable.of(),
+        ) || Observable.of(),
+    );
+  } else {
+    return new ApolloLink((operation, forward) => {
+      return (
+        firstLink.request(operation, op => {
+          return nextLink.request(op, forward) || Observable.of();
+        }) || Observable.of()
+      );
+    });
+  }
+};
+
+export class ApolloLink {
+  constructor(request?: RequestHandler) {
+    if (request) this.request = request;
   }
 
-  // split allows for creating a split point in an execution chain
-  // like filter, it can be used to direct operations based
-  // on request information. Instead of dead ending an execution,
-  // split allows for new chains to be formed.
-  public static split(
-    test: (op: Operation) => boolean,
-    left: ApolloLink | RequestHandler,
-    right: ApolloLink | RequestHandler = ApolloLink.passthrough(),
-  ): ApolloLink {
-    const leftLink = toLink(left);
-    const rightLink = toLink(right);
-
-    if (isTerminating(leftLink) && isTerminating(rightLink)) {
-      return new FunctionLink(operation => {
-        return test(operation)
-          ? leftLink.request(operation) || Observable.of()
-          : rightLink.request(operation) || Observable.of();
-      });
-    } else {
-      return new FunctionLink((operation, forward) => {
-        return test(operation)
-          ? leftLink.request(operation, forward) || Observable.of()
-          : rightLink.request(operation, forward) || Observable.of();
-      });
-    }
-  }
+  public static empty = empty;
+  public static from = from;
+  public static split = split;
 
   public split(
     test: (op: Operation) => boolean,
     left: ApolloLink | RequestHandler,
-    right: ApolloLink | RequestHandler = ApolloLink.passthrough(),
+    right: ApolloLink | RequestHandler = new ApolloLink(passthrough),
   ): ApolloLink {
-    return this.concat(ApolloLink.split(test, left, right));
+    return this.concat(split(test, left, right));
   }
 
-  // join two Links together
   public concat(next: ApolloLink | RequestHandler): ApolloLink {
-    if (isTerminating(this)) {
-      console.warn(
-        new LinkError(
-          `You are calling concat on a terminating link, which will have no effect`,
-          this,
-        ),
-      );
-      return this;
-    }
-    const nextLink = toLink(next);
-
-    if (isTerminating(nextLink)) {
-      return new FunctionLink(
-        operation =>
-          this.request(
-            operation,
-            op => nextLink.request(op) || Observable.of(),
-          ) || Observable.of(),
-      );
-    } else {
-      return new FunctionLink((operation, forward) => {
-        return (
-          this.request(operation, op => {
-            return nextLink.request(op, forward) || Observable.of();
-          }) || Observable.of()
-        );
-      });
-    }
+    return concat(this, next);
   }
 
-  public abstract request(
+  public request(
     operation: Operation,
     forward?: NextLink,
-  ): Observable<FetchResult> | null;
+  ): Observable<FetchResult> | null {
+    throw new Error('request is not implemented');
+  }
 }
 
 export function execute(
   link: ApolloLink,
   operation: GraphQLRequest,
 ): Observable<FetchResult> {
-  const copy = { ...operation };
-  validateOperation(copy);
-
-  if (!copy.context) {
-    copy.context = {};
-  }
-  if (!copy.variables) {
-    copy.variables = {};
-  }
-  if (!copy.query) {
-    console.warn(`query should either be a string or GraphQL AST`);
-    copy.query = <DocumentNode>{};
-  }
-
-  return link.request(transformOperation(copy)) || Observable.of();
-}
-
-function getName(node: OperationDefinitionNode) {
-  return node && node.name && node.name.kind === 'Name' && node.name.value;
-}
-
-function transformOperation(operation: GraphQLRequest): Operation {
-  let transformedOperation: Operation;
-
-  if (typeof operation.query === 'string') {
-    transformedOperation = {
-      ...operation,
-      query: gql(operation.query),
-    };
-  } else {
-    transformedOperation = {
-      ...operation,
-    } as Operation;
-  }
-
-  if (transformedOperation.query && transformedOperation.query.definitions) {
-    if (!transformedOperation.operationName) {
-      const operationTypes = ['query', 'mutation', 'subscription'];
-      const definitions = <OperationDefinitionNode[]>transformedOperation.query.definitions.filter(
-        (x: DefinitionNode) =>
-          x.kind === 'OperationDefinition' &&
-          operationTypes.indexOf(x.operation) >= 0,
-      );
-
-      transformedOperation.operationName = getName(definitions[0]) || '';
-    }
-  } else if (!transformedOperation.operationName) {
-    transformedOperation.operationName = '';
-  }
-
-  return transformedOperation;
-}
-
-export class FunctionLink extends ApolloLink {
-  constructor(public f: RequestHandler) {
-    super();
-    this.request = f;
-  }
-
-  public request(
-    operation: Operation,
-    forward: NextLink,
-  ): Observable<FetchResult> {
-    throw Error('should be overridden');
-  }
+  return (
+    link.request(
+      createOperation(
+        operation.context,
+        transformOperation(validateOperation(operation)),
+      ),
+    ) || Observable.of()
+  );
 }

@@ -7,42 +7,51 @@ import {
   ZenObservable,
 } from 'apollo-link';
 
+const operationFnOrNumber = prop =>
+  typeof prop === 'number' ? () => prop : prop;
+
+const defaultInterval = delay => delay;
+
+export type ParamFnOrNumber = (operation: Operation) => number | number;
+
 export default class RetryLink extends ApolloLink {
-  private count: number = 0;
-  private delay: number;
-  private max: number;
+  private delay: ParamFnOrNumber;
+  private max: ParamFnOrNumber;
   private interval: (delay: number, count: number) => number;
-  private subscription: ZenObservable.Subscription;
-  private timer;
+  private subscriptions: { [key: string]: ZenObservable.Subscription } = {};
+  private timers = {};
+  private counts: { [key: string]: number } = {};
 
   constructor(params?: {
-    max?: number;
-    delay?: number;
+    max?: ParamFnOrNumber;
+    delay?: ParamFnOrNumber;
     interval?: (delay: number, count: number) => number;
   }) {
     super();
-    this.max = (params && params.max) || 10;
-    this.delay = (params && params.delay) || 300;
-    this.interval = (params && params.interval) || this.defaultInterval;
+    this.max = operationFnOrNumber((params && params.max) || 10);
+    this.delay = operationFnOrNumber((params && params.delay) || 300);
+    this.interval = (params && params.interval) || defaultInterval;
   }
 
   public request(
     operation: Operation,
     forward: NextLink,
   ): Observable<FetchResult> {
+    const key = operation.toKey();
+    if (!this.counts[key]) this.counts[key] = 0;
     return new Observable(observer => {
       const subscriber = {
         next: data => {
-          this.count = 0;
+          this.counts[key] = 0;
           observer.next(data);
         },
         error: error => {
-          this.count++;
-          if (this.count < this.max) {
-            this.timer = setTimeout(() => {
+          this.counts[key]++;
+          if (this.counts[key] < this.max(operation)) {
+            this.timers[key] = setTimeout(() => {
               const observable = forward(operation);
-              this.subscription = observable.subscribe(subscriber);
-            }, this.interval(this.delay, this.count));
+              this.subscriptions[key] = observable.subscribe(subscriber);
+            }, this.interval(this.delay(operation), this.counts[key]));
           } else {
             observer.error(error);
           }
@@ -50,16 +59,12 @@ export default class RetryLink extends ApolloLink {
         complete: observer.complete.bind(observer),
       };
 
-      this.subscription = forward(operation).subscribe(subscriber);
+      this.subscriptions[key] = forward(operation).subscribe(subscriber);
 
       return () => {
-        this.subscription.unsubscribe();
-        if (this.timer) {
-          clearTimeout(this.timer);
-        }
+        this.subscriptions[key].unsubscribe();
+        if (this.timers[key]) clearTimeout(this.timers[key]);
       };
     });
   }
-
-  private defaultInterval = delay => delay;
 }
