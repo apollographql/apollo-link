@@ -39,11 +39,9 @@
     "test": "jest",
     "watch": "tsc -w -p ."
   },
-  "dependencies": {
-    "graphql": "^0.11.0"
-  },
   "peerDependencies": {
-    "apollo-link": "^0.7.0"
+    "apollo-link": "^0.7.0",
+    "graphql": "^0.11.0"
   },
   "devDependencies": {
     "@types/graphql": "0.11.5",
