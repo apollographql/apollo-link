@@ -120,7 +120,7 @@ const networkInterface = createNetworkInterface({ uri: '/graphql' });
 
 networkInterface.useAfter([{
   applyAfterware({ response }, next) {
-    if (response.status === 401) {
+    if (response.statusCode === 401) {
       logout();
     }
     next();
