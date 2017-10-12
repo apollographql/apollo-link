@@ -39,7 +39,7 @@ describe('error handling', () => {
   });
   it('has an easy way to log client side (network) errors', done => {
     const query = gql`
-      {
+      query Foo {
         foo {
           bar
         }
@@ -47,8 +47,9 @@ describe('error handling', () => {
     `;
 
     let called;
-    const errorLink = onError(({ graphQLErrors, networkError }) => {
+    const errorLink = onError(({ operation, networkError }) => {
       expect(networkError.message).toBe('app is crashing');
+      expect(operation.operationName).toBe('Foo');
       called = true;
     });
 
@@ -68,7 +69,7 @@ describe('error handling', () => {
   });
   it('captures errors within links', done => {
     const query = gql`
-      {
+      query Foo {
         foo {
           bar
         }
@@ -76,8 +77,9 @@ describe('error handling', () => {
     `;
 
     let called;
-    const errorLink = onError(({ graphQLErrors, networkError }) => {
+    const errorLink = onError(({ operation, networkError }) => {
       expect(networkError.message).toBe('app is crashing');
+      expect(operation.operationName).toBe('Foo');
       called = true;
     });
 
@@ -157,6 +159,43 @@ describe('error handling', () => {
     sub.unsubscribe();
 
     setTimeout(done, 10);
+  });
+  it('includes the operation and any data along with a graphql error', done => {
+    const query = gql`
+      query Foo {
+        foo {
+          bar
+        }
+      }
+    `;
+
+    let called;
+    const errorLink = onError(({ graphQLErrors, data, operation }) => {
+      expect(graphQLErrors[0].message).toBe('resolver blew up');
+      expect(data.foo).toBe(true);
+      expect(operation.operationName).toBe('Foo');
+      expect(operation.getContext().bar).toBe(true);
+      called = true;
+    });
+
+    const mockLink = new ApolloLink(operation =>
+      Observable.of({
+        data: { foo: true },
+        errors: [
+          {
+            message: 'resolver blew up',
+          },
+        ],
+      }),
+    );
+
+    const link = errorLink.concat(mockLink);
+
+    execute(link, { query, context: { bar: true } }).subscribe(result => {
+      expect(result.errors[0].message).toBe('resolver blew up');
+      expect(called).toBe(true);
+      done();
+    });
   });
 });
 
