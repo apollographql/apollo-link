@@ -2,7 +2,7 @@ import { ApolloLink, Observable } from 'apollo-link';
 import { GraphQLError, ExecutionResult } from 'graphql';
 
 export interface ErrorResponse {
-  graphqlErrors?: GraphQLError[];
+  graphQLErrors?: GraphQLError[];
   networkError?: Error;
 }
 
@@ -15,7 +15,7 @@ export const onError = (errorHandler: ErrorHandler): ApolloLink => {
       try {
         sub = forward(operation).subscribe({
           next: result => {
-            if (result.errors) errorHandler({ graphqlErrors: result.errors });
+            if (result.errors) errorHandler({ graphQLErrors: result.errors });
             observer.next(result);
           },
           error: networkError => {

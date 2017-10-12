@@ -14,8 +14,8 @@ describe('error handling', () => {
     `;
 
     let called;
-    const errorLink = onError(({ graphqlErrors, networkError }) => {
-      expect(graphqlErrors[0].message).toBe('resolver blew up');
+    const errorLink = onError(({ graphQLErrors, networkError }) => {
+      expect(graphQLErrors[0].message).toBe('resolver blew up');
       called = true;
     });
 
@@ -47,7 +47,7 @@ describe('error handling', () => {
     `;
 
     let called;
-    const errorLink = onError(({ graphqlErrors, networkError }) => {
+    const errorLink = onError(({ graphQLErrors, networkError }) => {
       expect(networkError.message).toBe('app is crashing');
       called = true;
     });
@@ -76,7 +76,7 @@ describe('error handling', () => {
     `;
 
     let called;
-    const errorLink = onError(({ graphqlErrors, networkError }) => {
+    const errorLink = onError(({ graphQLErrors, networkError }) => {
       expect(networkError.message).toBe('app is crashing');
       called = true;
     });
@@ -107,7 +107,7 @@ describe('error handling', () => {
     `;
 
     let called;
-    const errorLink = onError(({ graphqlErrors, networkError }) => {
+    const errorLink = onError(({ graphQLErrors, networkError }) => {
       expect(networkError.message).toBe('app is crashing');
       called = true;
     });
@@ -132,7 +132,7 @@ describe('error handling', () => {
     `;
 
     let called;
-    const errorLink = onError(({ graphqlErrors, networkError }) => {
+    const errorLink = onError(({ networkError }) => {
       expect(networkError.message).toBe('app is crashing');
       called = true;
     });
@@ -171,8 +171,8 @@ describe('error handling with class', () => {
     `;
 
     let called;
-    const errorLink = new ErrorLink(({ graphqlErrors, networkError }) => {
-      expect(graphqlErrors[0].message).toBe('resolver blew up');
+    const errorLink = new ErrorLink(({ graphQLErrors, networkError }) => {
+      expect(graphQLErrors[0].message).toBe('resolver blew up');
       called = true;
     });
 
@@ -204,7 +204,7 @@ describe('error handling with class', () => {
     `;
 
     let called;
-    const errorLink = new ErrorLink(({ graphqlErrors, networkError }) => {
+    const errorLink = new ErrorLink(({ networkError }) => {
       expect(networkError.message).toBe('app is crashing');
       called = true;
     });
@@ -233,7 +233,7 @@ describe('error handling with class', () => {
     `;
 
     let called;
-    const errorLink = new ErrorLink(({ graphqlErrors, networkError }) => {
+    const errorLink = new ErrorLink(({ networkError }) => {
       expect(networkError.message).toBe('app is crashing');
       called = true;
     });
@@ -264,7 +264,7 @@ describe('error handling with class', () => {
     `;
 
     let called;
-    const errorLink = new ErrorLink(({ graphqlErrors, networkError }) => {
+    const errorLink = new ErrorLink(({ networkError }) => {
       expect(networkError.message).toBe('app is crashing');
       called = true;
     });
@@ -289,7 +289,7 @@ describe('error handling with class', () => {
     `;
 
     let called;
-    const errorLink = new ErrorLink(({ graphqlErrors, networkError }) => {
+    const errorLink = new ErrorLink(({ networkError }) => {
       expect(networkError.message).toBe('app is crashing');
       called = true;
     });
