@@ -18,6 +18,10 @@ The targeted use cases of `apollo-link` are highlighted below:
 To use apollo-link in a web browser or mobile app, you'll need a build system capable of loading NPM packages on the client.
 Some common choices include Browserify, Webpack, and Meteor +1.3.
 
+
+## Contributing
+Apollo Link uses Lerna to manage multiple packages. To get started contributing, run `npm bootstrap` which will install all dependencies and link together the projects.
+
 ## Documentation
 
 To start, begin by reading the getting started [guide](docs/source/index.md).
