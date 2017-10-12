@@ -124,6 +124,41 @@ describe('error handling', () => {
       complete: done,
     });
   });
+  it('allows an error to be ignored', done => {
+    const query = gql`
+      {
+        foo {
+          bar
+        }
+      }
+    `;
+
+    let called;
+    const errorLink = onError(({ graphQLErrors, response }) => {
+      expect(graphQLErrors[0].message).toBe('ignore');
+      // ignore errors
+      response.errors = null;
+      called = true;
+    });
+
+    const mockLink = new ApolloLink(operation => {
+      return Observable.of({
+        data: { foo: { id: 1 } },
+        errors: [{ message: 'ignore' }],
+      });
+    });
+
+    const link = errorLink.concat(mockLink);
+
+    execute(link, { query }).subscribe({
+      next: ({ errors, data }) => {
+        expect(errors).toBe(null);
+        expect(data).toEqual({ foo: { id: 1 } });
+      },
+      complete: done,
+    });
+  });
+
   it('can be unsubcribed', done => {
     const query = gql`
       {
@@ -170,9 +205,9 @@ describe('error handling', () => {
     `;
 
     let called;
-    const errorLink = onError(({ graphQLErrors, data, operation }) => {
+    const errorLink = onError(({ graphQLErrors, response, operation }) => {
       expect(graphQLErrors[0].message).toBe('resolver blew up');
-      expect(data.foo).toBe(true);
+      expect(response.data.foo).toBe(true);
       expect(operation.operationName).toBe('Foo');
       expect(operation.getContext().bar).toBe(true);
       called = true;

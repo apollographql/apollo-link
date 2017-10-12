@@ -4,7 +4,7 @@ import { GraphQLError, ExecutionResult } from 'graphql';
 export interface ErrorResponse {
   graphQLErrors?: GraphQLError[];
   networkError?: Error;
-  data?: any;
+  response?: ExecutionResult;
   operation: Operation;
 }
 
@@ -20,7 +20,7 @@ export const onError = (errorHandler: ErrorHandler): ApolloLink => {
             if (result.errors) {
               errorHandler({
                 graphQLErrors: result.errors,
-                data: result.data,
+                response: result,
                 operation,
               });
             }
