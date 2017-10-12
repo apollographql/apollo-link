@@ -13,7 +13,6 @@ export function validateOperation(operation: GraphQLRequest): GraphQLRequest {
     'extensions',
     'context',
   ];
-  if (!operation.query) throw new Error('ApolloLink requires a query');
   for (let key of Object.keys(operation)) {
     if (OPERATION_FIELDS.indexOf(key) < 0) {
       throw new Error(`illegal argument: ${key}`);
