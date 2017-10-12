@@ -14,7 +14,7 @@ type ResponseError = Error & {
   statusCode?: number;
 };
 
-const parseAndCheckResponse = (response: Response) => {
+const parseAndCheckResponse = request => (response: Response) => {
   return response
     .json()
     .then(result => {
@@ -22,6 +22,11 @@ const parseAndCheckResponse = (response: Response) => {
         throw new Error(
           `Response not successful: Received status code ${response.status}`,
         );
+      if (!result.hasOwnProperty('data') && !result.hasOwnProperty('errors')) {
+        throw new Error(
+          `Server response was missing for query '${request.operationName}'.`,
+        );
+      }
       return result;
     })
     .catch(e => {
@@ -157,7 +162,7 @@ export const createHttpLink = (
         if (controller) fetchOptions.signal = signal;
 
         fetcher(uri, fetchOptions)
-          .then(parseAndCheckResponse)
+          .then(parseAndCheckResponse(operation))
           .then(result => {
             // we have data and can send it to back up the link chain
             observer.next(result);

@@ -22,7 +22,7 @@ const sampleMutation = gql`
 `;
 
 describe('HttpLink', () => {
-  const data = { hello: 'world', method: 'POST' };
+  const data = { data: { hello: 'world' } };
   const mockError = { throws: new TypeError('mock me') };
 
   let subscriber;
@@ -435,6 +435,23 @@ describe('error handling', () => {
       },
     );
   });
+  it('throws an error if empty response from the server ', done => {
+    fetch.mockReturnValueOnce(Promise.resolve({ json }));
+    json.mockReturnValueOnce(Promise.resolve({ body: 'boo' }));
+    const link = createHttpLink({ uri: 'data', fetch });
+
+    execute(link, { query: sampleQuery }).subscribe(
+      result => {
+        done.fail('error should have been thrown from the network');
+      },
+      e => {
+        expect(e.parseError.message).toMatch(
+          /Server response was missing for query 'SampleQuery'/,
+        );
+        done();
+      },
+    );
+  });
   it('makes it easy to do stuff on a 401', done => {
     fetch.mockReturnValueOnce(Promise.resolve({ status: 401, json }));
 
@@ -504,6 +521,8 @@ describe('error handling', () => {
     global.AbortController = AbortController;
 
     fetch.mockReturnValueOnce(Promise.resolve({ json }));
+    json.mockReturnValueOnce(Promise.resolve({ data: { hello: 'world' } }));
+
     const link = createHttpLink({ uri: 'data', fetch });
 
     const sub = execute(link, { query: sampleQuery }).subscribe({
