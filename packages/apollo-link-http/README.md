@@ -23,17 +23,20 @@ const link = createHttpLink({ uri: "/graphql" });
 The HTTP Link relies on having `fetch` present in your runtime environment. If you are running on react-native, or modern browsers, this should be no problem. If you are targeting an environment without `fetch` such as older browsers of the server, you will need to pass your own `fetch` to the link through the options. We recommend `unfetch` for older browsers and `node-fetch` for running in node.
 
 ## Options
-HTTP Link takes an object with three options on it to customize the behavior of the link. If your server supports it, the HTTP link can also send over metadata about the request in the extensions field. To enable this, pass `includeExtensions` as true.
+HTTP Link takes an object with some options on it to customize the behavior of the link. If your server supports it, the HTTP link can also send over metadata about the request in the extensions field. To enable this, pass `includeExtensions` as true.
 
 |name|value|default|required|
 |---|---|---|---|
 |uri|string|"/graphql"|false|
 |includeExtensions|boolean|false|false|
 |fetch|fetch|global fetch|false|
+|headers|Headers (or object)|{}|false|
+|credentials|string|none|false|
+|fetchOptions|Fetch Options (object)|none|false|
 
 
 ## Context
-The HTTP Link uses the `headers` field on the context to allow passing headers to the HTTP request. It also supports the `credentials` field for defining credentials policy for fetch and `fetchOptions` to allow generic fetch overrides (i.e. method: "GET").
+The HTTP Link uses the `headers` field on the context to allow passing headers to the HTTP request. It also supports the `credentials` field for defining credentials policy for fetch and `fetchOptions` to allow generic fetch overrides (i.e. method: "GET"). These options will override the same key if passed when creating the the link.
 
 |name|value|default|required|
 |---|---|---|---|
