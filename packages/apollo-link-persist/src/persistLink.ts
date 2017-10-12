@@ -4,19 +4,14 @@ import {
   Operation,
   FetchResult,
   Observable,
-} from 'apollo-link-core';
+} from 'apollo-link';
 
-import {
-  OutputMap,
-  getQueryDocumentKey,
-} from 'persistgraphql';
+import { OutputMap, getQueryDocumentKey } from 'persistgraphql';
 
 export default class PersistLink extends ApolloLink {
   private queryMap: OutputMap;
 
-  constructor(
-    queryMap: OutputMap,
-  ) {
+  constructor(queryMap: OutputMap) {
     super();
 
     this.queryMap = queryMap;
@@ -38,15 +33,8 @@ export default class PersistLink extends ApolloLink {
       });
     }
 
-    return forward({
-      query: null,
-      variables: operation.variables,
-      operationName: operation.operationName,
-      context: {
-        queryId: this.queryMap[queryKey],
-      },
-    } as Operation);
+    operation.query = null;
+    operation.extensions = { queryId: this.queryMap[queryKey] };
+    return forward(operation);
   }
 }
-
-

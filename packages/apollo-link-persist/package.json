@@ -6,13 +6,35 @@
   "module": "./dist/src/persistLink.js",
   "typings": "./dist/src/batchLink.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "pretest": "npm run build-test",
+    "test": "npm run test-only --",
+    "posttest": "npm run lint",
+    "test-only": "mocha --reporter spec --full-trace dist/tests/tests.js",
+    "test-watch":
+      "mocha --reporter spec --full-trace dist/tests/tests.js --watch",
+    "coverage":
+      "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot --full-trace dist/tests/tests.js",
+    "postcoverage":
+      "remap-istanbul --input coverage/coverage.json --type lcovonly --output coverage/lcov.info",
+    "lint":
+      "tslint --type-check -p tsconfig.test.json src/*.ts && tslint --type-check -p tsconfig.test.json tests/*.ts",
+    "prebuild": "npm run clean:dist",
+    "build": "tsc -p .",
+    "build-test": "tsc -p tsconfig.test.json",
+    "postbuild": "npm run bundle",
+    "postbuild-test": "npm run bundle",
+    "bundle": "rollup -c",
+    "watch": "tsc -w -p .",
+    "clean": "npm run clean:dist && npm run clean:coverage",
+    "clean:dist": "rimraf dist/*",
+    "clean:coverage": "rimraf coverage/*",
+    "prepublishOnly": "npm run clean && npm run build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "apollo-fetch": "^0.6.0",
-    "apollo-link-core": "^0.5.4",
+    "apollo-link": "^0.7.0",
     "graphql": "^0.11.3"
   },
   "devDependencies": {
@@ -36,30 +58,5 @@
     "source-map-support": "0.4.16",
     "tslint": "5.7.0",
     "typescript": "2.5.1"
-  },
-  "scripts": {
-    "pretest": "npm run build-test",
-    "test": "npm run test-only --",
-    "posttest": "npm run lint",
-    "test-only": "mocha --reporter spec --full-trace dist/tests/tests.js",
-    "test-watch":
-    "mocha --reporter spec --full-trace dist/tests/tests.js --watch",
-    "coverage":
-    "istanbul cover ./node_modules/mocha/bin/_mocha -- --reporter dot --full-trace dist/tests/tests.js",
-    "postcoverage":
-    "remap-istanbul --input coverage/coverage.json --type lcovonly --output coverage/lcov.info",
-    "lint":
-    "tslint --type-check -p tsconfig.test.json src/*.ts && tslint --type-check -p tsconfig.test.json tests/*.ts",
-    "prebuild": "npm run clean:dist",
-    "build": "tsc -p .",
-    "build-test": "tsc -p tsconfig.test.json",
-    "postbuild": "npm run bundle",
-    "postbuild-test": "npm run bundle",
-    "bundle": "rollup -c",
-    "watch": "tsc -w -p .",
-    "clean": "npm run clean:dist && npm run clean:coverage",
-    "clean:dist": "rimraf dist/*",
-    "clean:coverage": "rimraf coverage/*",
-    "prepublishOnly": "npm run clean && npm run build"
   }
 }
