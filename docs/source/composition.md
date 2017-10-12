@@ -35,7 +35,7 @@ import { ApolloLink } from 'apollo-link';
 import Retry from 'apollo-link-retry';
 import HttpLink from 'apollo-link-http';
 
-const link = ApolloLink.concat(new Retry(), (new HttpLink({ uri: '/graphql' }));
+const link = ApolloLink.concat(new Retry(), new HttpLink({ uri: '/graphql' }));
 ```
 
 <h3 id="directional">Directional Composition</h3>
