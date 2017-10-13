@@ -11,7 +11,7 @@ An Apollo Link to deduplicate matching requests before making a request.
 
 ## Usage
 ```js
-import DedupLink from "apollo-link-dedup";
+import { DedupLink } from "apollo-link-dedup";
 
 const link = new DedupLink();
 ```

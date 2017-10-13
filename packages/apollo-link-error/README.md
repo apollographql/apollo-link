@@ -11,13 +11,28 @@ An Apollo Link to allow sending error events to custom services or loggers.
 ```js
 import { onError } from "apollo-link-error";
 
-const link = onError(({ graphqlErrors, networkError }) => {
-  console.error({ graphqlErrors, networkError });
+const link = onError(({ graphQLErrors, networkError }) => {
+  console.error({ graphQLErrors, networkError });
 })
 ```
 
 ## Options
-Error Link takes a function that is called in the event of an error.
+Error Link takes a function that is called in the event of an error. This function is called with an object containing the following keys:
+- operation: The Operation that errored
+- response: The Execution of the reponse
+- graphQLErrors: any errors from the GraphQL endpoint
+- networkError: any error during the link execution or server response
+
+### Ignoring errors
+If you want to conditionally ignore errors, you can set `response.errors = null;` within the error handler:
+
+```js
+onError(({ response, operation }) => {
+  if (operation.operationName === "IgnoreErrorsQuery") {
+    response.errors = null;
+  }
+})
+```
 
 ## Context
 The Error Link does not use the context for anything

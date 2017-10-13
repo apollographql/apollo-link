@@ -14,7 +14,7 @@ type ResponseError = Error & {
   statusCode?: number;
 };
 
-const parseAndCheckResponse = (response: Response) => {
+const parseAndCheckResponse = request => (response: Response) => {
   return response
     .json()
     .then(result => {
@@ -22,6 +22,11 @@ const parseAndCheckResponse = (response: Response) => {
         throw new Error(
           `Response not successful: Received status code ${response.status}`,
         );
+      if (!result.hasOwnProperty('data') && !result.hasOwnProperty('errors')) {
+        throw new Error(
+          `Server response was missing for query '${request.operationName}'.`,
+        );
+      }
       return result;
     })
     .catch(e => {
@@ -83,9 +88,17 @@ export interface FetchOptions {
   uri?: string;
   fetch?: GlobalFetch['fetch'];
   includeExtensions?: boolean;
+  credentials?: string;
+  headers?: any;
+  fetcherOptions?: any;
 }
 export const createHttpLink = (
-  { uri, fetch: fetcher, includeExtensions }: FetchOptions = {},
+  {
+    uri,
+    fetch: fetcher,
+    includeExtensions,
+    ...requestOptions,
+  }: FetchOptions = {},
 ) => {
   // dev warnings to ensure fetch is present
   warnIfNoFetch(fetcher);
@@ -119,9 +132,12 @@ export const createHttpLink = (
           throw parseError;
         }
 
+        let options = fetcherOptions;
+        if (requestOptions.fetcherOptions)
+          options = { ...requestOptions.fetcherOptions, ...options };
         const fetchOptions = {
           method: 'POST',
-          ...fetcherOptions,
+          ...options,
           headers: {
             // headers are case insensitive (https://stackoverflow.com/a/5259004)
             accept: '*/*',
@@ -130,7 +146,15 @@ export const createHttpLink = (
           body: serializedBody,
         };
 
+        if (requestOptions.credentials)
+          fetchOptions.credentials = requestOptions.credentials;
         if (credentials) fetchOptions.credentials = credentials;
+
+        if (requestOptions.headers)
+          fetchOptions.headers = {
+            ...fetchOptions.headers,
+            ...requestOptions.headers,
+          };
         if (headers)
           fetchOptions.headers = { ...fetchOptions.headers, ...headers };
 
@@ -138,7 +162,7 @@ export const createHttpLink = (
         if (controller) fetchOptions.signal = signal;
 
         fetcher(uri, fetchOptions)
-          .then(parseAndCheckResponse)
+          .then(parseAndCheckResponse(operation))
           .then(result => {
             // we have data and can send it to back up the link chain
             observer.next(result);

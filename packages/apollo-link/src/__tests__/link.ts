@@ -1,4 +1,4 @@
-import Observable from 'zen-observable-ts';
+import * as Observable from 'zen-observable';
 import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
 

@@ -8,7 +8,7 @@ export type WebSocketParams = {
   webSocketImpl?: any;
 };
 
-export default class WebSocketLink extends ApolloLink {
+export class WebSocketLink extends ApolloLink {
   private subscriptionClient: SubscriptionClient;
 
   constructor(paramsOrClient: WebSocketParams | SubscriptionClient) {

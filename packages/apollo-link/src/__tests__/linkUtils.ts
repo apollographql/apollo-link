@@ -1,5 +1,5 @@
 import * as LinkUtils from '../linkUtils';
-import Observable from 'zen-observable-ts';
+import * as Observable from 'zen-observable';
 
 describe('Link utilities:', () => {
   describe('validateOperation', () => {

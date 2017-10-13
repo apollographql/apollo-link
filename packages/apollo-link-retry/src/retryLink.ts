@@ -4,7 +4,6 @@ import {
   Operation,
   NextLink,
   FetchResult,
-  ZenObservable,
 } from 'apollo-link';
 
 const operationFnOrNumber = prop =>
@@ -14,7 +13,7 @@ const defaultInterval = delay => delay;
 
 export type ParamFnOrNumber = (operation: Operation) => number | number;
 
-export default class RetryLink extends ApolloLink {
+export class RetryLink extends ApolloLink {
   private delay: ParamFnOrNumber;
   private max: ParamFnOrNumber;
   private interval: (delay: number, count: number) => number;

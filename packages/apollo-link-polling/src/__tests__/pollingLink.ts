@@ -1,7 +1,7 @@
 import { execute, Observable } from 'apollo-link';
 import gql from 'graphql-tag';
 
-import PollingLink from '../pollingLink';
+import { PollingLink } from '../pollingLink';
 
 const query = gql`
   query SampleQuery {

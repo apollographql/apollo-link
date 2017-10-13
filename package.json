@@ -45,7 +45,6 @@
       "path": "./packages/apollo-link-error/lib/bundle.min.js",
       "threshold": "1 Kb"
     },
-
     {
       "name": "apollo-link-http",
       "path": "./packages/apollo-link-http/lib/bundle.min.js",
@@ -65,11 +64,6 @@
       "name": "apollo-link-ws",
       "path": "./packages/apollo-link-ws/lib/bundle.min.js",
       "threshold": "10 Kb"
-    },
-    {
-      "name": "zen-observable-ts",
-      "path": "./packages/zen-observable-ts/lib/bundle.min.js",
-      "threshold": "1.5 Kb"
     }
   ],
   "jest": {

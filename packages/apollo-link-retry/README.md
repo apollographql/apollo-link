@@ -9,7 +9,7 @@ An Apollo Link to allow multiple attempts when an operation has failed. One such
 
 ## Usage
 ```js
-import RetryLink from "apollo-link-retry";
+import { RetryLink } from "apollo-link-retry";
 
 const link = new RetryLink();
 ```

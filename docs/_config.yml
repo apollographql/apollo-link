@@ -20,6 +20,8 @@ sidebar_categories:
     - stateless
     - stateful
     - composition
+  Links:
+    - links/http
 github_repo: apollographql/apollo-link
 content_root: docs
 
