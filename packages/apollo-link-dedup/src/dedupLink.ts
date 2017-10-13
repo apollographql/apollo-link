@@ -9,7 +9,7 @@ import {
 /*
  * Expects context to contain the forceFetch field if no dedup
  */
-export default class DedupLink extends ApolloLink {
+export class DedupLink extends ApolloLink {
   private inFlightRequestObservables: {
     [key: string]: Observable<FetchResult>;
   };

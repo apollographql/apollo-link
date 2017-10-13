@@ -1,13 +1,13 @@
 import { ApolloLink, Operation, FetchResult, Observable } from 'apollo-link';
 import { ApolloFetch, createApolloFetch } from 'apollo-fetch';
-import BatchLink from 'apollo-link-batch';
+import { BatchLink } from 'apollo-link-batch';
 
 import { print } from 'graphql/language/printer';
 
 /** Transforms Operation for into HTTP results.
  * context can include the headers property, which will be passed to the fetch function
  */
-export default class BatchHttpLink extends ApolloLink {
+export class BatchHttpLink extends ApolloLink {
   private headers = {};
   private apolloFetch: ApolloFetch;
   private batchInterval: number;

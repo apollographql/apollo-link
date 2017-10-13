@@ -9,13 +9,13 @@ An Apollo Link to allow batching of multiple operations into a single http reque
 
 ## Usage
 ```js
-import BatchLink from "apollo-link-batch-http";
+import { BatchLink } from "apollo-link-batch-http";
 
 const link = new BatchLink({ uri: "/graphql" });
 ```
 
 ## Options
-Batch HTTP Link takes an object with four options on it to customize the behavoir of the link.
+Batch HTTP Link takes an object with four options on it to customize the behavior of the link.
 
 |name|value|default|required|
 |---|---|---|---|

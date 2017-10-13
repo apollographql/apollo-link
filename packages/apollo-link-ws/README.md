@@ -9,7 +9,7 @@ An Apollo Link to allow sending a request over a web socket.
 
 ## Usage
 ```js
-import WSLink from "apollo-link-ws";
+import { WebSocketLink } from "apollo-link-ws";
 import { SubscriptionClient } from 'subscriptions-transport-ws';
 
 const GRAPHQL_ENDPOINT = 'ws://localhost:3000/graphql';
@@ -18,15 +18,11 @@ const client = new SubscriptionClient(GRAPHQL_ENDPOINT, {
   reconnect: true,
 });
 
-const link = new WSLink(client);
+const link = new WebSocketLink(client);
 ```
 
 ## Options
-WS Link takes either a subscription client or an object with three options on it to customize the behavoir of the link.
-
-uri: string;
-  options?: ClientOptions;
-  webSocketImpl?: any;
+WS Link takes either a subscription client or an object with three options on it to customize the behavior of the link.
 
 |name|value|default|required|
 |---|---|---|---|

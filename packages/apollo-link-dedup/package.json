@@ -40,8 +40,7 @@
     "watch": "tsc -w -p ."
   },
   "peerDependencies": {
-    "apollo-link": "^0.7.0",
-    "graphql": "^0.11.0"
+    "apollo-link": "^0.7.0"
   },
   "devDependencies": {
     "@types/graphql": "0.11.5",

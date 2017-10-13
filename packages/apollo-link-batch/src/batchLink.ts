@@ -9,7 +9,7 @@ import { OperationBatcher, BatchHandler } from './batching';
 
 export { OperationBatcher, BatchableRequest, BatchHandler } from './batching';
 
-export default class BatchLink extends ApolloLink {
+export class BatchLink extends ApolloLink {
   private batchInterval: number;
   private batchMax: number;
   private batcher: OperationBatcher;
