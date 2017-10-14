@@ -11,7 +11,7 @@ const operationFnOrNumber = prop =>
 
 const defaultInterval = delay => delay;
 
-export type ParamFnOrNumber = (operation: Operation) => number | number;
+export type ParamFnOrNumber = ((operation: Operation) => number) | number;
 
 export class RetryLink extends ApolloLink {
   private delay: ParamFnOrNumber;
