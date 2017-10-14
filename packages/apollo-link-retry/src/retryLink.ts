@@ -6,7 +6,7 @@ import {
   FetchResult,
 } from 'apollo-link';
 
-const operationFnOrNumber = prop =>
+const operationFnOrNumber: () => number = prop =>
   typeof prop === 'number' ? () => prop : prop;
 
 const defaultInterval = delay => delay;
