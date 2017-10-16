@@ -44,11 +44,11 @@ apis:
 logo:
   nav_mobile: links/logo/logo-apollo-space-left.svg
   title: Apollo
-  url: http://dev.apollodata.com/
+  url: https://www.apollographql.com/
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://dev.apollodata.com/docs/link
+url: https://www.apollographql.com/docs/link
 root: /docs/link/
 permalink: :year/:month/:day/:title/
 permalink_defaults:
