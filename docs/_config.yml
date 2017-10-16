@@ -48,14 +48,14 @@ logo:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://dev.apollodata.com/links
-root: /links/
+url: http://dev.apollodata.com/docs/link
+root: /docs/link/
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 
 # Directory
 source_dir: source
-public_dir: public/links
+public_dir: public/docs/link
 tag_dir: tags
 archive_dir: archives
 category_dir: categories
