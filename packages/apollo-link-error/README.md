@@ -12,7 +12,13 @@ An Apollo Link to allow sending error events to custom services or loggers.
 import { onError } from "apollo-link-error";
 
 const link = onError(({ graphQLErrors, networkError }) => {
-  console.error({ graphQLErrors, networkError });
+  if (graphQLErrors)
+    graphQLErrors.map(({ message, locations, path }) =>
+      console.log(
+        `[GraphQL error]: Message: ${message}, Location: ${location}, Path: ${path}`,
+      ),
+    );
+  if (networkError) console.log(`[Network error]: ${networkError}`);
 })
 ```
 
@@ -20,7 +26,7 @@ const link = onError(({ graphQLErrors, networkError }) => {
 Error Link takes a function that is called in the event of an error. This function is called with an object containing the following keys:
 - operation: The Operation that errored
 - response: The Execution of the reponse
-- graphQLErrors: any errors from the GraphQL endpoint
+- graphQLErrors: An array of errors from the GraphQL endpoint
 - networkError: any error during the link execution or server response
 
 ### Ignoring errors
