@@ -90,7 +90,7 @@ export interface FetchOptions {
   includeExtensions?: boolean;
   credentials?: string;
   headers?: any;
-  fetcherOptions?: any;
+  fetchOptions?: any;
 }
 export const createHttpLink = (
   {
@@ -111,7 +111,11 @@ export const createHttpLink = (
   return new ApolloLink(
     operation =>
       new Observable(observer => {
-        const { headers, credentials, fetcherOptions } = operation.getContext();
+        const {
+          headers,
+          credentials,
+          fetchOptions = {},
+        } = operation.getContext();
         const { operationName, extensions, variables, query } = operation;
 
         const body = {
@@ -132,10 +136,10 @@ export const createHttpLink = (
           throw parseError;
         }
 
-        let options = fetcherOptions;
-        if (requestOptions.fetcherOptions)
-          options = { ...requestOptions.fetcherOptions, ...options };
-        const fetchOptions = {
+        let options = fetchOptions;
+        if (requestOptions.fetchOptions)
+          options = { ...requestOptions.fetchOptions, ...options };
+        const fetcherOptions = {
           method: 'POST',
           ...options,
           headers: {
@@ -147,21 +151,21 @@ export const createHttpLink = (
         };
 
         if (requestOptions.credentials)
-          fetchOptions.credentials = requestOptions.credentials;
-        if (credentials) fetchOptions.credentials = credentials;
+          fetcherOptions.credentials = requestOptions.credentials;
+        if (credentials) fetcherOptions.credentials = credentials;
 
         if (requestOptions.headers)
-          fetchOptions.headers = {
-            ...fetchOptions.headers,
+          fetcherOptions.headers = {
+            ...fetcherOptions.headers,
             ...requestOptions.headers,
           };
         if (headers)
-          fetchOptions.headers = { ...fetchOptions.headers, ...headers };
+          fetcherOptions.headers = { ...fetcherOptions.headers, ...headers };
 
         const { controller, signal } = createSignalIfSupported();
-        if (controller) fetchOptions.signal = signal;
+        if (controller) fetcherOptions.signal = signal;
 
-        fetcher(uri, fetchOptions)
+        fetcher(uri, fetcherOptions)
           .then(parseAndCheckResponse(operation))
           .then(result => {
             // we have data and can send it to back up the link chain

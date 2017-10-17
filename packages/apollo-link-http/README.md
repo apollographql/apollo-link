@@ -36,7 +36,7 @@ HTTP Link takes an object with some options on it to customize the behavior of t
 
 
 ## Context
-The HTTP Link uses the `headers` field on the context to allow passing headers to the HTTP request. It also supports the `credentials` field for defining credentials policy for fetch and `fetchOptions` to allow generic fetch overrides (i.e. method: "GET"). These options will override the same key if passed when creating the the link.
+The HTTP Link uses the `headers` field on the context to allow passing headers to the HTTP request. It also supports the `credentials` field for defining credentials policy for fetch and `fetcherOptions` to allow generic fetch overrides (i.e. method: "GET"). These options will override the same key if passed when creating the the link.
 
 |name|value|default|required|
 |---|---|---|---|
