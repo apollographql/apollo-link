@@ -31,6 +31,8 @@ describe('HttpLink', () => {
     fetchMock.post('begin:data', data);
     fetchMock.post('begin:error', mockError);
 
+    fetchMock.get('begin:data', data);
+
     const next = jest.fn();
     const error = jest.fn();
     const complete = jest.fn();
@@ -329,11 +331,11 @@ describe('HttpLink', () => {
       done();
     });
   });
-  it('adds fetcherOptions to the request from the setup', done => {
+  it('adds fetchOptions to the request from the setup', done => {
     const variables = { params: 'stub' };
     const link = createHttpLink({
       uri: 'data',
-      fetcherOptions: { signal: 'foo' },
+      fetchOptions: { signal: 'foo' },
     });
 
     execute(link, { query: sampleQuery, variables }).subscribe(result => {
@@ -342,11 +344,42 @@ describe('HttpLink', () => {
       done();
     });
   });
-  it('adds fetcherOptions to the request from the context', done => {
+  it('supports using a GET request', done => {
+    const variables = { params: 'stub' };
+    const link = createHttpLink({
+      uri: 'data',
+      fetchOptions: { method: 'GET' },
+    });
+
+    execute(link, { query: sampleQuery, variables }).subscribe(result => {
+      const method = fetchMock.lastCall()[1].method;
+      expect(method).toBe('GET');
+      done();
+    });
+  });
+  it('supports using a GET request on the context', done => {
+    const variables = { params: 'stub' };
+    const link = createHttpLink({
+      uri: 'data',
+    });
+
+    execute(link, {
+      query: sampleQuery,
+      variables,
+      context: {
+        fetchOptions: { method: 'GET' },
+      },
+    }).subscribe(result => {
+      const method = fetchMock.lastCall()[1].method;
+      expect(method).toBe('GET');
+      done();
+    });
+  });
+  it('adds fetchOptions to the request from the context', done => {
     const variables = { params: 'stub' };
     const middleware = new ApolloLink((operation, forward) => {
       operation.setContext({
-        fetcherOptions: {
+        fetchOptions: {
           signal: 'foo',
         },
       });
@@ -364,14 +397,14 @@ describe('HttpLink', () => {
     const variables = { params: 'stub' };
     const middleware = new ApolloLink((operation, forward) => {
       operation.setContext({
-        fetcherOptions: {
+        fetchOptions: {
           signal: 'foo',
         },
       });
       return forward(operation);
     });
     const link = middleware.concat(
-      createHttpLink({ uri: 'data', fetcherOptions: { signal: 'bar' } }),
+      createHttpLink({ uri: 'data', fetchOptions: { signal: 'bar' } }),
     );
 
     execute(link, { query: sampleQuery, variables }).subscribe(result => {
