@@ -23,7 +23,7 @@ sidebar_categories:
   Links:
     - links/http
 github_repo: apollographql/apollo-link
-content_root: docs
+content_root: docs/source
 
 typescript_api_box:
   data_file: docs.json
@@ -44,18 +44,18 @@ apis:
 logo:
   nav_mobile: links/logo/logo-apollo-space-left.svg
   title: Apollo
-  url: http://dev.apollodata.com/
+  url: https://www.apollographql.com/
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://dev.apollodata.com/links
-root: /links/
+url: https://www.apollographql.com/docs/link
+root: /docs/link/
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 
 # Directory
 source_dir: source
-public_dir: public/links
+public_dir: public/docs/link
 tag_dir: tags
 archive_dir: archives
 category_dir: categories
