@@ -92,7 +92,7 @@
     "lint-staged": "4.2.1",
     "pre-commit": "1.2.2",
     "prettier": "1.7.4",
-    "ts-jest": "21.1.2",
+    "ts-jest": "21.1.3",
     "typescript": "2.5.2"
   }
 }
