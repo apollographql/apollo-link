@@ -39,7 +39,7 @@ import ApolloClient from "apollo-client";
 import InMemoryCache from "apollo-cache-inmemory";
 
 const client = new ApolloClient({
-  link: new BatchLink({ uri: "/graphql" }),
+  link: new BatchHttpLink({ uri: "/graphql" }),
   cache: new InMemoryCache()
 });
 
