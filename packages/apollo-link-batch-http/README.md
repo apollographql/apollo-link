@@ -9,9 +9,9 @@ An Apollo Link to allow batching of multiple operations into a single http reque
 
 ## Usage
 ```js
-import { BatchLink } from "apollo-link-batch-http";
+import { BatchHttpLink } from "apollo-link-batch-http";
 
-const link = new BatchLink({ uri: "/graphql" });
+const link = new BatchHttpLink({ uri: "/graphql" });
 ```
 
 ## Options
@@ -34,7 +34,7 @@ The Batch HTTP Link uses the `headers` field on the context to allow passing hea
 |headers|Headers (or object)|{}|false|
 
 ```js
-import BatchLink from "apollo-link-batch-http";
+import { BatchHttpLink } from "apollo-link-batch-http";
 import ApolloClient from "apollo-client";
 import InMemoryCache from "apollo-cache-inmemory";
 
