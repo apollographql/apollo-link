@@ -27,7 +27,7 @@ The default delay algorithm is to wait `delay` ms between each retry. You can cu
 |delay|number or (Operation => number)|300|input to the interval function below|
 |interval|(delay: number, count: number) => number|(delay, count => delay)|amount of time (in ms) to wait before the next attempt; count is the number of requests previously tried|
 ```js
-import RetryLink from "apollo-link-retry";
+import { RetryLink } from "apollo-link-retry";
 
 const max = (operation) => operation.getContext().max;
 const delay = 5000;
