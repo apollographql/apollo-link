@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 import { ApolloLink, execute, Observable } from 'apollo-link';
 
-import { setContext } from '../context';
+import { setContext } from '../index';
 
 const sleep = ms => new Promise(s => setTimeout(s, ms));
 const query = gql`
