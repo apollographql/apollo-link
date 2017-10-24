@@ -1,4 +1,6 @@
-# WebSocket Link
+---
+title: WebSocket Link
+---
 
 ## Purpose
 An Apollo Link to allow sending a request over a web socket.
@@ -22,13 +24,11 @@ const link = new WebSocketLink(client);
 ```
 
 ## Options
-WS Link takes either a subscription client or an object with three options on it to customize the behavior of the link.
+WS Link takes either a subscription client or an object with three options on it to customize the behavior of the link. Takes the following possible keys in the configuration object:
 
-|name|value|default|required|
-|---|---|---|---|
-|uri|string|NA|false|
-|options|Subscription ClientOptions|NA|false|
-|webSocketImpl|WebSocket implementation|NA|false|
+- `uri`: a string endpoint to connect to
+- `options`: a set of options to pass to a new Subscription Client
+- `webSocketImpl`: a custom WebSocket implementation
 
 By default, this link uses the [subscriptions-transport-ws](https://github.com/apollographql/subscriptions-transport-ws) library for the transport.
 
