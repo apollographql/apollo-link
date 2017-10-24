@@ -35,7 +35,7 @@ export function isTerminating(link: ApolloLink): boolean {
   return link.request.length <= 1;
 }
 
-export function makePromise<R>(observable: Observable<R>): Promise<R> {
+export function toPromise<R>(observable: Observable<R>): Promise<R> {
   let completed = false;
   return new Promise<R>((resolve, reject) => {
     observable.subscribe({
@@ -51,6 +51,20 @@ export function makePromise<R>(observable: Observable<R>): Promise<R> {
       },
       error: reject,
     });
+  });
+}
+
+// backwards compat
+export const makePromise = toPromise;
+
+export function fromPromise<T>(promise: Promise<T>): Observable<T> {
+  return new Observable<T>(observer => {
+    promise
+      .then((value: T) => {
+        observer.next(value);
+        observer.complete();
+      })
+      .catch(observer.error.bind(observer));
   });
 }
 
