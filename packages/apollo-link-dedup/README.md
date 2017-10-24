@@ -1,4 +1,6 @@
-# Dedup Link
+---
+title: Dedup Link
+---
 
 ## Purpose
 An Apollo Link to deduplicate matching requests before making a request.
@@ -21,10 +23,7 @@ The Dedup Link does not take any options when creating the link.
 
 ## Context
 The Dedup Link can be overriden by using the context on a per opearation basis:
-
-|name|value|default|required|
-|---|---|---|---|
-|forceFetch|boolean|false|false|
+- `forceFetch`: a true or false (defaults to false) to bypass deduplication per request
 
 ```js
 import Link from "apollo-link-http";
