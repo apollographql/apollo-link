@@ -45,7 +45,7 @@ The Http Link uses the `headers` field on the context to allow passing headers t
 ```js
 import HttpLink from "apollo-link-http";
 import ApolloClient from "apollo-client";
-import InMemoryCache from "apollo-cache-inmemory";
+import { InMemoryCache } from "apollo-cache-inmemory";
 
 const client = new ApolloClient({
   link: new HttpLink({ uri: "/graphql" }),
