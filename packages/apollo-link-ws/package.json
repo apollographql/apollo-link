@@ -40,10 +40,10 @@
     "watch": "tsc -w -p ."
   },
   "dependencies": {
-    "subscriptions-transport-ws": "^0.9.0"
   },
   "peerDependencies": {
-    "apollo-link": "^1.0.0"
+    "apollo-link": "^1.0.0",
+    "subscriptions-transport-ws": "^0.9.0"
   },
   "devDependencies": {
     "@types/graphql": "0.11.5",
