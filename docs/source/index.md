@@ -77,6 +77,36 @@ ReactDOM.render(
   document.body,
 );
 ```
+<h3 id="standalone">Relay Modern</h3>
+
+You can use Apollo Link as a network layer with Relay Modern.
+
+```js
+import {Environment, Network, RecordSource, Store} from 'relay-runtime';
+import {execute, makePromise} from 'apollo-link';
+import {HttpLink} from 'apollo-link-http';
+import {parse} from 'graphql';
+
+const link = new HttpLink({
+  uri: 'http://api.githunt.com/graphql'
+});
+
+const source = new RecordSource();
+const store = new Store(source);
+const network = Network.create(
+  (operation, variables) => makePromise(
+    execute(link, {
+      query: parse(operation.text),
+      variables
+    })
+  )
+);
+
+const environment = new Environment({
+    network,
+    store
+});
+```
 
 <h3 id="standalone">Standalone</h3>
 
