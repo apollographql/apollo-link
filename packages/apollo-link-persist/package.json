@@ -1,13 +1,13 @@
 {
   "name": "apollo-link-persist",
   "version": "1.0.0",
-  "description": "",
+  "description": "Apollo Link that provides persisted query support.",
   "main": "./dist/src/bundle.umd.js",
   "module": "./dist/src/persistLink.js",
   "typings": "./dist/src/batchLink.d.ts",
   "scripts": {
     "pretest": "npm run build-test",
-    "test": "npm run test-only --",
+    "test": "jest",
     "posttest": "npm run lint",
     "test-only": "mocha --reporter spec --full-trace dist/tests/tests.js",
     "test-watch":

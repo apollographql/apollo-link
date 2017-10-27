@@ -5,7 +5,7 @@ import { ApolloLink, execute, Operation, RequestHandler } from 'apollo-link';
 
 import { getQueryDocumentKey } from 'persistgraphql';
 
-import PersistLink from '../src/persistLink';
+import PersistLink from '../persistLink';
 
 describe('PersistLink', () => {
   it('constructs correctly with a query map', () => {
