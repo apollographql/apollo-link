@@ -1,4 +1,6 @@
-# SetContext Link
+---
+title: SetContext Link
+---
 
 ## Purpose
 An Apollo Link to easily set context including support for async actions!

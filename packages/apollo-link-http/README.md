@@ -1,4 +1,6 @@
-# HTTP Link
+---
+title: Http Link
+---
 
 ## Purpose
 An Apollo Link to allow sending a single http request per operation.
@@ -6,6 +8,7 @@ An Apollo Link to allow sending a single http request per operation.
 ## Installation
 
 `npm install apollo-link-http --save`
+
 
 ## Usage
 ```js
@@ -23,31 +26,26 @@ const link = createHttpLink({ uri: "/graphql" });
 The HTTP Link relies on having `fetch` present in your runtime environment. If you are running on react-native, or modern browsers, this should be no problem. If you are targeting an environment without `fetch` such as older browsers of the server, you will need to pass your own `fetch` to the link through the options. We recommend `unfetch` for older browsers and `node-fetch` for running in node.
 
 ## Options
-HTTP Link takes an object with some options on it to customize the behavior of the link. If your server supports it, the HTTP link can also send over metadata about the request in the extensions field. To enable this, pass `includeExtensions` as true.
-
-|name|value|default|required|
-|---|---|---|---|
-|uri|string|"/graphql"|false|
-|includeExtensions|boolean|false|false|
-|fetch|fetch|global fetch|false|
-|headers|Headers (or object)|{}|false|
-|credentials|string|none|false|
-|fetchOptions|Fetch Options (object)|none|false|
+HTTP Link takes an object with some options on it to customize the behavior of the link. If your server supports it, the HTTP link can also send over metadata about the request in the extensions field. To enable this, pass `includeExtensions` as true. The options you can pass are outlined below:
+- `uri`: the URI key can be either a string endpoint or default to "/graphql"
+- `includeExtensions`: allow passing the extensions field to your graphql server, defaults to false
+- `fetch`: a `fetch` compatiable API for making a request 
+- `headers`: an object representing values to be sent as headers on the request
+- `credentials`: a string representing the credentials policy you want for the fetch call
+- `fetchOptions`: any overrides of the fetch options argument to pass to the fetch call
 
 
 ## Context
-The HTTP Link uses the `headers` field on the context to allow passing headers to the HTTP request. It also supports the `credentials` field for defining credentials policy for fetch and `fetcherOptions` to allow generic fetch overrides (i.e. method: "GET"). These options will override the same key if passed when creating the the link.
+The Http Link uses the `headers` field on the context to allow passing headers to the HTTP request. It also supports the `credentials` field for defining credentials policy for fetch and `fetchOptions` to allow generic fetch overrides (i.e. method: "GET"). These options will override the same key if passed when creating the the link.
+- `headers`: an object representing values to be sent as headers on the request
+- `credentials`: a string representing the credentials policy you want for the fetch call
+- `fetchOptions`: any overrides of the fetch options argument to pass to the fetch call
 
-|name|value|default|required|
-|---|---|---|---|
-|headers|Headers (or object)|{}|false|
-|credentials|string|none|false|
-|fetchOptions|Fetch Options (object)|none|false|
 
 ```js
 import HttpLink from "apollo-link-http";
 import ApolloClient from "apollo-client";
-import InMemoryCache from "apollo-cache-inmemory";
+import { InMemoryCache } from "apollo-cache-inmemory";
 
 const client = new ApolloClient({
   link: new HttpLink({ uri: "/graphql" }),
@@ -66,8 +64,8 @@ client.query({
 })
 ```
 
-### Upgrading from `apollo-fetch` / `apollo-client` 
-If you previously used either `apollo-fetch` or `apollo-client`, you will need to change the way `use` and `useAfter` are implemented in your app. Both can be implemented by writing a custom link. It's important to note that regardless of whether you're adding middleware or afterware, your HTTP link will always be last in the chain since it's a terminating link.
+## Upgrading from `apollo-fetch` / `apollo-client` 
+If you previously used either `apollo-fetch` or `apollo-client`, you will need to change the way `use` and `useAfter` are implemented in your app. Both can be implemented by writing a custom link. It's important to note that regardless of whether you're adding middleware or afterware, your Http link will always be last in the chain since it's a terminating link.
 
 #### Middleware
 

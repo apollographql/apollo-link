@@ -1,4 +1,8 @@
-# Batch HTTP Link
+---
+title: Batch Http Link
+---
+
+**Note: This package will be updated to remove the dependency on apollo-fetch an use the same options / API as the http-link**
 
 ## Purpose
 An Apollo Link to allow batching of multiple operations into a single http request. Instead of sending a single operation, it sends an array of operations to the server.
@@ -15,23 +19,18 @@ const link = new BatchHttpLink({ uri: "/graphql" });
 ```
 
 ## Options
-Batch HTTP Link takes an object with four options on it to customize the behavior of the link.
-
-|name|value|default|required|
-|---|---|---|---|
-|uri|string|"/graphql"|false|
-|batchMax|number|10|false|
-|batchInterval|number|10|false|
-|fetch|ApolloFetch|ApolloFetch|false|
+Batch HTTP Link takes an object with four options on it to customize the behavior of the link. The possible keys on this configuration object are:
+- `uri`: a string of the server or a default of "/graphql"
+- `batchMax`: a max number of items to batch, defaults at 10
+- `batchInterval`: the interval at which to batch (in ms), defaults to 10
+- `fetch`: an instance of ApolloFetch
 
 By default, this link uses the [Apollo Fetch](https://github.com/apollographql/apollo-fetch) library for the HTTP transport.
 
 ## Context
 The Batch HTTP Link uses the `headers` field on the context to allow passing headers to the HTTP request.
 
-|name|value|default|required|
-|---|---|---|---|
-|headers|Headers (or object)|{}|false|
+- `headers`: an object to be converted to headers for the http request
 
 ```js
 import { BatchHttpLink } from "apollo-link-batch-http";
