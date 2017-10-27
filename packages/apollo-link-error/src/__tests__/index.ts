@@ -14,8 +14,8 @@ describe('error handling', () => {
     `;
 
     let called;
-    const errorLink = onError(({ graphqlErrors, networkError }) => {
-      expect(graphqlErrors[0].message).toBe('resolver blew up');
+    const errorLink = onError(({ graphQLErrors, networkError }) => {
+      expect(graphQLErrors[0].message).toBe('resolver blew up');
       called = true;
     });
 
@@ -39,7 +39,7 @@ describe('error handling', () => {
   });
   it('has an easy way to log client side (network) errors', done => {
     const query = gql`
-      {
+      query Foo {
         foo {
           bar
         }
@@ -47,8 +47,9 @@ describe('error handling', () => {
     `;
 
     let called;
-    const errorLink = onError(({ graphqlErrors, networkError }) => {
+    const errorLink = onError(({ operation, networkError }) => {
       expect(networkError.message).toBe('app is crashing');
+      expect(operation.operationName).toBe('Foo');
       called = true;
     });
 
@@ -68,7 +69,7 @@ describe('error handling', () => {
   });
   it('captures errors within links', done => {
     const query = gql`
-      {
+      query Foo {
         foo {
           bar
         }
@@ -76,8 +77,9 @@ describe('error handling', () => {
     `;
 
     let called;
-    const errorLink = onError(({ graphqlErrors, networkError }) => {
+    const errorLink = onError(({ operation, networkError }) => {
       expect(networkError.message).toBe('app is crashing');
+      expect(operation.operationName).toBe('Foo');
       called = true;
     });
 
@@ -107,7 +109,7 @@ describe('error handling', () => {
     `;
 
     let called;
-    const errorLink = onError(({ graphqlErrors, networkError }) => {
+    const errorLink = onError(({ graphQLErrors, networkError }) => {
       expect(networkError.message).toBe('app is crashing');
       called = true;
     });
@@ -122,6 +124,41 @@ describe('error handling', () => {
       complete: done,
     });
   });
+  it('allows an error to be ignored', done => {
+    const query = gql`
+      {
+        foo {
+          bar
+        }
+      }
+    `;
+
+    let called;
+    const errorLink = onError(({ graphQLErrors, response }) => {
+      expect(graphQLErrors[0].message).toBe('ignore');
+      // ignore errors
+      response.errors = null;
+      called = true;
+    });
+
+    const mockLink = new ApolloLink(operation => {
+      return Observable.of({
+        data: { foo: { id: 1 } },
+        errors: [{ message: 'ignore' }],
+      });
+    });
+
+    const link = errorLink.concat(mockLink);
+
+    execute(link, { query }).subscribe({
+      next: ({ errors, data }) => {
+        expect(errors).toBe(null);
+        expect(data).toEqual({ foo: { id: 1 } });
+      },
+      complete: done,
+    });
+  });
+
   it('can be unsubcribed', done => {
     const query = gql`
       {
@@ -132,7 +169,7 @@ describe('error handling', () => {
     `;
 
     let called;
-    const errorLink = onError(({ graphqlErrors, networkError }) => {
+    const errorLink = onError(({ networkError }) => {
       expect(networkError.message).toBe('app is crashing');
       called = true;
     });
@@ -158,6 +195,43 @@ describe('error handling', () => {
 
     setTimeout(done, 10);
   });
+  it('includes the operation and any data along with a graphql error', done => {
+    const query = gql`
+      query Foo {
+        foo {
+          bar
+        }
+      }
+    `;
+
+    let called;
+    const errorLink = onError(({ graphQLErrors, response, operation }) => {
+      expect(graphQLErrors[0].message).toBe('resolver blew up');
+      expect(response.data.foo).toBe(true);
+      expect(operation.operationName).toBe('Foo');
+      expect(operation.getContext().bar).toBe(true);
+      called = true;
+    });
+
+    const mockLink = new ApolloLink(operation =>
+      Observable.of({
+        data: { foo: true },
+        errors: [
+          {
+            message: 'resolver blew up',
+          },
+        ],
+      }),
+    );
+
+    const link = errorLink.concat(mockLink);
+
+    execute(link, { query, context: { bar: true } }).subscribe(result => {
+      expect(result.errors[0].message).toBe('resolver blew up');
+      expect(called).toBe(true);
+      done();
+    });
+  });
 });
 
 describe('error handling with class', () => {
@@ -171,8 +245,8 @@ describe('error handling with class', () => {
     `;
 
     let called;
-    const errorLink = new ErrorLink(({ graphqlErrors, networkError }) => {
-      expect(graphqlErrors[0].message).toBe('resolver blew up');
+    const errorLink = new ErrorLink(({ graphQLErrors, networkError }) => {
+      expect(graphQLErrors[0].message).toBe('resolver blew up');
       called = true;
     });
 
@@ -204,7 +278,7 @@ describe('error handling with class', () => {
     `;
 
     let called;
-    const errorLink = new ErrorLink(({ graphqlErrors, networkError }) => {
+    const errorLink = new ErrorLink(({ networkError }) => {
       expect(networkError.message).toBe('app is crashing');
       called = true;
     });
@@ -233,7 +307,7 @@ describe('error handling with class', () => {
     `;
 
     let called;
-    const errorLink = new ErrorLink(({ graphqlErrors, networkError }) => {
+    const errorLink = new ErrorLink(({ networkError }) => {
       expect(networkError.message).toBe('app is crashing');
       called = true;
     });
@@ -264,7 +338,7 @@ describe('error handling with class', () => {
     `;
 
     let called;
-    const errorLink = new ErrorLink(({ graphqlErrors, networkError }) => {
+    const errorLink = new ErrorLink(({ networkError }) => {
       expect(networkError.message).toBe('app is crashing');
       called = true;
     });
@@ -289,7 +363,7 @@ describe('error handling with class', () => {
     `;
 
     let called;
-    const errorLink = new ErrorLink(({ graphqlErrors, networkError }) => {
+    const errorLink = new ErrorLink(({ networkError }) => {
       expect(networkError.message).toBe('app is crashing');
       called = true;
     });

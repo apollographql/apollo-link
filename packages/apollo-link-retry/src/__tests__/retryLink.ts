@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 import { execute, ApolloLink, Observable, FetchResult } from 'apollo-link';
 
-import RetryLink from '../retryLink';
+import { RetryLink } from '../retryLink';
 
 const query = gql`
   {

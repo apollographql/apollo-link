@@ -16,7 +16,7 @@
     "coverage": "lerna run -- coverage",
     "coverage:upload": "codecov",
     "danger": "danger run --verbose",
-    "predeploy": "npm run build && npm test",
+    "predeploy": "npm run build",
     "deploy": "lerna publish -m \"chore: Publish\" --independent"
   },
   "bundlesize": [
@@ -45,7 +45,6 @@
       "path": "./packages/apollo-link-error/lib/bundle.min.js",
       "threshold": "1 Kb"
     },
-
     {
       "name": "apollo-link-http",
       "path": "./packages/apollo-link-http/lib/bundle.min.js",
@@ -65,11 +64,6 @@
       "name": "apollo-link-ws",
       "path": "./packages/apollo-link-ws/lib/bundle.min.js",
       "threshold": "10 Kb"
-    },
-    {
-      "name": "zen-observable-ts",
-      "path": "./packages/zen-observable-ts/lib/bundle.min.js",
-      "threshold": "1.5 Kb"
     }
   ],
   "jest": {
@@ -91,14 +85,15 @@
   "pre-commit": "lint-staged",
   "dependencies": {},
   "devDependencies": {
-    "bundlesize": "0.15.2",
-    "codecov": "2.3.0",
+    "@types/zen-observable": "^0.5.3",
+    "bundlesize": "0.15.3",
+    "codecov": "3.0.0",
     "danger": "1.2.0",
     "lerna": "2.4.0",
-    "lint-staged": "4.2.1",
+    "lint-staged": "4.3.0",
     "pre-commit": "1.2.2",
     "prettier": "1.7.4",
-    "ts-jest": "21.1.2",
+    "ts-jest": "21.1.4",
     "typescript": "2.5.2"
   }
 }

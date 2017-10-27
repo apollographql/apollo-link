@@ -1,4 +1,6 @@
-# Retry Link
+---
+title: Retry Link
+---
 
 ## Purpose
 An Apollo Link to allow multiple attempts when an operation has failed. One such use case is to try a request while a network connection is offline and retry until it comes back online. You can configure a RetryLink to vary the number of times it retries and how long it waits between retries through its configuration.
@@ -9,7 +11,7 @@ An Apollo Link to allow multiple attempts when an operation has failed. One such
 
 ## Usage
 ```js
-import RetryLink from "apollo-link-retry";
+import { RetryLink } from "apollo-link-retry";
 
 const link = new RetryLink();
 ```
@@ -19,15 +21,13 @@ Retry Link takes an object with three options on it to customize the behavior of
 
 Retry Link retries on network errors only, not on GraphQL errors.
 
-The default delay algorithm is to wait `delay` ms between each retry. You can customize the algorithm (eg, replacing with exponential backoff) with the `interval` option.
+The default delay algorithm is to wait `delay` ms between each retry. You can customize the algorithm (eg, replacing with exponential backoff) with the `interval` option. The possible values for the configuration object are as follow:
+- `max`: a number or function matching (Operation => number) to determine the max number of times to try a single operation before giving up. It defaults to 10
+- `delay`: a number or function matching (Operation => number) to input to the interval function below: Defaults to 300 ms
+- `interval`: a function matching (delay: number, count: number) => number which is the amount of time (in ms) to wait before the next attempt; count is the number of requests previously tried
 
-|name|value|default|meaning|
-|---|---|---|---|
-|max|number or (Operation => number)|10|max number of times to try a single operation before giving up|
-|delay|number or (Operation => number)|300|input to the interval function below|
-|interval|(delay: number, count: number) => number|(delay, count => delay)|amount of time (in ms) to wait before the next attempt; count is the number of requests previously tried|
 ```js
-import RetryLink from "apollo-link-retry";
+import { RetryLink } from "apollo-link-retry";
 
 const max = (operation) => operation.getContext().max;
 const delay = 5000;

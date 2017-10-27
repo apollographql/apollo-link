@@ -4,10 +4,9 @@ import {
   NextLink,
   FetchResult,
   Observable,
-  ZenObservable,
 } from 'apollo-link';
 
-export default class PollingLink extends ApolloLink {
+export class PollingLink extends ApolloLink {
   private pollInterval: (operation: Operation) => number | null;
   private timer;
   private subscription: ZenObservable.Subscription;

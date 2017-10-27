@@ -1,4 +1,4 @@
-import Observable from 'zen-observable-ts';
+import * as Observable from 'zen-observable';
 
 import {
   GraphQLRequest,

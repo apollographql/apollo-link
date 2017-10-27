@@ -3,7 +3,7 @@ import { ApolloFetch } from 'apollo-fetch';
 import { print } from 'graphql';
 import gql from 'graphql-tag';
 
-import BatchHttpLink from '../batchHttpLink';
+import { BatchHttpLink } from '../batchHttpLink';
 
 const operation = {
   query: gql`

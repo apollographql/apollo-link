@@ -1,9 +1,9 @@
 export default {
-  entry: 'lib/zenObservable.js',
+  entry: 'lib/index.js',
   dest: 'lib/bundle.umd.js',
   format: 'umd',
   sourceMap: true,
-  moduleName: 'zenObservable',
+  moduleName: 'errorLink',
   exports: 'named',
   onwarn,
 };

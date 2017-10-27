@@ -1,14 +1,13 @@
 {
-  "name": "zen-observable-ts",
-  "version": "0.5.0",
-  "description": "An Implementation of ES Observables in Typescript",
-  "author": "Evans Hauser <evanshauser@gmail.com>",
-  "contributors": [],
+  "name": "apollo-link-context",
+  "version": "1.0.0",
+  "description": "An easy way to set and cache context changes for Apollo Link",
+  "author": "James Baxley <james@meteor.com>",
   "license": "MIT",
   "main": "./lib/bundle.umd.js",
-  "module": "./lib/zenObservable.js",
-  "jsnext:main": "./lib/zenObservable.js",
-  "typings": "./lib/zenObservable.d.ts",
+  "module": "./lib/index.js",
+  "jsnext:main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-link.git"
@@ -16,10 +15,10 @@
   "bugs": {
     "url": "https://github.com/apollographql/apollo-link/issues"
   },
-  "homepage": "https://github.com/zenparsing/zen-observable",
+  "homepage": "https://github.com/apollographql/apollo-link#readme",
   "scripts": {
     "build:browser":
-      "browserify ./lib/bundle.umd.js -o=./lib/bundle.js && npm run minify:browser",
+      "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-link && npm run minify:browser",
     "build": "tsc -p .",
     "bundle": "rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
@@ -34,16 +33,23 @@
     "test": "jest",
     "watch": "tsc -w -p ."
   },
+  "peerDependencies": {
+    "apollo-link": "^1.0.0"
+  },
   "devDependencies": {
-    "@types/jest": "21.1.2",
-    "browserify": "14.4.0",
+    "@types/graphql": "0.11.5",
+    "@types/jest": "21.1.5",
+    "apollo-link": "^1.0.0",
+    "browserify": "14.5.0",
+    "graphql": "0.11.7",
+    "graphql-tag": "2.5.0",
     "jest": "21.2.1",
     "rimraf": "2.6.1",
     "rollup": "0.45.2",
-    "ts-jest": "21.1.2",
-    "tslint": "5.7.0",
+    "ts-jest": "21.1.4",
+    "tslint": "5.8.0",
     "typescript": "2.5.1",
-    "uglify-js": "3.1.3"
+    "uglify-js": "3.1.5"
   },
   "jest": {
     "transform": {

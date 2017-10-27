@@ -8,7 +8,8 @@ import {
 import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
 
-import BatchLink, {
+import {
+  BatchLink,
   OperationBatcher,
   BatchHandler,
   BatchableRequest,

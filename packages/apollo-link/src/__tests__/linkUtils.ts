@@ -1,19 +1,15 @@
-import * as LinkUtils from '../linkUtils';
-import Observable from 'zen-observable-ts';
+import { validateOperation, fromPromise, makePromise } from '../linkUtils';
+import * as Observable from 'zen-observable';
 
 describe('Link utilities:', () => {
   describe('validateOperation', () => {
     it('should throw when invalid field in operation', () => {
-      expect(() =>
-        LinkUtils.validateOperation(<any>{
-          qwerty: '',
-        }),
-      ).toThrow();
+      expect(() => validateOperation(<any>{ qwerty: '' })).toThrow();
     });
 
     it('should not throw when missing a query of some kind', () => {
       expect(() =>
-        LinkUtils.validateOperation(<any>{
+        validateOperation(<any>{
           query: '',
         }),
       ).not.toThrow();
@@ -21,7 +17,7 @@ describe('Link utilities:', () => {
 
     it('should not throw when valid fields in operation', () => {
       expect(() =>
-        LinkUtils.validateOperation({
+        validateOperation({
           query: '1234',
           context: {},
           variables: {},
@@ -39,15 +35,13 @@ describe('Link utilities:', () => {
     const error = new Error('I always error');
 
     it('return next call as Promise resolution', () => {
-      return LinkUtils.makePromise(Observable.of(data)).then(result =>
+      return makePromise(Observable.of(data)).then(result =>
         expect(data).toEqual(result),
       );
     });
 
     it('return error call as Promise rejection', () => {
-      return LinkUtils.makePromise(
-        new Observable(observer => observer.error(error)),
-      )
+      return makePromise(new Observable(observer => observer.error(error)))
         .then(expect.fail)
         .catch(actualError => expect(error).toEqual(actualError));
     });
@@ -66,12 +60,34 @@ describe('Link utilities:', () => {
       });
 
       it('return error call as Promise rejection', done => {
-        LinkUtils.makePromise(Observable.of(data, data)).then(result => {
+        makePromise(Observable.of(data, data)).then(result => {
           expect(data).toEqual(result);
           expect(spy).toHaveBeenCalled();
           done();
         });
       });
+    });
+  });
+  describe('fromPromise', () => {
+    const data = {
+      data: {
+        hello: 'world',
+      },
+    };
+    const error = new Error('I always error');
+
+    it('return next call as Promise resolution', () => {
+      const observable = fromPromise(Promise.resolve(data));
+      return makePromise(observable).then(result =>
+        expect(data).toEqual(result),
+      );
+    });
+
+    it('return Promise rejection as error call', () => {
+      const observable = fromPromise(Promise.reject(error));
+      return makePromise(observable)
+        .then(expect.fail)
+        .catch(actualError => expect(error).toEqual(actualError));
     });
   });
 });

@@ -14,7 +14,7 @@ type ResponseError = Error & {
   statusCode?: number;
 };
 
-const parseAndCheckResponse = (response: Response) => {
+const parseAndCheckResponse = request => (response: Response) => {
   return response
     .json()
     .then(result => {
@@ -22,6 +22,11 @@ const parseAndCheckResponse = (response: Response) => {
         throw new Error(
           `Response not successful: Received status code ${response.status}`,
         );
+      if (!result.hasOwnProperty('data') && !result.hasOwnProperty('errors')) {
+        throw new Error(
+          `Server response was missing for query '${request.operationName}'.`,
+        );
+      }
       return result;
     })
     .catch(e => {
@@ -64,7 +69,7 @@ const warnIfNoFetch = fetcher => {
         import fetch from '${library}';
         import { createHttpLink } from 'apollo-link-http';
 
-        const link = createFetchLink({ uri: '/graphql', fetch: fetch });
+        const link = createHttpLink({ uri: '/graphql', fetch: fetch });
       `,
     );
   }
@@ -83,9 +88,17 @@ export interface FetchOptions {
   uri?: string;
   fetch?: GlobalFetch['fetch'];
   includeExtensions?: boolean;
+  credentials?: string;
+  headers?: any;
+  fetchOptions?: any;
 }
 export const createHttpLink = (
-  { uri, fetch: fetcher, includeExtensions }: FetchOptions = {},
+  {
+    uri,
+    fetch: fetcher,
+    includeExtensions,
+    ...requestOptions,
+  }: FetchOptions = {},
 ) => {
   // dev warnings to ensure fetch is present
   warnIfNoFetch(fetcher);
@@ -98,7 +111,11 @@ export const createHttpLink = (
   return new ApolloLink(
     operation =>
       new Observable(observer => {
-        const { headers, credentials, fetcherOptions } = operation.getContext();
+        const {
+          headers,
+          credentials,
+          fetchOptions = {},
+        } = operation.getContext();
         const { operationName, extensions, variables, query } = operation;
 
         const body = {
@@ -119,9 +136,12 @@ export const createHttpLink = (
           throw parseError;
         }
 
-        const fetchOptions = {
+        let options = fetchOptions;
+        if (requestOptions.fetchOptions)
+          options = { ...requestOptions.fetchOptions, ...options };
+        const fetcherOptions = {
           method: 'POST',
-          ...fetcherOptions,
+          ...options,
           headers: {
             // headers are case insensitive (https://stackoverflow.com/a/5259004)
             accept: '*/*',
@@ -130,15 +150,23 @@ export const createHttpLink = (
           body: serializedBody,
         };
 
-        if (credentials) fetchOptions.credentials = credentials;
+        if (requestOptions.credentials)
+          fetcherOptions.credentials = requestOptions.credentials;
+        if (credentials) fetcherOptions.credentials = credentials;
+
+        if (requestOptions.headers)
+          fetcherOptions.headers = {
+            ...fetcherOptions.headers,
+            ...requestOptions.headers,
+          };
         if (headers)
-          fetchOptions.headers = { ...fetchOptions.headers, ...headers };
+          fetcherOptions.headers = { ...fetcherOptions.headers, ...headers };
 
         const { controller, signal } = createSignalIfSupported();
-        if (controller) fetchOptions.signal = signal;
+        if (controller) fetcherOptions.signal = signal;
 
-        fetcher(uri, fetchOptions)
-          .then(parseAndCheckResponse)
+        fetcher(uri, fetcherOptions)
+          .then(parseAndCheckResponse(operation))
           .then(result => {
             // we have data and can send it to back up the link chain
             observer.next(result);

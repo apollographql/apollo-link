@@ -8,7 +8,7 @@ import {
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 
-import DedupLink from '../dedupLink';
+import { DedupLink } from '../dedupLink';
 
 function getOperationName(doc: DocumentNode): string | null {
   let res: string | null = null;

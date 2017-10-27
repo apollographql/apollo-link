@@ -9,7 +9,7 @@ An Apollo Link to allow batching of multiple operations into a single request. F
 
 ## Usage
 ```js
-import BatchLink from "apollo-link-batch";
+import { BatchLink } from "apollo-link-batch";
 
 const link = new BatchLink({
   batchHandler: (operations: Operation[], forward: NextLink) => Observable<FetchResult[]> | null

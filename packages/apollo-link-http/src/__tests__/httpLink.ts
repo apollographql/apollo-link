@@ -22,7 +22,7 @@ const sampleMutation = gql`
 `;
 
 describe('HttpLink', () => {
-  const data = { hello: 'world', method: 'POST' };
+  const data = { data: { hello: 'world' } };
   const mockError = { throws: new TypeError('mock me') };
 
   let subscriber;
@@ -30,6 +30,8 @@ describe('HttpLink', () => {
   beforeEach(() => {
     fetchMock.post('begin:data', data);
     fetchMock.post('begin:error', mockError);
+
+    fetchMock.get('begin:data', data);
 
     const next = jest.fn();
     const error = jest.fn();
@@ -231,6 +233,41 @@ describe('HttpLink', () => {
       done();
     });
   });
+  it('adds headers to the request from the setup', done => {
+    const variables = { params: 'stub' };
+    const link = createHttpLink({
+      uri: 'data',
+      headers: { authorization: '1234' },
+    });
+
+    execute(link, { query: sampleQuery, variables }).subscribe(result => {
+      const headers = fetchMock.lastCall()[1].headers;
+      expect(headers.authorization).toBe('1234');
+      expect(headers['content-type']).toBe('application/json');
+      expect(headers.accept).toBe('*/*');
+      done();
+    });
+  });
+  it('prioritizes context headers over setup headers', done => {
+    const variables = { params: 'stub' };
+    const middleware = new ApolloLink((operation, forward) => {
+      operation.setContext({
+        headers: { authorization: '1234' },
+      });
+      return forward(operation);
+    });
+    const link = middleware.concat(
+      createHttpLink({ uri: 'data', headers: { authorization: 'no user' } }),
+    );
+
+    execute(link, { query: sampleQuery, variables }).subscribe(result => {
+      const headers = fetchMock.lastCall()[1].headers;
+      expect(headers.authorization).toBe('1234');
+      expect(headers['content-type']).toBe('application/json');
+      expect(headers.accept).toBe('*/*');
+      done();
+    });
+  });
   it('adds headers to the request from the context on an operation', done => {
     const variables = { params: 'stub' };
     const link = createHttpLink({ uri: 'data' });
@@ -266,17 +303,109 @@ describe('HttpLink', () => {
       done();
     });
   });
-  it('adds fetcherOptions to the request from the context', done => {
+  it('adds creds to the request from the setup', done => {
+    const variables = { params: 'stub' };
+    const link = createHttpLink({ uri: 'data', credentials: 'same-team-yo' });
+
+    execute(link, { query: sampleQuery, variables }).subscribe(result => {
+      const creds = fetchMock.lastCall()[1].credentials;
+      expect(creds).toBe('same-team-yo');
+      done();
+    });
+  });
+  it('prioritizes creds from the context over the setup', done => {
     const variables = { params: 'stub' };
     const middleware = new ApolloLink((operation, forward) => {
       operation.setContext({
-        fetcherOptions: {
+        credentials: 'same-team-yo',
+      });
+      return forward(operation);
+    });
+    const link = middleware.concat(
+      createHttpLink({ uri: 'data', credentials: 'error' }),
+    );
+
+    execute(link, { query: sampleQuery, variables }).subscribe(result => {
+      const creds = fetchMock.lastCall()[1].credentials;
+      expect(creds).toBe('same-team-yo');
+      done();
+    });
+  });
+  it('adds fetchOptions to the request from the setup', done => {
+    const variables = { params: 'stub' };
+    const link = createHttpLink({
+      uri: 'data',
+      fetchOptions: { signal: 'foo' },
+    });
+
+    execute(link, { query: sampleQuery, variables }).subscribe(result => {
+      const signal = fetchMock.lastCall()[1].signal;
+      expect(signal).toBe('foo');
+      done();
+    });
+  });
+  it('supports using a GET request', done => {
+    const variables = { params: 'stub' };
+    const link = createHttpLink({
+      uri: 'data',
+      fetchOptions: { method: 'GET' },
+    });
+
+    execute(link, { query: sampleQuery, variables }).subscribe(result => {
+      const method = fetchMock.lastCall()[1].method;
+      expect(method).toBe('GET');
+      done();
+    });
+  });
+  it('supports using a GET request on the context', done => {
+    const variables = { params: 'stub' };
+    const link = createHttpLink({
+      uri: 'data',
+    });
+
+    execute(link, {
+      query: sampleQuery,
+      variables,
+      context: {
+        fetchOptions: { method: 'GET' },
+      },
+    }).subscribe(result => {
+      const method = fetchMock.lastCall()[1].method;
+      expect(method).toBe('GET');
+      done();
+    });
+  });
+  it('adds fetchOptions to the request from the context', done => {
+    const variables = { params: 'stub' };
+    const middleware = new ApolloLink((operation, forward) => {
+      operation.setContext({
+        fetchOptions: {
           signal: 'foo',
         },
       });
       return forward(operation);
     });
     const link = middleware.concat(createHttpLink({ uri: 'data' }));
+
+    execute(link, { query: sampleQuery, variables }).subscribe(result => {
+      const signal = fetchMock.lastCall()[1].signal;
+      expect(signal).toBe('foo');
+      done();
+    });
+  });
+  it('prioritizes context over setup', done => {
+    const variables = { params: 'stub' };
+    const middleware = new ApolloLink((operation, forward) => {
+      operation.setContext({
+        fetchOptions: {
+          signal: 'foo',
+        },
+      });
+      return forward(operation);
+    });
+    const link = middleware.concat(
+      createHttpLink({ uri: 'data', fetchOptions: { signal: 'bar' } }),
+    );
 
     execute(link, { query: sampleQuery, variables }).subscribe(result => {
       const signal = fetchMock.lastCall()[1].signal;
@@ -335,6 +464,23 @@ describe('error handling', () => {
       e => {
         expect(e.parseError.message).toMatch(/Received status code 400/);
         expect(e.statusCode).toBe(400);
+        done();
+      },
+    );
+  });
+  it('throws an error if empty response from the server ', done => {
+    fetch.mockReturnValueOnce(Promise.resolve({ json }));
+    json.mockReturnValueOnce(Promise.resolve({ body: 'boo' }));
+    const link = createHttpLink({ uri: 'data', fetch });
+
+    execute(link, { query: sampleQuery }).subscribe(
+      result => {
+        done.fail('error should have been thrown from the network');
+      },
+      e => {
+        expect(e.parseError.message).toMatch(
+          /Server response was missing for query 'SampleQuery'/,
+        );
         done();
       },
     );
@@ -408,6 +554,8 @@ describe('error handling', () => {
     global.AbortController = AbortController;
 
     fetch.mockReturnValueOnce(Promise.resolve({ json }));
+    json.mockReturnValueOnce(Promise.resolve({ data: { hello: 'world' } }));
+
     const link = createHttpLink({ uri: 'data', fetch });
 
     const sub = execute(link, { query: sampleQuery }).subscribe({
