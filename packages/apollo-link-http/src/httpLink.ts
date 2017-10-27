@@ -69,7 +69,7 @@ const warnIfNoFetch = fetcher => {
         import fetch from '${library}';
         import { createHttpLink } from 'apollo-link-http';
 
-        const link = createFetchLink({ uri: '/graphql', fetch: fetch });
+        const link = createHttpLink({ uri: '/graphql', fetch: fetch });
       `,
     );
   }
