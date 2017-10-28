@@ -85,7 +85,7 @@
   "pre-commit": "lint-staged",
   "dependencies": {},
   "devDependencies": {
-    "@types/zen-observable": "^0.5.3",
+    "@types/zen-observable": "0.5.3",
     "bundlesize": "0.15.3",
     "codecov": "3.0.0",
     "danger": "1.2.0",
