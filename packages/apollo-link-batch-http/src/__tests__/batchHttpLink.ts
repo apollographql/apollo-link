@@ -25,10 +25,11 @@ describe('BatchHttpLink', () => {
 
   it('should pass batchInterval and batchMax to BatchLink', () => {
     jest.mock('apollo-link-batch', () => ({
-      default: jest.fn(),
+      BatchLink: jest.fn(),
     }));
-    const BatchLink = require('apollo-link-batch').default;
-    const LocalScopedLink = require('../batchHttpLink').default;
+
+    const BatchLink = require('apollo-link-batch').BatchLink;
+    const LocalScopedLink = require('../batchHttpLink').BatchHttpLink;
 
     const batch = new LocalScopedLink({
       batchInterval: 20,
