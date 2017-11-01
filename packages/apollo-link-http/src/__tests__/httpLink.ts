@@ -23,16 +23,19 @@ const sampleMutation = gql`
 
 describe('HttpLink', () => {
   const data = { data: { hello: 'world' } };
+  const data2 = { data: { hello: 'everyone' } };
   const mockError = { throws: new TypeError('mock me') };
 
   let subscriber;
 
   beforeEach(() => {
+    fetchMock.post('begin:data2', data2);
     fetchMock.post('begin:data', data);
     fetchMock.post('begin:error', mockError);
     fetchMock.post('begin:apollo', data);
 
     fetchMock.get('begin:data', data);
+    fetchMock.get('begin:data2', data2);
 
     const next = jest.fn();
     const error = jest.fn();
@@ -215,14 +218,30 @@ describe('HttpLink', () => {
       done();
     }, 50);
   });
+  it('allows for dynamic endpoint setting', done => {
+    const variables = { params: 'stub' };
+    const link = createHttpLink({ uri: 'data' });
 
+    execute(link, {
+      query: sampleQuery,
+      variables,
+      context: { uri: 'data2' },
+    }).subscribe(result => {
+      expect(result).toEqual(data2);
+      done();
+    });
+  });
   it('adds headers to the request from the context', done => {
     const variables = { params: 'stub' };
     const middleware = new ApolloLink((operation, forward) => {
       operation.setContext({
         headers: { authorization: '1234' },
       });
-      return forward(operation);
+      return forward(operation).map(result => {
+        const { response } = operation.getContext();
+        expect(response.headers).toBeDefined();
+        return result;
+      });
     });
     const link = middleware.concat(createHttpLink({ uri: 'data' }));
 

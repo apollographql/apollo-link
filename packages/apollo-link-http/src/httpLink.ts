@@ -167,6 +167,11 @@ export const createHttpLink = (
         if (controller) fetcherOptions.signal = signal;
 
         fetcher(contextURI || uri, fetcherOptions)
+          // attach the raw response to the context for usage
+          .then(response => {
+            operation.setContext({ response });
+            return response;
+          })
           .then(parseAndCheckResponse(operation))
           .then(result => {
             // we have data and can send it to back up the link chain
