@@ -1,6 +1,8 @@
 # Change log
 
 ### vNEXT
+
+### v1.1.0
 - support dynamic endpoints using `uri` on the context
 - the request not attaches the raw response as `response` on the context. This can be used to access response headers or more
 
