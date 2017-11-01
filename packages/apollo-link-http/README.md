@@ -36,10 +36,15 @@ HTTP Link takes an object with some options on it to customize the behavior of t
 
 
 ## Context
-The Http Link uses the `headers` field on the context to allow passing headers to the HTTP request. It also supports the `credentials` field for defining credentials policy for fetch and `fetchOptions` to allow generic fetch overrides (i.e. method: "GET"). These options will override the same key if passed when creating the the link.
+The Http Link uses the `headers` field on the context to allow passing headers to the HTTP request. It also supports the `credentials` field for defining credentials policy, `uri` for changing the endpoint dynamically, and `fetchOptions` to allow generic fetch overrides (i.e. method: "GET"). These options will override the same key if passed when creating the the link.
+
+This link also attaches the response from the `fetch` operation on the context as `response` so you can access it from within another link.
+
 - `headers`: an object representing values to be sent as headers on the request
 - `credentials`: a string representing the credentials policy you want for the fetch call
+- `uri`: a string of the endpoint you want to fetch from
 - `fetchOptions`: any overrides of the fetch options argument to pass to the fetch call
+- `response`: this is the raw response from the fetch request after it is made.
 
 
 ```js

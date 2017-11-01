@@ -1,6 +1,11 @@
 # Change log
 
 ### vNEXT
+- support dynamic endpoints using `uri` on the context
+- the request not attaches the raw response as `response` on the context. This can be used to access response headers or more
+
+### v1.0.0
+- official release, not changes
 
 ### v0.9.0
 - changed `fetcherOptions` to be `fetchOptions` and added a test for using 'GET' requests

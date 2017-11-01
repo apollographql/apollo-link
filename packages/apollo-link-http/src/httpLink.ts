@@ -115,6 +115,7 @@ export const createHttpLink = (
           headers,
           credentials,
           fetchOptions = {},
+          uri: endpoint,
         } = operation.getContext();
         const { operationName, extensions, variables, query } = operation;
 
@@ -165,7 +166,12 @@ export const createHttpLink = (
         const { controller, signal } = createSignalIfSupported();
         if (controller) fetcherOptions.signal = signal;
 
-        fetcher(uri, fetcherOptions)
+        fetcher(endpoint || uri, fetcherOptions)
+          // attach the raw response to the context for usage
+          .then(response => {
+            operation.setContext({ response });
+            return response;
+          })
           .then(parseAndCheckResponse(operation))
           .then(result => {
             // we have data and can send it to back up the link chain
