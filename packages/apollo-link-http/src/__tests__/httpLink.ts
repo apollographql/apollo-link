@@ -30,6 +30,7 @@ describe('HttpLink', () => {
   beforeEach(() => {
     fetchMock.post('begin:data', data);
     fetchMock.post('begin:error', mockError);
+    fetchMock.post('begin:apollo', data);
 
     fetchMock.get('begin:data', data);
 
@@ -328,6 +329,51 @@ describe('HttpLink', () => {
     execute(link, { query: sampleQuery, variables }).subscribe(result => {
       const creds = fetchMock.lastCall()[1].credentials;
       expect(creds).toBe('same-team-yo');
+      done();
+    });
+  });
+  it('adds uri to the request from the context', done => {
+    const variables = { params: 'stub' };
+    const middleware = new ApolloLink((operation, forward) => {
+      operation.setContext({
+        uri: 'data',
+      });
+      return forward(operation);
+    });
+    const link = middleware.concat(createHttpLink());
+
+    execute(link, { query: sampleQuery, variables }).subscribe(result => {
+      const uri = fetchMock.lastUrl();
+      expect(uri).toBe('data');
+      done();
+    });
+  });
+  it('adds uri to the request from the setup', done => {
+    const variables = { params: 'stub' };
+    const link = createHttpLink({ uri: 'data' });
+
+    execute(link, { query: sampleQuery, variables }).subscribe(result => {
+      const uri = fetchMock.lastUrl();
+      expect(uri).toBe('data');
+      done();
+    });
+  });
+  it('prioritizes context uri over setup uri', done => {
+    const variables = { params: 'stub' };
+    const middleware = new ApolloLink((operation, forward) => {
+      operation.setContext({
+        uri: 'apollo',
+      });
+      return forward(operation);
+    });
+    const link = middleware.concat(
+      createHttpLink({ uri: 'data', credentials: 'error' }),
+    );
+
+    execute(link, { query: sampleQuery, variables }).subscribe(result => {
+      const uri = fetchMock.lastUrl();
+
+      expect(uri).toBe('apollo');
       done();
     });
   });

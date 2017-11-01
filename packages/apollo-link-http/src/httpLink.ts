@@ -115,6 +115,7 @@ export const createHttpLink = (
           headers,
           credentials,
           fetchOptions = {},
+          uri: contextURI,
         } = operation.getContext();
         const { operationName, extensions, variables, query } = operation;
 
@@ -165,7 +166,7 @@ export const createHttpLink = (
         const { controller, signal } = createSignalIfSupported();
         if (controller) fetcherOptions.signal = signal;
 
-        fetcher(uri, fetcherOptions)
+        fetcher(contextURI || uri, fetcherOptions)
           .then(parseAndCheckResponse(operation))
           .then(result => {
             // we have data and can send it to back up the link chain

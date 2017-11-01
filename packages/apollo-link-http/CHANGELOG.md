@@ -1,6 +1,7 @@
 # Change log
 
 ### vNEXT
+- added support to set the uri based on the context of the request.
 
 ### v0.9.0
 - changed `fetcherOptions` to be `fetchOptions` and added a test for using 'GET' requests
