@@ -24,9 +24,9 @@ Apollo Link uses Lerna to manage multiple packages. To get started contributing,
 
 ## Documentation
 
-To start, begin by reading the getting started [guide](docs/source/index.md).
+To start, begin by reading the getting started [guide](http://apollo-link-docs.netlify.com/docs/link/index.html).
 
-If you are interested in implementing your own links, read the implementation [information](docs/source/overview.md).
+If you are interested in implementing your own links, read the implementation [information](http://apollo-link-docs.netlify.com/docs/link/overview.html).
 
 Your feedback and contributions are welcome.
 
