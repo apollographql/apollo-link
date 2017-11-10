@@ -428,7 +428,8 @@ describe('Link static library', () => {
             query: sampleQuery,
             variables: {},
           }).toEqual(op);
-          return done();
+          done();
+          return Observable.of();
         }),
       ]);
       execute(chain, uniqueOperation);
@@ -718,36 +719,6 @@ describe('Link static library', () => {
     it('should return an empty observable when a link is empty', done => {
       testLinkResults({
         link: ApolloLink.empty(),
-        results: [],
-        done,
-      });
-    });
-
-    it("should return an empty observable when a concat'd link returns null", done => {
-      const link = new MockLink((operation, forward) => {
-        return forward(operation);
-      }).concat(() => null);
-      testLinkResults({
-        link,
-        results: [],
-        done,
-      });
-    });
-
-    it('should return an empty observable when a split link returns null', done => {
-      let context = { test: true };
-      const link = new SetContextLink(() => context).split(
-        op => op.getContext().test,
-        () => Observable.of(),
-        () => null,
-      );
-      testLinkResults({
-        link,
-        results: [],
-      });
-      context.test = false;
-      testLinkResults({
-        link,
         results: [],
         done,
       });

@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@types/zen-observable": "0.5.3",
-    "apollo-utilities": "^1.0.0",
+    "apollo-utilities": "^1.0.1",
     "zen-observable": "^0.6.0"
   },
   "peerDependencies": {

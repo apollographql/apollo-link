@@ -5,7 +5,7 @@ import * as Observable from 'zen-observable';
 import { ApolloLink } from '../link';
 
 export default class MockLink extends ApolloLink {
-  constructor(handleRequest: RequestHandler = () => null) {
+  constructor(handleRequest: RequestHandler = () => Observable.of()) {
     super();
     this.request = handleRequest;
   }
@@ -13,7 +13,7 @@ export default class MockLink extends ApolloLink {
   public request(
     operation: Operation,
     forward?: NextLink,
-  ): Observable<FetchResult> | null {
+  ): Observable<FetchResult> {
     throw Error('should be overridden');
   }
 }

@@ -31,4 +31,13 @@ export type NextLink = (operation: Operation) => Observable<FetchResult>;
 export type RequestHandler = (
   operation: Operation,
   forward?: NextLink,
-) => Observable<FetchResult> | null;
+) => Observable<FetchResult>;
+
+export type DevToolsMessage = {
+  network: {
+    operation: Operation;
+    result: FetchResult;
+  };
+};
+
+export type DevToolsHook = (message: DevToolsMessage) => void;
