@@ -6,10 +6,11 @@ import {
   Observable,
 } from 'apollo-link';
 
+import { switchMap } from 'rxjs/operators';
+import { interval } from 'rxjs/observable/interval';
+
 export class PollingLink extends ApolloLink {
   private pollInterval: (operation: Operation) => number | null;
-  private timer;
-  private subscription: ZenObservable.Subscription;
 
   constructor(pollInterval: (operation: Operation) => number | null) {
     super();
@@ -20,32 +21,8 @@ export class PollingLink extends ApolloLink {
     operation: Operation,
     forward: NextLink,
   ): Observable<FetchResult> {
-    return new Observable(observer => {
-      const subscriber = {
-        next: data => {
-          observer.next(data);
-        },
-        error: error => observer.error(error),
-      };
+    const intervalValue = this.pollInterval(operation);
 
-      const poll = () => {
-        this.subscription.unsubscribe();
-        this.subscription = forward(operation).subscribe(subscriber);
-      };
-
-      const interval = this.pollInterval(operation);
-      if (interval !== null) {
-        this.timer = setInterval(poll, interval);
-      }
-
-      this.subscription = forward(operation).subscribe(subscriber);
-
-      return () => {
-        if (this.timer) {
-          clearInterval(this.timer);
-        }
-        this.subscription.unsubscribe();
-      };
-    });
+    return interval(intervalValue).pipe(switchMap(() => forward(operation)));
   }
 }

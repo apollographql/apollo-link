@@ -1,3 +1,5 @@
+import { globals, external } from '../../rollup.config';
+
 export default {
   entry: 'lib/pollingLink.js',
   dest: 'lib/bundle.umd.js',
@@ -6,6 +8,8 @@ export default {
   moduleName: 'pollingLink',
   exports: 'named',
   onwarn,
+  globals,
+  external,
 };
 
 function onwarn(message) {

@@ -1,5 +1,6 @@
 import { validateOperation, fromPromise, makePromise } from '../linkUtils';
-import * as Observable from 'zen-observable';
+import { Observable } from 'rxjs/Observable';
+import { of } from 'rxjs/observable/of';
 
 describe('Link utilities:', () => {
   describe('validateOperation', () => {
@@ -35,13 +36,12 @@ describe('Link utilities:', () => {
     const error = new Error('I always error');
 
     it('return next call as Promise resolution', () => {
-      return makePromise(Observable.of(data)).then(result =>
-        expect(data).toEqual(result),
-      );
+      return makePromise(of(data)).then(result => expect(data).toEqual(result));
     });
 
     it('return error call as Promise rejection', () => {
-      return makePromise(new Observable(observer => observer.error(error)))
+      return makePromise
+        .call(new Observable(observer => observer.error(error)))
         .then(expect.fail)
         .catch(actualError => expect(error).toEqual(actualError));
     });
@@ -60,7 +60,7 @@ describe('Link utilities:', () => {
       });
 
       it('return error call as Promise rejection', done => {
-        makePromise(Observable.of(data, data)).then(result => {
+        makePromise.call(of(data, data)).then(result => {
           expect(data).toEqual(result);
           expect(spy).toHaveBeenCalled();
           done();

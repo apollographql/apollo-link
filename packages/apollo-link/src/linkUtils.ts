@@ -1,6 +1,7 @@
 import { getOperationName } from 'apollo-utilities';
-import * as Observable from 'zen-observable';
+import { Observable } from 'rxjs/Observable';
 import { print } from 'graphql/language/printer';
+import { toPromise } from 'rxjs/operator/toPromise';
 
 import { GraphQLRequest, Operation } from './types';
 import { ApolloLink } from './link';
@@ -35,27 +36,9 @@ export function isTerminating(link: ApolloLink): boolean {
   return link.request.length <= 1;
 }
 
-export function toPromise<R>(observable: Observable<R>): Promise<R> {
-  let completed = false;
-  return new Promise<R>((resolve, reject) => {
-    observable.subscribe({
-      next: data => {
-        if (completed) {
-          console.warn(
-            `Promise Wrapper does not support multiple results from Observable`,
-          );
-        } else {
-          completed = true;
-          resolve(data);
-        }
-      },
-      error: reject,
-    });
-  });
-}
-
 // backwards compat
 export const makePromise = toPromise;
+export { toPromise };
 
 export function fromPromise<T>(promise: Promise<T>): Observable<T> {
   return new Observable<T>(observer => {
@@ -122,7 +105,7 @@ export function createOperation(
 export function getKey(operation: GraphQLRequest) {
   // XXX we're assuming here that variables will be serialized in the same order.
   // that might not always be true
-  return `${print(operation.query)}|${JSON.stringify(
-    operation.variables,
-  )}|${operation.operationName}`;
+  return `${print(operation.query)}|${JSON.stringify(operation.variables)}|${
+    operation.operationName
+  }`;
 }

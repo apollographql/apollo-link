@@ -1,4 +1,6 @@
-import { execute, Observable } from 'apollo-link';
+import { execute } from 'apollo-link';
+import { Observable } from 'rxjs/Observable';
+import { of } from 'rxjs/observable/of';
 import gql from 'graphql-tag';
 
 import { PollingLink } from '../pollingLink';
@@ -36,7 +38,7 @@ describe('PollingLink', () => {
         subscription.unsubscribe();
         checkResults();
       }
-      return Observable.of({
+      return of({
         data: {
           count: count++,
         },
@@ -75,7 +77,7 @@ describe('PollingLink', () => {
         });
       }
 
-      return Observable.of({
+      return of({
         data: {
           count: count++,
         },

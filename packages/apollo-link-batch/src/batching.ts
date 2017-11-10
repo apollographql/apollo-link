@@ -1,4 +1,5 @@
 import { Observable, Operation, NextLink, FetchResult } from 'apollo-link';
+import { of } from 'rxjs/observable/of';
 
 export type BatchHandler = (
   operations: Operation[],
@@ -97,8 +98,7 @@ export class OperationBatcher {
 
     this.queuedRequests = [];
 
-    const batchedObservable =
-      this.batchHandler(requests, forwards) || Observable.of();
+    const batchedObservable = this.batchHandler(requests, forwards) || of();
 
     batchedObservable.subscribe({
       next: results => {

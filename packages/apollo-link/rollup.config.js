@@ -1,11 +1,15 @@
+import { globals, external } from '../../rollup.config';
+
 export default {
-  entry: './lib/index.js',
-  dest: './lib/bundle.umd.js',
+  entry: 'lib/index.js',
+  dest: 'lib/bundle.umd.js',
   format: 'umd',
   sourceMap: true,
-  moduleName: 'apolloLinkCore',
+  moduleName: 'apolloLink',
   exports: 'named',
   onwarn,
+  globals,
+  external,
 };
 
 function onwarn(message) {

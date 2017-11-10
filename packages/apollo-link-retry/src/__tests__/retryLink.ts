@@ -1,5 +1,6 @@
 import gql from 'graphql-tag';
 import { execute, ApolloLink, Observable, FetchResult } from 'apollo-link';
+import { of } from 'rxjs/observable/of';
 
 import { RetryLink } from '../retryLink';
 
@@ -45,7 +46,7 @@ describe('RetryLink', () => {
       },
     };
     const stub = jest.fn();
-    stub.mockReturnValue(Observable.of(data));
+    stub.mockReturnValue(of(data));
 
     const link = ApolloLink.from([retry, stub]);
 
@@ -71,7 +72,7 @@ describe('RetryLink', () => {
     };
     const stub = jest.fn();
     stub.mockReturnValueOnce(new Observable(observer => observer.error(error)));
-    stub.mockReturnValueOnce(Observable.of(data));
+    stub.mockReturnValueOnce(of(data));
 
     const link = ApolloLink.from([retry, stub]);
 

@@ -1,25 +1,24 @@
 import {
   ApolloLink,
-  Observable,
   Operation,
+  Observable,
   NextLink,
   FetchResult,
 } from 'apollo-link';
+import { retry } from 'rxjs/operators';
 
-const operationFnOrNumber = prop =>
+const operationFnOrNumber = (prop: ((op: Operation) => number) | number) =>
   typeof prop === 'number' ? () => prop : prop;
 
-const defaultInterval = delay => delay;
+// const defaultInterval = _delay => _delay;
 
-export type ParamFnOrNumber = (operation: Operation) => number | number;
+export type ParamFn = (operation: Operation) => number;
+export type ParamFnOrNumber = ParamFn | number;
 
 export class RetryLink extends ApolloLink {
-  private delay: ParamFnOrNumber;
-  private max: ParamFnOrNumber;
-  private interval: (delay: number, count: number) => number;
-  private subscriptions: { [key: string]: ZenObservable.Subscription } = {};
-  private timers = {};
-  private counts: { [key: string]: number } = {};
+  // private delay: ParamFn;
+  private max: ParamFn;
+  // private interval: (delay: number, count: number) => number;
 
   constructor(params?: {
     max?: ParamFnOrNumber;
@@ -28,16 +27,21 @@ export class RetryLink extends ApolloLink {
   }) {
     super();
     this.max = operationFnOrNumber((params && params.max) || 10);
-    this.delay = operationFnOrNumber((params && params.delay) || 300);
-    this.interval = (params && params.interval) || defaultInterval;
+    // this.delay = operationFnOrNumber((params && params.delay) || 300);
+    // this.interval = (params && params.interval) || defaultInterval;
   }
 
   public request(
     operation: Operation,
     forward: NextLink,
   ): Observable<FetchResult> {
-    const key = operation.toKey();
+    const retryVal = this.max(operation);
+    console.log('retryVal', retryVal);
+
+    return forward(operation).pipe(retry(retryVal));
+    /*const key = operation.toKey();
     if (!this.counts[key]) this.counts[key] = 0;
+
     return new Observable(observer => {
       const subscriber = {
         next: data => {
@@ -64,6 +68,6 @@ export class RetryLink extends ApolloLink {
         this.subscriptions[key].unsubscribe();
         if (this.timers[key]) clearTimeout(this.timers[key]);
       };
-    });
+    });*/
   }
 }
