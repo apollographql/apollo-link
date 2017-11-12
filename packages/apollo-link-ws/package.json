@@ -4,6 +4,7 @@
   "description": "WebSocket transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
+    "Giles Bradshaw <giles.bradshaw@sigyl.com>",
     "James Baxley <james@meteor.com>",
     "Jonas Helfer <jonas@helfer.email>",
     "jon wong <j@jnwng.com>",
