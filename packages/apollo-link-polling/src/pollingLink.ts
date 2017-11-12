@@ -6,7 +6,7 @@ import {
   Observable,
 } from 'apollo-link';
 
-import { switchMap } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators/switchMap';
 import { interval } from 'rxjs/observable/interval';
 
 export class PollingLink extends ApolloLink {

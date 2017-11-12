@@ -1,7 +1,13 @@
-import { ApolloLink, Operation, NextLink, GraphQLRequest } from 'apollo-link';
+import {
+  ApolloLink,
+  Operation,
+  NextLink,
+  GraphQLRequest,
+  of,
+} from 'apollo-link';
 import { Observable } from 'rxjs/Observable';
-import { tap, switchMap } from 'rxjs/operators';
-import { of } from 'rxjs/observable/of';
+import { tap } from 'rxjs/operators/tap';
+import { switchMap } from 'rxjs/operators/switchMap';
 
 export type ContextSetter = (
   operation: GraphQLRequest,
@@ -12,7 +18,7 @@ export const setContext = (setter: ContextSetter): ApolloLink =>
   new ApolloLink((operation: Operation, forward: NextLink) => {
     const { ...request } = operation;
 
-    return of(request).pipe(
+    return of<Operation>(request).pipe(
       switchMap(req => {
         const res = setter(req, operation.getContext());
         return res.then ? res : of(res);

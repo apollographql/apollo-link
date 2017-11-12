@@ -5,7 +5,7 @@ import {
   NextLink,
   FetchResult,
 } from 'apollo-link';
-import { retry } from 'rxjs/operators';
+import { retry } from 'rxjs/operators/retry';
 
 const operationFnOrNumber = (prop: ((op: Operation) => number) | number) =>
   typeof prop === 'number' ? () => prop : prop;

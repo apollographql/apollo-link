@@ -1,11 +1,19 @@
 import { getOperationName } from 'apollo-utilities';
 import { Observable } from 'rxjs/Observable';
 import { print } from 'graphql/language/printer';
-import { toPromise } from 'rxjs/operator/toPromise';
 
 import { GraphQLRequest, Operation } from './types';
 import { ApolloLink } from './link';
 
+export function of<T = {}>(...items): Observable<T> {
+  return new Observable<T>(observer => {
+    for (let i = 0; i < items.length; ++i) {
+      observer.next(items[i]);
+      if (observer.closed) return;
+    }
+    observer.complete();
+  });
+}
 export function validateOperation(operation: GraphQLRequest): GraphQLRequest {
   const OPERATION_FIELDS = [
     'query',
@@ -34,21 +42,6 @@ export class LinkError extends Error {
 
 export function isTerminating(link: ApolloLink): boolean {
   return link.request.length <= 1;
-}
-
-// backwards compat
-export const makePromise = toPromise;
-export { toPromise };
-
-export function fromPromise<T>(promise: Promise<T>): Observable<T> {
-  return new Observable<T>(observer => {
-    promise
-      .then((value: T) => {
-        observer.next(value);
-        observer.complete();
-      })
-      .catch(observer.error.bind(observer));
-  });
 }
 
 export function transformOperation(operation: GraphQLRequest): GraphQLRequest {

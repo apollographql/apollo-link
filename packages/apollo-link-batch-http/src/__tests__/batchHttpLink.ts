@@ -1,6 +1,8 @@
-import { ApolloLink, execute, Observable, makePromise } from 'apollo-link';
+import { ApolloLink, execute, of } from 'apollo-link';
 import { ApolloFetch } from 'apollo-fetch';
 import { print } from 'graphql';
+import { Observable } from 'rxjs/Observable';
+import { toPromise } from 'rxjs/operator/toPromise';
 import gql from 'graphql-tag';
 
 import { BatchHttpLink } from '../batchHttpLink';
@@ -47,7 +49,7 @@ describe('BatchHttpLink', () => {
       expect(operations.length).toEqual(1);
       expect(operations[0].query).toEqual(print(operation.query));
       done();
-      return makePromise(Observable.of());
+      return toPromise.call(of());
     };
     (apolloFetch as any).use = () => void 0;
     (apolloFetch as any).useAfter = () => void 0;
@@ -70,7 +72,7 @@ describe('BatchHttpLink', () => {
       expect(Array.isArray(operations)).toBeTruthy();
       expect(operations.length).toEqual(1);
       expect(operations[0].query).toEqual(print(operation.query));
-      return makePromise(
+      return toPromise.call(
         new Observable(observer => {
           observer.error(error);
         }),
@@ -112,7 +114,7 @@ describe('BatchHttpLink', () => {
       expect(operations.length).toEqual(1);
       expect(operations[0].query).toEqual(print(operation.query));
       middleware.forEach(x => x());
-      return makePromise(
+      return toPromise.call(
         new Observable(observer => {
           observer.next(results);
           observer.complete();

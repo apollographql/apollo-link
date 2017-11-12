@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
+import { of } from './linkUtils';
 
 import {
   GraphQLRequest,

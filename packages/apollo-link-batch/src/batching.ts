@@ -1,5 +1,4 @@
-import { Observable, Operation, NextLink, FetchResult } from 'apollo-link';
-import { of } from 'rxjs/observable/of';
+import { Observable, Operation, NextLink, FetchResult, of } from 'apollo-link';
 
 export type BatchHandler = (
   operations: Operation[],

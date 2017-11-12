@@ -3,7 +3,8 @@ import { GraphQLError, ExecutionResult } from 'graphql';
 import { empty } from 'rxjs/observable/empty';
 import { _throw } from 'rxjs/observable/throw';
 import { of } from 'rxjs/observable/of';
-import { mergeMap, catchError } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators/mergeMap';
+import { catchError } from 'rxjs/operators/catchError';
 
 export interface ErrorResponse {
   graphQLErrors?: GraphQLError[];
