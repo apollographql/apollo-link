@@ -54,11 +54,11 @@
     "jest": "21.2.1",
     "proxyquire": "1.8.0",
     "rimraf": "2.6.1",
-    "rollup": "0.51.3",
-    "ts-jest": "21.2.1",
+    "rollup": "0.51.5",
+    "ts-jest": "21.2.2",
     "tslint": "5.8.0",
     "typescript": "2.6.1",
-    "uglify-js": "3.1.8"
+    "uglify-js": "3.1.9"
   },
   "jest": {
     "transform": {
