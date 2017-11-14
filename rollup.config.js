@@ -1,8 +1,8 @@
 export const globals = {
   // Apollo
   'apollo-client': 'apollo.core',
-  'apollo-link': 'apollo.link.core',
-  'apollo-link-batch': 'apollo.link.batch',
+  'apollo-link': 'apolloLink.core',
+  'apollo-link-batch': 'apolloLink.batch',
   'apollo-utilities': 'apollo.utilities',
 };
 
@@ -12,7 +12,7 @@ export default name => ({
     file: 'lib/bundle.umd.js',
     format: 'umd',
   },
-  name: `apollo.link.${name}`,
+  name: `apolloLink.${name}`,
   exports: 'named',
   sourcemap: true,
   external: Object.keys(globals),
