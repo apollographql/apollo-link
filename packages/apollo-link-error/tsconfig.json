@@ -2,11 +2,7 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "lib",
-    "baseUrl": ".",
-    "paths": {
-      "rxjs/*": ["./node_modules/apollo-link/node_modules/rxjs/*"]
-    }
+    "outDir": "lib"
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/__tests__/*.ts"]

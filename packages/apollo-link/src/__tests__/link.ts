@@ -1,5 +1,6 @@
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
+import { map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
 
@@ -639,9 +640,11 @@ describe('Link static library', () => {
       const link = ApolloLink.split(
         operation => operation.getContext().test,
         (operation, forward) =>
-          forward(operation).map(data => ({
-            data: { count: data.data.count + 1 },
-          })),
+          forward(operation).pipe(
+            map(data => ({
+              data: { count: data.data.count + 1 },
+            })),
+          ),
       ).concat(() => of({ data: { count: 1 } }));
 
       testLinkResults({

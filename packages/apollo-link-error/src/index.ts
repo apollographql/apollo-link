@@ -3,7 +3,9 @@ import { GraphQLError, ExecutionResult } from 'graphql';
 import { empty } from 'rxjs/observable/empty';
 import { _throw } from 'rxjs/observable/throw';
 import { of } from 'rxjs/observable/of';
-import { mergeMap } from 'rxjs/operators/mergeMap';
+import { tap } from 'rxjs/operators/tap';
+// import { mergeMap } from "rxjs/operators/mergeMap";
+import { switchMap } from 'rxjs/operators/switchMap';
 import { catchError } from 'rxjs/operators/catchError';
 
 export interface ErrorResponse {
@@ -17,15 +19,23 @@ export type ErrorHandler = (error: ErrorResponse) => void;
 
 export const onError = (errorHandler: ErrorHandler): ApolloLink => {
   return new ApolloLink((operation, forward) => {
+    console.log('operation');
     return empty().pipe(
-      mergeMap(() => {
+      tap(v => {
+        console.log('tap 1', v);
+      }),
+      switchMap(() => {
         try {
+          console.log('1');
           return forward(operation);
         } catch (e) {
           console.log('e', e);
           errorHandler({ networkError: e, operation });
           return _throw(e);
         }
+      }),
+      tap(v => {
+        console.log('tap 2', v);
       }),
       catchError(networkError => {
         console.log('catch', networkError);
@@ -35,7 +45,10 @@ export const onError = (errorHandler: ErrorHandler): ApolloLink => {
         });
         return _throw(networkError);
       }),
-      mergeMap(result => {
+      tap(v => {
+        console.log('tap 3', v);
+      }),
+      switchMap(result => {
         if (result.errors) {
           console.log('errors', result.errors);
           errorHandler({
@@ -48,6 +61,9 @@ export const onError = (errorHandler: ErrorHandler): ApolloLink => {
         console.log('return', result);
 
         return of(result);
+      }),
+      tap(v => {
+        console.log('tap 4', v);
       }),
     );
   });

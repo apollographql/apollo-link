@@ -1,5 +1,6 @@
 import { Observable, ApolloLink, execute } from 'apollo-link';
 import { print } from 'graphql';
+import { map } from 'rxjs/operators/map';
 import gql from 'graphql-tag';
 import * as fetchMock from 'fetch-mock';
 
@@ -237,11 +238,13 @@ describe('HttpLink', () => {
       operation.setContext({
         headers: { authorization: '1234' },
       });
-      return forward(operation).map(result => {
-        const { response } = operation.getContext();
-        expect(response.headers).toBeDefined();
-        return result;
-      });
+      return forward(operation).pipe(
+        map(result => {
+          const { response } = operation.getContext();
+          expect(response.headers).toBeDefined();
+          return result;
+        }),
+      );
     });
     const link = middleware.concat(createHttpLink({ uri: 'data' }));
 

@@ -6,6 +6,9 @@ import {
   FetchResult,
 } from 'apollo-link';
 import { retry } from 'rxjs/operators/retry';
+import { tap } from 'rxjs/operators/tap';
+import { catchError } from 'rxjs/operators/catchError';
+import { _throw } from 'rxjs/observable/throw';
 
 const operationFnOrNumber = (prop: ((op: Operation) => number) | number) =>
   typeof prop === 'number' ? () => prop : prop;
@@ -38,7 +41,16 @@ export class RetryLink extends ApolloLink {
     const retryVal = this.max(operation);
     console.log('retryVal', retryVal);
 
-    return forward(operation).pipe(retry(retryVal));
+    return forward(operation).pipe(
+      retry(retryVal),
+      tap(v => {
+        console.log('tap', v);
+      }),
+      catchError(e => {
+        console.log('catch', e);
+        return _throw(e);
+      }),
+    );
     /*const key = operation.toKey();
     if (!this.counts[key]) this.counts[key] = 0;
 

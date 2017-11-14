@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { ApolloLink, execute, Observable } from 'apollo-link';
+import { ApolloLink, execute, Observable, Operation } from 'apollo-link';
 import { of } from 'rxjs/observable/of';
 
 import { onError, ErrorLink } from '../';
@@ -247,7 +247,12 @@ describe('error handling with class', () => {
 
     let called;
     const errorLink = new ErrorLink(({ graphQLErrors, networkError }) => {
-      expect(graphQLErrors[0].message).toBe('resolver blew up');
+      console.log('error link');
+      try {
+        expect(graphQLErrors[0].message).toBe('resolver blew up');
+      } catch (e) {
+        done.fail(e);
+      }
       called = true;
     });
 
@@ -264,8 +269,13 @@ describe('error handling with class', () => {
     const link = errorLink.concat(mockLink);
 
     execute(link, { query }).subscribe(result => {
-      expect(result.errors[0].message).toBe('resolver blew up');
-      expect(called).toBe(true);
+      console.log('sub');
+      try {
+        expect(result.errors[0].message).toBe('resolver blew up');
+        expect(called).toBe(true);
+      } catch (e) {
+        done.fail(e);
+      }
       done();
     });
   });
