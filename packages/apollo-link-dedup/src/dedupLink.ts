@@ -56,8 +56,10 @@ export class DedupLink extends ApolloLink {
             next: result => {
               const prev = cleanup(key);
               this.subscribers.delete(key);
-              if (prev) prev.next.forEach(next => next(result));
-              if (prev) prev.complete.forEach(complete => complete());
+              if (prev) {
+                prev.next.forEach(next => next(result));
+                prev.complete.forEach(complete => complete());
+              }
             },
             error: error => {
               const prev = cleanup(key);
