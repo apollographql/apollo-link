@@ -1,6 +1,9 @@
 # Change log
 
 ### vNEXT
+
+### 1.2.0
+- moved to better rollup build
 - support for persisted queries by opting out of sending the query
 
 ### v1.1.0
