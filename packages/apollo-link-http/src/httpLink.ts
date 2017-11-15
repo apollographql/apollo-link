@@ -134,7 +134,7 @@ export const createHttpLink = (
           (body as any).extensions = extensions;
 
         // not sending the query (i.e persisted queries)
-        if (http.includeQuery) body.query = print(query);
+        if (http.includeQuery) (body as any).query = print(query);
 
         let serializedBody;
         try {
