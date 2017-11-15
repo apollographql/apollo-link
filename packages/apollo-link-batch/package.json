@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-batch",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description":
     "Apollo Link that performs batching and operation on batched Operations",
   "author": "Evans Hauser <evanshauser@gmail.com>",
@@ -41,12 +41,12 @@
     "watch": "tsc -w -p ."
   },
   "peerDependencies": {
-    "apollo-link": "^1.0.0"
+    "apollo-link": "^1.0.3"
   },
   "devDependencies": {
     "@types/graphql": "0.11.6",
     "@types/jest": "21.1.6",
-    "apollo-link": "^1.0.0",
+    "apollo-link": "^1.0.3",
     "browserify": "14.5.0",
     "fetch-mock": "5.13.1",
     "graphql": "0.11.7",
