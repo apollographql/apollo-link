@@ -11,9 +11,9 @@
   ],
   "license": "MIT",
   "main": "./lib/bundle.umd.js",
-  "module": "./lib/dedupLink.js",
-  "jsnext:main": "./lib/dedupLink.js",
-  "typings": "./lib/dedupLink.d.ts",
+  "module": "./lib/index.js",
+  "jsnext:main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-link.git"

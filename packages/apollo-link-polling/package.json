@@ -11,9 +11,9 @@
   ],
   "license": "MIT",
   "main": "./lib/bundle.umd.js",
-  "module": "./lib/pollingLink.js",
-  "jsnext:main": "./lib/pollingLink.js",
-  "typings": "./lib/pollingLink.d.ts",
+  "module": "./lib/index.js",
+  "jsnext:main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-link.git"
