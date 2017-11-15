@@ -13,7 +13,6 @@ export function validateOperation(operation: GraphQLRequest): GraphQLRequest {
     'extensions',
     'context',
   ];
-  if (!operation.query) throw new Error('ApolloLink requires a query');
   for (let key of Object.keys(operation)) {
     if (OPERATION_FIELDS.indexOf(key) < 0) {
       throw new Error(`illegal argument: ${key}`);
@@ -122,7 +121,7 @@ export function createOperation(
 export function getKey(operation: GraphQLRequest) {
   // XXX we're assuming here that variables will be serialized in the same order.
   // that might not always be true
-  return `${print(operation.query)}|${JSON.stringify(
-    operation.variables,
-  )}|${operation.operationName}`;
+  return `${print(operation.query)}|${JSON.stringify(operation.variables)}|${
+    operation.operationName
+  }`;
 }

@@ -1,6 +1,7 @@
 # Change log
 
 ### vNEXT
+- support for persisted queries by opting out of sending the query
 
 ### v1.1.0
 - support dynamic endpoints using `uri` on the context
