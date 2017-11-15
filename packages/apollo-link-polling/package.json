@@ -1,5 +1,6 @@
 {
   "name": "apollo-link-polling",
+  "private": true,
   "version": "1.0.0",
   "description": "Polling Apollo Link for GraphQL Network Stack",
   "author": "Evans Hauser <evanshauser@gmail.com>",
