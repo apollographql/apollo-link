@@ -2,7 +2,6 @@ import { ApolloLink, Observable, RequestHandler } from 'apollo-link';
 import { print } from 'graphql/language/printer';
 
 // types
-import { ExecutionResult } from 'graphql';
 import { ApolloFetch } from 'apollo-fetch';
 
 // XXX replace with actual typings when available
@@ -31,7 +30,9 @@ const parseAndCheckResponse = request => (response: Response) => {
     })
     .catch(e => {
       const httpError = new Error(
-        `Network request failed with status ${response.status} - "${response.statusText}"`,
+        `Network request failed with status ${response.status} - "${
+          response.statusText
+        }"`,
       ) as ResponseError;
       httpError.response = response;
       httpError.parseError = e;
@@ -92,6 +93,12 @@ export interface FetchOptions {
   headers?: any;
   fetchOptions?: any;
 }
+
+const defaultHttpOptions = {
+  includeQuery: true,
+  includeExtensions: false,
+};
+
 export const createHttpLink = (
   {
     uri,
@@ -116,15 +123,17 @@ export const createHttpLink = (
           credentials,
           fetchOptions = {},
           uri: contextURI,
+          http: httpOptions = {},
         } = operation.getContext();
         const { operationName, extensions, variables, query } = operation;
+        const http = { ...defaultHttpOptions, ...httpOptions };
+        const body = { operationName, variables };
 
-        const body = {
-          operationName,
-          variables,
-          query: print(query),
-        };
-        if (includeExtensions) (body as any).extensions = extensions;
+        if (includeExtensions || http.includeExtensions)
+          (body as any).extensions = extensions;
+
+        // not sending the query (i.e persisted queries)
+        if (http.includeQuery) (body as any).query = print(query);
 
         let serializedBody;
         try {
@@ -197,11 +206,6 @@ export const createHttpLink = (
 export class HttpLink extends ApolloLink {
   public requester: RequestHandler;
   constructor(opts: FetchOptions) {
-    super();
-    this.requester = createHttpLink(opts).request;
-  }
-
-  public request(op): Observable<ExecutionResult> | null {
-    return this.requester(op);
+    super(createHttpLink(opts).request);
   }
 }

@@ -45,6 +45,23 @@ This link also attaches the response from the `fetch` operation on the context a
 - `uri`: a string of the endpoint you want to fetch from
 - `fetchOptions`: any overrides of the fetch options argument to pass to the fetch call
 - `response`: this is the raw response from the fetch request after it is made.
+- `http`: this is an object to control fine grained aspects of the http link itself (see below)
+
+**http options**
+The http link supports an advanced GraphQL feature (and maybe more in the future) called persisted queries. This allows you to not send the stringified query over the wire, but instead send some kind of identifier of the query. To support this you need to attach the id somewhere to the extensions field and pass the following options to the context:
+
+```
+operation.setContext({
+  http: {
+    includeExtensions: true,
+    includeQuery: false,
+  }
+})
+```
+
+the `http` object on context currently supports two keys:
+- `includeExtensions`: allowing you to send the extensions object per request
+- `includeQuery`: allowing you to not send a query as part of the request
 
 
 ```js

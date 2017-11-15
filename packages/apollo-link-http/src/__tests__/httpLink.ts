@@ -478,6 +478,27 @@ describe('HttpLink', () => {
       done();
     });
   });
+  it('allows for not sending the query with the request', done => {
+    const variables = { params: 'stub' };
+    const middleware = new ApolloLink((operation, forward) => {
+      operation.setContext({
+        http: {
+          includeQuery: false,
+          includeExtensions: true,
+        },
+      });
+      operation.extensions.persistedQuery = { hash: '1234' };
+      return forward(operation);
+    });
+    const link = middleware.concat(createHttpLink({ uri: 'data' }));
+
+    execute(link, { query: sampleQuery, variables }).subscribe(result => {
+      const body = JSON.parse(fetchMock.lastCall()[1].body);
+      expect(body.query).not.toBeDefined();
+      expect(body.extensions).toEqual({ persistedQuery: { hash: '1234' } });
+      done();
+    });
+  });
 });
 
 describe('dev warnings', () => {
@@ -518,6 +539,41 @@ describe('error handling', () => {
   const fetch = jest.fn((uri, options) => {
     return Promise.resolve({ json });
   });
+  beforeEach(() => {
+    fetch.mockReset();
+  });
+  it('makes it easy to do stuff on a 401', done => {
+    const middleware = new ApolloLink((operation, forward) => {
+      return new Observable(ob => {
+        fetch.mockReturnValueOnce(Promise.resolve({ status: 401, json }));
+        const op = forward(operation);
+        const sub = op.subscribe({
+          next: ob.next.bind(ob),
+          error: e => {
+            expect(e.parseError.message).toMatch(/Received status code 401/);
+            expect(e.statusCode).toEqual(401);
+            ob.error(e);
+            done();
+          },
+          complete: ob.complete.bind(ob),
+        });
+
+        return () => {
+          sub.unsubscribe();
+        };
+      });
+    });
+
+    const link = middleware.concat(createHttpLink({ uri: 'data', fetch }));
+
+    execute(link, { query: sampleQuery }).subscribe(
+      result => {
+        done.fail('error should have been thrown from the network');
+      },
+      () => {},
+    );
+  });
+
   it('throws an error if response code is > 300', done => {
     fetch.mockReturnValueOnce(Promise.resolve({ status: 400, json }));
     const link = createHttpLink({ uri: 'data', fetch });
@@ -550,38 +606,7 @@ describe('error handling', () => {
       },
     );
   });
-  it('makes it easy to do stuff on a 401', done => {
-    fetch.mockReturnValueOnce(Promise.resolve({ status: 401, json }));
 
-    const middleware = new ApolloLink((operation, forward) => {
-      return new Observable(ob => {
-        const op = forward(operation);
-        const sub = op.subscribe({
-          next: ob.next.bind(ob),
-          error: e => {
-            expect(e.parseError.message).toMatch(/Received status code 401/);
-            expect(e.statusCode).toEqual(401);
-            ob.error(e);
-            done();
-          },
-          complete: ob.complete.bind(ob),
-        });
-
-        return () => {
-          sub.unsubscribe();
-        };
-      });
-    });
-
-    const link = middleware.concat(createHttpLink({ uri: 'data', fetch }));
-
-    execute(link, { query: sampleQuery }).subscribe(
-      result => {
-        done.fail('error should have been thrown from the network');
-      },
-      () => {},
-    );
-  });
   it("throws if the body can't be stringified", done => {
     fetch.mockReturnValueOnce(Promise.resolve({ data: {}, json }));
     const link = createHttpLink({ uri: 'data', fetch });
