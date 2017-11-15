@@ -30,7 +30,6 @@ export class DedupLink extends ApolloLink {
     const cleanup = key => {
       this.inFlightRequestObservables.delete(key);
       const prev = this.subscribers.get(key);
-      this.subscribers.delete(key);
       return prev;
     };
 
@@ -44,13 +43,7 @@ export class DedupLink extends ApolloLink {
         // this will still be called by each subscriber regardless of
         // deduplication status
         let prev = this.subscribers.get(key);
-        if (!prev) {
-          prev = {
-            next: [],
-            error: [],
-            complete: [],
-          };
-        }
+        if (!prev) prev = { next: [], error: [], complete: [] };
 
         this.subscribers.set(key, {
           next: prev.next.concat([observer.next.bind(observer)]),
@@ -62,22 +55,23 @@ export class DedupLink extends ApolloLink {
           subscription = singleObserver.subscribe({
             next: result => {
               const prev = cleanup(key);
-              if (prev) prev.next.forEach(next => next(result));
+              this.subscribers.delete(key);
+              if (prev) {
+                prev.next.forEach(next => next(result));
+                prev.complete.forEach(complete => complete());
+              }
             },
             error: error => {
               const prev = cleanup(key);
+              this.subscribers.delete(key);
               if (prev) prev.error.forEach(err => err(error));
-            },
-            complete: () => {
-              const prev = cleanup(key);
-              if (prev) prev.complete.forEach(complete => complete());
             },
           });
         }
 
         return () => {
-          cleanup(key);
           if (subscription) subscription.unsubscribe();
+          this.inFlightRequestObservables.delete(key);
         };
       });
 
