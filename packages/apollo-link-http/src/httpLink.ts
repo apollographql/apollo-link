@@ -2,7 +2,6 @@ import { ApolloLink, Observable, RequestHandler } from 'apollo-link';
 import { print } from 'graphql/language/printer';
 
 // types
-import { ExecutionResult } from 'graphql';
 import { ApolloFetch } from 'apollo-fetch';
 
 // XXX replace with actual typings when available
@@ -207,11 +206,6 @@ export const createHttpLink = (
 export class HttpLink extends ApolloLink {
   public requester: RequestHandler;
   constructor(opts: FetchOptions) {
-    super();
-    this.requester = createHttpLink(opts).request;
-  }
-
-  public request(op): Observable<ExecutionResult> | null {
-    return this.requester(op);
+    super(createHttpLink(opts).request);
   }
 }
