@@ -23,47 +23,47 @@
     {
       "name": "apollo-link",
       "path": "./packages/apollo-link/lib/bundle.min.js",
-      "threshold": "1.6 Kb"
+      "maxSize": "3 Kb"
     },
     {
       "name": "apollo-link-batch",
       "path": "./packages/apollo-link-batch/lib/bundle.min.js",
-      "threshold": "1.3 Kb"
+      "maxSize": "1.3 Kb"
     },
     {
       "name": "apollo-link-batch-http",
       "path": "./packages/apollo-link-batch-http/lib/bundle.min.js",
-      "threshold": "6.5 Kb"
+      "maxSize": "6.5 Kb"
     },
     {
       "name": "apollo-link-dedup",
       "path": "./packages/apollo-link-dedup/lib/bundle.min.js",
-      "threshold": "3 Kb"
+      "maxSize": "3 Kb"
     },
     {
       "name": "apollo-link-error",
       "path": "./packages/apollo-link-error/lib/bundle.min.js",
-      "threshold": "1 Kb"
+      "maxSize": "1 Kb"
     },
     {
       "name": "apollo-link-http",
       "path": "./packages/apollo-link-http/lib/bundle.min.js",
-      "threshold": "3.8 Kb"
+      "maxSize": "4 Kb"
     },
     {
       "name": "apollo-link-polling",
       "path": "./packages/apollo-link-polling/lib/bundle.min.js",
-      "threshold": "1 Kb"
+      "maxSize": "1 Kb"
     },
     {
       "name": "apollo-link-retry",
       "path": "./packages/apollo-link-retry/lib/bundle.min.js",
-      "threshold": "1 Kb"
+      "maxSize": "1 Kb"
     },
     {
       "name": "apollo-link-ws",
       "path": "./packages/apollo-link-ws/lib/bundle.min.js",
-      "threshold": "10 Kb"
+      "maxSize": "10 Kb"
     }
   ],
   "jest": {
@@ -90,10 +90,10 @@
     "codecov": "3.0.0",
     "danger": "1.2.0",
     "lerna": "2.5.1",
-    "lint-staged": "4.3.0",
+    "lint-staged": "5.0.0",
     "pre-commit": "1.2.2",
-    "prettier": "1.8.1",
-    "ts-jest": "21.1.4",
+    "prettier": "1.8.2",
+    "ts-jest": "21.2.2",
     "typescript": "2.6.1"
   }
 }
