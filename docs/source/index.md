@@ -64,6 +64,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import '../node_modules/graphiql/graphiql.css'
 import GraphiQL from 'graphiql';
+import gql from 'graphql-tag';
 
 import { execute } from 'apollo-link';
 import HttpLink from 'apollo-link-http';
@@ -73,7 +74,10 @@ const link = new HttpLink({
 });
 
 ReactDOM.render(
-  <GraphiQL fetcher={(operation) => execute(link, operation)}/>,
+  <GraphiQL fetcher={(operation) => execute(link, {
+    ...operation,
+    query: gql`${operation.query}`
+  })}/>,
   document.body,
 );
 ```
