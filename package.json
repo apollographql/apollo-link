@@ -48,7 +48,7 @@
     {
       "name": "apollo-link-http",
       "path": "./packages/apollo-link-http/lib/bundle.min.js",
-      "maxSize": "4 Kb"
+      "maxSize": "4.01 Kb"
     },
     {
       "name": "apollo-link-polling",

@@ -27,9 +27,9 @@ The HTTP Link relies on having `fetch` present in your runtime environment. If y
 
 ## Options
 HTTP Link takes an object with some options on it to customize the behavior of the link. If your server supports it, the HTTP link can also send over metadata about the request in the extensions field. To enable this, pass `includeExtensions` as true. The options you can pass are outlined below:
-- `uri`: the URI key can be either a string endpoint or default to "/graphql"
+- `uri`: the URI key can be a string endpoint or a function returning a string -- will default to "/graphql" if not specified
 - `includeExtensions`: allow passing the extensions field to your graphql server, defaults to false
-- `fetch`: a `fetch` compatiable API for making a request 
+- `fetch`: a `fetch` compatiable API for making a request
 - `headers`: an object representing values to be sent as headers on the request
 - `credentials`: a string representing the credentials policy you want for the fetch call
 - `fetchOptions`: any overrides of the fetch options argument to pass to the fetch call
@@ -42,7 +42,7 @@ This link also attaches the response from the `fetch` operation on the context a
 
 - `headers`: an object representing values to be sent as headers on the request
 - `credentials`: a string representing the credentials policy you want for the fetch call
-- `uri`: a string of the endpoint you want to fetch from
+- `uri`: a string of the endpoint or a function returning a string endpoint you want to fetch from
 - `fetchOptions`: any overrides of the fetch options argument to pass to the fetch call
 - `response`: this is the raw response from the fetch request after it is made.
 - `http`: this is an object to control fine grained aspects of the http link itself (see below)
@@ -86,7 +86,7 @@ client.query({
 })
 ```
 
-## Upgrading from `apollo-fetch` / `apollo-client` 
+## Upgrading from `apollo-fetch` / `apollo-client`
 If you previously used either `apollo-fetch` or `apollo-client`, you will need to change the way `use` and `useAfter` are implemented in your app. Both can be implemented by writing a custom link. It's important to note that regardless of whether you're adding middleware or afterware, your Http link will always be last in the chain since it's a terminating link.
 
 #### Middleware

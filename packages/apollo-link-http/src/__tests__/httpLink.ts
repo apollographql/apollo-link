@@ -396,6 +396,40 @@ describe('HttpLink', () => {
       done();
     });
   });
+  it('allows uri to be a function', done => {
+    const variables = { params: 'stub' };
+    const uriFunc = jest.fn().mockReturnValueOnce('dataFunc');
+    const link = createHttpLink({ uri: uriFunc });
+
+    execute(link, { query: sampleQuery, variables }).subscribe(result => {
+      const uri = fetchMock.lastUrl();
+      expect(fetchMock.lastUrl()).toBe('dataFunc');
+      // Simple check if uri function was called with operation
+      expect(uriFunc.mock.calls[0][0]).toHaveProperty('operationName', 'SampleQuery');
+      done();
+    });
+  });
+  it('allows context uri to be a function', done => {
+    const variables = { params: 'stub' };
+    const contextUriFunc = jest.fn().mockReturnValueOnce('dataFunc');
+    const middleware = new ApolloLink((operation, forward) => {
+      operation.setContext({
+        uri: contextUriFunc
+      });
+      return forward(operation);
+    });
+    const link = middleware.concat(
+      createHttpLink({ uri: 'data', credentials: 'error' }),
+    );
+
+    execute(link, { query: sampleQuery, variables }).subscribe(result => {
+      const uri = fetchMock.lastUrl();
+      expect(uri).toBe('dataFunc');
+      // Simple check if uri function was called with operation
+      expect(contextUriFunc.mock.calls[0][0]).toHaveProperty('operationName', 'SampleQuery');
+      done();
+    });
+  });
   it('adds fetchOptions to the request from the setup', done => {
     const variables = { params: 'stub' };
     const link = createHttpLink({

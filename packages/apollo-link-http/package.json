@@ -7,7 +7,8 @@
     "James Baxley <james@meteor.com>",
     "Jonas Helfer <jonas@helfer.email>",
     "jon wong <j@jnwng.com>",
-    "Sashko Stubailo <sashko@stubailo.com>"
+    "Sashko Stubailo <sashko@stubailo.com>",
+    "Stephen Kao <stephen.yuchen.kao@gmail.com>"
   ],
   "license": "MIT",
   "main": "./lib/bundle.umd.js",
