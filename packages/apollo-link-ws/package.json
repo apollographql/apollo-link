@@ -52,12 +52,12 @@
     "graphql-tag": "2.5.0",
     "jest": "21.2.1",
     "rimraf": "2.6.1",
-    "rollup": "0.51.6",
+    "rollup": "0.51.8",
     "subscriptions-transport-ws": "0.9.1",
-    "ts-jest": "21.2.2",
+    "ts-jest": "21.2.3",
     "tslint": "5.8.0",
     "typescript": "2.6.1",
-    "uglify-js": "3.1.9"
+    "uglify-js": "3.1.10"
   },
   "jest": {
     "transform": {
