@@ -1,4 +1,4 @@
-import { ApolloLink, Observable, RequestHandler } from 'apollo-link';
+import { ApolloLink, Observable, RequestHandler, Operation } from 'apollo-link';
 import { print } from 'graphql/language/printer';
 
 // types
@@ -86,7 +86,7 @@ const createSignalIfSupported = () => {
 };
 
 export interface UriFunction {
-  (operation: any): string;
+  (operation: Operation): string;
 }
 
 export interface FetchOptions {
