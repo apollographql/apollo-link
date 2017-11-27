@@ -27,7 +27,7 @@ Apollo Client is designed to work seamlessly with Apollo Link. A link is one of 
 import { ApolloLink } from 'apollo-link';
 import { ApolloClient } from 'apollo-client';
 import Cache from 'apollo-cache-inmemory';
-import HttpLink from 'apollo-link-http';
+import { HttpLink } from 'apollo-link-http';
 
 const client = new ApolloClient({
   link: new HttpLink({ uri: 'http://api.githunt.com/graphql' }),
@@ -64,6 +64,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import '../node_modules/graphiql/graphiql.css'
 import GraphiQL from 'graphiql';
+import { parse } from 'graphql';
 
 import { execute } from 'apollo-link';
 import HttpLink from 'apollo-link-http';
@@ -72,8 +73,13 @@ const link = new HttpLink({
   uri: 'http://api.githunt.com/graphql'
 });
 
+const fetcher = (operation) => {
+  operation.query = parse(operation.query);
+  return execute(link, operation);
+};
+
 ReactDOM.render(
-  <GraphiQL fetcher={(operation) => execute(link, operation)}/>,
+  <GraphiQL fetcher={fetcher}/>,
   document.body,
 );
 ```

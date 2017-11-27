@@ -2,42 +2,68 @@ import { ApolloLink, Observable, RequestHandler } from 'apollo-link';
 import { print } from 'graphql/language/printer';
 
 // types
-import { ExecutionResult } from 'graphql';
 import { ApolloFetch } from 'apollo-fetch';
 
 // XXX replace with actual typings when available
 declare var AbortController: any;
 
-type ResponseError = Error & {
-  response?: Response;
+//Used for any Error for data from the server
+//on a request with a Status >= 300
+//response contains no data or errors
+type ServerError = Error & {
+  response: Response;
+  result: Record<string, any>;
+  statusCode: number;
+};
+
+//Thrown when server's resonse is cannot be parsed
+type ServerParseError = Error & {
+  response: Response;
+  statusCode: number;
+};
+
+type ClientParseError = Error & {
   parseError: Error;
-  statusCode?: number;
+};
+
+const throwServerError = (response, result, message) => {
+  const error = new Error(message) as ServerError;
+
+  error.response = response;
+  error.statusCode = response.status;
+  error.result = result;
+
+  throw error;
 };
 
 const parseAndCheckResponse = request => (response: Response) => {
   return response
     .json()
+    .catch(e => {
+      const parseError = e as ServerParseError;
+      parseError.response = response;
+      parseError.statusCode = response.status;
+
+      throw parseError;
+    })
     .then(result => {
-      if (response.status >= 300)
-        throw new Error(
+      if (response.status >= 300) {
+        //Network error
+        throwServerError(
+          response,
+          result,
           `Response not successful: Received status code ${response.status}`,
         );
+      }
       if (!result.hasOwnProperty('data') && !result.hasOwnProperty('errors')) {
-        throw new Error(
+        //Data error
+        throwServerError(
+          response,
+          result,
           `Server response was missing for query '${request.operationName}'.`,
         );
       }
       return result;
-    })
-    .catch(e => {
-      const httpError = new Error(
-        `Network request failed with status ${response.status} - "${response.statusText}"`,
-      ) as ResponseError;
-      httpError.response = response;
-      httpError.parseError = e;
-      httpError.statusCode = response.status;
-
-      throw httpError;
     });
 };
 
@@ -92,6 +118,12 @@ export interface FetchOptions {
   headers?: any;
   fetchOptions?: any;
 }
+
+const defaultHttpOptions = {
+  includeQuery: true,
+  includeExtensions: false,
+};
+
 export const createHttpLink = (
   {
     uri,
@@ -116,15 +148,17 @@ export const createHttpLink = (
           credentials,
           fetchOptions = {},
           uri: contextURI,
+          http: httpOptions = {},
         } = operation.getContext();
         const { operationName, extensions, variables, query } = operation;
+        const http = { ...defaultHttpOptions, ...httpOptions };
+        const body = { operationName, variables };
 
-        const body = {
-          operationName,
-          variables,
-          query: print(query),
-        };
-        if (includeExtensions) (body as any).extensions = extensions;
+        if (includeExtensions || http.includeExtensions)
+          (body as any).extensions = extensions;
+
+        // not sending the query (i.e persisted queries)
+        if (http.includeQuery) (body as any).query = print(query);
 
         let serializedBody;
         try {
@@ -132,7 +166,7 @@ export const createHttpLink = (
         } catch (e) {
           const parseError = new Error(
             `Network request failed. Payload is not serializable: ${e.message}`,
-          ) as ResponseError;
+          ) as ClientParseError;
           parseError.parseError = e;
           throw parseError;
         }
@@ -140,7 +174,7 @@ export const createHttpLink = (
         let options = fetchOptions;
         if (requestOptions.fetchOptions)
           options = { ...requestOptions.fetchOptions, ...options };
-        const fetcherOptions = {
+        const fetcherOptions: any = {
           method: 'POST',
           ...options,
           headers: {
@@ -196,12 +230,7 @@ export const createHttpLink = (
 
 export class HttpLink extends ApolloLink {
   public requester: RequestHandler;
-  constructor(opts: FetchOptions) {
-    super();
-    this.requester = createHttpLink(opts).request;
-  }
-
-  public request(op): Observable<ExecutionResult> | null {
-    return this.requester(op);
+  constructor(opts?: FetchOptions) {
+    super(createHttpLink(opts).request);
   }
 }

@@ -1,8 +1,5 @@
 # apollo-link [![npm version](https://badge.fury.io/js/apollo-link.svg)](https://badge.fury.io/js/apollo-link) [![Get on Slack](https://img.shields.io/badge/slack-join-orange.svg)](http://www.apollostack.com/#slack)
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/apollographql/apollo-link.svg)](https://greenkeeper.io/)
-
-
 `apollo-link` is a standard interface for modifying control flow of GraphQL requests and fetching GraphQL results, designed to provide a simple GraphQL client that is capable of extensions.
 The targeted use cases of `apollo-link` are highlighted below:
 
@@ -20,7 +17,7 @@ Some common choices include Browserify, Webpack, and Meteor +1.3.
 
 
 ## Contributing
-Apollo Link uses Lerna to manage multiple packages. To get started contributing, run `npm run bootstrap` which will install all dependencies and link together the projects.
+Apollo Link uses Lerna to manage multiple packages. To get started contributing, run `npm run bootstrap` which will install all dependencies and connect the dependent projects with symlinks `node_modules`.
 
 ## Documentation
 

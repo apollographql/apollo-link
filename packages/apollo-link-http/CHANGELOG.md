@@ -2,6 +2,10 @@
 
 ### vNEXT
 
+### 1.2.0
+- moved to better rollup build
+- support for persisted queries by opting out of sending the query
+
 ### v1.1.0
 - support dynamic endpoints using `uri` on the context
 - the request not attaches the raw response as `response` on the context. This can be used to access response headers or more
