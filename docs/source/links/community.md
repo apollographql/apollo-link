@@ -8,3 +8,4 @@ Thank you to our amazing community members who have created custom Apollo Links!
 - [apollo-upload-client](https://github.com/jaydenseric/apollo-upload-client)
 - [apollo-angular-link-http](https://www.npmjs.com/package/apollo-angular-link-http)
 - [apollo-link-logger](https://github.com/blackxored/apollo-link-logger)
+- [apollo-link-redux](https://github.com/AdamYee/apollo-link-redux)
