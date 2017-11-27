@@ -120,7 +120,7 @@ You can also use Apollo Link as a standalone client. Here, we're using the `exec
 
 ```js
 import { execute, makePromise } from 'apollo-link';
-import HttpLink from 'apollo-link-http';
+import { HttpLink } from 'apollo-link-http';
 
 const uri = 'http://api.githunt.com/graphql';
 const link = new HttpLink({ uri });
@@ -133,7 +133,7 @@ execute(link, operation).subscribe({
 })
 
 // For single execution operations, a Promise can be used
-makePromise((execute(link, operation))
+makePromise(execute(link, operation))
   .then(data => console.log(`received data ${data}`))
   .catch(error => console.log(`received error ${error}`))
 ```
