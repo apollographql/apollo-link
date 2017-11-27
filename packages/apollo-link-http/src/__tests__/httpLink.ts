@@ -535,7 +535,11 @@ describe('dev warnings', () => {
 });
 
 describe('error handling', () => {
-  const json = jest.fn(() => Promise.resolve({}));
+  let responseBody;
+  const json = jest.fn(() => {
+    responseBody = {};
+    return Promise.resolve(responseBody);
+  });
   const fetch = jest.fn((uri, options) => {
     return Promise.resolve({ json });
   });
@@ -583,8 +587,9 @@ describe('error handling', () => {
         done.fail('error should have been thrown from the network');
       },
       e => {
-        expect(e.parseError.message).toMatch(/Received status code 400/);
+        expect(e.message).toMatch(/Received status code 400/);
         expect(e.statusCode).toBe(400);
+        expect(e.result).toEqual(responseBody);
         done();
       },
     );
@@ -599,13 +604,36 @@ describe('error handling', () => {
         done.fail('error should have been thrown from the network');
       },
       e => {
-        expect(e.parseError.message).toMatch(
+        expect(e.message).toMatch(
           /Server response was missing for query 'SampleQuery'/,
         );
         done();
       },
     );
   });
+  it('makes it easy to do stuff on a 401', done => {
+    fetch.mockReturnValueOnce(Promise.resolve({ status: 401, json }));
+
+    const middleware = new ApolloLink((operation, forward) => {
+      return new Observable(ob => {
+        const op = forward(operation);
+        const sub = op.subscribe({
+          next: ob.next.bind(ob),
+          error: e => {
+            expect(e.message).toMatch(/Received status code 401/);
+            expect(e.statusCode).toEqual(401);
+            expect(e.result).toEqual(responseBody);
+            ob.error(e);
+            done();
+          },
+          complete: ob.complete.bind(ob),
+        });
+
+        return () => {
+          sub.unsubscribe();
+        };
+      });
+    });
 
   it("throws if the body can't be stringified", done => {
     fetch.mockReturnValueOnce(Promise.resolve({ data: {}, json }));
@@ -665,7 +693,33 @@ describe('error handling', () => {
     setTimeout(() => {
       delete global.AbortController;
       expect(called).toBe(true);
+      fetch.mockReset();
+      json.mockReset();
       done();
     }, 150);
+  });
+  const unparsedJson = jest.fn(() => {
+    responseBody = '{';
+    return new Promise((resolve, reject) => {
+      return JSON.parse(responseBody);
+    });
+  });
+  it('throws an error if response is unparsable', done => {
+    fetch.mockReturnValueOnce(
+      Promise.resolve({ status: 400, json: unparsedJson }),
+    );
+    const link = createHttpLink({ uri: 'data', fetch });
+
+    execute(link, { query: sampleQuery }).subscribe(
+      result => {
+        done.fail('error should have been thrown from the network');
+      },
+      e => {
+        expect(e.message).toMatch(/JSON/);
+        expect(e.statusCode).toBe(400);
+        expect(e.response).toBeDefined();
+        done();
+      },
+    );
   });
 });
