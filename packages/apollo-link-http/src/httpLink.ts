@@ -230,7 +230,7 @@ export const createHttpLink = (
 
 export class HttpLink extends ApolloLink {
   public requester: RequestHandler;
-  constructor(opts: FetchOptions) {
+  constructor(opts?: FetchOptions) {
     super(createHttpLink(opts).request);
   }
 }
