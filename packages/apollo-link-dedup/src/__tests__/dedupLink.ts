@@ -65,7 +65,7 @@ describe('DedupLink', () => {
     const variables = { x: 'Hello World' };
 
     let error;
-    const data = { data: { data: 'some data' } };
+    const data = { data: 'some data' };
 
     const request: GraphQLRequest = {
       query: document,
@@ -96,20 +96,24 @@ describe('DedupLink', () => {
       }),
     ]);
 
-    execute(deduper, request).subscribe({
-      error: actualError => {
-        expect(actualError).toEqual(error);
+    try {
+      execute(deduper, request).subscribe({
+        error: actualError => {
+          expect(actualError).toEqual(error);
 
-        //second query
-        execute(deduper, request).subscribe({
-          next: result => {
-            expect(result).toEqual(data);
-            expect(called).toBe(2);
-            done();
-          },
-        });
-      },
-    });
+          //second query
+          execute(deduper, request).subscribe({
+            next: result => {
+              expect(result).toEqual(data);
+              expect(called).toBe(2);
+              done();
+            },
+          });
+        },
+      });
+    } catch (e) {
+      done.fail(e);
+    }
   });
 
   it(`deduplicates identical queries`, () => {
@@ -137,8 +141,8 @@ describe('DedupLink', () => {
     const deduper = ApolloLink.from([
       new DedupLink(),
       new ApolloLink(() => {
-        called += 1;
         return new Observable(observer => {
+          called += 1;
           setTimeout(observer.complete.bind(observer));
         });
       }),
@@ -147,6 +151,49 @@ describe('DedupLink', () => {
     execute(deduper, request1).subscribe({});
     execute(deduper, request2).subscribe({});
     expect(called).toBe(1);
+  });
+  it(`works for nested queries`, done => {
+    const document: DocumentNode = gql`
+      query test1($x: String) {
+        test(x: $x)
+      }
+    `;
+    const variables1 = { x: 'Hello World' };
+    const variables2 = { x: 'Hello World' };
+
+    const request1: GraphQLRequest = {
+      query: document,
+      variables: variables1,
+      operationName: getOperationName(document),
+    };
+
+    const request2: GraphQLRequest = {
+      query: document,
+      variables: variables2,
+      operationName: getOperationName(document),
+    };
+
+    let called = 0;
+    const deduper = ApolloLink.from([
+      new DedupLink(),
+      new ApolloLink(() => {
+        return new Observable(observer => {
+          called += 1;
+          observer.next({ data: { test: 1 } });
+        });
+      }),
+    ]);
+
+    execute(deduper, request1).subscribe({
+      complete: () => {
+        execute(deduper, request2).subscribe({
+          complete: () => {
+            expect(called).toBe(2);
+            done();
+          },
+        });
+      },
+    });
   });
 
   it(`can bypass deduplication if desired`, () => {

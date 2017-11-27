@@ -10,14 +10,11 @@ import {
  * Expects context to contain the forceFetch field if no dedup
  */
 export class DedupLink extends ApolloLink {
-  private inFlightRequestObservables: {
-    [key: string]: Observable<FetchResult>;
-  };
-
-  constructor() {
-    super();
-    this.inFlightRequestObservables = {};
-  }
+  private inFlightRequestObservables: Map<
+    string,
+    Observable<FetchResult>
+  > = new Map();
+  private subscribers: Map<string, any> = new Map();
 
   public request(
     operation: Operation,
@@ -29,26 +26,59 @@ export class DedupLink extends ApolloLink {
     }
 
     const key = operation.toKey();
-    if (!this.inFlightRequestObservables[key]) {
-      this.inFlightRequestObservables[key] = forward(operation);
-    }
-    return new Observable<FetchResult>(observer => {
-      const subscription = this.inFlightRequestObservables[key].subscribe({
-        next: result => {
-          delete this.inFlightRequestObservables[key];
-          observer.next(result);
-        },
-        error: error => {
-          delete this.inFlightRequestObservables[key];
-          observer.error(error);
-        },
-        complete: observer.complete.bind(observer),
+
+    const cleanup = key => {
+      this.inFlightRequestObservables.delete(key);
+      const prev = this.subscribers.get(key);
+      return prev;
+    };
+
+    if (!this.inFlightRequestObservables.get(key)) {
+      // this is a new request, i.e. we haven't deduplicated it yet
+      // call the next link
+      const singleObserver = forward(operation);
+      let subscription;
+
+      const sharedObserver = new Observable(observer => {
+        // this will still be called by each subscriber regardless of
+        // deduplication status
+        let prev = this.subscribers.get(key);
+        if (!prev) prev = { next: [], error: [], complete: [] };
+
+        this.subscribers.set(key, {
+          next: prev.next.concat([observer.next.bind(observer)]),
+          error: prev.error.concat([observer.error.bind(observer)]),
+          complete: prev.complete.concat([observer.complete.bind(observer)]),
+        });
+
+        if (!subscription) {
+          subscription = singleObserver.subscribe({
+            next: result => {
+              const prev = cleanup(key);
+              this.subscribers.delete(key);
+              if (prev) {
+                prev.next.forEach(next => next(result));
+                prev.complete.forEach(complete => complete());
+              }
+            },
+            error: error => {
+              const prev = cleanup(key);
+              this.subscribers.delete(key);
+              if (prev) prev.error.forEach(err => err(error));
+            },
+          });
+        }
+
+        return () => {
+          if (subscription) subscription.unsubscribe();
+          this.inFlightRequestObservables.delete(key);
+        };
       });
 
-      return () => {
-        if (subscription) subscription.unsubscribe();
-        delete this.inFlightRequestObservables[key];
-      };
-    });
+      this.inFlightRequestObservables.set(key, sharedObserver);
+    }
+
+    // return shared Observable
+    return this.inFlightRequestObservables.get(key);
   }
 }

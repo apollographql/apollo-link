@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-http",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "HTTP transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -11,9 +11,9 @@
   ],
   "license": "MIT",
   "main": "./lib/bundle.umd.js",
-  "module": "./lib/httpLink.js",
-  "jsnext:main": "./lib/httpLink.js",
-  "typings": "./lib/httpLink.d.ts",
+  "module": "./lib/index.js",
+  "jsnext:main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-link.git"
@@ -40,25 +40,25 @@
     "watch": "tsc -w -p ."
   },
   "peerDependencies": {
-    "apollo-link": "^1.0.0",
+    "apollo-link": "^1.0.3",
     "graphql": "^0.11.0"
   },
   "devDependencies": {
-    "@types/graphql": "0.11.5",
-    "@types/jest": "21.1.5",
+    "@types/graphql": "0.11.6",
+    "@types/jest": "21.1.8",
     "apollo-fetch": "0.6.0",
-    "apollo-link": "^1.0.0",
+    "apollo-link": "^1.0.3",
     "browserify": "14.5.0",
     "fetch-mock": "5.13.1",
     "graphql": "0.11.7",
     "graphql-tag": "2.5.0",
     "jest": "21.2.1",
     "rimraf": "2.6.1",
-    "rollup": "0.45.2",
-    "ts-jest": "21.1.4",
+    "rollup": "0.51.8",
+    "ts-jest": "21.2.3",
     "tslint": "5.8.0",
     "typescript": "2.6.1",
-    "uglify-js": "3.1.6"
+    "uglify-js": "3.1.10"
   },
   "jest": {
     "transform": {

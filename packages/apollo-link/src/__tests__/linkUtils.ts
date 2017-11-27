@@ -7,14 +7,6 @@ describe('Link utilities:', () => {
       expect(() => validateOperation(<any>{ qwerty: '' })).toThrow();
     });
 
-    it('should throw when missing a query of some kind', () => {
-      expect(() =>
-        validateOperation(<any>{
-          query: '',
-        }),
-      ).toThrow();
-    });
-
     it('should not throw when valid fields in operation', () => {
       expect(() =>
         validateOperation({

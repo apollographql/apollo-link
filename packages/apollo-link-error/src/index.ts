@@ -30,6 +30,8 @@ export const onError = (errorHandler: ErrorHandler): ApolloLink => {
             errorHandler({
               operation,
               networkError,
+              //Network errors can return GraphQL errors on for example a 403
+              graphQLErrors: networkError.result && networkError.result.errors,
             });
             observer.error(networkError);
           },
