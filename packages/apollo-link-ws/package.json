@@ -57,7 +57,7 @@
     "subscriptions-transport-ws": "0.9.1",
     "ts-jest": "21.2.3",
     "tslint": "5.8.0",
-    "typescript": "2.6.1",
+    "typescript": "2.6.2",
     "uglify-js": "3.1.10"
   },
   "jest": {
