@@ -34,7 +34,7 @@ type Query {
 
 const schema = makeExecutableSchema({ typeDefs });
 
-describe('HttpLink', () => {
+describe('LocalLink', () => {
   const data = { data: { hello: 'world' } };
   const data2 = { data: { hello: 'everyone' } };
   const mockError = { throws: new TypeError('mock me') };

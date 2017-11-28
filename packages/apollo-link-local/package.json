@@ -1,7 +1,7 @@
 {
-  "name": "apollo-link-http",
+  "name": "apollo-link-local",
   "version": "1.1.0",
-  "description": "HTTP transport layer for GraphQL",
+  "description": "Local transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
     "James Baxley <james@meteor.com>",
@@ -12,9 +12,9 @@
   ],
   "license": "MIT",
   "main": "./lib/bundle.umd.js",
-  "module": "./lib/httpLink.js",
-  "jsnext:main": "./lib/httpLink.js",
-  "typings": "./lib/httpLink.d.ts",
+  "module": "./lib/localLink.js",
+  "jsnext:main": "./lib/localLink.js",
+  "typings": "./lib/localLink.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-link.git"
