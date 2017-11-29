@@ -2,13 +2,12 @@
   "name": "apollo-link-schema",
   "version": "1.0.0",
   "description": "Use a GraphQL Schema to request data",
-  "author": "Evans Hauser <evanshauser@gmail.com>",
+  "author": "Tomas Trescak <tomi.trescak@gmail.com>",
   "contributors": [
     "James Baxley <james@meteor.com>",
     "Jonas Helfer <jonas@helfer.email>",
     "jon wong <j@jnwng.com>",
     "Sashko Stubailo <sashko@stubailo.com>",
-    "Tomas Trescak <tomi.trescak@gmail.com>",
     "Zephraph <zephraph@gmail.com>"
   ],
   "license": "MIT",
