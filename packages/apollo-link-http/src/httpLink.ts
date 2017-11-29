@@ -204,7 +204,7 @@ export const createHttpLink = (
         const { controller, signal } = createSignalIfSupported();
         if (controller) fetcherOptions.signal = signal;
 
-        let fetchUri;
+        let fetchUri = uri;
         if (contextURI) {
           fetchUri =
             typeof contextURI === 'function'

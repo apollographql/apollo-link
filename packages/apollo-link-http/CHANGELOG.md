@@ -1,6 +1,8 @@
 # Change log
 
 ### vNEXT
+- added ability to generate URI based on operation
+- cleaned up error handling types and added docs
 
 ### 1.2.0
 - moved to better rollup build

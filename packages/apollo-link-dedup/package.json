@@ -28,6 +28,7 @@
     "build": "tsc -p .",
     "bundle": "rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
+    "coverage": "jest --coverage",
     "filesize": "npm run build && npm run build:browser",
     "lint":
       "tslint --type-check -p tsconfig.json -c ../../tslint.json src/*.ts",

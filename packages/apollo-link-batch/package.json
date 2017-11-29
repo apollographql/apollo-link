@@ -28,6 +28,7 @@
       "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-link && npm run minify:browser",
     "build": "tsc -p .",
     "bundle": "rollup -c",
+    "coverage": "jest --coverage",
     "clean": "rimraf lib/* && rimraf coverage/*",
     "filesize": "npm run build && npm run build:browser",
     "lint":

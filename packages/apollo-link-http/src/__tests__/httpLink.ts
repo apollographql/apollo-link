@@ -405,7 +405,10 @@ describe('HttpLink', () => {
       const uri = fetchMock.lastUrl();
       expect(fetchMock.lastUrl()).toBe('dataFunc');
       // Simple check if uri function was called with operation
-      expect(uriFunc.mock.calls[0][0]).toHaveProperty('operationName', 'SampleQuery');
+      expect(uriFunc.mock.calls[0][0]).toHaveProperty(
+        'operationName',
+        'SampleQuery',
+      );
       done();
     });
   });
@@ -414,7 +417,7 @@ describe('HttpLink', () => {
     const contextUriFunc = jest.fn().mockReturnValueOnce('dataFunc');
     const middleware = new ApolloLink((operation, forward) => {
       operation.setContext({
-        uri: contextUriFunc
+        uri: contextUriFunc,
       });
       return forward(operation);
     });
@@ -426,7 +429,10 @@ describe('HttpLink', () => {
       const uri = fetchMock.lastUrl();
       expect(uri).toBe('dataFunc');
       // Simple check if uri function was called with operation
-      expect(contextUriFunc.mock.calls[0][0]).toHaveProperty('operationName', 'SampleQuery');
+      expect(contextUriFunc.mock.calls[0][0]).toHaveProperty(
+        'operationName',
+        'SampleQuery',
+      );
       done();
     });
   });
@@ -588,7 +594,7 @@ describe('error handling', () => {
         const sub = op.subscribe({
           next: ob.next.bind(ob),
           error: e => {
-            expect(e.parseError.message).toMatch(/Received status code 401/);
+            expect(e.message).toMatch(/Received status code 401/);
             expect(e.statusCode).toEqual(401);
             ob.error(e);
             done();
@@ -645,30 +651,6 @@ describe('error handling', () => {
       },
     );
   });
-  it('makes it easy to do stuff on a 401', done => {
-    fetch.mockReturnValueOnce(Promise.resolve({ status: 401, json }));
-
-    const middleware = new ApolloLink((operation, forward) => {
-      return new Observable(ob => {
-        const op = forward(operation);
-        const sub = op.subscribe({
-          next: ob.next.bind(ob),
-          error: e => {
-            expect(e.message).toMatch(/Received status code 401/);
-            expect(e.statusCode).toEqual(401);
-            expect(e.result).toEqual(responseBody);
-            ob.error(e);
-            done();
-          },
-          complete: ob.complete.bind(ob),
-        });
-
-        return () => {
-          sub.unsubscribe();
-        };
-      });
-    });
-
   it("throws if the body can't be stringified", done => {
     fetch.mockReturnValueOnce(Promise.resolve({ data: {}, json }));
     const link = createHttpLink({ uri: 'data', fetch });
