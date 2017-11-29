@@ -50,8 +50,6 @@ describe('SchemaLink', () => {
       error,
       complete,
     };
-
-    jest.resetModules();
   });
 
   it('raises warning if called with concat', () => {
