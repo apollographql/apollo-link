@@ -27,7 +27,7 @@ The HTTP Link relies on having `fetch` present in your runtime environment. If y
 
 ## Options
 HTTP Link takes an object with some options on it to customize the behavior of the link. If your server supports it, the HTTP link can also send over metadata about the request in the extensions field. To enable this, pass `includeExtensions` as true. The options you can pass are outlined below:
-- `uri`: the URI key can be either a string endpoint or default to "/graphql"
+- `uri`: the URI key can be a string endpoint or a function returning a string -- will default to "/graphql" if not specified
 - `includeExtensions`: allow passing the extensions field to your graphql server, defaults to false
 - `fetch`: a `fetch` compatiable API for making a request
 - `headers`: an object representing values to be sent as headers on the request
@@ -42,7 +42,7 @@ This link also attaches the response from the `fetch` operation on the context a
 
 - `headers`: an object representing values to be sent as headers on the request
 - `credentials`: a string representing the credentials policy you want for the fetch call
-- `uri`: a string of the endpoint you want to fetch from
+- `uri`: a string of the endpoint or a function returning a string endpoint you want to fetch from
 - `fetchOptions`: any overrides of the fetch options argument to pass to the fetch call
 - `response`: this is the raw response from the fetch request after it is made.
 - `http`: this is an object to control fine grained aspects of the http link itself (see below)

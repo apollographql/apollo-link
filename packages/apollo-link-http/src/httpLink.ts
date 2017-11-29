@@ -1,4 +1,4 @@
-import { ApolloLink, Observable, RequestHandler } from 'apollo-link';
+import { ApolloLink, Observable, RequestHandler, Operation } from 'apollo-link';
 import { print } from 'graphql/language/printer';
 
 // types
@@ -110,8 +110,12 @@ const createSignalIfSupported = () => {
   return { controller, signal };
 };
 
+export interface UriFunction {
+  (operation: Operation): string;
+}
+
 export interface FetchOptions {
-  uri?: string;
+  uri?: string | UriFunction;
   fetch?: GlobalFetch['fetch'];
   includeExtensions?: boolean;
   credentials?: string;
@@ -200,7 +204,17 @@ export const createHttpLink = (
         const { controller, signal } = createSignalIfSupported();
         if (controller) fetcherOptions.signal = signal;
 
-        fetcher(contextURI || uri, fetcherOptions)
+        let fetchUri;
+        if (contextURI) {
+          fetchUri =
+            typeof contextURI === 'function'
+              ? contextURI(operation)
+              : contextURI;
+        } else if (typeof uri === 'function') {
+          fetchUri = uri(operation);
+        }
+
+        fetcher(fetchUri, fetcherOptions)
           // attach the raw response to the context for usage
           .then(response => {
             operation.setContext({ response });
