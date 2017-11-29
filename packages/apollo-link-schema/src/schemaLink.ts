@@ -8,11 +8,20 @@ export class SchemaLink extends ApolloLink {
   public rootValue: any;
   public context: any;
 
-  constructor(params: { schema: GraphQLSchema; rootValue?: any; context?: any }) {
+  constructor({
+    schema,
+    rootValue,
+    context
+  }: {
+    schema: GraphQLSchema;
+    rootValue?: any;
+    context?: any;
+  }) {
     super();
-    this.schema = params.schema;
-    this.rootValue = params.rootValue;
-    this.context = params.context;
+
+    this.schema = schema;
+    this.rootValue = rootValue;
+    this.context = context;
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
@@ -22,7 +31,14 @@ export class SchemaLink extends ApolloLink {
     };
 
     return new Observable<FetchResult>(observer => {
-      graphql(this.schema, request.query, this.rootValue, this.context, request.variables, request.operationName)
+      graphql(
+        this.schema,
+        request.query,
+        this.rootValue,
+        this.context,
+        request.variables,
+        request.operationName
+      )
         .then(data => {
           if (!observer.closed) {
             observer.next(data);
