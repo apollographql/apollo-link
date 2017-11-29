@@ -62,11 +62,11 @@ describe('SchemaLink', () => {
     console.warn = _warn;
   });
 
-  it('does not need any constructor arguments', () => {
+  it('throws if no arguments given', () => {
     expect(() => new SchemaLink()).toThrow();
   });
 
-  it('does not need any constructor arguments', () => {
+  it('correctly receives the constructor arguments', () => {
     let rootValue = {};
     let context = {};
     let link = new SchemaLink({ schema, rootValue, context });

@@ -8,7 +8,7 @@ export class SchemaLink extends ApolloLink {
   public rootValue: any;
   public context: any;
 
-  constructor(params?: { schema: GraphQLSchema; rootValue?: any; context?: any }) {
+  constructor(params: { schema: GraphQLSchema; rootValue?: any; context?: any }) {
     super();
     this.schema = params.schema;
     this.rootValue = params.rootValue;
