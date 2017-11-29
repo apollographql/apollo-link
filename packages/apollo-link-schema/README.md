@@ -7,7 +7,7 @@ An Apollo Link to allow mocking and server rendering
 
 ## Installation
 
-`npm install apollo-link-local --save`
+`npm install apollo-link-schema --save`
 
 
 ## Usage
@@ -33,7 +33,7 @@ const apolloCache = new InMemoryCache(window.__APOLLO_STATE_);
 
 const graphqlClient = new ApolloClient({
   cache: apolloCache,
-  link: new LocalLink({ schema })
+  link: new SchemaLink({ schema })
 });
 ```
 

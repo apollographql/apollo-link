@@ -1,9 +1,9 @@
 export default {
-  entry: 'lib/localLink.js',
+  entry: 'lib/schemaLink.js',
   dest: 'lib/bundle.umd.js',
   format: 'umd',
   sourceMap: true,
-  moduleName: 'localLink',
+  moduleName: 'schemaLink',
   exports: 'named',
   onwarn,
 };

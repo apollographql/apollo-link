@@ -3,7 +3,7 @@ import { ApolloLink, Operation, FetchResult, Observable } from 'apollo-link';
 import { print } from 'graphql/language/printer';
 import { graphql, GraphQLSchema } from 'graphql';
 
-export class LocalLink extends ApolloLink {
+export class SchemaLink extends ApolloLink {
   public schema: GraphQLSchema;
   public rootValue: any;
   public context: any;
@@ -38,4 +38,4 @@ export class LocalLink extends ApolloLink {
   }
 }
 
-export default LocalLink;
+export default SchemaLink;

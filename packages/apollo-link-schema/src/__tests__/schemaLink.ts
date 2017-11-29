@@ -4,7 +4,7 @@ import { makeExecutableSchema } from 'graphql-tools';
 import gql from 'graphql-tag';
 
 import * as graphqlMocked from 'graphql';
-import { LocalLink } from '../localLink';
+import { SchemaLink } from '../schemaLink';
 
 const sampleQuery = gql`
   query SampleQuery {
@@ -34,7 +34,7 @@ type Query {
 
 const schema = makeExecutableSchema({ typeDefs });
 
-describe('LocalLink', () => {
+describe('SchemaLink', () => {
   const data = { data: { hello: 'world' } };
   const data2 = { data: { hello: 'everyone' } };
   const mockError = { throws: new TypeError('mock me') };
@@ -54,7 +54,7 @@ describe('LocalLink', () => {
   });
 
   it('raises warning if called with concat', () => {
-    const link = new LocalLink({ schema });
+    const link = new SchemaLink({ schema });
     const _warn = console.warn;
     console.warn = warning => expect(warning['message']).toBeDefined();
     expect(link.concat((operation, forward) => forward(operation))).toEqual(
@@ -64,13 +64,13 @@ describe('LocalLink', () => {
   });
 
   it('does not need any constructor arguments', () => {
-    expect(() => new LocalLink()).toThrow();
+    expect(() => new SchemaLink()).toThrow();
   });
 
   it('does not need any constructor arguments', () => {
     let rootValue = {};
     let context = {};
-    let link = new LocalLink({ schema, rootValue, context });
+    let link = new SchemaLink({ schema, rootValue, context });
     expect(link.rootValue).toEqual(rootValue);
     expect(link.context).toEqual(context);
     expect(link.schema).toEqual(schema);
@@ -78,7 +78,7 @@ describe('LocalLink', () => {
 
   it('calls next and then complete', done => {
     const next = jest.fn();
-    const link = new LocalLink({ schema });
+    const link = new SchemaLink({ schema });
     const observable = execute(link, {
       query: sampleQuery,
     });
@@ -96,7 +96,7 @@ describe('LocalLink', () => {
     const badTypeDefs = 'type Query {}';
     const badSchema = makeExecutableSchema({ typeDefs });
 
-    const link = new LocalLink({ schema: badSchema });
+    const link = new SchemaLink({ schema: badSchema });
     const observable = execute(link, {
       query: sampleQuery,
     });
@@ -116,7 +116,7 @@ describe('LocalLink', () => {
   it('calls graphql', () => {
     let rootValue = {};
     let context = {};
-    let link = new LocalLink({ schema, rootValue, context });
+    let link = new SchemaLink({ schema, rootValue, context });
     const observable = execute(link, {
       query: sampleQuery,
     });
