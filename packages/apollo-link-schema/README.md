@@ -1,5 +1,5 @@
 ---
-title: Http Link
+title: Schema Link
 ---
 
 ## Purpose
