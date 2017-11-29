@@ -3,7 +3,6 @@ import { print, graphql } from 'graphql';
 import { makeExecutableSchema } from 'graphql-tools';
 import gql from 'graphql-tag';
 
-import * as graphqlMocked from 'graphql';
 import { SchemaLink } from '../schemaLink';
 
 const sampleQuery = gql`
@@ -51,6 +50,8 @@ describe('SchemaLink', () => {
       error,
       complete,
     };
+
+    jest.resetModules();
   });
 
   it('raises warning if called with concat', () => {
@@ -111,25 +112,6 @@ describe('SchemaLink', () => {
         done();
       },
     );
-  });
-
-  it('calls graphql', () => {
-    let rootValue = {};
-    let context = {};
-    let link = new SchemaLink({ schema, rootValue, context });
-    const observable = execute(link, {
-      query: sampleQuery,
-    });
-
-
-    // I'm not sure how to mock graphql import
-    // spent too much time on this, maybe you can help out?
-
-    //TODO: test graphql call if has the correct parameters
-
-    // does not work
-    // const stub = require('graphql');
-    // spyOn(graphql, 'graphql');
   });
 
 });
