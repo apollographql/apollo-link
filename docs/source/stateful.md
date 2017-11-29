@@ -25,7 +25,7 @@ class OperationCountLink extends ApolloLink {
 const link = new OperationCountLink();
 ```
 
-It is important when managing stateful links where the request is being saved to implement a key value store for the requests. Otherwise, it is easy to accidentally override an in-flight request with another operation happening. Take the for example a portion the dedup link:
+It is important when managing stateful links where the request is being saved to implement a key value store for the requests. Otherwise, it is easy to accidentally override an in-flight request with another operation happening. Take for example a portion of the dedup link:
 
 ```js
 import { ApolloLink } from 'apollo-link';

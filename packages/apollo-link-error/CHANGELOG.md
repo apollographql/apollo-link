@@ -1,6 +1,8 @@
 # Change log
 
 ### vNEXT
+- apollo-link-http: Added clarity around errors: ClientParseError, ServerParseError, and ServerError(Network and Missing Data)
+- apollo-link-error: graphQLErrors alias networkError.result.errors on a networkError
 
 ### 1.0.1
 - moved to better rollup build

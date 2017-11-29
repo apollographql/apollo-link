@@ -86,8 +86,51 @@ client.query({
 })
 ```
 
+## Errors
+The Http Link draws a distinction between client, server and GraphQL errors. Server errors can occur in three different scenerios: parse, network and data errors. [`apollo-link-error`](error.html) provides an [interface](error.html#Usage) for handling these errors. This list describes the scenerios that cause different errors:
+
+* *Client parse error*: the request body is not-serializable due to circular references for example
+* *Server parse error*: the response from the server cannot be parsed ([response.json()](https://developer.mozilla.org/en-US/docs/Web/API/Body/json))
+* *Server network error*: the response has a status of >= 300
+* *Server data error*:  the parse request does not contain `data` or `errors`
+* *GraphQL error*: an objects in the `errors` array for a 200 level status
+
+Since many server implementations can return a valid GraphQL result on a server network error, the thrown `Error` object contains the parsed server result. A server data error also receives the parsed result.
+
+The table below provides a summary of error, `Observable` method called by the HTTP link, and type of error thrown for each failure:
+
+| Error   |      Callback      |Error Type |
+|----------|:-------------:|------|
+| Client Parse |    `error`   | `ClientParseError` |
+| Server Parse |    `error`   | `ServerParseError` |
+| Server Network |  `error`   | `ServerError` |
+| Server Data |     `error`   | `ServerError` |
+| GraphQL Error |   `next`    | `Object` |
+
+All error types inherit the `name`, `message`, and nullable `stack` properties from the generic javascript [Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error).
+
+```js
+//type ClientParseError
+{
+  parseError: Error;                // Error returned from response.json()
+};
+
+//type ServerParseError
+{
+  response: Response;               // Object returned from fetch()
+  statusCode: number;               // HTTP status code
+};
+
+//type ServerError
+{
+  result: Record<string, any>;      // Parsed object from server response
+  response: Response;               // Object returned from fetch()
+  statusCode: number;               // HTTP status code
+};
+```
+
 ## Upgrading from `apollo-fetch` / `apollo-client`
-If you previously used either `apollo-fetch` or `apollo-client`, you will need to change the way `use` and `useAfter` are implemented in your app. Both can be implemented by writing a custom link. It's important to note that regardless of whether you're adding middleware or afterware, your Http link will always be last in the chain since it's a terminating link.
+If you previously used either `apollo-fetch` or `apollo-client`'s `createNetworkInterface`, you will need to change the way `use` and `useAfter` are implemented in your app. Both can be implemented by writing a custom link. It's important to note that regardless of whether you're adding middleware or afterware, your Http link will always be last in the chain since it's a terminating link.
 
 #### Middleware
 
