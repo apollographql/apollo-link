@@ -214,7 +214,7 @@ export const createHttpLink = (
           fetchUri = uri(operation);
         }
 
-        fetcher(fetchUri, fetcherOptions)
+        fetcher(fetchUri as string, fetcherOptions)
           // attach the raw response to the context for usage
           .then(response => {
             operation.setContext({ response });
