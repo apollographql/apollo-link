@@ -440,12 +440,14 @@ describe('HttpLink', () => {
     const variables = { params: 'stub' };
     const link = createHttpLink({
       uri: 'data',
-      fetchOptions: { signal: 'foo' },
+      fetchOptions: { signal: 'foo', mode: 'no-cors' },
     });
 
     execute(link, { query: sampleQuery, variables }).subscribe(result => {
-      const signal = fetchMock.lastCall()[1].signal;
+      const { signal, mode, headers } = fetchMock.lastCall()[1];
       expect(signal).toBe('foo');
+      expect(mode).toBe('no-cors');
+      expect(headers['content-type']).toBe('application/json');
       done();
     });
   });
