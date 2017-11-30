@@ -11,6 +11,24 @@ An Apollo Link to allow mocking and server rendering
 
 
 ## Usage
+
+### Server Side Rendering
+
+When performing SSR _on the same server_ you can use this library to avoid making network calls.
+
+```js
+import ApolloClient from "apollo-client";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import schema from './path/to/your/schema';
+
+const graphqlClient = new ApolloClient({
+  ssr: true,
+  cache: new InMemoryCache(),
+  link: new SchemaLink({ schema })
+});
+```
+
+### Mocking
 ```js
 const typeDefs = `
   Query {
