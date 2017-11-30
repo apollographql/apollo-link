@@ -428,7 +428,7 @@ describe('HttpLink', () => {
       done();
     });
   });
-  fit('supports using a GET request', done => {
+  it('supports using a GET request', done => {
     const variables = { params: 'stub' };
 
     let requestedString;
