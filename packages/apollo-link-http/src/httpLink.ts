@@ -73,14 +73,9 @@ const parseAndCheckResponse = request => (response: Response) => {
 };
 
 const checkFetcher = (fetcher: ApolloFetch | GlobalFetch['fetch']) => {
-  if (
-    (fetcher as ApolloFetch).use &&
-    (fetcher as ApolloFetch).useAfter &&
-    (fetcher as ApolloFetch).batchUse &&
-    (fetcher as ApolloFetch).batchUseAfter
-  ) {
+  if ((fetcher as ApolloFetch).use) {
     throw new Error(`
-      It looks like you're using apollo-fetch! Apollo Link now uses the native fetch
+      It looks like you're using apollo-fetch! Apollo Link now uses native fetch
       implementation, so apollo-fetch is not needed. If you want to use your existing
       apollo-fetch middleware, please check this guide to upgrade:
         https://github.com/apollographql/apollo-link/blob/master/docs/implementation.md
@@ -209,17 +204,7 @@ export const createHttpLink = (
         const { controller, signal } = createSignalIfSupported();
         if (controller) fetcherOptions.signal = signal;
 
-        let fetchUri = uri;
-        if (contextURI) {
-          fetchUri =
-            typeof contextURI === 'function'
-              ? contextURI(operation)
-              : contextURI;
-        } else if (typeof uri === 'function') {
-          fetchUri = uri(operation);
-        }
-
-        fetcher(fetchUri as string, fetcherOptions)
+        fetcher(contextURI || uri, fetcherOptions)
           // attach the raw response to the context for usage
           .then(response => {
             operation.setContext({ response });
