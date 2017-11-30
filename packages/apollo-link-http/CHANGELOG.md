@@ -1,7 +1,9 @@
 # Change log
 
 ### vNEXT
-- added ability to generate URI based on operation
+
+### 1.3.0
+- changed to initially parsing response as text to improve error handling
 - cleaned up error handling types and added docs
 
 ### 1.2.0
