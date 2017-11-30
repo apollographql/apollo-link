@@ -2,6 +2,7 @@ import { Observable, ApolloLink, execute } from 'apollo-link';
 import { print } from 'graphql';
 import gql from 'graphql-tag';
 import * as fetchMock from 'fetch-mock';
+import objectToQuery from 'object-to-querystring';
 
 import { HttpLink, createHttpLink } from '../httpLink';
 
@@ -398,41 +399,17 @@ describe('HttpLink', () => {
   });
   it('allows uri to be a function', done => {
     const variables = { params: 'stub' };
-    const uriFunc = jest.fn().mockReturnValueOnce('dataFunc');
-    const link = createHttpLink({ uri: uriFunc });
+    const customFetch = (uri, options) => {
+      const { operationName } = JSON.parse(options.body);
+      expect(operationName).toBe('SampleQuery');
+      return fetch('dataFunc', options);
+    };
+
+    const link = createHttpLink({ fetch: customFetch });
 
     execute(link, { query: sampleQuery, variables }).subscribe(result => {
       const uri = fetchMock.lastUrl();
       expect(fetchMock.lastUrl()).toBe('dataFunc');
-      // Simple check if uri function was called with operation
-      expect(uriFunc.mock.calls[0][0]).toHaveProperty(
-        'operationName',
-        'SampleQuery',
-      );
-      done();
-    });
-  });
-  it('allows context uri to be a function', done => {
-    const variables = { params: 'stub' };
-    const contextUriFunc = jest.fn().mockReturnValueOnce('dataFunc');
-    const middleware = new ApolloLink((operation, forward) => {
-      operation.setContext({
-        uri: contextUriFunc,
-      });
-      return forward(operation);
-    });
-    const link = middleware.concat(
-      createHttpLink({ uri: 'data', credentials: 'error' }),
-    );
-
-    execute(link, { query: sampleQuery, variables }).subscribe(result => {
-      const uri = fetchMock.lastUrl();
-      expect(uri).toBe('dataFunc');
-      // Simple check if uri function was called with operation
-      expect(contextUriFunc.mock.calls[0][0]).toHaveProperty(
-        'operationName',
-        'SampleQuery',
-      );
       done();
     });
   });
@@ -453,13 +430,25 @@ describe('HttpLink', () => {
   });
   it('supports using a GET request', done => {
     const variables = { params: 'stub' };
+
+    let requestedString;
+    const customFetch = (uri, options) => {
+      const { body, ...newOptions } = options;
+      const queryString = objectToQuery(JSON.parse(body));
+      requestedString = uri + queryString;
+      return fetch(requestedString, newOptions);
+    };
     const link = createHttpLink({
       uri: 'data',
       fetchOptions: { method: 'GET' },
+      fetch: customFetch,
     });
 
     execute(link, { query: sampleQuery, variables }).subscribe(result => {
-      const method = fetchMock.lastCall()[1].method;
+      const [uri, options] = fetchMock.lastCall();
+      const { method, body, ...rest } = options;
+      expect(body).toBeUndefined();
+
       expect(method).toBe('GET');
       done();
     });
