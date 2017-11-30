@@ -5,6 +5,7 @@
 ### 1.3.0
 - changed to initially parsing response as text to improve error handling
 - cleaned up error handling types and added docs
+- changed peer-dependency of apollo-link to actual dependency
 
 ### 1.2.0
 - moved to better rollup build

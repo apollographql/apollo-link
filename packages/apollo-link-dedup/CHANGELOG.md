@@ -1,4 +1,10 @@
 
+
+### vNext
+
+### 1.0.3
+- changed peer-dependency of apollo-link to actual dependency
+
 ### 1.0.2
 - fixed bug where next observable subscription was not deduplicated
 - moved to better rollup build
