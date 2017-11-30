@@ -20,6 +20,7 @@ type ServerError = Error & {
 type ServerParseError = Error & {
   response: Response;
   statusCode: number;
+  bodyText: string;
 };
 
 type ClientParseError = Error & {
@@ -38,13 +39,17 @@ const throwServerError = (response, result, message) => {
 
 const parseAndCheckResponse = request => (response: Response) => {
   return response
-    .json()
-    .catch(e => {
-      const parseError = e as ServerParseError;
-      parseError.response = response;
-      parseError.statusCode = response.status;
-
-      throw parseError;
+    .text()
+    .then(bodyText => {
+      try {
+        return JSON.parse(bodyText);
+      } catch (err) {
+        const parseError = err as ServerParseError;
+        parseError.response = response;
+        parseError.statusCode = response.status;
+        parseError.bodyText = bodyText;
+        return Promise.reject(parseError);
+      }
     })
     .then(result => {
       if (response.status >= 300) {
