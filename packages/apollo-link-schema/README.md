@@ -17,8 +17,9 @@ An Apollo Link to allow mocking and server rendering
 When performing SSR _on the same server_ you can use this library to avoid making network calls.
 
 ```js
-import ApolloClient from "apollo-client";
+import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
+import { SchemaLink } from "apollo-link-schema";
 import schema from './path/to/your/schema';
 
 const graphqlClient = new ApolloClient({
