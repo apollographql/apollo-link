@@ -2,6 +2,12 @@
 
 ### vNEXT
 
+# 1.0.5
+- fix bug where context wasn't merged when setting it
+
+# 1.0.4
+- export link util helpers
+
 # 1.0.3
 - removed requiring query on initial execution check
 - moved to move efficent rollup build
