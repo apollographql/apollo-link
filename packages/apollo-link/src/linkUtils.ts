@@ -93,9 +93,9 @@ export function createOperation(
   let context = { ...starting };
   const setContext = next => {
     if (typeof next === 'function') {
-      context = next(context);
+      context = { ...context, ...next(context) };
     } else {
-      context = { ...next };
+      context = { ...context, ...next };
     }
   };
   const getContext = () => ({ ...context });

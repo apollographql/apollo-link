@@ -14,9 +14,8 @@ const sampleQuery = gql`
   }
 `;
 
+const setContext = () => ({ add: 1 });
 describe('ApolloLink(abstract class)', () => {
-  const setContext = () => ({ add: 1 });
-
   describe('concat', () => {
     it('should concat a function', done => {
       const returnOne = new SetContextLink(setContext);
@@ -342,6 +341,52 @@ describe('ApolloLink(abstract class)', () => {
         link: ApolloLink.empty(),
         done,
       });
+    });
+  });
+});
+describe('context', () => {
+  it('should merge context when using a function', done => {
+    const returnOne = new SetContextLink(setContext);
+    const mock = new MockLink((op, forward) => {
+      op.setContext(({ add }) => ({ add: add + 2 }));
+      op.setContext(() => ({ substract: 1 }));
+
+      return forward(op);
+    });
+    const link = returnOne.concat(mock).concat(op => {
+      expect(op.getContext()).toEqual({
+        add: 3,
+        substract: 1,
+      });
+      return Observable.of({ data: op.getContext().add });
+    });
+
+    testLinkResults({
+      link,
+      results: [3],
+      done,
+    });
+  });
+  it('should merge context when not using a function', done => {
+    const returnOne = new SetContextLink(setContext);
+    const mock = new MockLink((op, forward) => {
+      op.setContext({ add: 3 });
+      op.setContext({ substract: 1 });
+
+      return forward(op);
+    });
+    const link = returnOne.concat(mock).concat(op => {
+      expect(op.getContext()).toEqual({
+        add: 3,
+        substract: 1,
+      });
+      return Observable.of({ data: op.getContext().add });
+    });
+
+    testLinkResults({
+      link,
+      results: [3],
+      done,
     });
   });
 });
