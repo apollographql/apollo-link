@@ -55,7 +55,7 @@
     "jest": "21.2.1",
     "rimraf": "2.6.1",
     "rollup": "0.52.0",
-    "subscriptions-transport-ws": "0.9.1",
+    "subscriptions-transport-ws": "0.9.2",
     "ts-jest": "21.2.4",
     "tslint": "5.8.0",
     "typescript": "2.6.2",
