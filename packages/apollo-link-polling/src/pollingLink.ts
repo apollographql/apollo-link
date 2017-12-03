@@ -10,7 +10,9 @@ export namespace PollingLink {
   /**
    * Frequency (in milliseconds) that an operation should be polled on.
    */
-  export type PollInterval = (operation: Operation) => number | null;
+  export interface PollInterval {
+    (operation: Operation): number | null;
+  }
 }
 
 export class PollingLink extends ApolloLink {
