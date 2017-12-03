@@ -15,7 +15,7 @@ export namespace RetryLink {
   export type ParamFnOrNumber = (operation: Operation) => number | number;
   export type IntervalFn = (delay: number, count: number) => number;
 
-  export interface Configuration {
+  export interface Options {
     /**
      * The max number of times to try a single operation before giving up.
      *
@@ -56,7 +56,7 @@ export class RetryLink extends ApolloLink {
   private timers = {};
   private counts: { [key: string]: number } = {};
 
-  constructor(params?: RetryLink.Configuration) {
+  constructor(params?: RetryLink.Options) {
     super();
     this.max = operationFnOrNumber((params && params.max) || 10);
     this.delay = operationFnOrNumber((params && params.delay) || 300);
