@@ -1,5 +1,5 @@
 import { ApolloLink, Operation, FetchResult, Observable } from 'apollo-link';
-import { graphql, execute, GraphQLSchema } from 'graphql';
+import { execute, GraphQLSchema } from 'graphql';
 
 export class SchemaLink extends ApolloLink {
   public schema: GraphQLSchema;
