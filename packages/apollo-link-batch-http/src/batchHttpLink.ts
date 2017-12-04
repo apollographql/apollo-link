@@ -4,6 +4,39 @@ import { BatchLink } from 'apollo-link-batch';
 
 import { print } from 'graphql/language/printer';
 
+export namespace BatchHttpLink {
+  /**
+   * Note: This package will be updated to remove the dependency on apollo-fetch an use the same options / API as the http-link.
+   */
+  export interface Options {
+    /**
+     * The URI to use when fetching operations.
+     *
+     * Defaults to '/graphql'.
+     */
+    uri?: string;
+
+    /**
+     * The maximum number of operations to include in one fetch.
+     *
+     * Defaults to 10.
+     */
+    batchMax?: number;
+
+    /**
+     * The interval at which to batch, in milliseconds.
+     *
+     * Defaults to 10.
+     */
+    batchInterval?: number;
+
+    /**
+     * An instance of ApolloFetch to use when making requests.
+     */
+    fetch?: ApolloFetch;
+  }
+}
+
 /** Transforms Operation for into HTTP results.
  * context can include the headers property, which will be passed to the fetch function
  */
@@ -14,12 +47,7 @@ export class BatchHttpLink extends ApolloLink {
   private batchMax: number;
   private batcher: ApolloLink;
 
-  constructor(fetchParams?: {
-    uri?: string;
-    batchInterval?: number;
-    batchMax?: number;
-    fetch?: ApolloFetch;
-  }) {
+  constructor(fetchParams?: BatchHttpLink.Options) {
     super();
 
     this.batchInterval = (fetchParams && fetchParams.batchInterval) || 10;

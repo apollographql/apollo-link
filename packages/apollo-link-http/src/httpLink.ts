@@ -4,6 +4,55 @@ import { print } from 'graphql/language/printer';
 // types
 import { ApolloFetch } from 'apollo-fetch';
 
+export namespace HttpLink {
+  /**
+   * A function that generates the URI to use when fetching a particular operation.
+   */
+  export interface UriFunction {
+    (operation: Operation): string;
+  }
+
+  export interface Options {
+    /**
+     * The URI to use when fetching operations.
+     *
+     * Defaults to '/graphql'.
+     */
+    uri?: string | UriFunction;
+
+    /**
+     * Passes the extensions field to your graphql server.
+     *
+     * Defaults to false.
+     */
+    includeExtensions?: boolean;
+
+    /**
+     * A `fetch`-compatible API to use when making requests.
+     */
+    fetch?: GlobalFetch['fetch'];
+
+    /**
+     * An object representing values to be sent as headers on the request.
+     */
+    headers?: any;
+
+    /**
+     * The credentials policy you want to use for the fetch call.
+     */
+    credentials?: string;
+
+    /**
+     * Any overrides of the fetch options argument to pass to the fetch call.
+     */
+    fetchOptions?: any;
+  }
+}
+
+// For backwards compatibility.
+export import FetchOptions = HttpLink.Options;
+export import UriFunction = HttpLink.UriFunction;
+
 // XXX replace with actual typings when available
 declare var AbortController: any;
 
@@ -110,19 +159,6 @@ const createSignalIfSupported = () => {
   return { controller, signal };
 };
 
-export interface UriFunction {
-  (operation: Operation): string;
-}
-
-export interface FetchOptions {
-  uri?: string | UriFunction;
-  fetch?: GlobalFetch['fetch'];
-  includeExtensions?: boolean;
-  credentials?: string;
-  headers?: any;
-  fetchOptions?: any;
-}
-
 const defaultHttpOptions = {
   includeQuery: true,
   includeExtensions: false,
@@ -134,7 +170,7 @@ export const createHttpLink = (
     fetch: fetcher,
     includeExtensions,
     ...requestOptions,
-  }: FetchOptions = {},
+  }: HttpLink.Options = {},
 ) => {
   // dev warnings to ensure fetch is present
   warnIfNoFetch(fetcher);
@@ -234,7 +270,7 @@ export const createHttpLink = (
 
 export class HttpLink extends ApolloLink {
   public requester: RequestHandler;
-  constructor(opts?: FetchOptions) {
+  constructor(opts?: HttpLink.Options) {
     super(createHttpLink(opts).request);
   }
 }

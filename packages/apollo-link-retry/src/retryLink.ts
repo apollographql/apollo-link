@@ -11,21 +11,57 @@ const operationFnOrNumber = prop =>
 
 const defaultInterval = delay => delay;
 
-export type ParamFnOrNumber = (operation: Operation) => number | number;
+export namespace RetryLink {
+  export interface ParamFnOrNumber {
+    (operation: Operation): number | number;
+  }
+
+  export interface IntervalFn {
+    (delay: number, count: number): number;
+  }
+
+  export interface Options {
+    /**
+     * The max number of times to try a single operation before giving up.
+     *
+     * Can be a function that determines the number of attempts for a particular operation.
+     *
+     * Defaults to 10.
+     */
+    max?: ParamFnOrNumber;
+
+    /**
+     * Number of milliseconds to wait after a failed attempt before retrying.
+     *
+     * Can be a function that determines the delay for a particular operation.
+     *
+     * Defaults to 300.
+     */
+    delay?: ParamFnOrNumber;
+
+    /**
+     * A function that returns the actual milliseconds to wait after a failed attempt before retrying.
+     *
+     * Its first argument is the value of `delay` for that operation.
+     *
+     * Defaults to just passing the delay through.
+     */
+    interval?: IntervalFn;
+  }
+}
+
+// For backwards compatibility.
+export import ParamFnOrNumber = RetryLink.ParamFnOrNumber;
 
 export class RetryLink extends ApolloLink {
-  private delay: ParamFnOrNumber;
-  private max: ParamFnOrNumber;
-  private interval: (delay: number, count: number) => number;
+  private delay: RetryLink.ParamFnOrNumber;
+  private max: RetryLink.ParamFnOrNumber;
+  private interval: RetryLink.IntervalFn;
   private subscriptions: { [key: string]: ZenObservable.Subscription } = {};
   private timers = {};
   private counts: { [key: string]: number } = {};
 
-  constructor(params?: {
-    max?: ParamFnOrNumber;
-    delay?: ParamFnOrNumber;
-    interval?: (delay: number, count: number) => number;
-  }) {
+  constructor(params?: RetryLink.Options) {
     super();
     this.max = operationFnOrNumber((params && params.max) || 10);
     this.delay = operationFnOrNumber((params && params.delay) || 300);

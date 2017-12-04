@@ -8,7 +8,17 @@ export interface ErrorResponse {
   operation: Operation;
 }
 
-export type ErrorHandler = (error: ErrorResponse) => void;
+export namespace ErrorLink {
+  /**
+   * Callback to be triggered when an error occurs within the link stack.
+   */
+  export interface ErrorHandler {
+    (error: ErrorResponse): void;
+  }
+}
+
+// For backwards compatibility.
+export import ErrorHandler = ErrorLink.ErrorHandler;
 
 export const onError = (errorHandler: ErrorHandler): ApolloLink => {
   return new ApolloLink((operation, forward) => {
@@ -51,7 +61,7 @@ export const onError = (errorHandler: ErrorHandler): ApolloLink => {
 
 export class ErrorLink extends ApolloLink {
   private link: ApolloLink;
-  constructor(errorHandler: ErrorHandler) {
+  constructor(errorHandler: ErrorLink.ErrorHandler) {
     super();
     this.link = onError(errorHandler);
   }
