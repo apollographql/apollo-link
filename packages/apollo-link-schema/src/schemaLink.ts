@@ -1,7 +1,5 @@
 import { ApolloLink, Operation, FetchResult, Observable } from 'apollo-link';
-
-import { print } from 'graphql/language/printer';
-import { graphql, GraphQLSchema } from 'graphql';
+import { execute, GraphQLSchema } from 'graphql';
 
 export class SchemaLink extends ApolloLink {
   public schema: GraphQLSchema;
@@ -25,19 +23,14 @@ export class SchemaLink extends ApolloLink {
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
-    const request = {
-      ...operation,
-      query: print(operation.query)
-    };
-
     return new Observable<FetchResult>(observer => {
-      graphql(
+      execute(
         this.schema,
-        request.query,
+        operation.query,
         this.rootValue,
         this.context,
-        request.variables,
-        request.operationName
+        operation.variables,
+        operation.operationName
       )
         .then(data => {
           if (!observer.closed) {
