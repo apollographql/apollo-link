@@ -50,6 +50,30 @@ describe('RetryLink', () => {
     expect(stub).toHaveBeenCalledTimes(2);
   });
 
+  it('calls unsubscribe on the appropriate downstream observable', async () => {
+    const retry = new RetryLink({ delay: 1, max: 2 });
+    const data = { data: { hello: 'world' } };
+    const unsubscribeStub = jest.fn();
+    const fauxObservable = {
+      subscribe(observer) {
+        Promise.resolve().then(() => {
+          observer.next(data);
+          observer.complete();
+        });
+        return { unsubscribe: unsubscribeStub };
+      },
+    };
+    const stub = jest.fn();
+    stub.mockReturnValueOnce(new Observable(o => o.error(standardError)));
+    stub.mockReturnValueOnce(fauxObservable);
+    const link = ApolloLink.from([retry, stub]);
+
+    const [{ values }] = await waitFor(execute(link, { query }));
+    expect(values).toEqual([data]);
+    expect(stub).toHaveBeenCalledTimes(2);
+    expect(unsubscribeStub).toHaveBeenCalledTimes(1);
+  });
+
   it('supports multiple subscribers to the same request', async () => {
     const retry = new RetryLink({ delay: 1, max: 5 });
     const data = { data: { hello: 'world' } };
