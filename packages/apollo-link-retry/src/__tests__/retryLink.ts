@@ -11,15 +11,15 @@ const query = gql`
   }
 `;
 
+const error = new Error('I never work');
+
 describe('RetryLink', () => {
-  it('should fail with unreachable endpoint', done => {
+  it('fails for unreachable endpoints', done => {
     const max = 10;
     const retry = new RetryLink({ delay: 1, max });
-    const error = new Error('I never work');
     const stub = jest.fn(() => {
       return new Observable(observer => observer.error(error));
     });
-
     const link = ApolloLink.from([retry, stub]);
 
     execute(link, { query }).subscribe(
@@ -37,7 +37,7 @@ describe('RetryLink', () => {
     );
   });
 
-  it('should return data from the underlying link on a successful operation', done => {
+  it('returns data from the underlying link on a successful operation', done => {
     const retry = new RetryLink();
     const data = <FetchResult>{
       data: {
@@ -46,7 +46,6 @@ describe('RetryLink', () => {
     };
     const stub = jest.fn();
     stub.mockReturnValue(Observable.of(data));
-
     const link = ApolloLink.from([retry, stub]);
 
     execute(link, { query }).subscribe(
@@ -61,9 +60,8 @@ describe('RetryLink', () => {
     );
   });
 
-  it('should return data from the underlying link on a successful retry', done => {
+  it('returns data from the underlying link on a successful retry', done => {
     const retry = new RetryLink({ delay: 1, max: 2 });
-    const error = new Error('I never work');
     const data = <FetchResult>{
       data: {
         hello: 'world',
