@@ -54,23 +54,32 @@ describe('RetryLink', () => {
     const retry = new RetryLink({ delay: 1, max: 2 });
     const data = { data: { hello: 'world' } };
     const unsubscribeStub = jest.fn();
-    const fauxObservable = {
-      subscribe(observer) {
-        Promise.resolve().then(() => {
-          observer.next(data);
-          observer.complete();
-        });
-        return { unsubscribe: unsubscribeStub };
-      },
-    };
+
+    const firstTry = new Observable(o => o.error(standardError));
+    // Hold the test hostage until we're hit
+    let secondTry;
+    const untilSecondTry = new Promise(resolve => {
+      secondTry = {
+        subscribe(observer) {
+          resolve(); // Release hold on test.
+
+          Promise.resolve().then(() => {
+            observer.next(data);
+            observer.complete();
+          });
+          return { unsubscribe: unsubscribeStub };
+        },
+      };
+    });
+
     const stub = jest.fn();
-    stub.mockReturnValueOnce(new Observable(o => o.error(standardError)));
-    stub.mockReturnValueOnce(fauxObservable);
+    stub.mockReturnValueOnce(firstTry);
+    stub.mockReturnValueOnce(secondTry);
     const link = ApolloLink.from([retry, stub]);
 
-    const [{ values }] = await waitFor(execute(link, { query }));
-    expect(values).toEqual([data]);
-    expect(stub).toHaveBeenCalledTimes(2);
+    const subscription = execute(link, { query }).subscribe({});
+    await untilSecondTry;
+    subscription.unsubscribe();
     expect(unsubscribeStub).toHaveBeenCalledTimes(1);
   });
 
