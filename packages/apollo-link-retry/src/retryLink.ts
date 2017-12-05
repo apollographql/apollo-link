@@ -20,6 +20,10 @@ export namespace RetryLink {
     (delay: number, count: number): number;
   }
 
+  export interface RetryInterval {
+    (operation: Operation, count: number): number | false;
+  }
+
   export interface Options {
     /**
      * The max number of times to try a single operation before giving up.
@@ -53,6 +57,147 @@ export namespace RetryLink {
 // For backwards compatibility.
 export import ParamFnOrNumber = RetryLink.ParamFnOrNumber;
 
+/**
+ * Tracking and management of operations that may be (or currently are) retried.
+ */
+class RetryableOperation<TValue = any> {
+  private retryCount: number = 0;
+  private values: any[] = [];
+  private error: any;
+  private complete = false;
+  private canceled = false;
+  private observers: ZenObservable.Observer<TValue>[] = [];
+  private currentSubscription: ZenObservable.Subscription = null;
+  private timerId: number;
+
+  constructor(
+    private operation: Operation,
+    private nextLink: NextLink,
+    private retryAfter: RetryLink.RetryInterval,
+  ) {}
+
+  /**
+   * Register a new observer for this operation.
+   *
+   * If the operation has previously emitted other events, they will be
+   * immediately triggered for the observer.
+   */
+  subscribe(observer: ZenObservable.Observer<TValue>) {
+    if (this.canceled) {
+      throw new Error(
+        `Subscribing to a retryable link that was canceled is not supported`,
+      );
+    }
+    this.observers.push(observer);
+
+    // If we've already begun, catch this observer up.
+    for (const value of this.values) {
+      observer.next(value);
+    }
+
+    if (this.complete) {
+      observer.complete();
+    } else if (this.error) {
+      observer.error(this.error);
+    }
+  }
+
+  /**
+   * Remove a previously registered observer from this operation.
+   *
+   * If no observers remain, the operation will stop retrying, and unsubscribe
+   * from its downstream link.
+   */
+  unsubscribe(observer: ZenObservable.Observer<TValue>) {
+    const index = this.observers.indexOf(observer);
+    if (index < 0) {
+      throw new Error(
+        `RetryLink BUG! Attempting to unsubscribe unknown observer!`,
+      );
+    }
+    // Note that we are careful not to change the order of length of the array,
+    // as we are often mid-iteration when calling this method.
+    this.observers[index] = null;
+
+    // If this is the last observer, we're done.
+    if (this.observers.every(o => o === null)) {
+      this.cancel();
+    }
+  }
+
+  /**
+   * Start the initial request.
+   */
+  start() {
+    if (this.currentSubscription) return; // Already started.
+
+    this.try();
+  }
+
+  /**
+   * Stop retrying for the operation, and cancel any in-progress requests.
+   */
+  cancel() {
+    if (this.currentSubscription) {
+      this.currentSubscription.unsubscribe();
+    }
+    clearTimeout(this.timerId);
+    this.timerId = null;
+    this.currentSubscription = null;
+    this.canceled = true;
+  }
+
+  private try() {
+    this.currentSubscription = this.nextLink(this.operation).subscribe({
+      next: this.onNext,
+      error: this.onError,
+      complete: this.onComplete,
+    });
+  }
+
+  private onNext = (value: any) => {
+    this.values.push(value);
+    for (const observer of this.observers) {
+      observer.next(value);
+    }
+  };
+
+  private onComplete = () => {
+    for (const observer of this.observers) {
+      try {
+        observer.complete();
+      } catch (error) {}
+    }
+    this.complete = true;
+  };
+
+  private onError = error => {
+    this.retryCount += 1;
+    const delay = this.retryAfter(this.operation, this.retryCount);
+    // Should we retry?
+    if (typeof delay === 'number') {
+      this.scheduleRetry(delay);
+      return;
+    }
+
+    for (const observer of this.observers) {
+      observer.error(error);
+    }
+    this.error = error;
+  };
+
+  private scheduleRetry(delay) {
+    if (this.timerId) {
+      throw new Error(`RetryLink BUG! Encountered overlapping retries`);
+    }
+
+    this.timerId = setTimeout(() => {
+      this.timerId = null;
+      this.try();
+    }, delay);
+  }
+}
+
 export class RetryLink extends ApolloLink {
   private delay: RetryLink.ParamFnOrNumber;
   private max: RetryLink.ParamFnOrNumber;
@@ -69,56 +214,20 @@ export class RetryLink extends ApolloLink {
     operation: Operation,
     nextLink: NextLink,
   ): Observable<FetchResult> {
-    let retryCount = 0;
-    const values = [];
-    let complete = false;
-    const observers = [];
-    let currentSubscription;
-    let timerId;
-
-    const subscriber = {
-      next: data => {
-        retryCount = 0;
-        values.push(data);
-        for (const observer of observers) {
-          observer.next(data);
-        }
+    const retryable = new RetryableOperation(
+      operation,
+      nextLink,
+      (operation, count) => {
+        if (count >= this.max(operation)) return false;
+        return this.interval(this.delay(operation), count);
       },
-      error: error => {
-        retryCount++;
-        if (retryCount < this.max(operation)) {
-          timerId = setTimeout(() => {
-            const observable = nextLink(operation);
-            currentSubscription = observable.subscribe(subscriber);
-          }, this.interval(this.delay(operation), retryCount));
-        } else {
-          for (const observer of observers) {
-            observer.error(error);
-          }
-        }
-      },
-      complete() {
-        for (const observer of observers) {
-          observer.complete();
-        }
-        complete = true;
-      },
-    };
-
-    currentSubscription = nextLink(operation).subscribe(subscriber);
+    );
+    retryable.start();
 
     return new Observable(observer => {
-      observers.push(observer);
-      for (const value of values) {
-        observer.next(value);
-      }
-      if (complete) {
-        observer.complete();
-      }
-
+      retryable.subscribe(observer);
       return () => {
-        currentSubscription.unsubscribe();
-        if (timerId) clearTimeout(timerId);
+        retryable.unsubscribe(observer);
       };
     });
   }
