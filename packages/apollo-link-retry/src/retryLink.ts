@@ -12,9 +12,7 @@ const operationFnOrNumber = prop =>
 const defaultInterval = delay => delay;
 
 export namespace RetryLink {
-  export interface ParamFnOrNumber {
-    (operation: Operation): number | number;
-  }
+  export type ParamFnOrNumber = number | ((operation: Operation) => number);
 
   export interface IntervalFn {
     (delay: number, count: number): number;
