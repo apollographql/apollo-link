@@ -1,0 +1,76 @@
+{
+  "name": "apollo-link-http",
+  "version": "1.1.0",
+  "description": "HTTP transport layer for GraphQL",
+  "author": "Evans Hauser <evanshauser@gmail.com>",
+  "contributors": [
+    "James Baxley <james@meteor.com>",
+    "Jonas Helfer <jonas@helfer.email>",
+    "jon wong <j@jnwng.com>",
+    "Sashko Stubailo <sashko@stubailo.com>",
+    "Tomas Trescak <tomi.trescak@gmail.com>"
+  ],
+  "license": "MIT",
+  "main": "./lib/bundle.umd.js",
+  "module": "./lib/httpLink.js",
+  "jsnext:main": "./lib/httpLink.js",
+  "typings": "./lib/httpLink.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apollographql/apollo-link.git"
+  },
+  "bugs": {
+    "url": "https://github.com/apollographql/apollo-link/issues"
+  },
+  "homepage": "https://github.com/apollographql/apollo-link#readme",
+  "scripts": {
+    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-link && npm run minify:browser",
+    "build": "tsc -p .",
+    "bundle": "rollup -c",
+    "clean": "rimraf lib/* && rimraf coverage/*",
+    "filesize": "npm run build && npm run build:browser",
+    "lint": "tslint --type-check -p tsconfig.json -c ../../tslint.json src/*.ts",
+    "minify:browser": "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
+    "postbuild": "npm run bundle",
+    "prebuild": "npm run clean",
+    "prepublishOnly": "npm run clean && npm run build",
+    "test": "jest",
+    "watch": "tsc -w -p ."
+  },
+  "peerDependencies": {
+    "apollo-link": "^1.0.0",
+    "graphql": "^0.11.0"
+  },
+  "devDependencies": {
+    "@types/graphql": "0.11.5",
+    "@types/jest": "21.1.5",
+    "apollo-fetch": "0.6.0",
+    "apollo-link": "^1.0.0",
+    "browserify": "14.5.0",
+    "fetch-mock": "5.13.1",
+    "graphql": "0.11.7",
+    "graphql-tag": "2.5.0",
+    "jest": "21.2.1",
+    "rimraf": "2.6.1",
+    "rollup": "0.51.2",
+    "ts-jest": "21.2.1",
+    "tslint": "5.8.0",
+    "typescript": "2.6.1",
+    "uglify-js": "3.1.8"
+  },
+  "jest": {
+    "transform": {
+      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ]
+  },
+  "dependencies": {
+    "graphql-tools": "^2.7.2"
+  }
+}
