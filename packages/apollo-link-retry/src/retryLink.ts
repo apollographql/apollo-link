@@ -18,7 +18,7 @@ export namespace RetryLink {
     (delay: number, count: number): number;
   }
 
-  export interface RetryInterval {
+  export interface IntervalPredicate {
     (operation: Operation, count: number): number | false;
   }
 
@@ -71,7 +71,7 @@ class RetryableOperation<TValue = any> {
   constructor(
     private operation: Operation,
     private nextLink: NextLink,
-    private retryAfter: RetryLink.RetryInterval,
+    private retryAfter: RetryLink.IntervalPredicate,
   ) {}
 
   /**
@@ -197,15 +197,19 @@ class RetryableOperation<TValue = any> {
 }
 
 export class RetryLink extends ApolloLink {
-  private delay: RetryLink.ParamFnOrNumber;
-  private max: RetryLink.ParamFnOrNumber;
-  private interval: RetryLink.IntervalFn;
+  private intervalPredicate: RetryLink.IntervalPredicate;
 
   constructor(params?: RetryLink.Options) {
     super();
-    this.max = operationFnOrNumber((params && params.max) || 10);
-    this.delay = operationFnOrNumber((params && params.delay) || 300);
-    this.interval = (params && params.interval) || defaultInterval;
+
+    const max = operationFnOrNumber((params && params.max) || 10);
+    const delay = operationFnOrNumber((params && params.delay) || 300);
+    const interval = (params && params.interval) || defaultInterval;
+
+    this.intervalPredicate = (operation, count) => {
+      if (count >= max(operation)) return false;
+      return interval(delay(operation), count);
+    };
   }
 
   public request(
@@ -215,10 +219,7 @@ export class RetryLink extends ApolloLink {
     const retryable = new RetryableOperation(
       operation,
       nextLink,
-      (operation, count) => {
-        if (count >= this.max(operation)) return false;
-        return this.interval(this.delay(operation), count);
-      },
+      this.intervalPredicate,
     );
     retryable.start();
 
