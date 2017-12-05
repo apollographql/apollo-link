@@ -1,5 +1,6 @@
 import gql from 'graphql-tag';
 import { execute, ApolloLink, Observable, FetchResult } from 'apollo-link';
+import waitFor from 'wait-for-observables';
 
 import { RetryLink } from '../retryLink';
 
@@ -11,77 +12,41 @@ const query = gql`
   }
 `;
 
-const error = new Error('I never work');
+const standardError = new Error('I never work');
 
 describe('RetryLink', () => {
-  it('fails for unreachable endpoints', done => {
+  it('fails for unreachable endpoints', async () => {
     const max = 10;
     const retry = new RetryLink({ delay: 1, max });
-    const stub = jest.fn(() => {
-      return new Observable(observer => observer.error(error));
-    });
+    const stub = jest.fn(() => new Observable(o => o.error(standardError)));
     const link = ApolloLink.from([retry, stub]);
 
-    execute(link, { query }).subscribe(
-      () => {
-        throw new Error();
-      },
-      actualError => {
-        expect(stub).toHaveBeenCalledTimes(max);
-        expect(error).toEqual(actualError);
-        done();
-      },
-      () => {
-        throw new Error();
-      },
-    );
+    const [{ error }] = await waitFor(execute(link, { query }));
+    expect(error).toEqual(standardError);
+    expect(stub).toHaveBeenCalledTimes(max);
   });
 
-  it('returns data from the underlying link on a successful operation', done => {
+  it('returns data from the underlying link on a successful operation', async () => {
     const retry = new RetryLink();
-    const data = <FetchResult>{
-      data: {
-        hello: 'world',
-      },
-    };
-    const stub = jest.fn();
-    stub.mockReturnValue(Observable.of(data));
+    const data = { data: { hello: 'world' } };
+    const stub = jest.fn(() => Observable.of(data));
     const link = ApolloLink.from([retry, stub]);
 
-    execute(link, { query }).subscribe(
-      actualData => {
-        expect(stub).toHaveBeenCalledTimes(1);
-        expect(data).toEqual(actualData);
-      },
-      () => {
-        throw new Error();
-      },
-      done,
-    );
+    const [{ values }] = await waitFor(execute(link, { query }));
+    expect(values).toEqual([data]);
+    expect(stub).toHaveBeenCalledTimes(1);
   });
 
-  it('returns data from the underlying link on a successful retry', done => {
+  it('returns data from the underlying link on a successful retry', async () => {
     const retry = new RetryLink({ delay: 1, max: 2 });
-    const data = <FetchResult>{
-      data: {
-        hello: 'world',
-      },
-    };
+    const data = { data: { hello: 'world' } };
     const stub = jest.fn();
-    stub.mockReturnValueOnce(new Observable(observer => observer.error(error)));
+    stub.mockReturnValueOnce(new Observable(o => o.error(standardError)));
     stub.mockReturnValueOnce(Observable.of(data));
-
     const link = ApolloLink.from([retry, stub]);
 
-    execute(link, { query }).subscribe(
-      actualData => {
-        expect(stub).toHaveBeenCalledTimes(2);
-        expect(data).toEqual(actualData);
-      },
-      () => {
-        throw new Error();
-      },
-      done,
-    );
+    const [{ values }] = await waitFor(execute(link, { query }));
+    expect(values).toEqual([data]);
+    expect(stub).toHaveBeenCalledTimes(2);
   });
 });
