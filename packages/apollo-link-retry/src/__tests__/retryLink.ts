@@ -49,4 +49,20 @@ describe('RetryLink', () => {
     expect(values).toEqual([data]);
     expect(stub).toHaveBeenCalledTimes(2);
   });
+
+  it('supports multiple subscribers to the same request', async () => {
+    const retry = new RetryLink({ delay: 1, max: 5 });
+    const data = { data: { hello: 'world' } };
+    const stub = jest.fn();
+    stub.mockReturnValueOnce(new Observable(o => o.error(standardError)));
+    stub.mockReturnValueOnce(new Observable(o => o.error(standardError)));
+    stub.mockReturnValueOnce(Observable.of(data));
+    const link = ApolloLink.from([retry, stub]);
+
+    const observable = execute(link, { query });
+    const [result1, result2] = await waitFor(observable, observable);
+    expect(result1.values).toEqual([data]);
+    expect(result2.values).toEqual([data]);
+    expect(stub).toHaveBeenCalledTimes(3);
+  });
 });
