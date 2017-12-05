@@ -57,9 +57,6 @@ export class RetryLink extends ApolloLink {
   private delay: RetryLink.ParamFnOrNumber;
   private max: RetryLink.ParamFnOrNumber;
   private interval: RetryLink.IntervalFn;
-  private subscriptions: { [key: string]: ZenObservable.Subscription } = {};
-  private timers = {};
-  private counts: { [key: string]: number } = {};
 
   constructor(params?: RetryLink.Options) {
     super();
@@ -70,35 +67,58 @@ export class RetryLink extends ApolloLink {
 
   public request(
     operation: Operation,
-    forward: NextLink,
+    nextLink: NextLink,
   ): Observable<FetchResult> {
-    const key = operation.toKey();
-    if (!this.counts[key]) this.counts[key] = 0;
-    return new Observable(observer => {
-      const subscriber = {
-        next: data => {
-          this.counts[key] = 0;
+    let retryCount = 0;
+    const values = [];
+    let complete = false;
+    const observers = [];
+    let currentSubscription;
+    let timerId;
+
+    const subscriber = {
+      next: data => {
+        retryCount = 0;
+        values.push(data);
+        for (const observer of observers) {
           observer.next(data);
-        },
-        error: error => {
-          this.counts[key]++;
-          if (this.counts[key] < this.max(operation)) {
-            this.timers[key] = setTimeout(() => {
-              const observable = forward(operation);
-              this.subscriptions[key] = observable.subscribe(subscriber);
-            }, this.interval(this.delay(operation), this.counts[key]));
-          } else {
+        }
+      },
+      error: error => {
+        retryCount++;
+        if (retryCount < this.max(operation)) {
+          timerId = setTimeout(() => {
+            const observable = nextLink(operation);
+            currentSubscription = observable.subscribe(subscriber);
+          }, this.interval(this.delay(operation), retryCount));
+        } else {
+          for (const observer of observers) {
             observer.error(error);
           }
-        },
-        complete: observer.complete.bind(observer),
-      };
+        }
+      },
+      complete() {
+        for (const observer of observers) {
+          observer.complete();
+        }
+        complete = true;
+      },
+    };
 
-      this.subscriptions[key] = forward(operation).subscribe(subscriber);
+    currentSubscription = nextLink(operation).subscribe(subscriber);
+
+    return new Observable(observer => {
+      observers.push(observer);
+      for (const value of values) {
+        observer.next(value);
+      }
+      if (complete) {
+        observer.complete();
+      }
 
       return () => {
-        this.subscriptions[key].unsubscribe();
-        if (this.timers[key]) clearTimeout(this.timers[key]);
+        currentSubscription.unsubscribe();
+        if (timerId) clearTimeout(timerId);
       };
     });
   }
