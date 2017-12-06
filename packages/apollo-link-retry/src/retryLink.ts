@@ -161,12 +161,10 @@ class RetryableOperation<TValue = any> {
   };
 
   private onComplete = () => {
-    for (const observer of this.observers) {
-      try {
-        observer.complete();
-      } catch (error) {}
-    }
     this.complete = true;
+    for (const observer of this.observers) {
+      observer.complete();
+    }
   };
 
   private onError = error => {
@@ -178,10 +176,10 @@ class RetryableOperation<TValue = any> {
       return;
     }
 
+    this.error = error;
     for (const observer of this.observers) {
       observer.error(error);
     }
-    this.error = error;
   };
 
   private scheduleRetry(delay) {
