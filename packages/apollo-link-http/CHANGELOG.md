@@ -1,6 +1,7 @@
 # Change log
 
 ### vNEXT
+- Fix typescript bug with destructuring of parameter in createHttpLink (#189)
 
 ### 1.3.0
 - changed to initially parsing response as text to improve error handling
