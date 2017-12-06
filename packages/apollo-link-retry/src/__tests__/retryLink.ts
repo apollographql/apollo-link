@@ -114,6 +114,21 @@ describe('RetryLink', () => {
     expect(stub).toHaveBeenCalledTimes(10);
   });
 
+  it('supports custom delay functions', async () => {
+    const delayStub = jest.fn();
+    delayStub.mockReturnValueOnce(1);
+    delayStub.mockReturnValueOnce(1);
+    delayStub.mockReturnValueOnce(false);
+
+    const retry = new RetryLink(delayStub);
+    const linkStub = jest.fn(() => new Observable(o => o.error(standardError)));
+    const link = ApolloLink.from([retry, linkStub]);
+    const [{ error }] = await waitFor(execute(link, { query }));
+
+    expect(error).toEqual(standardError);
+    expect(delayStub).toHaveBeenCalledTimes(3);
+  });
+
   describe('buildDelayFunction', () => {
     // For easy testing of just the delay component
     interface SimpleDelayFunction {

@@ -61,6 +61,8 @@ export namespace RetryLink {
      * Predicate function that determines whether a particular response should
      * be retried.
      *
+     * For example, you may want to not retry 4xx class HTTP errors.
+     *
      * By default, any response with an error will be retried.
      */
     retryIf?: (count: number, operation: Operation, error: any) => boolean;
@@ -219,14 +221,6 @@ export class RetryLink extends ApolloLink {
     } else {
       this.delayFunction = RetryLink.buildDelayFunction(optionsOrDelayFunction);
     }
-    // const max = operationFnOrNumber((params && params.max) || 10);
-    // const delay = operationFnOrNumber((params && params.delay) || 300);
-    // const interval = (params && params.interval) || defaultInterval;
-
-    // this.delayFunction = (operation, count) => {
-    //   if (count >= max(operation)) return false;
-    //   return interval(delay(operation), count);
-    // };
   }
 
   public request(
