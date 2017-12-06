@@ -6,54 +6,68 @@ import {
   FetchResult,
 } from 'apollo-link';
 
-const operationFnOrNumber = prop =>
-  typeof prop === 'number' ? () => prop : prop;
-
-const defaultInterval = delay => delay;
-
 export namespace RetryLink {
-  export type ParamFnOrNumber = number | ((operation: Operation) => number);
-
-  export interface IntervalFn {
-    (delay: number, count: number): number;
+  /**
+   * Advanced mode: a function that determines both whether a particular
+   * response should be retried, and the delay if so.
+   */
+  export interface DelayFunction {
+    (count: number, operation: Operation, error: any): number | false;
   }
 
-  export interface IntervalPredicate {
-    (operation: Operation, count: number): number | false;
-  }
-
-  export interface Options {
+  export interface SimpleOptions {
     /**
-     * The max number of times to try a single operation before giving up.
+     * The number of milliseconds to wait before attempting the first retry.
      *
-     * Can be a function that determines the number of attempts for a particular operation.
+     * Delays will increase exponentially for each attempt.  E.g. if this is
+     * set to 100, subsequent retries will be delayed by 200, 400, 800, etc,
+     * until they reach maxDelay.
      *
-     * Defaults to 10.
-     */
-    max?: ParamFnOrNumber;
-
-    /**
-     * Number of milliseconds to wait after a failed attempt before retrying.
-     *
-     * Can be a function that determines the delay for a particular operation.
+     * Note that if jittering is enabled, this is the _average_ delay.
      *
      * Defaults to 300.
      */
-    delay?: ParamFnOrNumber;
+    initialDelay?: number;
 
     /**
-     * A function that returns the actual milliseconds to wait after a failed attempt before retrying.
+     * The maximum number of milliseconds that the link should wait for any
+     * retry.
      *
-     * Its first argument is the value of `delay` for that operation.
-     *
-     * Defaults to just passing the delay through.
+     * Defaults to Infinity.
      */
-    interval?: IntervalFn;
-  }
-}
+    maxDelay?: number;
 
-// For backwards compatibility.
-export import ParamFnOrNumber = RetryLink.ParamFnOrNumber;
+    /**
+     * The max number of times to try a single operation before giving up.
+     *
+     * Note that this INCLUDES the initial request as part of the count.
+     * E.g. maxTries of 1 indicates no retrying should occur.
+     *
+     * Defaults to 5.  Pass Infinity for infinite retries.
+     */
+    maxTries?: number;
+
+    /**
+     * Enable randomization of delay values.
+     *
+     * This helps avoid thundering herd type situations by better distributing
+     * load during major outages.
+     *
+     * Defaults to true.
+     */
+    jitter?: boolean;
+
+    /**
+     * Predicate function that determines whether a particular response should
+     * be retried.
+     *
+     * By default, any response with an error will be retried.
+     */
+    retryIf?: (count: number, operation: Operation, error: any) => boolean;
+  }
+
+  export type Options = DelayFunction | SimpleOptions;
+}
 
 /**
  * Tracking and management of operations that may be (or currently are) retried.
@@ -71,7 +85,7 @@ class RetryableOperation<TValue = any> {
   constructor(
     private operation: Operation,
     private nextLink: NextLink,
-    private retryAfter: RetryLink.IntervalPredicate,
+    private retryAfter: RetryLink.DelayFunction,
   ) {}
 
   /**
@@ -169,7 +183,7 @@ class RetryableOperation<TValue = any> {
 
   private onError = error => {
     this.retryCount += 1;
-    const delay = this.retryAfter(this.operation, this.retryCount);
+    const delay = this.retryAfter(this.retryCount, this.operation, error);
     // Should we retry?
     if (typeof delay === 'number') {
       this.scheduleRetry(delay);
@@ -195,19 +209,24 @@ class RetryableOperation<TValue = any> {
 }
 
 export class RetryLink extends ApolloLink {
-  private intervalPredicate: RetryLink.IntervalPredicate;
+  private delayFunction: RetryLink.DelayFunction;
 
-  constructor(params?: RetryLink.Options) {
+  constructor(optionsOrDelayFunction?: RetryLink.Options) {
     super();
 
-    const max = operationFnOrNumber((params && params.max) || 10);
-    const delay = operationFnOrNumber((params && params.delay) || 300);
-    const interval = (params && params.interval) || defaultInterval;
+    if (typeof optionsOrDelayFunction === 'function') {
+      this.delayFunction = optionsOrDelayFunction;
+    } else {
+      this.delayFunction = RetryLink.buildDelayFunction(optionsOrDelayFunction);
+    }
+    // const max = operationFnOrNumber((params && params.max) || 10);
+    // const delay = operationFnOrNumber((params && params.delay) || 300);
+    // const interval = (params && params.interval) || defaultInterval;
 
-    this.intervalPredicate = (operation, count) => {
-      if (count >= max(operation)) return false;
-      return interval(delay(operation), count);
-    };
+    // this.delayFunction = (operation, count) => {
+    //   if (count >= max(operation)) return false;
+    //   return interval(delay(operation), count);
+    // };
   }
 
   public request(
@@ -217,7 +236,7 @@ export class RetryLink extends ApolloLink {
     const retryable = new RetryableOperation(
       operation,
       nextLink,
-      this.intervalPredicate,
+      this.delayFunction,
     );
     retryable.start();
 
@@ -227,5 +246,49 @@ export class RetryLink extends ApolloLink {
         retryable.unsubscribe(observer);
       };
     });
+  }
+}
+
+export namespace RetryLink {
+  export const defaultOptions = {
+    initialDelay: 300,
+    maxDelay: Infinity,
+    maxTries: 5,
+    jitter: true,
+    retryIf: (_count, _operation, error) => !!error,
+  };
+
+  export function buildDelayFunction(options?: SimpleOptions): DelayFunction {
+    options = { ...defaultOptions, ...options };
+    const { initialDelay, maxDelay, maxTries, jitter, retryIf } = options;
+
+    let baseDelay;
+    if (jitter) {
+      // If we're jittering, baseDelay is half of the maximum delay for that
+      // attempt (and is, on average, the delay we will encounter).
+      baseDelay = initialDelay;
+    } else {
+      // If we're not jittering, adjust baseDelay so that the first attempt
+      // lines up with initialDelay, for everyone's sanity.
+      baseDelay = initialDelay / 2;
+    }
+
+    return function delayFunction(
+      count: number,
+      operation: Operation,
+      error: any,
+    ) {
+      if (count >= maxTries) return false;
+      if (!retryIf(count, operation, error)) return false;
+
+      let delay = Math.min(maxDelay, baseDelay * 2 ** count);
+      if (jitter) {
+        // We opt for a full jitter approach for a mostly uniform distribution,
+        // but bound it within initialDelay and delay for everyone's sanity.
+        delay = Math.random() * delay;
+      }
+
+      return delay;
+    };
   }
 }

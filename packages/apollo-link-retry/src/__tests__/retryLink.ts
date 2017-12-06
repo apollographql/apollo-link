@@ -16,14 +16,14 @@ const standardError = new Error('I never work');
 
 describe('RetryLink', () => {
   it('fails for unreachable endpoints', async () => {
-    const max = 10;
-    const retry = new RetryLink({ delay: 1, max });
+    const maxTries = 10;
+    const retry = new RetryLink({ initialDelay: 1, maxTries });
     const stub = jest.fn(() => new Observable(o => o.error(standardError)));
     const link = ApolloLink.from([retry, stub]);
 
     const [{ error }] = await waitFor(execute(link, { query }));
     expect(error).toEqual(standardError);
-    expect(stub).toHaveBeenCalledTimes(max);
+    expect(stub).toHaveBeenCalledTimes(maxTries);
   });
 
   it('returns data from the underlying link on a successful operation', async () => {
@@ -38,7 +38,7 @@ describe('RetryLink', () => {
   });
 
   it('returns data from the underlying link on a successful retry', async () => {
-    const retry = new RetryLink({ delay: 1, max: 2 });
+    const retry = new RetryLink({ initialDelay: 1, maxTries: 2 });
     const data = { data: { hello: 'world' } };
     const stub = jest.fn();
     stub.mockReturnValueOnce(new Observable(o => o.error(standardError)));
@@ -51,7 +51,7 @@ describe('RetryLink', () => {
   });
 
   it('calls unsubscribe on the appropriate downstream observable', async () => {
-    const retry = new RetryLink({ delay: 1, max: 2 });
+    const retry = new RetryLink({ initialDelay: 1, maxTries: 2 });
     const data = { data: { hello: 'world' } };
     const unsubscribeStub = jest.fn();
 
@@ -84,7 +84,7 @@ describe('RetryLink', () => {
   });
 
   it('supports multiple subscribers to the same request', async () => {
-    const retry = new RetryLink({ delay: 1, max: 5 });
+    const retry = new RetryLink({ initialDelay: 1, maxTries: 5 });
     const data = { data: { hello: 'world' } };
     const stub = jest.fn();
     stub.mockReturnValueOnce(new Observable(o => o.error(standardError)));
@@ -100,7 +100,7 @@ describe('RetryLink', () => {
   });
 
   it('retries independently for concurrent requests', async () => {
-    const retry = new RetryLink({ delay: 1, max: 5 });
+    const retry = new RetryLink({ initialDelay: 1, maxTries: 5 });
     const data = { data: { hello: 'world' } };
     const stub = jest.fn(() => new Observable(o => o.error(standardError)));
     const link = ApolloLink.from([retry, stub]);
@@ -112,5 +112,117 @@ describe('RetryLink', () => {
     expect(result1.error).toEqual(standardError);
     expect(result2.error).toEqual(standardError);
     expect(stub).toHaveBeenCalledTimes(10);
+  });
+
+  describe('buildDelayFunction', () => {
+    // For easy testing of just the delay component
+    interface SimpleDelayFunction {
+      (count: number): number;
+    }
+
+    function delayRange(delayFunction: SimpleDelayFunction, count: number) {
+      const results = [];
+      for (let i = 1; i <= count; i++) {
+        results.push(delayFunction(i));
+      }
+      return results;
+    }
+
+    it('stops after hitting maxTries', () => {
+      const delayFunction = RetryLink.buildDelayFunction({
+        maxTries: 3,
+        retryIf: () => true,
+      }) as SimpleDelayFunction;
+
+      expect(typeof delayFunction(2)).toEqual('number');
+      expect(delayFunction(3)).toEqual(false);
+      expect(delayFunction(4)).toEqual(false);
+    });
+
+    it('skips retries if there was no error, by default', () => {
+      const delayFunction = RetryLink.buildDelayFunction();
+
+      expect(delayFunction(1, {} as any, undefined)).toEqual(false);
+      expect(typeof delayFunction(1, {} as any, {})).toEqual('number');
+    });
+
+    describe('without jitter', () => {
+      it('grows exponentially up to maxDelay', () => {
+        const delayFunction = RetryLink.buildDelayFunction({
+          jitter: false,
+          initialDelay: 100,
+          maxDelay: 1000,
+          maxTries: Infinity,
+          retryIf: () => true,
+        }) as SimpleDelayFunction;
+
+        expect(delayRange(delayFunction, 6)).toEqual([
+          100,
+          200,
+          400,
+          800,
+          1000,
+          1000,
+        ]);
+      });
+    });
+
+    describe('with jitter', () => {
+      let mockRandom, origRandom;
+      beforeEach(() => {
+        mockRandom = jest.fn();
+        origRandom = Math.random;
+        Math.random = mockRandom;
+      });
+
+      afterEach(() => {
+        Math.random = origRandom;
+      });
+
+      it('jitters, on average, exponentially up to maxDelay', () => {
+        const delayFunction = RetryLink.buildDelayFunction({
+          jitter: true,
+          initialDelay: 100,
+          maxDelay: 1000,
+          maxTries: Infinity,
+          retryIf: () => true,
+        }) as SimpleDelayFunction;
+
+        mockRandom.mockReturnValue(0.5);
+        expect(delayRange(delayFunction, 5)).toEqual([100, 200, 400, 500, 500]);
+      });
+
+      it('can have instant retries as the low end of the jitter range', () => {
+        const delayFunction = RetryLink.buildDelayFunction({
+          jitter: true,
+          initialDelay: 100,
+          maxDelay: 1000,
+          maxTries: Infinity,
+          retryIf: () => true,
+        }) as SimpleDelayFunction;
+
+        mockRandom.mockReturnValue(0);
+        expect(delayRange(delayFunction, 5)).toEqual([0, 0, 0, 0, 0]);
+      });
+
+      it('uses double the calculated delay as the high end of the jitter range, up to maxDelay', () => {
+        const delayFunction = RetryLink.buildDelayFunction({
+          jitter: true,
+          initialDelay: 100,
+          maxDelay: 1000,
+          maxTries: Infinity,
+          retryIf: () => true,
+        }) as SimpleDelayFunction;
+
+        mockRandom.mockReturnValue(1);
+        expect(delayRange(delayFunction, 5)).toEqual([
+          200,
+          400,
+          800,
+          1000,
+          1000,
+        ]);
+      });
+    });
   });
 });
