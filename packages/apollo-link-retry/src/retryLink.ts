@@ -6,54 +6,30 @@ import {
   FetchResult,
 } from 'apollo-link';
 
-const operationFnOrNumber = prop =>
-  typeof prop === 'number' ? () => prop : prop;
-
-const defaultInterval = delay => delay;
+import {
+  DelayFunction,
+  DelayFunctionOptions,
+  buildDelayFunction,
+} from './delayFunction';
+import {
+  RetryFunction,
+  RetryFunctionOptions,
+  buildRetryFunction,
+} from './retryFunction';
 
 export namespace RetryLink {
-  export type ParamFnOrNumber = number | ((operation: Operation) => number);
-
-  export interface IntervalFn {
-    (delay: number, count: number): number;
-  }
-
-  export interface IntervalPredicate {
-    (operation: Operation, count: number): number | false;
-  }
-
   export interface Options {
     /**
-     * The max number of times to try a single operation before giving up.
-     *
-     * Can be a function that determines the number of attempts for a particular operation.
-     *
-     * Defaults to 10.
+     * Configuration for the delay strategy to use, or a custom delay strategy.
      */
-    max?: ParamFnOrNumber;
+    delay?: DelayFunctionOptions | DelayFunction;
 
     /**
-     * Number of milliseconds to wait after a failed attempt before retrying.
-     *
-     * Can be a function that determines the delay for a particular operation.
-     *
-     * Defaults to 300.
+     * Configuration for the retry strategy to use, or a custom retry strategy.
      */
-    delay?: ParamFnOrNumber;
-
-    /**
-     * A function that returns the actual milliseconds to wait after a failed attempt before retrying.
-     *
-     * Its first argument is the value of `delay` for that operation.
-     *
-     * Defaults to just passing the delay through.
-     */
-    interval?: IntervalFn;
+    attempts?: RetryFunctionOptions | RetryFunction;
   }
 }
-
-// For backwards compatibility.
-export import ParamFnOrNumber = RetryLink.ParamFnOrNumber;
 
 /**
  * Tracking and management of operations that may be (or currently are) retried.
@@ -71,7 +47,8 @@ class RetryableOperation<TValue = any> {
   constructor(
     private operation: Operation,
     private nextLink: NextLink,
-    private retryAfter: RetryLink.IntervalPredicate,
+    private delayFor: DelayFunction,
+    private retryIf: RetryFunction,
   ) {}
 
   /**
@@ -169,10 +146,10 @@ class RetryableOperation<TValue = any> {
 
   private onError = error => {
     this.retryCount += 1;
-    const delay = this.retryAfter(this.operation, this.retryCount);
+
     // Should we retry?
-    if (typeof delay === 'number') {
-      this.scheduleRetry(delay);
+    if (this.retryIf(this.retryCount, this.operation, error)) {
+      this.scheduleRetry(this.delayFor(this.retryCount, this.operation, error));
       return;
     }
 
@@ -195,19 +172,15 @@ class RetryableOperation<TValue = any> {
 }
 
 export class RetryLink extends ApolloLink {
-  private intervalPredicate: RetryLink.IntervalPredicate;
+  private delayFor: DelayFunction;
+  private retryIf: RetryFunction;
 
-  constructor(params?: RetryLink.Options) {
+  constructor({ delay, attempts }: RetryLink.Options = {}) {
     super();
-
-    const max = operationFnOrNumber((params && params.max) || 10);
-    const delay = operationFnOrNumber((params && params.delay) || 300);
-    const interval = (params && params.interval) || defaultInterval;
-
-    this.intervalPredicate = (operation, count) => {
-      if (count >= max(operation)) return false;
-      return interval(delay(operation), count);
-    };
+    this.delayFor =
+      typeof delay === 'function' ? delay : buildDelayFunction(delay);
+    this.retryIf =
+      typeof attempts === 'function' ? attempts : buildRetryFunction(attempts);
   }
 
   public request(
@@ -217,7 +190,8 @@ export class RetryLink extends ApolloLink {
     const retryable = new RetryableOperation(
       operation,
       nextLink,
-      this.intervalPredicate,
+      this.delayFor,
+      this.retryIf,
     );
     retryable.start();
 
