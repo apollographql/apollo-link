@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-retry",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Retry Apollo Link for GraphQL Network Stack",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -56,7 +56,8 @@
     "ts-jest": "21.2.4",
     "tslint": "5.8.0",
     "typescript": "2.6.2",
-    "uglify-js": "3.2.1"
+    "uglify-js": "3.2.1",
+    "wait-for-observables": "^1.0.3"
   },
   "jest": {
     "transform": {

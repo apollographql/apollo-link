@@ -28,6 +28,7 @@ sidebar_categories:
     - links/ws
     - links/batch-http
     - links/dedup
+    - links/schema
     - links/community
 github_repo: apollographql/apollo-link
 content_root: docs/source
