@@ -17,7 +17,7 @@ const standardError = new Error('I never work');
 describe('RetryLink', () => {
   it('fails for unreachable endpoints', async () => {
     const max = 10;
-    const retry = new RetryLink({ delay: 1, max });
+    const retry = new RetryLink({ delay: { initial: 1 }, attempts: { max } });
     const stub = jest.fn(() => new Observable(o => o.error(standardError)));
     const link = ApolloLink.from([retry, stub]);
 
@@ -38,7 +38,10 @@ describe('RetryLink', () => {
   });
 
   it('returns data from the underlying link on a successful retry', async () => {
-    const retry = new RetryLink({ delay: 1, max: 2 });
+    const retry = new RetryLink({
+      delay: { initial: 1 },
+      attempts: { max: 2 },
+    });
     const data = { data: { hello: 'world' } };
     const stub = jest.fn();
     stub.mockReturnValueOnce(new Observable(o => o.error(standardError)));
@@ -51,7 +54,10 @@ describe('RetryLink', () => {
   });
 
   it('calls unsubscribe on the appropriate downstream observable', async () => {
-    const retry = new RetryLink({ delay: 1, max: 2 });
+    const retry = new RetryLink({
+      delay: { initial: 1 },
+      attempts: { max: 2 },
+    });
     const data = { data: { hello: 'world' } };
     const unsubscribeStub = jest.fn();
 
@@ -84,7 +90,10 @@ describe('RetryLink', () => {
   });
 
   it('supports multiple subscribers to the same request', async () => {
-    const retry = new RetryLink({ delay: 1, max: 5 });
+    const retry = new RetryLink({
+      delay: { initial: 1 },
+      attempts: { max: 5 },
+    });
     const data = { data: { hello: 'world' } };
     const stub = jest.fn();
     stub.mockReturnValueOnce(new Observable(o => o.error(standardError)));
@@ -100,7 +109,10 @@ describe('RetryLink', () => {
   });
 
   it('retries independently for concurrent requests', async () => {
-    const retry = new RetryLink({ delay: 1, max: 5 });
+    const retry = new RetryLink({
+      delay: { initial: 1 },
+      attempts: { max: 5 },
+    });
     const data = { data: { hello: 'world' } };
     const stub = jest.fn(() => new Observable(o => o.error(standardError)));
     const link = ApolloLink.from([retry, stub]);
@@ -112,5 +124,43 @@ describe('RetryLink', () => {
     expect(result1.error).toEqual(standardError);
     expect(result2.error).toEqual(standardError);
     expect(stub).toHaveBeenCalledTimes(10);
+  });
+
+  it('supports custom delay functions', async () => {
+    const delayStub = jest.fn(() => 1);
+    const retry = new RetryLink({ delay: delayStub, attempts: { max: 3 } });
+    const linkStub = jest.fn(() => new Observable(o => o.error(standardError)));
+    const link = ApolloLink.from([retry, linkStub]);
+    const [{ error }] = await waitFor(execute(link, { query }));
+
+    expect(error).toEqual(standardError);
+    const operation = delayStub.mock.calls[0][1];
+    expect(delayStub.mock.calls).toEqual([
+      [1, operation, standardError],
+      [2, operation, standardError],
+    ]);
+  });
+
+  it('supports custom attempt functions', async () => {
+    const attemptStub = jest.fn();
+    attemptStub.mockReturnValueOnce(true);
+    attemptStub.mockReturnValueOnce(true);
+    attemptStub.mockReturnValueOnce(false);
+
+    const retry = new RetryLink({
+      delay: { initial: 1 },
+      attempts: attemptStub,
+    });
+    const linkStub = jest.fn(() => new Observable(o => o.error(standardError)));
+    const link = ApolloLink.from([retry, linkStub]);
+    const [{ error }] = await waitFor(execute(link, { query }));
+
+    expect(error).toEqual(standardError);
+    const operation = attemptStub.mock.calls[0][1];
+    expect(attemptStub.mock.calls).toEqual([
+      [1, operation, standardError],
+      [2, operation, standardError],
+      [3, operation, standardError],
+    ]);
   });
 });
