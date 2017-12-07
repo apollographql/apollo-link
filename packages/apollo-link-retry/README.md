@@ -24,17 +24,33 @@ const link = new RetryLink();
 
 ## Options
 
-The standard retry strategy provides exponential backoff with jittering, and takes the following options:
+The standard retry strategy provides exponential backoff with jittering, and takes the following options, grouped into `delay` and `attempt` strategies:
 
-- `initialDelay`: The number of milliseconds to wait before attempting the first retry, with a default of `300`.
+- `delay.initial`: The number of milliseconds to wait before attempting the first retry.
 
-- `maxDelay`: The maximum number of milliseconds that the link should wait for any retry, with a default of `Infinity`.
+- `delay.max`: The maximum number of milliseconds that the link should wait for any retry.
 
-- `maxTries`: The max number of times to try a single operation before giving up, with a default of `5`.
+- `delay.jitter`: Whether delays between attempts should be randomized.
 
-- `jitter`: Whether delays between attempts should be randomized, with a default of `true`.
+- `attempts.max`: The max number of times to try a single operation before giving up.
 
-- `retryIf`: A predicate function that can determine whether a particular response should be retried.  By default, any response with an `error` is retried.
+- `attempts.retryIf`: A predicate function that can determine whether a particular response should be retried.
+
+The default configuration is equivalent to:
+
+```ts
+new RetryLink({
+  delay: {
+    initial: 300,
+    max: Infinity,
+    jitter: true,
+  },
+  attempts: {
+    max: 5,
+    retryIf: (_count, _operation, error) => !!error,
+  },
+});
+```
 
 ### On Exponential Backoff & Jitter
 
@@ -44,18 +60,22 @@ Additionally, with `jitter` enabled, delays are randomized anywhere between 0ms 
 
 These two features combined help alleviate [the thundering herd problem](https://en.wikipedia.org/wiki/Thundering_herd_problem), by distributing load during major outages.
 
-### Advanced Mode
+### Custom Strategies
 
-Instead of the options object, you may pass a function that provides full control over whether and how a particular error response should be retried.
+Instead of the options object, you may pass a function for `delay` and/or `attempts`, which implement custom strategies for each.  In both cases the function is given the same arguments (`count`, `operation`, `error`).
+
+The `attempts` function should return a boolean indicating whether the response should be retried.  If yes, the `delay` function is then called, and should return the number of milliseconds to delay by.
 
 ```ts
 import { RetryLink } from "apollo-link-retry";
 
-const link = new RetryLink((count, operation, error) => {
-  // Return false if you want to stop retrying this operation.
-  //
-  // Or, alternatively, return the number of milliseconds that it should be
-  // retried after.
+const link = new RetryLink(
+  attempts: (count, operation, error) => {
+    return !!error && operation.operationName != 'specialCase';
+  },
+  delay: (count, operation, error) => {
+    return count * 1000 * Math.random();
+  },
 });
 ```
 
