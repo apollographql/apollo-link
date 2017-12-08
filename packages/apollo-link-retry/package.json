@@ -57,7 +57,7 @@
     "tslint": "5.8.0",
     "typescript": "2.6.2",
     "uglify-js": "3.2.1",
-    "wait-for-observables": "^1.0.3"
+    "wait-for-observables": "1.0.3"
   },
   "jest": {
     "transform": {
