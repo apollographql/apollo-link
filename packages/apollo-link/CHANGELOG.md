@@ -2,6 +2,9 @@
 
 ### vNEXT
 
+# 1.0.6
+- update rollup
+
 # 1.0.5
 - fix bug where context wasn't merged when setting it
 

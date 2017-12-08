@@ -2,6 +2,9 @@
 
 ### vNext
 
+### 1.0.4
+- update rollup build
+
 ### 1.0.3
 - changed peer-dependency of apollo-link to actual dependency
 

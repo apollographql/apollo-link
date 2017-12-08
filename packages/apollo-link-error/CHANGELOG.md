@@ -2,6 +2,9 @@
 
 ### vNEXT
 
+### 1.0.3
+- export options as named interface [TypeScript]
+
 ### 1.0.2
 - changed peer-dependency of apollo-link to actual dependency
 - graphQLErrors alias networkError.result.errors on a networkError
