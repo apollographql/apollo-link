@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-error",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Error Apollo Link for GraphQL Network Stack",
   "author": "James Baxley <james@meteor.com>",
   "license": "MIT",
@@ -35,7 +35,7 @@
     "watch": "tsc -w -p ."
   },
   "dependencies": {
-    "apollo-link": "^1.0.4"
+    "apollo-link": "^1.0.6"
   },
   "devDependencies": {
     "@types/graphql": "0.11.7",
