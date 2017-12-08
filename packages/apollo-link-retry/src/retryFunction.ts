@@ -27,7 +27,7 @@ export interface RetryFunctionOptions {
    *
    * By default, all errors are retried.
    */
-  retryIf?: (error: any) => boolean;
+  retryIf?: (error: any, operation: Operation) => boolean;
 }
 
 export function buildRetryFunction(
@@ -35,6 +35,6 @@ export function buildRetryFunction(
 ): RetryFunction {
   return function retryFunction(count, operation, error) {
     if (count >= max) return false;
-    return retryIf ? retryIf(error) : !!error;
+    return retryIf ? retryIf(error, operation) : !!error;
   };
 }
