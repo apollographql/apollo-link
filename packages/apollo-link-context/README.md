@@ -21,7 +21,7 @@ const middleware = setContext((request, previousContext) => ({
 }))
 
 
-const asyncMiddleware = setContext((request) => new Promise((success, fail) => {
+const asyncMiddleware = setContext((request) => return new Promise((success, fail) => {
   // do some async lookup here
   setTimeout(() => {
     success({ token: 'async found token' })
