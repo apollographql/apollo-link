@@ -1,5 +1,5 @@
 export * from './link';
-export { makePromise, toPromise, fromPromise } from './linkUtils';
+export { createOperation, makePromise, toPromise, fromPromise } from './linkUtils';
 export * from './types';
 
 import * as Observable from 'zen-observable';
