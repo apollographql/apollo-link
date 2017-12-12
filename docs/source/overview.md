@@ -33,7 +33,7 @@ When writing a `RequestHandler`, the second argument is the way to call the next
 
 Composition is done using helper functions exported from the `apollo-link` package, or conveniently located on the `ApolloLink` class itself. These helpers are explained more [here](./composition.html). We suggest using the helpers directly on the `ApolloLink` however to make it easier to read and reason about what is being done in your code.
 
-<h3 id="context">Context</h3>
+<h2 id="context">Context</h2>
 
 Since links are meant to be composed, they need an easy way to send metadata about the request down the chain of links. They also need a way for the operation to send specific information to a link no matter where it was added to the chain. To accomplish this, each `Operation` has a `context` object which can be set from the operation while being written and read by each link. The context is read by using `operation.getContext()` and written using `operation.setContext(newContext)` or `operation.setContext((prevContext) => newContext)`. The `context` is *not* sent to the server, but is used for link to link communication. For example:
 
