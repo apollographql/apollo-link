@@ -12,11 +12,11 @@ const link = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors)
     graphQLErrors.map(({ message, locations, path }) =>
       console.log(
-        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
-      ),
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+      )
     );
   if (networkError) console.log(`[Network error]: ${networkError}`);
-})
+});
 ```
 
 Apollo Link is a system of modular components for GraphQL networking. [Read the docs](https://www.apollographql.com/docs/link/#usage) to learn how to use this link with libraries like Apollo Client and graphql-tools, or as a standalone client.
@@ -25,10 +25,10 @@ Apollo Link is a system of modular components for GraphQL networking. [Read the 
 
 Error Link takes a function that is called in the event of an error. This function is called with an object containing the following keys:
 
-- `operation`: The Operation that errored
-- `response`: The result returned from lower down in the link chain
-- `graphQLErrors`: An array of errors from the GraphQL endpoint
-- `networkError`: Any error during the link execution or server response, that wasn't delivered as part of the `errors` field in the GraphQL result
+* `operation`: The Operation that errored
+* `response`: The result returned from lower down in the link chain
+* `graphQLErrors`: An array of errors from the GraphQL endpoint
+* `networkError`: Any error during the link execution or server response, that wasn't delivered as part of the `errors` field in the GraphQL result
 
 <h2 id="error-categories">Error categorization</h2>
 
@@ -45,5 +45,5 @@ onError(({ response, operation }) => {
   if (operation.operationName === "IgnoreErrorsQuery") {
     response.errors = null;
   }
-})
+});
 ```
