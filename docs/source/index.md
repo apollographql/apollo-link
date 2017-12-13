@@ -1,27 +1,26 @@
 ---
-title: Apollo Link
+title: Composable networking for GraphQL
 sidebar_title: Introduction
 description: Apollo Link is a standard interface for modifying control flow of GraphQL requests and fetching GraphQL results.
 ---
 
-This is the official guide for getting started with Apollo Link in your application. Apollo Link is a simple yet powerful way to describe how you want to execute a GraphQL operation, and what you want to do with the results. It is completely customizable, which means you can use links with Apollo Client, `graphql-tools`, GraphiQL, and even as a standalone client.
+This is the official guide for getting started with Apollo Link in your application. Apollo Link is a simple yet powerful way to describe how you want to get the result of a GraphQL operation, and what you want to do with the results. You can use Apollo Link with Apollo Client, `graphql-tools` schema stitching, GraphiQL, and even as a standalone client, allowing you to reuse the same authorization, error handling, and control flow across all of your GraphQL fetching.
 
 <h2 id="installation">Installation</h2>
 
-First, you'll need to install the `apollo-link` npm package.
 ```bash
-npm install apollo-link --save
+npm install apollo-link
 ```
 
 Apollo Link has two main exports, the `ApolloLink` interface and the `execute` function. The `ApolloLink` interface is used to create custom links, compose multiple links together, and can be extended to support more powerful use cases. The `execute` function is how to use a link and an operation to create a request. For a deeper dive on how to use links in your application, check out our Apollo Link [concepts guide](./overview.html).
 
-<h2 id="apollo-client">Usage</h2>
+<h2 id="usage">Usage</h2>
 
-To get you started quickly, we've already created a couple links to cover some of the most common use cases. Let's look at some examples.
+Apollo Link is easy to use with a variety of GraphQL libraries. It's designed to go anywhere you need to fetch GraphQL results.
 
 <h3 id="apollo-client">Apollo Client</h3>
 
-Apollo Client is designed to work seamlessly with Apollo Link. A link is one of the required items when creating an [Apollo Client instance](/core/apollo-client-api.html#constructor). For a simple request link, we recommend using [`apollo-link-http`](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-http):
+Apollo Client works seamlessly with Apollo Link. A Link is one of the required items when creating an [Apollo Client instance](/core/apollo-client-api.html#constructor). For simple HTTP requests, we recommend using [`apollo-link-http`](./links/http.html):
 
 ```js
 import { ApolloLink } from 'apollo-link';
