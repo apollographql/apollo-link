@@ -144,6 +144,8 @@ Links use observables to support GraphQL subscriptions, live queries, and pollin
 
 If you want to control how you handle errors, `next` will receive GraphQL errors, while `error` be called on a network error. We recommend using [`apollo-link-error`](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-error) instead.
 
-<h3 id="customization">Customizing your own links</h3>
+<h2 id="customization">Customizing your own links</h2>
 
-Our links have you covered for the most common use cases, but what if you want to write your own middleware? What about offline support or persisted queries? The `ApolloLink` interface was designed to be customizable to fit your application's needs. To get started, first read our [concepts guide](./overview.html) and then learn how to write your own [stateless link](./stateless.html).
+The links documented here and provided by the community have you covered for the most common use cases, but we've designed things so that it's easy to write your own. If you need your own versions of offline support or persisted queries, the `ApolloLink` interface was designed to be as flexible as possible to fit your application's needs.
+
+To get started, first read our [concepts guide](./overview.html) and then learn how to write your own [stateless link](./stateless.html).
