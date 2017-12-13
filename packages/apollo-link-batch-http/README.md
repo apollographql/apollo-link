@@ -48,7 +48,7 @@ client.query({
   context: {
     // example of setting the headers with context per operation
     headers: {
-      authoriztion: Meteor.userId()
+      authorization: Meteor.userId()
     }
   }
 })
