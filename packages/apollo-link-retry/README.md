@@ -47,7 +47,7 @@ new RetryLink({
   },
   attempts: {
     max: 5,
-    retryIf: (_count, _operation, error) => !!error,
+    retryIf: (error, _operation) => !!error,
   },
 });
 ```
