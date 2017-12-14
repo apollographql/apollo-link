@@ -6,6 +6,7 @@ import {
   Operation,
   RequestHandler,
   FetchResult,
+  DevToolsHook,
 } from './types';
 
 import {
@@ -41,14 +42,14 @@ export const split = (
   if (isTerminating(leftLink) && isTerminating(rightLink)) {
     return new ApolloLink(operation => {
       return test(operation)
-        ? leftLink.request(operation) || Observable.of()
-        : rightLink.request(operation) || Observable.of();
+        ? leftLink.execute(operation) || Observable.of()
+        : rightLink.execute(operation) || Observable.of();
     });
   } else {
     return new ApolloLink((operation, forward) => {
       return test(operation)
-        ? leftLink.request(operation, forward) || Observable.of()
-        : rightLink.request(operation, forward) || Observable.of();
+        ? leftLink.execute(operation, forward) || Observable.of()
+        : rightLink.execute(operation, forward) || Observable.of();
     });
   }
 };
@@ -62,7 +63,9 @@ export const concat = (
   if (isTerminating(firstLink)) {
     console.warn(
       new LinkError(
-        `You are calling concat on a terminating link, which will have no effect`,
+        `You are calling concat on a terminating link, which will have no effect.
+        Learn more about terminating links in the Apollo Link docs:
+          https://www.apollographql.com/docs/link/overview.html#terminating`,
         firstLink,
       ),
     );
@@ -73,16 +76,16 @@ export const concat = (
   if (isTerminating(nextLink)) {
     return new ApolloLink(
       operation =>
-        firstLink.request(
+        firstLink.execute(
           operation,
-          op => nextLink.request(op) || Observable.of(),
+          op => nextLink.execute(op) || Observable.of(),
         ) || Observable.of(),
     );
   } else {
     return new ApolloLink((operation, forward) => {
       return (
-        firstLink.request(operation, op => {
-          return nextLink.request(op, forward) || Observable.of();
+        firstLink.execute(operation, op => {
+          return nextLink.execute(op, forward) || Observable.of();
         }) || Observable.of()
       );
     });
@@ -90,8 +93,18 @@ export const concat = (
 };
 
 export class ApolloLink {
+  private devToolsHook: DevToolsHook;
   constructor(request?: RequestHandler) {
-    if (request) this.request = request;
+    if (request) {
+      this.request = request;
+      // if (request() === null) {
+      //   throw new Error(`
+      //     Your request handler must return an Observable.
+      //     Visit the Apollo Link docs to learn more about request handlers:
+      //       https://www.apollographql.com/docs/link/overview.html#request
+      //   `);
+      // }
+    }
   }
 
   public static empty = empty;
@@ -113,8 +126,38 @@ export class ApolloLink {
   public request(
     operation: Operation,
     forward?: NextLink,
-  ): Observable<FetchResult> | null {
+  ): Observable<FetchResult> {
     throw new Error('request is not implemented');
+  }
+
+  private notifyDevTools(operation: Operation, result: FetchResult): void {
+    if (this.devToolsHook) {
+      this.devToolsHook({
+        network: {
+          operation,
+          result,
+        },
+      });
+    }
+  }
+
+  public connectToDevTools(hook: DevToolsHook): void {
+    if (!this.devToolsHook) {
+      this.devToolsHook = hook;
+    }
+  }
+
+  public execute(
+    operation: Operation,
+    forward?: NextLink,
+  ): Observable<FetchResult> {
+    return this.request(operation, forward).map(result => {
+      setTimeout(() => {
+        this.notifyDevTools(operation, result);
+      }, 0);
+
+      return result;
+    });
   }
 }
 
