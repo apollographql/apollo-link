@@ -2,15 +2,13 @@
 title: Composing Links
 ---
 
-<h2 id="composition">Composing Links</h2>
-
 Links represent small portions of how you want your GraphQL operation to be handled. In order to serve all of the needs of your app, Apollo Link is designed to be composed with other links to build complex actions as needed. Composition is managed in two main ways: additive and directional. Additive composition is how you can combine multiple links into a single chain and directional is how you can control which links are used depending on the operation.
 
 It's important to note that no matter how many links you have in your chain, your [terminating link](./overview.html#terminating) has to be last.
 
 *NOTE Future composition mechanisms like `race` are being considered. If you have ideas please submit an issue or PR for the style you need!*
 
-<h3 id="additive">Additive Composition</h3>
+<h2 id="additive">Additive Composition</h2>
 
 Apollo Link ships with two ways to compose links. The first is a method called `from` which is both exported, and is on the `ApolloLink` interface. `from` takes an array of links and combines them all into a single link. For example:
 
@@ -38,7 +36,7 @@ import HttpLink from 'apollo-link-http';
 const link = ApolloLink.concat(new Retry(), new HttpLink({ uri: '/graphql' }));
 ```
 
-<h3 id="directional">Directional Composition</h3>
+<h2 id="directional">Directional Composition</h2>
 
 Given that links are a way of implementing custom control flow for your GraphQL operation, Apollo Link provides and easy way to use different links depending on the operation itself (or any other global state). This is done using the `split` method which is exported as a function and is on the `ApolloLink` interface. Using the split function can be done like this:
 
@@ -58,6 +56,6 @@ const link = new Retry().split(
 
 Using `split` allows for per operation based control flow for things like sending mutations to a different server or giving them more retry attempts, for using a WS link for subscriptions and Http for everything else, it can even be used to customize which links are used for an authenticated user vs a public client.
 
-<h3 id="usage">Usage</h3>
+<h2 id="usage">Usage</h2>
 
 `split`, `from`, and `concat` are all exported as part of the ApolloLink interface as well as individual functions which can be uses. Both are great ways to build link chains and they are identical in functionality.

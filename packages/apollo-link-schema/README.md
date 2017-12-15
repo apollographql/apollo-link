@@ -20,6 +20,7 @@ When performing SSR _on the same server_ you can use this library to avoid makin
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { SchemaLink } from "apollo-link-schema";
+
 import schema from './path/to/your/schema';
 
 const graphqlClient = new ApolloClient({
@@ -31,6 +32,11 @@ const graphqlClient = new ApolloClient({
 
 ### Mocking
 ```js
+import { ApolloClient } from "apollo-client";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { SchemaLink } from "apollo-link-schema";
+import { makeExecutableSchema, addMockFunctionsToSchema } from 'graphql-tools';
+
 const typeDefs = `
   Query {
   ...
@@ -48,7 +54,7 @@ addMockFunctionsToSchema({
   mocks
 });
 
-const apolloCache = new InMemoryCache(window.__APOLLO_STATE_);
+const apolloCache = new InMemoryCache(window.__APOLLO_STATE__);
 
 const graphqlClient = new ApolloClient({
   cache: apolloCache,
