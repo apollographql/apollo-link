@@ -2,6 +2,10 @@
 
 ### vNEXT
 
+### 1.3.2
+
+- Update to graphql@0.12
+
 ### 1.3.1
 - export options as named interface [TypeScript]
 - Fix typescript bug with destructuring of parameter in createHttpLink (#189)
