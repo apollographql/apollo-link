@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-http",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "HTTP transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -42,7 +42,7 @@
     "watch": "tsc -w -p ."
   },
   "dependencies": {
-    "apollo-link": "^1.0.6"
+    "apollo-link": "^1.0.7"
   },
   "peerDependencies": {
     "graphql": "^0.11.0"
