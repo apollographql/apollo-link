@@ -1,40 +1,37 @@
 ---
-title: Retry Link
+title: apollo-link-retry
+description: Attempt an operation multiple times if it fails due to network or server errors.
 ---
 
-## Purpose
+Sometimes, you're in an unreliable situation but you would rather wait longer than explicitly fail an operation. `apollo-link-retry` provides exponential backoff, and jitters delays between attempts by default. It does not (currently) handle retries for GraphQL errors in the response, only for network errors.
 
-An Apollo Link to allow multiple attempts when an operation has failed, due to network or server errors. `RetryLink` provides exponential backoff, and jitters delays between attempts by default. It does not (currently) support retries for GraphQL errors.
+One such use case is to hold on to a request while a network connection is offline and retry until it comes back online.
 
-One such use case is to try a request while a network connection is offline and retry until it comes back online.
-
-## Installation
-
-```sh
-npm install apollo-link-retry --save
-```
-
-## Usage
-
-```ts
+```js
 import { RetryLink } from "apollo-link-retry";
 
 const link = new RetryLink();
 ```
 
-## Options
+<h2 id="options">Options</h2>
 
 The standard retry strategy provides exponential backoff with jittering, and takes the following options, grouped into `delay` and `attempt` strategies:
 
-- `delay.initial`: The number of milliseconds to wait before attempting the first retry.
+<h3 id="options.delay">options.delay</h3>
 
-- `delay.max`: The maximum number of milliseconds that the link should wait for any retry.
+* `delay.initial`: The number of milliseconds to wait before attempting the first retry.
 
-- `delay.jitter`: Whether delays between attempts should be randomized.
+* `delay.max`: The maximum number of milliseconds that the link should wait for any retry.
 
-- `attempts.max`: The max number of times to try a single operation before giving up.
+* `delay.jitter`: Whether delays between attempts should be randomized.
 
-- `attempts.retryIf`: A predicate function that can determine whether a particular response should be retried.
+<h3 id="options.attempts">options.attempts</h3>
+
+* `attempts.max`: The max number of times to try a single operation before giving up.
+
+* `attempts.retryIf`: A predicate function that can determine whether a particular response should be retried.
+
+<h3 id="options-default">Default configuration</h3>
 
 The default configuration is equivalent to:
 
@@ -43,30 +40,30 @@ new RetryLink({
   delay: {
     initial: 300,
     max: Infinity,
-    jitter: true,
+    jitter: true
   },
   attempts: {
     max: 5,
-    retryIf: (error, _operation) => !!error,
-  },
+    retryIf: (error, _operation) => !!error
+  }
 });
 ```
 
-### On Exponential Backoff & Jitter
+<h2 id="backoff">Avoiding thundering herd</h2>
 
-Starting with `initialDelay`, the delay of each subsequent retry is increased exponentially (by a power of 2).  For example, if `initialDelay` is 100, additional retries will occur after delays of 200, 400, 800, etc.
+Starting with `initialDelay`, the delay of each subsequent retry is increased exponentially, meaning it's multiplied by 2 each time. For example, if `initialDelay` is 100, additional retries will occur after delays of 200, 400, 800, etc.
 
-Additionally, with `jitter` enabled, delays are randomized anywhere between 0ms (instant), and 2x the configured delay so that, on average, they should occur at the same intervals.
+With the `jitter` option enabled, delays are randomized anywhere between 0ms (instant), and 2x the configured delay. This way you get the same result on average, but with random delays.
 
-These two features combined help alleviate [the thundering herd problem](https://en.wikipedia.org/wiki/Thundering_herd_problem), by distributing load during major outages.
+These two features combined help alleviate [the thundering herd problem](https://en.wikipedia.org/wiki/Thundering_herd_problem), by distributing load during major outages. Without these strategies, when your server comes back up it will be hit by all of your clients at once, possibly causing it to go down again.
 
-### Custom Strategies
+<h2 id="custom-strategies">Custom Strategies</h2>
 
-Instead of the options object, you may pass a function for `delay` and/or `attempts`, which implement custom strategies for each.  In both cases the function is given the same arguments (`count`, `operation`, `error`).
+Instead of the options object, you may pass a function for `delay` and/or `attempts`, which implement custom strategies for each. In both cases the function is given the same arguments (`count`, `operation`, `error`).
 
-The `attempts` function should return a boolean indicating whether the response should be retried.  If yes, the `delay` function is then called, and should return the number of milliseconds to delay by.
+The `attempts` function should return a boolean indicating whether the response should be retried. If yes, the `delay` function is then called, and should return the number of milliseconds to delay by.
 
-```ts
+```js
 import { RetryLink } from "apollo-link-retry";
 
 const link = new RetryLink(
@@ -78,6 +75,3 @@ const link = new RetryLink(
   },
 });
 ```
-
-## Context
-The Retry Link does not use the context for anything.

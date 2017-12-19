@@ -1,9 +1,7 @@
 ---
-title: Dedup Link
+title: apollo-link-dedup
+description: Deduplicate matching requests before making a request
 ---
-
-## Purpose
-An Apollo Link to deduplicate matching requests before making a request.
 
 *NOTE* This link is included by default when using apollo-client so you don't need to add it to your link chain if using apollo-client.
 

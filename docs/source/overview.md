@@ -1,5 +1,6 @@
 ---
-title: Overview
+title: Concepts Overview
+description: What you need to know to create your own Links.
 ---
 
 Apollo Link is designed to be a powerful way to compose actions around data handling with GraphQL. Each link represents a subset of functionality that can be composed with other links to create complex control flows of data. At a basic level, a link is a function that takes an operation and returns an observable. An operation is an object with the following information:
