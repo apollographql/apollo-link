@@ -12,7 +12,7 @@ In the past, Apollo users stored their application's local data in a separate
 Redux or MobX store. With `apollo-link-state`, you no longer have to maintain a
 second store for local state. Your Apollo Client cache is your single source of
 truth that holds all of your local data alongside your remote data. To access or
-update your local state, you use GraphQL queries & mutations just like you would
+update your local state, you use GraphQL queries and mutations just like you would
 for data from a server.
 
 When you use Apollo Client to manage your local state, you get all of the same
@@ -20,7 +20,7 @@ benefits you know and love like caching and offline persistence without having
 to set these features up yourself. 🎉 On top of that, you also benefit from the
 excellent developer experience of [Apollo
 DevTools](https://github.com/apollographql/apollo-client-devtools) for painless
-debugging & full visibility into your store.
+debugging and full visibility into your store.
 
 <h2 id="start">Quick start</h2>
 
@@ -109,7 +109,7 @@ const stateLink = withClientState({
 ```
 
 How do we query the `networkStatus` from our component? Similar to mutations,
-just use a query & the `@client` directive! With Apollo Link, we can combine
+just use a query and the `@client` directive! With Apollo Link, we can combine
 data sources, including your remote data, in one query.
 
 In this example, the `articles` field will either hit the cache or fetch from
@@ -133,8 +133,8 @@ const GET_ARTICLES = gql`
 
 To retrieve the data in your component, bind your query to your component via
 your favorite Apollo view layer integration just like you normally would. Then,
-React Apollo will attach both your remote & local data to `props.data` while
-tracking both loading & error states. Once the query returns a result, your
+React Apollo will attach both your remote and local data to `props.data` while
+tracking both loading and error states. Once the query returns a result, your
 component will update reactively.
 
 ```js
@@ -158,7 +158,7 @@ const WrappedComponent = graphql(GET_ARTICLES, {
 ```
 
 Now that you've seen how easy it is to manage your local state in Apollo Client,
-let's dive deeper into how `apollo-link-state` updates & queries your local
+let's dive deeper into how `apollo-link-state` updates and queries your local
 data: the resolver map.
 
 <h2 id="resolver">Resolver map</h2>
@@ -172,7 +172,7 @@ resolve to data or another function call.
 The three most important things to keep in mind about resolvers in
 `apollo-link-state` are this:
 
-1. The cache is added to the context for you so you can write & read data from
+1. The cache is added to the context for you so you can write and read data from
    the cache.
 2. The resolver should return an object with a `__typename` property unless
    you've overridden the `dataIdFromObject` function to not use `__typename` for
@@ -331,7 +331,7 @@ const stateLink = withClientState(
 <h2 id="cache">Updating the cache</h2>
 
 When you manage your local data with Apollo Client, your Apollo cache becomes
-the single source of truth for all your local & remote data. To update and read
+the single source of truth for all your local and remote data. To update and read
 from the cache, you access it via the `context`, which is the third argument
 passed to your resolver function.
 
@@ -383,10 +383,10 @@ cache, which allow you to pass in a query or a fragment.
 <h2 id="cache-api">Cache API</h2>
 
 The [Apollo cache API](docs/react/features/caching.html) has several other
-methods to assist you with updating & retrieving data. Here are some common use
+methods to assist you with updating and retrieving data. Here are some common use
 cases where it's best to use the DataProxy methods instead of `cache.writeData`.
 
-<h3 id="write-query">writeQuery & readQuery</h3>
+<h3 id="write-query">writeQuery and readQuery</h3>
 
 Sometimes, the data you're writing to the cache depends on data that's already
 in the cache; for example, you're adding an item to a list or setting a property
@@ -441,7 +441,7 @@ required by the query. Under the hood, `cache.writeData` automatically
 constructs a query from the `data` object you pass in and calls
 `cache.writeQuery`.
 
-<h3 id="write-fragment">writeFragment & readFragment</h3>
+<h3 id="write-fragment">writeFragment and readFragment</h3>
 
 `cache.readFragment` is similar to `cache.readQuery` except you pass in a
 fragment. This allows for greater flexibility because you can read from any
@@ -472,8 +472,8 @@ const todos = {
 };
 ```
 
-In order to toggle our todo, we need the todo & its status from the cache, which
-is why we call `cache.readFragment` & pass in a fragment to retrieve it. The
+In order to toggle our todo, we need the todo and its status from the cache, which
+is why we call `cache.readFragment` and pass in a fragment to retrieve it. The
 `id` we're passing into `cache.readFragment` refers to its cache key. If you're
 using the `InMemoryCache` and not overriding the `dataObjectFromId` config
 property, your cache key should be `__typename:id`.
@@ -483,7 +483,7 @@ To write the data to the cache, you can use either `cache.writeFragment` or
 `cache.writeFragment` requires that you pass in a fragment to validate that the
 shape of the data you're writing to the cache node is the same as the shape of
 the data required by the fragment. Under the hood, `cache.writeData`
-automatically constructs a fragment from the `data` object & `id` you pass in
+automatically constructs a fragment from the `data` object and `id` you pass in
 and calls `cache.writeFragment`.
 
 <h2 id="directive">@client directive</h2>
@@ -496,12 +496,12 @@ uses the `@rest` directive to specify fields that should be fetched from a REST
 endpoint. To clarify, the `@client` and `@rest` directives never modify the
 shape of the result; rather, they specify where the data is coming from.
 
-<h3 id="combine">Combining local & remote data</h3>
+<h3 id="combine">Combining local and remote data</h3>
 
 What's really cool about using a `@client` directive to specify client-side only
-fields is that you can actually combine local & remote data in one query. In
+fields is that you can actually combine local and remote data in one query. In
 this example, we're querying our user's name from our GraphQL server and their
-cart from our Apollo cache. Both the local & remote data will be merged together
+cart from our Apollo cache. Both the local and remote data will be merged together
 in one result.
 
 ```js
@@ -521,7 +521,7 @@ const getUser = gql`
 `;
 ```
 
-Thanks to the power of directives & Apollo Link, you'll soon be able to request
+Thanks to the power of directives and Apollo Link, you'll soon be able to request
 `@client` data, `@rest` data, and data from your GraphQL server all in one
 query! 🎉
 
@@ -555,14 +555,14 @@ validation. That's because we haven't settled on how to approach this piece of
 the puzzle yet.
 
 Type checking at runtime is problematic because the necessary modules from
-`graphql-js` are very large. Including the modules for defining a schema &
+`graphql-js` are very large. Including the modules for defining a schema and
 validating a request against a schema would significantly increase bundle size,
 so we'd like to avoid this approach. This is why we don't send your server's
 entire schema over to Apollo Client.
 
 Ideally, we'd like to perform type checking at build time to avoid increasing
 bundle size. This is comparable to the rest of the JavaScript ecosystem - for
-example, Flow & TypeScript types are both stripped out at build time.
+example, Flow and TypeScript types are both stripped out at build time.
 
 We don't consider this a blocker for using `apollo-link-state`, but it is a
 feature we'd like to build before the v1.0 release. If you have any ideas on how
@@ -576,7 +576,7 @@ in Apollo Client as seamless as possible. To accomplish this, we want to
 minimize boilerplate as much as possible so you can be productive quickly.
 
 We're nearly there; for example, `cache.writeData` was added as a helper method
-to reduce the boilerplate of `cache.writeQuery` & `cache.writeFragment`. We
+to reduce the boilerplate of `cache.writeQuery` and `cache.writeFragment`. We
 think we can improve the boilerplate required for binding your query or mutation
 to a component. For example, this is a common pattern for performing a
 client-side mutation:
@@ -603,7 +603,7 @@ withClientMutations(({ writeField }) => (
 ```
 
 Once we find out how people are using `apollo-link-state`, we can start to write
-helper components for making common mutation & query patterns even easier. These
+helper components for making common mutation and query patterns even easier. These
 components will be separate from React Apollo and will live in another package
 in the `apollo-link-state` repo. If you'd like to help build them, please get in
 touch!
