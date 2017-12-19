@@ -1,5 +1,8 @@
-
 ### vNext
+
+### 1.0.4
+
+- Update to graphql@0.12
 
 ### 1.0.3
 - export options as named interface [TypeScript]

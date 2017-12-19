@@ -2,6 +2,10 @@
 
 ### vNEXT
 
+# 1.0.7
+
+- Update to graphql@0.12
+
 # 1.0.6
 - update rollup
 
