@@ -1,9 +1,7 @@
 ---
-title: Schema Link
+title: apollo-link-schema
+description: Assists with mocking and server-side rendering
 ---
-
-## Purpose
-An Apollo Link to allow mocking and server rendering
 
 ## Installation
 
