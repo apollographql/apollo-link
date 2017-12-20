@@ -44,7 +44,7 @@ import { withClientState } from 'apollo-link-state';
 
 const stateLink = withClientState({
   Mutation: {
-    networkStatus: (_, { isConnected }, { cache }) => {
+    updateNetworkStatus: (_, { isConnected }, { cache }) => {
       const data = {
         networkStatus: { isConnected, __typename: 'NetworkStatus' },
       };
@@ -57,7 +57,7 @@ const stateLink = withClientState({
 
 To hook up your state link to Apollo Client, concatenate it to the other links
 in your Apollo Link chain. Your state link should be one of the last links in
-your chain. Then, pass your link chain to the Apollo Client constructor.
+your chain, but before `HttpLink` so local queries and mutations are intercepted before they hit the network. It should also go before [`apollo-link-persisted-queries`](https://github.com/apollographql/apollo-link-persisted-queries) if you are using persisted queries.  Then, pass your link chain to the Apollo Client constructor.
 
 ```js
 const client = new ApolloClient({
@@ -74,8 +74,10 @@ in the cache with our resolver map that we passed into our state link.
 ```js
 const UPDATE_NETWORK_STATUS = gql`
   mutation updateNetworkStatus($isConnected: Boolean) {
-    networkStatus(isConnected: $isConnected) @client {
-      isConnected
+    updateNetworkStatus(isConnected: $isConnected) @client {
+      networkStatus {
+        isConnected
+      }
     }
   }
 `;
@@ -99,11 +101,10 @@ try to access the data, we should guard against undefined values by providing an
 initial state for our query in our resolver map.
 
 ```js
-import { withClientState } from 'apollo-link-state';
-
 const stateLink = withClientState({
+  Mutation: { /* same as above */ },
   Query: {
-    networkStatus: () => null,
+    networkStatus: () => false,
   },
 });
 ```
@@ -172,7 +173,7 @@ resolve to data or another function call.
 The three most important things to keep in mind about resolvers in
 `apollo-link-state` are this:
 
-1. The cache is added to the context for you so you can write and read data from
+1. The cache is added to the context (the third argument to the resolver) for you so you can write and read data from
    the cache.
 2. The resolver should return an object with a `__typename` property unless
    you've overridden the `dataIdFromObject` function to not use `__typename` for
@@ -223,7 +224,7 @@ fieldName: (obj, args, context, info) => result;
    parent field or the `ROOT_QUERY` object in the case of a top-level query or
    mutation. Don't worry about this one too much for `apollo-link-state`.
 2. `args`: An object containing all of the arguments passed into the field. For
-   example, if you called the field with `networkStatus(isConnected: true)`, the
+   example, if you called a mutation with `updateNetworkStatus(isConnected: true)`, the
    `args` object would be `{ isConnected: true }`.
 3. `context`: The context object, which is shared by all links in the Apollo
    Link chain. The most important thing to note here is that we've added the
@@ -240,7 +241,7 @@ docs](/docs/graphql-tools/resolvers.html#Resolver-function-signature).
 
 <h3 id="async">Async resolvers</h3>
 
-`apollo-link-state` supports asynchronous resolver functions. This can be useful
+`apollo-link-state` supports asynchronous resolver functions. These functions can either be `async` functions or ordinary functions that return a Promise. This can be useful
 for performing side effects like accessing a device API. If you would like to
 hit a REST endpoint with your resolver, [we recommend checking out
 `apollo-link-rest`](https://github.com/apollographql/apollo-link-rest) instead,
@@ -377,7 +378,7 @@ const user = {
 
 `cache.writeData` should cover most of your needs; however, there are some cases
 where the data you're writing to the cache depends on the data that's already
-there. In that scenario, you should use the DataProxy methods on the Apollo
+there. In that scenario, you should use [the DataProxy methods](/docs/react/features/caching.html) on the Apollo
 cache, which allow you to pass in a query or a fragment.
 
 <h2 id="cache-api">Cache API</h2>
@@ -529,9 +530,9 @@ query! 🎉
 
 To get you started, here are some example apps:
 
-* [Todo:](https://github.com/apollographql/apollo-link-state/tree/master/examples/todo)
+* [Todo](https://github.com/apollographql/apollo-link-state/tree/master/examples/todo):
   The classic todo list example
-* [Async:](https://github.com/apollographql/apollo-link-state/tree/master/examples/async)
+* [Async](https://github.com/apollographql/apollo-link-state/tree/master/examples/async):
   Uses a React Native Web device API with async resolvers
 
 If you have an example app that you'd like to be featured, please send us a PR!
@@ -552,7 +553,7 @@ love to have you on board as a contributor!
 
 You may have noticed we haven't mentioned a client-side schema yet or any type
 validation. That's because we haven't settled on how to approach this piece of
-the puzzle yet.
+the puzzle yet. It is something we would like to tackle soon in order to enable schema introspection and autocomplete with GraphiQL in Apollo DevTools.
 
 Type checking at runtime is problematic because the necessary modules from
 `graphql-js` are very large. Including the modules for defining a schema and
@@ -561,7 +562,7 @@ so we'd like to avoid this approach. This is why we don't send your server's
 entire schema over to Apollo Client.
 
 Ideally, we'd like to perform type checking at build time to avoid increasing
-bundle size. This is comparable to the rest of the JavaScript ecosystem - for
+bundle size. This is comparable to the rest of the JavaScript ecosystem---for
 example, Flow and TypeScript types are both stripped out at build time.
 
 We don't consider this a blocker for using `apollo-link-state`, but it is a
@@ -593,8 +594,7 @@ const WrappedComponent = graphql(
 ));
 ```
 
-What if we could shorten it to something like this so you didn't have to pass in
-a mutation just to write one field to the cache?
+What if we could shorten it to something like this, so you don't have to write out the mutation details yourself, but it's still implemented as a mutation under the hood?
 
 ```js
 withClientMutations(({ writeField }) => (
