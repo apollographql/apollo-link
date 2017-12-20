@@ -112,4 +112,30 @@ describe('SchemaLink', () => {
     );
   });
 
+  it('supports query which is executed synchronously', done => {
+    const next = jest.fn();
+    const link = new SchemaLink({ schema });
+    const introspectionQuery = gql`
+      query IntrospectionQuery {
+        __schema {
+          types {
+            name
+          }
+        }
+      }
+    `;
+    const observable = execute(link, {
+      query: introspectionQuery,
+    });
+    observable.subscribe(
+      next,
+      error => expect(false),
+      result => {
+        expect(next).toHaveBeenCalledTimes(1);
+        console.log(result);
+        // expect(result).toEqual();
+        done();
+      },
+    );
+  });
 });
