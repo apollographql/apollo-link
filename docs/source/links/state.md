@@ -12,8 +12,8 @@ In the past, Apollo users stored their application's local data in a separate
 Redux or MobX store. With `apollo-link-state`, you no longer have to maintain a
 second store for local state. Your Apollo Client cache is your single source of
 truth that holds all of your local data alongside your remote data. To access or
-update your local state, you use GraphQL queries and mutations just like you would
-for data from a server.
+update your local state, you use GraphQL queries and mutations just like you
+would for data from a server.
 
 When you use Apollo Client to manage your local state, you get all of the same
 benefits you know and love like caching and offline persistence without having
@@ -57,7 +57,11 @@ const stateLink = withClientState({
 
 To hook up your state link to Apollo Client, concatenate it to the other links
 in your Apollo Link chain. Your state link should be one of the last links in
-your chain, but before `HttpLink` so local queries and mutations are intercepted before they hit the network. It should also go before [`apollo-link-persisted-queries`](https://github.com/apollographql/apollo-link-persisted-queries) if you are using persisted queries.  Then, pass your link chain to the Apollo Client constructor.
+your chain, but before `HttpLink` so local queries and mutations are intercepted
+before they hit the network. It should also go before
+[`apollo-link-persisted-queries`](https://github.com/apollographql/apollo-link-persisted-queries)
+if you are using persisted queries. Then, pass your link chain to the Apollo
+Client constructor.
 
 ```js
 const client = new ApolloClient({
@@ -98,13 +102,16 @@ const WrappedComponent = graphql(UPDATE_NETWORK_STATUS, {
 What if we want to access our network status data from another component? Since
 we don't know whether our `UPDATE_NETWORK_STATUS` mutation will fire before we
 try to access the data, we should guard against undefined values by providing an
-initial state for our query in our resolver map.
+initial state for our query in our resolver map. Your query resolver will only
+fire on a cache miss, which is why we use it to return an initial state.
 
 ```js
 const stateLink = withClientState({
-  Mutation: { /* same as above */ },
+  Mutation: {
+    /* same as above */
+  },
   Query: {
-    networkStatus: () => false,
+    networkStatus: () => ({ isConnected: false, __typename: 'NetworkStatus' }),
   },
 });
 ```
@@ -170,17 +177,20 @@ functions for each GraphQL object type. You can think of a GraphQL query or
 mutation as a tree of function calls for each field. These function calls
 resolve to data or another function call.
 
-The three most important things to keep in mind about resolvers in
+The four most important things to keep in mind about resolvers in
 `apollo-link-state` are this:
 
-1. The cache is added to the context (the third argument to the resolver) for you so you can write and read data from
-   the cache.
+1. The cache is added to the context (the third argument to the resolver) for
+   you so you can write and read data from the cache.
 2. The resolver should return an object with a `__typename` property unless
    you've overridden the `dataIdFromObject` function to not use `__typename` for
    cache keys. This is necessary for Apollo Client to [normalize the data in the
    cache](/docs/react/basics/caching.html#normalization) properly.
 3. Resolver functions can return a promise if you need to perform asynchronous
    side effects.
+4. Query resolvers are only called on a cache miss. Since the first time you
+   call the query will be a cache miss, you should return any default state from
+   your resolver function.
 
 If any of that sounds confusing, I promise it will be cleared up by the end of
 this section. Keep on reading! 😀
@@ -224,8 +234,8 @@ fieldName: (obj, args, context, info) => result;
    parent field or the `ROOT_QUERY` object in the case of a top-level query or
    mutation. Don't worry about this one too much for `apollo-link-state`.
 2. `args`: An object containing all of the arguments passed into the field. For
-   example, if you called a mutation with `updateNetworkStatus(isConnected: true)`, the
-   `args` object would be `{ isConnected: true }`.
+   example, if you called a mutation with `updateNetworkStatus(isConnected:
+   true)`, the `args` object would be `{ isConnected: true }`.
 3. `context`: The context object, which is shared by all links in the Apollo
    Link chain. The most important thing to note here is that we've added the
    Apollo cache to the context for you, so you can manipulate the cache with
@@ -241,12 +251,13 @@ docs](/docs/graphql-tools/resolvers.html#Resolver-function-signature).
 
 <h3 id="async">Async resolvers</h3>
 
-`apollo-link-state` supports asynchronous resolver functions. These functions can either be `async` functions or ordinary functions that return a Promise. This can be useful
-for performing side effects like accessing a device API. If you would like to
-hit a REST endpoint with your resolver, [we recommend checking out
-`apollo-link-rest`](https://github.com/apollographql/apollo-link-rest) instead,
-which is a more complete solution for using your REST endpoints with Apollo
-Client.
+`apollo-link-state` supports asynchronous resolver functions. These functions
+can either be `async` functions or ordinary functions that return a Promise.
+This can be useful for performing side effects like accessing a device API. If
+you would like to hit a REST endpoint with your resolver, [we recommend checking
+out `apollo-link-rest`](https://github.com/apollographql/apollo-link-rest)
+instead, which is a more complete solution for using your REST endpoints with
+Apollo Client.
 
 For React Native and most browser APIs, you should set up a listener in a
 component lifecycle method and pass in your mutation trigger function as the
@@ -332,9 +343,9 @@ const stateLink = withClientState(
 <h2 id="cache">Updating the cache</h2>
 
 When you manage your local data with Apollo Client, your Apollo cache becomes
-the single source of truth for all your local and remote data. To update and read
-from the cache, you access it via the `context`, which is the third argument
-passed to your resolver function.
+the single source of truth for all your local and remote data. To update and
+read from the cache, you access it via the `context`, which is the third
+argument passed to your resolver function.
 
 <h3 id="write-data">writeData</h3>
 
@@ -378,14 +389,16 @@ const user = {
 
 `cache.writeData` should cover most of your needs; however, there are some cases
 where the data you're writing to the cache depends on the data that's already
-there. In that scenario, you should use [the DataProxy methods](/docs/react/features/caching.html) on the Apollo
-cache, which allow you to pass in a query or a fragment.
+there. In that scenario, you should use [the DataProxy
+methods](/docs/react/features/caching.html) on the Apollo cache, which allow you
+to pass in a query or a fragment.
 
 <h2 id="cache-api">Cache API</h2>
 
 The [Apollo cache API](docs/react/features/caching.html) has several other
-methods to assist you with updating and retrieving data. Here are some common use
-cases where it's best to use the DataProxy methods instead of `cache.writeData`.
+methods to assist you with updating and retrieving data. Here are some common
+use cases where it's best to use the DataProxy methods instead of
+`cache.writeData`.
 
 <h3 id="write-query">writeQuery and readQuery</h3>
 
@@ -473,11 +486,11 @@ const todos = {
 };
 ```
 
-In order to toggle our todo, we need the todo and its status from the cache, which
-is why we call `cache.readFragment` and pass in a fragment to retrieve it. The
-`id` we're passing into `cache.readFragment` refers to its cache key. If you're
-using the `InMemoryCache` and not overriding the `dataObjectFromId` config
-property, your cache key should be `__typename:id`.
+In order to toggle our todo, we need the todo and its status from the cache,
+which is why we call `cache.readFragment` and pass in a fragment to retrieve it.
+The `id` we're passing into `cache.readFragment` refers to its cache key. If
+you're using the `InMemoryCache` and not overriding the `dataObjectFromId`
+config property, your cache key should be `__typename:id`.
 
 To write the data to the cache, you can use either `cache.writeFragment` or
 `cache.writeData`. The only difference between the two is that
@@ -502,8 +515,8 @@ shape of the result; rather, they specify where the data is coming from.
 What's really cool about using a `@client` directive to specify client-side only
 fields is that you can actually combine local and remote data in one query. In
 this example, we're querying our user's name from our GraphQL server and their
-cart from our Apollo cache. Both the local and remote data will be merged together
-in one result.
+cart from our Apollo cache. Both the local and remote data will be merged
+together in one result.
 
 ```js
 const getUser = gql`
@@ -522,9 +535,9 @@ const getUser = gql`
 `;
 ```
 
-Thanks to the power of directives and Apollo Link, you'll soon be able to request
-`@client` data, `@rest` data, and data from your GraphQL server all in one
-query! 🎉
+Thanks to the power of directives and Apollo Link, you'll soon be able to
+request `@client` data, `@rest` data, and data from your GraphQL server all in
+one query! 🎉
 
 <h2 id="examples">Example apps</h2>
 
@@ -553,7 +566,8 @@ love to have you on board as a contributor!
 
 You may have noticed we haven't mentioned a client-side schema yet or any type
 validation. That's because we haven't settled on how to approach this piece of
-the puzzle yet. It is something we would like to tackle soon in order to enable schema introspection and autocomplete with GraphiQL in Apollo DevTools.
+the puzzle yet. It is something we would like to tackle soon in order to enable
+schema introspection and autocomplete with GraphiQL in Apollo DevTools.
 
 Type checking at runtime is problematic because the necessary modules from
 `graphql-js` are very large. Including the modules for defining a schema and
@@ -594,7 +608,9 @@ const WrappedComponent = graphql(
 ));
 ```
 
-What if we could shorten it to something like this, so you don't have to write out the mutation details yourself, but it's still implemented as a mutation under the hood?
+What if we could shorten it to something like this, so you don't have to write
+out the mutation details yourself, but it's still implemented as a mutation
+under the hood?
 
 ```js
 withClientMutations(({ writeField }) => (
@@ -603,7 +619,7 @@ withClientMutations(({ writeField }) => (
 ```
 
 Once we find out how people are using `apollo-link-state`, we can start to write
-helper components for making common mutation and query patterns even easier. These
-components will be separate from React Apollo and will live in another package
-in the `apollo-link-state` repo. If you'd like to help build them, please get in
-touch!
+helper components for making common mutation and query patterns even easier.
+These components will be separate from React Apollo and will live in another
+package in the `apollo-link-state` repo. If you'd like to help build them,
+please get in touch!
