@@ -130,10 +130,8 @@ describe('SchemaLink', () => {
     observable.subscribe(
       next,
       error => expect(false),
-      result => {
+      () => {
         expect(next).toHaveBeenCalledTimes(1);
-        console.log(result);
-        // expect(result).toEqual();
         done();
       },
     );
