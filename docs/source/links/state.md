@@ -608,7 +608,7 @@ validation. That's because we haven't settled on how to approach this piece of
 the puzzle yet. It is something we would like to tackle soon in order to enable
 schema introspection and autocomplete with GraphiQL in Apollo DevTools, as well as code generation with `apollo-codegen`.
 
-Havine the same runtime type checking as a GraphQL server does is problematic because the necessary modules from
+Having the same runtime type checking as a GraphQL server does is problematic because the necessary modules from
 `graphql-js` are very large. Including the modules for defining a schema and
 validating a request against a schema would significantly increase bundle size,
 so we'd like to avoid this approach. This is why we don't send your server's
