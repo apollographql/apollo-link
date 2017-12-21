@@ -5,22 +5,20 @@ description: Manage your local data with Apollo Client
 
 Managing remote data from an external API is simple with Apollo Client, but
 where do we put all of our data that doesn't fit in that category? Nearly all
-apps need to centralize client-side data from user interactions and device APIs
-somewhere!
+apps need some way to centralize client-side data from user interactions and device APIs.
 
 In the past, Apollo users stored their application's local data in a separate
 Redux or MobX store. With `apollo-link-state`, you no longer have to maintain a
-second store for local state. Your Apollo Client cache is your single source of
+second store for local state. You can instead use the Apollo Client cache as your single source of
 truth that holds all of your local data alongside your remote data. To access or
 update your local state, you use GraphQL queries and mutations just like you
 would for data from a server.
 
 When you use Apollo Client to manage your local state, you get all of the same
 benefits you know and love like caching and offline persistence without having
-to set these features up yourself. 🎉 On top of that, you also benefit from the
-excellent developer experience of [Apollo
-DevTools](https://github.com/apollographql/apollo-client-devtools) for painless
-debugging and full visibility into your store.
+to set these features up yourself. 🎉 On top of that, you also benefit from the [Apollo
+DevTools](https://github.com/apollographql/apollo-client-devtools) for
+debugging and visibility into your store.
 
 <h2 id="start">Quick start</h2>
 
@@ -30,7 +28,7 @@ To get started, install `apollo-link-state` from npm:
 npm install apollo-link-state --save
 ```
 
-The rest of the instructions assume that you already [set up Apollo
+The rest of the instructions assume that you have already [set up Apollo
 Client](/docs/react/basics/setup.html#installation) in your application. After
 you install the package, you can create your state link by calling
 `withClientState` and passing in a resolver map. A resolver map describes how to
@@ -42,16 +40,21 @@ our network is connected with a boolean flag:
 ```js
 import { withClientState } from 'apollo-link-state';
 
+// This is the same cache you pass into new ApolloClient
+const cache = new InMemoryCache(...);
+
 const stateLink = withClientState({
-  Mutation: {
-    updateNetworkStatus: (_, { isConnected }, { cache }) => {
-      const data = {
-        networkStatus: { isConnected, __typename: 'NetworkStatus' },
-      };
-      cache.writeData({ data });
-      return data;
+  cache,
+  resolvers: {
+    Mutation: {
+      updateNetworkStatus: (_, { isConnected }, { cache }) => {
+        const data = {
+          networkStatus: { isConnected },
+        };
+        cache.writeData({ data });
+      },
     },
-  },
+  }
 });
 ```
 
@@ -64,7 +67,7 @@ Client constructor.
 
 ```js
 const client = new ApolloClient({
-  cache: new InMemoryCache(),
+  cache,
   link: ApolloLink.from([
     stateLink,
     new HttpLink()
@@ -80,11 +83,7 @@ in the cache with our resolver map that we passed into our state link.
 ```js
 const UPDATE_NETWORK_STATUS = gql`
   mutation updateNetworkStatus($isConnected: Boolean) {
-    updateNetworkStatus(isConnected: $isConnected) @client {
-      networkStatus {
-        isConnected
-      }
-    }
+    updateNetworkStatus(isConnected: $isConnected) @client
   }
 `;
 ```
@@ -103,18 +102,35 @@ const WrappedComponent = graphql(UPDATE_NETWORK_STATUS, {
 
 What if we want to access our network status data from another component? Since
 we don't know whether our `UPDATE_NETWORK_STATUS` mutation will fire before we
-try to access the data, we should guard against undefined values by providing an
-initial state for our query in our resolver map. Your query resolver will only
-fire on a cache miss, which is why we use it to return an initial state.
+try to access the data, we should guard against undefined values by providing a
+default state as part of the state link initialization:
 
 ```js
 const stateLink = withClientState({
-  Mutation: {
-    /* same as above */
+  cache,
+  resolvers: {
+    Mutation: {
+      /* same as above */
+    },
   },
-  Query: {
-    networkStatus: () => ({ isConnected: false, __typename: 'NetworkStatus' }),
+  defaults: {
+    networkStatus: {
+      __typename: 'NetworkStatus',
+      isConnected: true,
+    }
   },
+});
+```
+
+This is the same as calling `writeData` yourself with an initial value:
+
+```js
+// Same as passing defaults above
+cache.writeData({
+  networkStatus: {
+    __typename: 'NetworkStatus',
+    isConnected: true,
+  }
 });
 ```
 
@@ -142,10 +158,10 @@ const GET_ARTICLES = gql`
 ```
 
 To retrieve the data in your component, bind your query to your component via
-your favorite Apollo view layer integration just like you normally would. Then,
+your favorite Apollo view layer integration just like you normally would. In this case, we'll use React as an example.
 React Apollo will attach both your remote and local data to `props.data` while
 tracking both loading and error states. Once the query returns a result, your
-component will update reactively.
+component will update reactively. Updates to Apollo Client state via `apollo-link-state` will also automatically update any components using that data in a query.
 
 ```js
 const WrappedComponent = graphql(GET_ARTICLES, {
@@ -337,9 +353,28 @@ import currentUser from './resolvers/user';
 import cameraRoll from './resolvers/camera';
 import networkStatus from './resolvers/camera';
 
-const stateLink = withClientState(
-  merge({}, currentUser, cameraRoll, networkStatus),
-);
+const stateLink = withClientState({
+  cache,
+  resolvers: merge(currentUser, cameraRoll, networkStatus),
+});
+```
+
+You can do the same thing with the `defaults` option as well:
+
+```js
+const currentUser = {
+  defaults: {
+    currentUser: null,
+  },
+  resolvers: { ... }
+};
+
+const cameraRoll = { defaults: { ... }, resolvers: { ... }};
+
+const stateLink = withClientState({
+  ...merge(currentUser, cameraRoll, networkStatus),
+  cache,
+});
 ```
 
 <h2 id="cache">Updating the cache</h2>
@@ -363,7 +398,6 @@ const filter = {
     updateVisibilityFilter: (_, { visibilityFilter }, { cache }) => {
       const data = { visibilityFilter, __typename: 'Filter' };
       cache.writeData({ data });
-      return data;
     },
   },
 };
@@ -383,7 +417,6 @@ const user = {
     updateUserEmail: (_, { id, email }, { cache }) => {
       const data = { email };
       cache.writeData({ id: `User:${id}`, data });
-      return data;
     },
   },
 };
@@ -392,8 +425,8 @@ const user = {
 `cache.writeData` should cover most of your needs; however, there are some cases
 where the data you're writing to the cache depends on the data that's already
 there. In that scenario, you should use [the DataProxy
-methods](/docs/react/features/caching.html) on the Apollo cache, which allow you
-to pass in a query or a fragment.
+methods](/docs/react/features/caching.html) API on the Apollo cache, which allows you
+to pass in a query or a fragment. We'll explain some of those use cases below.
 
 <h2 id="cache-api">Cache API</h2>
 
@@ -414,30 +447,32 @@ write any data. Let's look at an example where we add a todo to a list:
 let nextTodoId = 0;
 
 const todos = {
-  Query: {
-    todos: () => [],
+  defaults: {
+    todos: [],
   },
-  Mutation: {
-    addTodo: (_, { text }, { cache }) => {
-      const query = gql`
-        query GetTodos {
-          todos @client {
-            id
-            text
-            completed
+  resolvers: {
+    Mutation: {
+      addTodo: (_, { text }, { cache }) => {
+        const query = gql`
+          query GetTodos {
+            todos @client {
+              id
+              text
+              completed
+            }
           }
-        }
-      `;
-      const previous = cache.readQuery({ query });
-      const data = {
-        todos: previous.todos.concat([
-          { id: nextTodoId++, text, completed: false, __typename: 'TodoItem' },
-        ]),
-      };
+        `;
 
-      // you can also do cache.writeData({ data }) here if you prefer
-      cache.writeQuery({ query, data });
-      return data;
+        const previous = cache.readQuery({ query });
+        const newTodo = { id: nextTodoId++, text, completed: false, __typename: 'TodoItem' },
+        const data = {
+          todos: previous.todos.concat([newTodo]),
+        };
+
+        // you can also do cache.writeData({ data }) here if you prefer
+        cache.writeQuery({ query, data });
+        return newTodo;
+      },
     },
   },
 };
@@ -469,20 +504,22 @@ can help us toggle one of our todos as completed.
 
 ```js
 const todos = {
-  Mutation: {
-    toggleTodo: (_, variables, { cache }) => {
-      const id = `TodoItem:${variables.id}`;
-      const fragment = gql`
-        fragment completeTodo on TodoItem {
-          completed
-        }
-      `;
-      const todo = cache.readFragment({ fragment, id });
-      const data = { ...todo, completed: !todo.completed };
+  resolvers: {
+    Mutation: {
+      toggleTodo: (_, variables, { cache }) => {
+        const id = `TodoItem:${variables.id}`;
+        const fragment = gql`
+          fragment completeTodo on TodoItem {
+            completed
+          }
+        `;
+        const todo = cache.readFragment({ fragment, id });
+        const data = { ...todo, completed: !todo.completed };
 
-      // you can also do cache.writeData({ data, id }) here if you prefer
-      cache.writeFragment({ fragment, id, data });
-      return data;
+        // you can also do cache.writeData({ data, id }) here if you prefer
+        cache.writeFragment({ fragment, id, data });
+        return null;
+      },
     },
   },
 };
@@ -569,9 +606,9 @@ love to have you on board as a contributor!
 You may have noticed we haven't mentioned a client-side schema yet or any type
 validation. That's because we haven't settled on how to approach this piece of
 the puzzle yet. It is something we would like to tackle soon in order to enable
-schema introspection and autocomplete with GraphiQL in Apollo DevTools.
+schema introspection and autocomplete with GraphiQL in Apollo DevTools, as well as code generation with `apollo-codegen`.
 
-Type checking at runtime is problematic because the necessary modules from
+Having the same runtime type checking as a GraphQL server does is problematic because the necessary modules from
 `graphql-js` are very large. Including the modules for defining a schema and
 validating a request against a schema would significantly increase bundle size,
 so we'd like to avoid this approach. This is why we don't send your server's
