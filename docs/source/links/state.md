@@ -464,14 +464,14 @@ const todos = {
         `;
 
         const previous = cache.readQuery({ query });
+        const newTodo = { id: nextTodoId++, text, completed: false, __typename: 'TodoItem' },
         const data = {
-          todos: previous.todos.concat([
-            { id: nextTodoId++, text, completed: false, __typename: 'TodoItem' },
-          ]),
+          todos: previous.todos.concat([newTodo]),
         };
 
         // you can also do cache.writeData({ data }) here if you prefer
         cache.writeQuery({ query, data });
+        return newTodo;
       },
     },
   },
@@ -518,7 +518,7 @@ const todos = {
 
         // you can also do cache.writeData({ data, id }) here if you prefer
         cache.writeFragment({ fragment, id, data });
-        return data;
+        return null;
       },
     },
   },
