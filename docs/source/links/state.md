@@ -55,9 +55,8 @@ const stateLink = withClientState({
 });
 ```
 
-To hook up your state link to Apollo Client, concatenate it to the other links
-in your Apollo Link chain. Your state link should be one of the last links in
-your chain, but before `HttpLink` so local queries and mutations are intercepted
+To hook up your state link to Apollo Client, add it to the other links
+in your Apollo Link chain. Your state link should be near the end of the chain, so that other links like `apollo-link-error` can also deal with local state requests. However, it should go before `HttpLink` so local queries and mutations are intercepted
 before they hit the network. It should also go before
 [`apollo-link-persisted-queries`](https://github.com/apollographql/apollo-link-persisted-queries)
 if you are using persisted queries. Then, pass your link chain to the Apollo
