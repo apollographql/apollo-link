@@ -65,7 +65,10 @@ Client constructor.
 ```js
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: ApolloLink.from([stateLink, new HttpLink()]),
+  link: ApolloLink.from([
+    stateLink,
+    new HttpLink()
+  ]),
 });
 ```
 
