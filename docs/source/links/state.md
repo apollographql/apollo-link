@@ -67,7 +67,7 @@ Client constructor.
 
 ```js
 const client = new ApolloClient({
-  cache: cache,
+  cache,
   link: ApolloLink.from([
     stateLink,
     new HttpLink()
@@ -83,11 +83,7 @@ in the cache with our resolver map that we passed into our state link.
 ```js
 const UPDATE_NETWORK_STATUS = gql`
   mutation updateNetworkStatus($isConnected: Boolean) {
-    updateNetworkStatus(isConnected: $isConnected) @client {
-      networkStatus {
-        isConnected
-      }
-    }
+    updateNetworkStatus(isConnected: $isConnected) @client
   }
 `;
 ```
