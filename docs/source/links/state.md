@@ -9,7 +9,7 @@ apps need some way to centralize client-side data from user interactions and dev
 
 In the past, Apollo users stored their application's local data in a separate
 Redux or MobX store. With `apollo-link-state`, you no longer have to maintain a
-second store for local state. You can instead use the Apollo Client cache is your single source of
+second store for local state. You can instead use the Apollo Client cache as your single source of
 truth that holds all of your local data alongside your remote data. To access or
 update your local state, you use GraphQL queries and mutations just like you
 would for data from a server.
