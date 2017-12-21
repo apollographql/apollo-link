@@ -3,21 +3,25 @@ title: apollo-link-state
 description: Manage your local data with Apollo Client
 ---
 
+[**Read the announcement post!
+🎉**](https://dev-blog.apollodata.com/the-future-of-state-management-dd410864cae2)
+
 Managing remote data from an external API is simple with Apollo Client, but
 where do we put all of our data that doesn't fit in that category? Nearly all
-apps need some way to centralize client-side data from user interactions and device APIs.
+apps need some way to centralize client-side data from user interactions and
+device APIs.
 
 In the past, Apollo users stored their application's local data in a separate
 Redux or MobX store. With `apollo-link-state`, you no longer have to maintain a
-second store for local state. You can instead use the Apollo Client cache as your single source of
-truth that holds all of your local data alongside your remote data. To access or
-update your local state, you use GraphQL queries and mutations just like you
-would for data from a server.
+second store for local state. You can instead use the Apollo Client cache as
+your single source of truth that holds all of your local data alongside your
+remote data. To access or update your local state, you use GraphQL queries and
+mutations just like you would for data from a server.
 
 When you use Apollo Client to manage your local state, you get all of the same
 benefits you know and love like caching and offline persistence without having
-to set these features up yourself. 🎉 On top of that, you also benefit from the [Apollo
-DevTools](https://github.com/apollographql/apollo-client-devtools) for
+to set these features up yourself. 🎉 On top of that, you also benefit from the
+[Apollo DevTools](https://github.com/apollographql/apollo-client-devtools) for
 debugging and visibility into your store.
 
 <h2 id="start">Quick start</h2>
@@ -58,9 +62,11 @@ const stateLink = withClientState({
 });
 ```
 
-To hook up your state link to Apollo Client, add it to the other links
-in your Apollo Link chain. Your state link should be near the end of the chain, so that other links like `apollo-link-error` can also deal with local state requests. However, it should go before `HttpLink` so local queries and mutations are intercepted
-before they hit the network. It should also go before
+To hook up your state link to Apollo Client, add it to the other links in your
+Apollo Link chain. Your state link should be near the end of the chain, so that
+other links like `apollo-link-error` can also deal with local state requests.
+However, it should go before `HttpLink` so local queries and mutations are
+intercepted before they hit the network. It should also go before
 [`apollo-link-persisted-queries`](https://github.com/apollographql/apollo-link-persisted-queries)
 if you are using persisted queries. Then, pass your link chain to the Apollo
 Client constructor.
@@ -68,10 +74,7 @@ Client constructor.
 ```js
 const client = new ApolloClient({
   cache,
-  link: ApolloLink.from([
-    stateLink,
-    new HttpLink()
-  ]),
+  link: ApolloLink.from([stateLink, new HttpLink()]),
 });
 ```
 
@@ -117,7 +120,7 @@ const stateLink = withClientState({
     networkStatus: {
       __typename: 'NetworkStatus',
       isConnected: true,
-    }
+    },
   },
 });
 ```
@@ -130,7 +133,7 @@ cache.writeData({
   networkStatus: {
     __typename: 'NetworkStatus',
     isConnected: true,
-  }
+  },
 });
 ```
 
@@ -158,10 +161,12 @@ const GET_ARTICLES = gql`
 ```
 
 To retrieve the data in your component, bind your query to your component via
-your favorite Apollo view layer integration just like you normally would. In this case, we'll use React as an example.
-React Apollo will attach both your remote and local data to `props.data` while
-tracking both loading and error states. Once the query returns a result, your
-component will update reactively. Updates to Apollo Client state via `apollo-link-state` will also automatically update any components using that data in a query.
+your favorite Apollo view layer integration just like you normally would. In
+this case, we'll use React as an example. React Apollo will attach both your
+remote and local data to `props.data` while tracking both loading and error
+states. Once the query returns a result, your component will update reactively.
+Updates to Apollo Client state via `apollo-link-state` will also automatically
+update any components using that data in a query.
 
 ```js
 const WrappedComponent = graphql(GET_ARTICLES, {
@@ -425,8 +430,9 @@ const user = {
 `cache.writeData` should cover most of your needs; however, there are some cases
 where the data you're writing to the cache depends on the data that's already
 there. In that scenario, you should use [the DataProxy
-methods](/docs/react/features/caching.html) API on the Apollo cache, which allows you
-to pass in a query or a fragment. We'll explain some of those use cases below.
+methods](/docs/react/features/caching.html) API on the Apollo cache, which
+allows you to pass in a query or a fragment. We'll explain some of those use
+cases below.
 
 <h2 id="cache-api">Cache API</h2>
 
@@ -606,13 +612,14 @@ love to have you on board as a contributor!
 You may have noticed we haven't mentioned a client-side schema yet or any type
 validation. That's because we haven't settled on how to approach this piece of
 the puzzle yet. It is something we would like to tackle soon in order to enable
-schema introspection and autocomplete with GraphiQL in Apollo DevTools, as well as code generation with `apollo-codegen`.
+schema introspection and autocomplete with GraphiQL in Apollo DevTools, as well
+as code generation with `apollo-codegen`.
 
-Having the same runtime type checking as a GraphQL server does is problematic because the necessary modules from
-`graphql-js` are very large. Including the modules for defining a schema and
-validating a request against a schema would significantly increase bundle size,
-so we'd like to avoid this approach. This is why we don't send your server's
-entire schema over to Apollo Client.
+Having the same runtime type checking as a GraphQL server does is problematic
+because the necessary modules from `graphql-js` are very large. Including the
+modules for defining a schema and validating a request against a schema would
+significantly increase bundle size, so we'd like to avoid this approach. This is
+why we don't send your server's entire schema over to Apollo Client.
 
 Ideally, we'd like to perform type checking at build time to avoid increasing
 bundle size. This is comparable to the rest of the JavaScript ecosystem---for
