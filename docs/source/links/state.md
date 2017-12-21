@@ -102,7 +102,7 @@ const WrappedComponent = graphql(UPDATE_NETWORK_STATUS, {
 
 What if we want to access our network status data from another component? Since
 we don't know whether our `UPDATE_NETWORK_STATUS` mutation will fire before we
-try to access the data, we should guard against undefined values by providing an
+try to access the data, we should guard against undefined values by providing a
 default state as part of the state link initialization:
 
 ```js
