@@ -114,3 +114,7 @@ theme: meteor
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
   type:
+
+marked:
+  gfm: true
+  breaks: false
