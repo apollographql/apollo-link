@@ -170,13 +170,13 @@ update any components using that data in a query.
 
 ```js
 const WrappedComponent = graphql(GET_ARTICLES, {
-  props: ({ data: { networkStatus, articles } }) => {
-    if (data.loading) {
-      return { loading: data.loading };
+  props: ({ data: { loading, error, networkStatus, articles } }) => {
+    if (loading) {
+      return { loading };
     }
 
-    if (data.error) {
-      return { error: data.error };
+    if (error) {
+      return { error };
     }
 
     return {
