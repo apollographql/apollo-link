@@ -12,25 +12,18 @@ export namespace SchemaLink {
      * The root value to use when generating responses.
      */
     rootValue?: any;
-
-    /**
-     * A context to provide to resolvers declared within the schema.
-     */
-    context?: any;
   }
 }
 
 export class SchemaLink extends ApolloLink {
   public schema: GraphQLSchema;
   public rootValue: any;
-  public context: any;
 
-  constructor({ schema, rootValue, context }: SchemaLink.Options) {
+  constructor({ schema, rootValue }: SchemaLink.Options) {
     super();
 
     this.schema = schema;
     this.rootValue = rootValue;
-    this.context = context;
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
@@ -40,7 +33,7 @@ export class SchemaLink extends ApolloLink {
           this.schema,
           operation.query,
           this.rootValue,
-          this.context || operation.getContext(),
+          operation.getContext(),
           operation.variables,
           operation.operationName,
         ),

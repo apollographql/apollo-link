@@ -68,10 +68,8 @@ describe('SchemaLink', () => {
 
   it('correctly receives the constructor arguments', () => {
     let rootValue = {};
-    let context = {};
-    let link = new SchemaLink({ schema, rootValue, context });
+    let link = new SchemaLink({ schema, rootValue });
     expect(link.rootValue).toEqual(rootValue);
-    expect(link.context).toEqual(context);
     expect(link.schema).toEqual(schema);
   });
 
