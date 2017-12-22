@@ -7,7 +7,7 @@ import { SchemaLink } from '../schemaLink';
 
 const sampleQuery = gql`
   query SampleQuery {
-    stub {
+    sampleQuery {
       id
     }
   }
@@ -130,6 +130,39 @@ describe('SchemaLink', () => {
     observable.subscribe(
       next,
       error => expect(false),
+      () => {
+        expect(next).toHaveBeenCalledTimes(1);
+        done();
+      },
+    );
+  });
+
+  it('passes operation context into execute', done => {
+    const next = jest.fn();
+    const contextValue = { some: 'value' };
+    const resolvers = {
+      Query: {
+        sampleQuery: (root, args, context) => {
+          try {
+            expect(context).toEqual(contextValue);
+          } catch (error) {
+            done.fail('Should pass context into resolver');
+          }
+        },
+      },
+    };
+    const schemaWithResolvers = makeExecutableSchema({
+      typeDefs,
+      resolvers,
+    });
+    const link = new SchemaLink({ schema: schemaWithResolvers });
+    const observable = execute(link, {
+      query: sampleQuery,
+      context: contextValue,
+    });
+    observable.subscribe(
+      next,
+      error => done.fail("Shouldn't call onError"),
       () => {
         expect(next).toHaveBeenCalledTimes(1);
         done();

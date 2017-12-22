@@ -40,7 +40,7 @@ export class SchemaLink extends ApolloLink {
           this.schema,
           operation.query,
           this.rootValue,
-          this.context,
+          this.context || operation.getContext(),
           operation.variables,
           operation.operationName,
         ),
