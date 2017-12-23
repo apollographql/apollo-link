@@ -4,6 +4,7 @@ import {
   Observable,
   Operation,
   FetchResult,
+  createOperation,
 } from 'apollo-link';
 import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
@@ -161,9 +162,12 @@ describe('OperationBatcher', () => {
         result: { data },
       },
     );
-    const operation: Operation = {
-      query,
-    };
+    const operation: Operation = createOperation(
+      {},
+      {
+        query,
+      },
+    );
 
     it('should be able to consume from a queue containing a single query', done => {
       const myBatcher = new OperationBatcher({
@@ -184,9 +188,13 @@ describe('OperationBatcher', () => {
     });
 
     it('should be able to consume from a queue containing multiple queries', done => {
-      const request2: Operation = {
-        query,
-      };
+      const request2: Operation = createOperation(
+        {},
+        {
+          query,
+        },
+      );
+
       const BH = createMockBatchHandler(
         {
           request: { query },
@@ -253,10 +261,15 @@ describe('OperationBatcher', () => {
   });
 
   it('should work when single query', done => {
+    const data = {
+      lastName: 'Ever',
+      firstName: 'Greatest',
+    };
     const batcher = new OperationBatcher({
       batchInterval: 10,
       batchHandler: () =>
         new Observable(observer => {
+          observer.next([{ data }]);
           setTimeout(observer.complete.bind(observer));
         }),
     });
@@ -268,21 +281,34 @@ describe('OperationBatcher', () => {
         }
       }
     `;
-    const operation: Operation = { query };
+    const operation: Operation = createOperation({}, { query });
 
     batcher.enqueueRequest({ operation }).subscribe({});
     expect(batcher.queuedRequests.length).toBe(1);
 
     setTimeout(() => {
       expect(batcher.queuedRequests.length).toBe(0);
+      expect(operation.getContext()).toEqual({ response: { data } });
       done();
     }, 20);
   });
 
-  it('should correctly batch multiple queries', done => {
+  it.only('should correctly batch multiple queries', done => {
+    const data = {
+      lastName: 'Ever',
+      firstName: 'Greatest',
+    };
+    const data2 = {
+      lastName: 'Hauser',
+      firstName: 'Evans',
+    };
     const batcher = new OperationBatcher({
       batchInterval: 10,
-      batchHandler: () => null,
+      batchHandler: () =>
+        new Observable(observer => {
+          observer.next([{ data }, { data: data2 }, { data }]);
+          setTimeout(observer.complete.bind(observer));
+        }),
     });
     const query = gql`
       query {
@@ -292,20 +318,25 @@ describe('OperationBatcher', () => {
         }
       }
     `;
-    const operation: Operation = { query };
+    const operation: Operation = createOperation({}, { query });
+    const operation2: Operation = createOperation({}, { query });
+    const operation3: Operation = createOperation({}, { query });
 
     batcher.enqueueRequest({ operation }).subscribe({});
-    batcher.enqueueRequest({ operation }).subscribe({});
+    batcher.enqueueRequest({ operation: operation2 }).subscribe({});
     expect(batcher.queuedRequests.length).toBe(2);
 
     setTimeout(() => {
       // The batch shouldn't be fired yet, so we can add one more request.
-      batcher.enqueueRequest({ operation }).subscribe({});
+      batcher.enqueueRequest({ operation: operation3 }).subscribe({});
       expect(batcher.queuedRequests.length).toBe(3);
     }, 5);
 
     setTimeout(() => {
       // The batch should've been fired by now.
+      expect(operation.getContext()).toEqual({ response: { data } });
+      expect(operation2.getContext()).toEqual({ response: { data: data2 } });
+      expect(operation3.getContext()).toEqual({ response: { data } });
       expect(batcher.queuedRequests.length).toBe(0);
       done();
     }, 20);
@@ -320,9 +351,7 @@ describe('OperationBatcher', () => {
         }
       }
     `;
-    const operation: Operation = {
-      query: query,
-    };
+    const operation: Operation = createOperation({}, { query });
     const error = new Error('Network error');
     const BH = createMockBatchHandler({
       request: { query },

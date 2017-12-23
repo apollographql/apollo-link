@@ -30,13 +30,15 @@ describe('HttpLink', () => {
   let subscriber;
 
   beforeEach(() => {
-    fetchMock.post('begin:data2', data2);
-    fetchMock.post('begin:data', data);
-    fetchMock.post('begin:error', mockError);
-    fetchMock.post('begin:apollo', data);
+    const makePromise = res =>
+      new Promise((resolve, reject) => setTimeout(() => resolve(res)));
+    fetchMock.post('begin:data2', makePromise(data2));
+    fetchMock.post('begin:data', makePromise(data));
+    fetchMock.post('begin:error', makePromise(mockError));
+    fetchMock.post('begin:apollo', makePromise(data));
 
-    fetchMock.get('begin:data', data);
-    fetchMock.get('begin:data2', data2);
+    fetchMock.get('begin:data', makePromise(data));
+    fetchMock.get('begin:data2', makePromise(data2));
 
     const next = jest.fn();
     const error = jest.fn();
@@ -52,6 +54,7 @@ describe('HttpLink', () => {
   afterEach(() => {
     fetchMock.restore();
   });
+
   it('raises warning if called with concat', () => {
     const link = new HttpLink();
     const _warn = console.warn;
@@ -239,8 +242,8 @@ describe('HttpLink', () => {
         headers: { authorization: '1234' },
       });
       return forward(operation).map(result => {
-        const { response } = operation.getContext();
-        expect(response.headers).toBeDefined();
+        const { headers } = operation.getContext();
+        expect(headers).toBeDefined();
         return result;
       });
     });
