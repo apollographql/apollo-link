@@ -1,4 +1,5 @@
 import { ApolloLink, Observable, RequestHandler, Operation } from 'apollo-link';
+import { BatchLink } from 'apollo-link-batch';
 import { print } from 'graphql/language/printer';
 
 // types
@@ -10,6 +11,15 @@ export namespace HttpLink {
    */
   export interface UriFunction {
     (operation: Operation): string;
+  }
+
+  /**
+   * Contains all of the options for batching
+   */
+  export interface BatchingOptions {
+    batchInterval?: number;
+    batchMax?: number;
+    reduceOptions: (left: RequestInit, right: RequestInit) => RequestInit;
   }
 
   export interface Options {
@@ -46,6 +56,11 @@ export namespace HttpLink {
      * Any overrides of the fetch options argument to pass to the fetch call.
      */
     fetchOptions?: any;
+
+    /**
+     * Options that enable batching
+     */
+    batchOptions?: BatchingOptions;
   }
 }
 
@@ -86,7 +101,7 @@ const throwServerError = (response, result, message) => {
   throw error;
 };
 
-const parseAndCheckResponse = request => (response: Response) => {
+const parseAndCheckResponse = operations => (response: Response) => {
   return response
     .text()
     .then(bodyText => {
@@ -114,7 +129,9 @@ const parseAndCheckResponse = request => (response: Response) => {
         throwServerError(
           response,
           result,
-          `Server response was missing for query '${request.operationName}'.`,
+          `Server response was missing for query '${operations.map(
+            op => op.operationName,
+          )}'.`,
         );
       }
       return result;
@@ -159,9 +176,106 @@ const createSignalIfSupported = () => {
   return { controller, signal };
 };
 
-const defaultHttpOptions = {
+interface HttpOptions {
+  includeQuery?: boolean;
+  includeExtensions?: boolean;
+}
+
+const defaultHttpOptions: HttpOptions = {
   includeQuery: true,
   includeExtensions: false,
+};
+
+const defaultHeaders = {
+  // headers are case insensitive (https://stackoverflow.com/a/5259004)
+  accept: '*/*',
+  'content-type': 'application/json',
+};
+
+const defaultOptions = {
+  method: 'POST',
+};
+
+const fallbackConfig = {
+  http: defaultHttpOptions,
+  headers: defaultHeaders,
+  options: defaultOptions,
+};
+
+interface ConfigOptions {
+  http?: HttpOptions;
+  options?: any;
+  headers?: any; //overrides headers in options
+  credentials?: any;
+}
+
+const createOptionsAndBody = (
+  operation: Operation,
+  fallbackConfig: ConfigOptions,
+  ...configs: Array<ConfigOptions>
+) => {
+  let options: ConfigOptions = {
+    ...fallbackConfig.options,
+    headers: fallbackConfig.headers,
+    credentials: fallbackConfig.credentials,
+  };
+  let http: HttpOptions = fallbackConfig.http;
+
+  /*
+   * use the rest of the configs to populate the options
+   * configs later in the list will overwrite earlier fields
+   */
+  configs.forEach(config => {
+    options = {
+      ...options,
+      ...config.options,
+      headers: {
+        ...options.headers,
+        ...config.headers,
+      },
+    };
+    if (config.credentials) options.credentials = config.credentials;
+
+    http = {
+      ...http,
+      ...config.http,
+    };
+  });
+
+  //The body depends on the http options
+  const { operationName, extensions, variables, query } = operation;
+  const body = { operationName, variables };
+
+  if (http.includeExtensions) (body as any).extensions = extensions;
+
+  // not sending the query (i.e persisted queries)
+  if (http.includeQuery) (body as any).query = print(query);
+
+  return {
+    options,
+    body,
+  };
+};
+
+const serializeBody = body => {
+  let serializedBody;
+  try {
+    serializedBody = JSON.stringify(body);
+  } catch (e) {
+    const parseError = new Error(
+      `Network request failed. Payload is not serializable: ${e.message}`,
+    ) as ClientParseError;
+    parseError.parseError = e;
+    throw parseError;
+  }
+  return serializedBody;
+};
+
+const simpleSpread = (left, right) => {
+  return {
+    ...left,
+    ...right,
+  };
 };
 
 export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
@@ -169,8 +283,17 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
     uri,
     fetch: fetcher,
     includeExtensions,
-    ...requestOptions,
+    batchOptions,
+    ...requestOptions
   } = linkOptions;
+
+  const linkConfig = {
+    http: { includeExtensions },
+    options: requestOptions.fetchOptions,
+    credentials: requestOptions.credentials,
+    headers: requestOptions.headers,
+  };
+
   // dev warnings to ensure fetch is present
   warnIfNoFetch(fetcher);
   if (fetcher) checkFetcher(fetcher);
@@ -179,73 +302,66 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
   if (!fetcher) fetcher = fetch;
   if (!uri) uri = '/graphql';
 
-  return new ApolloLink(
-    operation =>
-      new Observable(observer => {
-        const {
-          headers,
-          credentials,
-          fetchOptions = {},
-          uri: contextURI,
-          http: httpOptions = {},
-        } = operation.getContext();
-        const { operationName, extensions, variables, query } = operation;
-        const http = { ...defaultHttpOptions, ...httpOptions };
-        const body = { operationName, variables };
+  //currently all operations in a single batch use the same uri
+  let choosenURI: string;
 
-        if (includeExtensions || http.includeExtensions)
-          (body as any).extensions = extensions;
+  return new BatchLink({
+    batchInterval: (batchOptions && batchOptions.batchInterval) || 0, //default to no batching
+    batchMax: (batchOptions && batchOptions.batchMax) || 1,
+    batchHandler: operations => {
+      const optsAndBodies = operations.map(operation => {
+        const context = operation.getContext();
+        const contextURI = context.uri;
 
-        // not sending the query (i.e persisted queries)
-        if (http.includeQuery) (body as any).query = print(query);
-
-        let serializedBody;
-        try {
-          serializedBody = JSON.stringify(body);
-        } catch (e) {
-          const parseError = new Error(
-            `Network request failed. Payload is not serializable: ${e.message}`,
-          ) as ClientParseError;
-          parseError.parseError = e;
-          throw parseError;
+        //TODO Add support for multiple URI's, would need to make a fetch request per uri and then place the result in the correct index in result array
+        if (contextURI) {
+          choosenURI = contextURI;
+        } else if (typeof uri === 'function') {
+          choosenURI = uri(operation);
+        } else {
+          choosenURI = (uri as string) || '/graphql';
         }
 
-        let options = fetchOptions;
-        if (requestOptions.fetchOptions)
-          options = { ...requestOptions.fetchOptions, ...options };
-        const fetcherOptions: any = {
-          method: 'POST',
-          ...options,
-          headers: {
-            // headers are case insensitive (https://stackoverflow.com/a/5259004)
-            accept: '*/*',
-            'content-type': 'application/json',
-          },
-          body: serializedBody,
+        const contextConfig = {
+          http: context.http,
+          options: context.fetchOptions,
+          credentials: context.credentials,
+          headers: context.headers,
         };
 
-        if (requestOptions.credentials)
-          fetcherOptions.credentials = requestOptions.credentials;
-        if (credentials) fetcherOptions.credentials = credentials;
+        //creates an { options, body } object
+        //uses fallback, link, and then context to build options
+        return createOptionsAndBody(
+          operation,
+          fallbackConfig,
+          linkConfig,
+          contextConfig,
+        );
+      });
 
-        if (requestOptions.headers)
-          fetcherOptions.headers = {
-            ...fetcherOptions.headers,
-            ...requestOptions.headers,
-          };
-        if (headers)
-          fetcherOptions.headers = { ...fetcherOptions.headers, ...headers };
+      const body = optsAndBodies.map(({ body }) => body);
+      const allOptions = optsAndBodies.map(({ options }) => options);
+      const options = allOptions.reduce(
+        (batchOptions && batchOptions.reduceOptions) || simpleSpread,
+      );
 
+      return new Observable(observer => {
         const { controller, signal } = createSignalIfSupported();
-        if (controller) fetcherOptions.signal = signal;
+        if (controller) (options as any).signal = signal;
 
-        fetcher(contextURI || uri, fetcherOptions)
-          // attach the raw response to the context for usage
+        if (body.length === 1) {
+          //use non-array for compatility with servers that do not support batching
+          (options as any).body = serializeBody(body[0]);
+        } else {
+          (options as any).body = serializeBody(body);
+        }
+
+        fetcher(choosenURI, options)
           .then(response => {
-            operation.setContext({ response });
+            // the raw response is attached to the context in the BatchingLink
             return response;
           })
-          .then(parseAndCheckResponse(operation))
+          .then(parseAndCheckResponse(operations))
           .then(result => {
             // we have data and can send it to back up the link chain
             observer.next(result);
@@ -296,8 +412,9 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
           // https://developers.google.com/web/updates/2017/09/abortable-fetch
           if (controller) controller.abort();
         };
-      }),
-  );
+      });
+    },
+  });
 };
 
 export class HttpLink extends ApolloLink {

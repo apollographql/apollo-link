@@ -2,7 +2,7 @@ import { Observable, Operation, NextLink, FetchResult } from 'apollo-link';
 
 export type BatchHandler = (
   operations: Operation[],
-  forward: (NextLink | undefined)[],
+  forward?: (NextLink | undefined)[],
 ) => Observable<FetchResult[]> | null;
 
 export interface BatchableRequest {
@@ -13,9 +13,9 @@ export interface BatchableRequest {
   // added to the queue and is resolved once the result is back
   // from the server.
   observable?: Observable<FetchResult>;
-  next?: (result: FetchResult) => void;
-  error?: (error: Error) => void;
-  complete?: () => void;
+  next?: Array<(result: FetchResult) => void>;
+  error?: Array<(error: Error) => void>;
+  complete?: Array<() => void>;
 }
 
 // QueryBatcher doesn't fire requests immediately. Requests that were enqueued within
@@ -47,17 +47,30 @@ export class OperationBatcher {
   }
 
   public enqueueRequest(request: BatchableRequest): Observable<FetchResult> {
-    const requestCopy = { ...request };
+    const requestCopy = {
+      ...request,
+    };
+    let queued = false;
 
     requestCopy.observable =
       requestCopy.observable ||
       new Observable<FetchResult>(observer => {
-        this.queuedRequests.push(requestCopy);
+        //called for each subscriber, so need to save all listeners(next, error, complete)
+        if (!queued) {
+          this.queuedRequests.push(requestCopy);
+          queued = true;
+        }
 
-        requestCopy.next = requestCopy.next || observer.next.bind(observer);
-        requestCopy.error = requestCopy.error || observer.error.bind(observer);
-        requestCopy.complete =
-          requestCopy.complete || observer.complete.bind(observer);
+        requestCopy.next = requestCopy.next || [];
+        if (observer.next) requestCopy.next.push(observer.next.bind(observer));
+
+        requestCopy.error = requestCopy.error || [];
+        if (observer.error)
+          requestCopy.error.push(observer.error.bind(observer));
+
+        requestCopy.complete = requestCopy.complete || [];
+        if (observer.complete)
+          requestCopy.complete.push(observer.complete.bind(observer));
 
         // The first enqueued request triggers the queue consumption after `batchInterval` milliseconds.
         if (this.queuedRequests.length === 1) {
@@ -102,23 +115,40 @@ export class OperationBatcher {
 
     batchedObservable.subscribe({
       next: results => {
+        if (!Array.isArray(results)) {
+          results = [results];
+          if (nexts.length != 1)
+            console.warn(
+              `server returned single result, expected array of length ${
+                nexts.length
+              }`,
+            );
+        }
+        // console.log(results);
         results.forEach((result, index) => {
+          // console.log(result);
+          // console.log(`${result} at ${index}`);
+          // attach the raw response to the context for usage
+          requests[index].setContext({ response: result });
           if (nexts[index]) {
-            nexts[index](result);
+            nexts[index].forEach(next => next(result));
           }
         });
       },
       error: error => {
+        //each callback list in batch
         errors.forEach((rejecter, index) => {
           if (errors[index]) {
-            errors[index](error);
+            //each subscriber to request
+            errors[index].forEach(e => e(error));
           }
         });
       },
       complete: () => {
         completes.forEach(complete => {
           if (complete) {
-            complete();
+            //each subscriber to request
+            complete.forEach(c => c());
           }
         });
       },
