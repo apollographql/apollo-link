@@ -17,7 +17,7 @@ Some common choices include Browserify, Webpack, and Meteor +1.3.
 
 
 ## Contributing
-Apollo Link uses Lerna to manage multiple packages. To get started contributing, run `npm run bootstrap` which will install all dependencies and connect the dependent projects with symlinks `node_modules`.
+Apollo Link uses Lerna to manage multiple packages. To get started contributing, run `npm run bootstrap` in the root of the repository, which will install all dependencies and connect the dependent projects with symlinks in `node_modules`. Then run `npm run build` to compile the typescript source. Finally for incremental compilation, use `npm run watch`.
 
 ## Documentation
 
