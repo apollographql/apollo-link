@@ -35,16 +35,17 @@ export class SchemaLink extends ApolloLink {
 
   public request(operation: Operation): Observable<FetchResult> | null {
     return new Observable<FetchResult>(observer => {
-      Promise.resolve(
-        execute(
+      new Promise(resolve => {
+        const data = execute(
           this.schema,
           operation.query,
           this.rootValue,
           this.context,
           operation.variables,
           operation.operationName,
-        ),
-      )
+        );
+        resolve(data);
+      })
         .then(data => {
           if (!observer.closed) {
             observer.next(data);
