@@ -1,8 +1,5 @@
 import { ApolloLink, Operation, FetchResult, Observable } from 'apollo-link';
-import { ApolloFetch, createApolloFetch } from 'apollo-fetch';
-import { BatchLink } from 'apollo-link-batch';
-
-import { print } from 'graphql/language/printer';
+import { createHttpLink } from 'apollo-link-http';
 
 export namespace BatchHttpLink {
   /**
@@ -31,9 +28,45 @@ export namespace BatchHttpLink {
     batchInterval?: number;
 
     /**
-     * An instance of ApolloFetch to use when making requests.
+     *
      */
-    fetch?: ApolloFetch;
+    reduceOptions: (left: RequestInit, right: RequestInit) => RequestInit;
+
+    /**
+     * Passes the extensions field to your graphql server.
+     *
+     * Defaults to false.
+     */
+    includeExtensions?: boolean;
+
+    /**
+     * A `fetch`-compatible API to use when making requests.
+     */
+    fetch?: GlobalFetch['fetch'];
+
+    /**
+     * An object representing values to be sent as headers on the request.
+     */
+    headers?: any;
+
+    /**
+     * The credentials policy you want to use for the fetch call.
+     */
+    credentials?: string;
+
+    /**
+     * Any overrides of the fetch options argument to pass to the fetch call.
+     */
+    fetchOptions?: any;
+  }
+
+  /**
+   * Contains all of the options for batching
+   */
+  export interface BatchingOptions {
+    batchInterval?: number;
+    batchMax?: number;
+    reduceOptions: (left: RequestInit, right: RequestInit) => RequestInit;
   }
 }
 
@@ -41,55 +74,33 @@ export namespace BatchHttpLink {
  * context can include the headers property, which will be passed to the fetch function
  */
 export class BatchHttpLink extends ApolloLink {
-  private headers = {};
-  private apolloFetch: ApolloFetch;
   private batchInterval: number;
   private batchMax: number;
   private batcher: ApolloLink;
 
-  constructor(fetchParams?: BatchHttpLink.Options) {
+  constructor(options?: BatchHttpLink.Options) {
     super();
 
-    this.batchInterval = (fetchParams && fetchParams.batchInterval) || 10;
-    this.batchMax = (fetchParams && fetchParams.batchMax) || 10;
+    this.batchInterval = (options && options.batchInterval) || 10;
+    this.batchMax = (options && options.batchMax) || 10;
 
-    this.apolloFetch =
-      (fetchParams && fetchParams.fetch) ||
-      createApolloFetch({ uri: fetchParams && fetchParams.uri });
-
-    this.apolloFetch.batchUse((request, next) => {
-      request.options.headers = {
-        ...request.options.headers,
-        ...this.headers,
-      };
-      next();
-    });
-
-    const batchHandler = (operations: Operation[]) => {
-      return new Observable<FetchResult[]>(observer => {
-        const printedOperations = operations.map((operation: Operation) => ({
-          ...operation,
-          query: print(operation.query),
-        }));
-
-        this.apolloFetch(printedOperations)
-          .then(data => {
-            observer.next(data);
-            observer.complete();
-          })
-          .catch(observer.error.bind(observer));
-      });
-    };
-
-    this.batcher = new BatchLink({
-      batchInterval: this.batchInterval,
-      batchMax: this.batchMax,
-      batchHandler,
+    this.batcher = createHttpLink({
+      uri: options && options.uri,
+      includeExtensions: options && options.includeExtensions,
+      headers: options && options.headers,
+      credentials: options && options.credentials,
+      fetch: options && options.fetch,
+      fetchOptions: options && options.fetchOptions,
+      batchOptions: {
+        batchInterval: this.batchInterval,
+        batchMax: this.batchMax,
+        //TODO: export some more ways to reduce the options, so that this link does something more than just mirror apollo-link-http
+        reduceOptions: options && options.reduceOptions,
+      },
     });
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
-    this.headers = operation.getContext().headers || this.headers;
     return this.batcher.request(operation);
   }
 }
