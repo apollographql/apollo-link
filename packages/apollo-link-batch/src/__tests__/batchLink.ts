@@ -293,7 +293,7 @@ describe('OperationBatcher', () => {
     }, 20);
   });
 
-  it.only('should correctly batch multiple queries', done => {
+  it('should correctly batch multiple queries', done => {
     const data = {
       lastName: 'Ever',
       firstName: 'Greatest',
@@ -380,16 +380,191 @@ describe('BatchLink', () => {
     ).not.toThrow();
   });
 
-  it('passes forward on', () => {
+  it('passes forward on', done => {
+    const query = gql`
+      {
+        id
+      }
+    `;
     const link = ApolloLink.from([
-      new BatchLink({ batchHandler: () => Observable.of() }),
+      new BatchLink({
+        batchInterval: 0,
+        batchMax: 1,
+        batchHandler: (operation, forward) => {
+          expect(forward.length).toBe(1);
+          expect(operation.length).toBe(1);
+          return forward[0](operation[0]);
+        },
+      }),
+      new ApolloLink(operation => {
+        expect(operation.query).toEqual(query);
+        done();
+      }),
     ]);
-    execute(link, {
-      query: gql`
+
+    execute(
+      link,
+      createOperation(
+        {},
         {
-          id
-        }
-      `,
+          query,
+        },
+      ),
+    ).subscribe();
+  });
+
+  it('raises warning if terminating', () => {
+    let calls = 0;
+    const link_full = new BatchLink({
+      batchHandler: (operation, forward) => forward(operation),
     });
+    const link_one_op = new BatchLink({
+      batchHandler: operation => Observable.of(),
+    });
+    const link_no_op = new BatchLink({ batchHandler: () => Observable.of() });
+    const _warn = console.warn;
+    console.warn = warning => {
+      calls++;
+      expect(warning['message']).toBeDefined();
+    };
+    expect(
+      link_one_op.concat((operation, forward) => forward(operation)),
+    ).toEqual(link_one_op);
+    expect(
+      link_no_op.concat((operation, forward) => forward(operation)),
+    ).toEqual(link_no_op);
+    console.warn = warning => {
+      throw Error('non-terminating link should not throw');
+    };
+    expect(
+      link_full.concat((operation, forward) => forward(operation)),
+    ).not.toEqual(link_full);
+    console.warn = _warn;
+    expect(calls).toBe(2);
+  });
+
+  it('correctly uses batch size', done => {
+    const sizes = [1, 2, 3];
+    const terminating = new ApolloLink(operation => {
+      expect(operation.query).toEqual(query);
+      return Observable.of(operation.variables.count);
+    });
+
+    const query = gql`
+      {
+        id
+      }
+    `;
+
+    let runBatchSize = () => {
+      const size = sizes.pop();
+      if (!size) done();
+
+      const batchHandler = jest.fn((operation, forward) => {
+        expect(operation.length).toBe(size);
+        expect(forward.length).toBe(size);
+        const observables = forward.map((f, i) => f(operation[i]));
+        return new Observable(observer => {
+          const data = [];
+          observables.forEach(obs =>
+            obs.subscribe(d => {
+              data.push(d);
+              if (data.length === observables.length) {
+                observer.next(data);
+                observer.complete();
+              }
+            }),
+          );
+        });
+      });
+
+      const link = ApolloLink.from([
+        new BatchLink({
+          batchInterval: 1000,
+          batchMax: size,
+          batchHandler,
+        }),
+        terminating,
+      ]);
+
+      Array.from(new Array(size)).forEach((_, i) => {
+        execute(link, {
+          query,
+          variables: { count: i },
+        }).subscribe({
+          next: data => {
+            expect(data).toBe(i);
+          },
+          complete: () => {
+            expect(batchHandler.mock.calls.length).toBe(1);
+            runBatchSize();
+          },
+        });
+      });
+    };
+
+    runBatchSize();
+  });
+
+  it('correctly follows batch interval', done => {
+    const intervals = [10, 20, 30];
+    const query = gql`
+      {
+        id
+      }
+    `;
+
+    const runBatchInterval = () => {
+      const mock = jest.fn();
+
+      const batchInterval = intervals.pop();
+      if (!batchInterval) done();
+
+      const batchHandler = jest.fn((operation, forward) => {
+        expect(operation.length).toBe(1);
+        expect(forward.length).toBe(1);
+        return forward[0](operation[0]).map(d => [d]);
+      });
+
+      const link = ApolloLink.from([
+        new BatchLink({
+          batchInterval,
+          batchMax: 0,
+          batchHandler,
+        }),
+        () => Observable.of(42),
+      ]);
+
+      execute(
+        link,
+        createOperation(
+          {},
+          {
+            query,
+          },
+        ),
+      ).subscribe({
+        next: data => {
+          expect(data).toBe(42);
+        },
+        complete: () => {
+          mock(batchHandler.mock.calls.length);
+        },
+      });
+
+      setTimeout(() => {
+        const checkCalls = mock.mock.calls.slice(0, -1);
+        expect(checkCalls.length).toBe(2);
+        checkCalls.forEach(args => expect(args[0]).toBe(0));
+        expect(mock).lastCalledWith(1);
+        expect(batchHandler.mock.calls.length).toBe(1);
+
+        runBatchInterval();
+      }, batchInterval + 1);
+
+      setTimeout(() => mock(batchHandler.mock.calls.length), batchInterval - 1);
+      setTimeout(() => mock(batchHandler.mock.calls.length), batchInterval / 2);
+    };
+    runBatchInterval();
   });
 });
