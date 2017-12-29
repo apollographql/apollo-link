@@ -33,15 +33,19 @@ export namespace BatchLink {
 }
 
 export class BatchLink extends ApolloLink {
-  private batchInterval: number;
-  private batchMax: number;
+  private batchInterval: number = 10;
+  private batchMax: number = 0;
   private batcher: OperationBatcher;
 
-  constructor(fetchParams: BatchLink.Options) {
+  constructor(fetchParams?: BatchLink.Options) {
     super();
 
-    this.batchInterval = (fetchParams && fetchParams.batchInterval) || 10;
-    this.batchMax = (fetchParams && fetchParams.batchMax) || 0;
+    if (fetchParams && typeof fetchParams.batchInterval === 'number') {
+      this.batchInterval = fetchParams.batchInterval;
+    }
+    if (fetchParams && typeof fetchParams.batchMax === 'number') {
+      this.batchMax = fetchParams.batchMax;
+    }
 
     if (typeof this.batchInterval !== 'number') {
       throw new Error(
