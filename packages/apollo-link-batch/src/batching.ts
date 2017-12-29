@@ -113,21 +113,34 @@ export class OperationBatcher {
     const batchedObservable =
       this.batchHandler(requests, forwards) || Observable.of();
 
+    const onError = error => {
+      //each callback list in batch
+      errors.forEach(rejecters => {
+        if (rejecters) {
+          //each subscriber to request
+          rejecters.forEach(e => e(error));
+        }
+      });
+    };
+
     batchedObservable.subscribe({
       next: results => {
         if (!Array.isArray(results)) {
           results = [results];
-          if (nexts.length != 1)
-            console.warn(
-              `server returned single result, expected array of length ${
-                nexts.length
-              }`,
-            );
         }
-        // console.log(results);
+
+        if (nexts.length !== results.length) {
+          const error = new Error(
+            `server returned results wtih length ${
+              results.length
+            }, expected length of ${nexts.length}`,
+          );
+          (error as any).result = results;
+
+          return onError(error);
+        }
+
         results.forEach((result, index) => {
-          // console.log(result);
-          // console.log(`${result} at ${index}`);
           // attach the raw response to the context for usage
           requests[index].setContext({ response: result });
           if (nexts[index]) {
@@ -135,15 +148,7 @@ export class OperationBatcher {
           }
         });
       },
-      error: error => {
-        //each callback list in batch
-        errors.forEach((rejecter, index) => {
-          if (errors[index]) {
-            //each subscriber to request
-            errors[index].forEach(e => e(error));
-          }
-        });
-      },
+      error: onError,
       complete: () => {
         completes.forEach(complete => {
           if (complete) {
