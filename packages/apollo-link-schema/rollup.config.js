@@ -1,3 +1,5 @@
+import { onwarn } from '../../rollup.config';
+
 export default {
   input: 'lib/schemaLink.js',
   output: {
@@ -9,11 +11,3 @@ export default {
   },
   onwarn,
 };
-
-function onwarn(message) {
-  const suppressed = ['UNRESOLVED_IMPORT', 'THIS_IS_UNDEFINED'];
-
-  if (!suppressed.find(code => message.code === code)) {
-    return console.warn(message.message);
-  }
-}
