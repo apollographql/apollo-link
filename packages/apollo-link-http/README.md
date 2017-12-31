@@ -27,6 +27,7 @@ HTTP Link takes an object with some options on it to customize the behavior of t
 * `headers`: an object representing values to be sent as headers on the request
 * `credentials`: a string representing the credentials policy you want for the fetch call
 * `fetchOptions`: any overrides of the fetch options argument to pass to the fetch call
+* `batchOptions`: object that enables batching and contains various options necessary for batching(see [batching section](batching))
 
 <h2 id="context">Context</h2>
 
@@ -131,6 +132,25 @@ All error types inherit the `name`, `message`, and nullable `stack` properties f
   statusCode: number;               // HTTP status code
 };
 ```
+
+<h3 id="batching">Batching</h3>
+
+Batching is enabled by providing the `batchOptions` field to the http link constructor. `batchOptions` is an instance of the `BatchingOptions` type found below. Unlike single requests, batching can only handle a single uri per group. This means that all requests in a batch must expect to be sent to the same endpoint. The uri is still set in the same priority: context over constructor over the default, '/graphql'.
+
+```js
+//type BatchingOptions
+{
+  batchInterval: number;           // Interval between first request and consumption
+  batchMax: number;                // Maximum requests in a batch, zero means no limit
+
+  reduceFetchOptions: Function     // combines options of requests in batch
+  //(left: RequestInit, right: RequestInit) => RequestInit;
+}
+```
+
+`reduceFetchOptions` defines the combination of all fetch options except `body` across the batch, since each request defines its own set. The `body` is set to a `JSON.stringify`'d array of the GraphQL operations in string form, which is the current format for servers that support batching. The fetch options are the second argument to the [fetch function](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch), which contains fields such as `method`, `headers`, and `credentials`.
+
+None of the batching options are required. The default behavior with none of the options set is single requests. `batchInterval` is 0; `batchMax` is 1; `reduceFetchOptions` selects the fetch options for the first request.
 
 <h2 id="custom">Custom fetching</h2>
 

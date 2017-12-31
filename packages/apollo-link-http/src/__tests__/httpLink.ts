@@ -36,6 +36,7 @@ describe('HttpLink', () => {
     fetchMock.post('begin:data', makePromise(data));
     fetchMock.post('begin:error', makePromise(mockError));
     fetchMock.post('begin:apollo', makePromise(data));
+    fetchMock.post('begin:batch', makePromise([data, data2]));
 
     fetchMock.get('begin:data', makePromise(data));
     fetchMock.get('begin:data2', makePromise(data2));
@@ -222,6 +223,7 @@ describe('HttpLink', () => {
       done();
     }, 50);
   });
+
   it('allows for dynamic endpoint setting', done => {
     const variables = { params: 'stub' };
     const link = createHttpLink({ uri: 'data' });
@@ -235,6 +237,7 @@ describe('HttpLink', () => {
       done();
     });
   });
+
   it('adds headers to the request from the context', done => {
     const variables = { params: 'stub' };
     const middleware = new ApolloLink((operation, forward) => {
@@ -257,6 +260,7 @@ describe('HttpLink', () => {
       done();
     });
   });
+
   it('adds headers to the request from the setup', done => {
     const variables = { params: 'stub' };
     const link = createHttpLink({
@@ -272,6 +276,7 @@ describe('HttpLink', () => {
       done();
     });
   });
+
   it('prioritizes context headers over setup headers', done => {
     const variables = { params: 'stub' };
     const middleware = new ApolloLink((operation, forward) => {
@@ -292,6 +297,7 @@ describe('HttpLink', () => {
       done();
     });
   });
+
   it('adds headers to the request from the context on an operation', done => {
     const variables = { params: 'stub' };
     const link = createHttpLink({ uri: 'data' });
@@ -311,6 +317,7 @@ describe('HttpLink', () => {
       done();
     });
   });
+
   it('adds creds to the request from the context', done => {
     const variables = { params: 'stub' };
     const middleware = new ApolloLink((operation, forward) => {
@@ -327,6 +334,7 @@ describe('HttpLink', () => {
       done();
     });
   });
+
   it('adds creds to the request from the setup', done => {
     const variables = { params: 'stub' };
     const link = createHttpLink({ uri: 'data', credentials: 'same-team-yo' });
@@ -337,6 +345,7 @@ describe('HttpLink', () => {
       done();
     });
   });
+
   it('prioritizes creds from the context over the setup', done => {
     const variables = { params: 'stub' };
     const middleware = new ApolloLink((operation, forward) => {
@@ -355,6 +364,7 @@ describe('HttpLink', () => {
       done();
     });
   });
+
   it('adds uri to the request from the context', done => {
     const variables = { params: 'stub' };
     const middleware = new ApolloLink((operation, forward) => {
@@ -371,6 +381,7 @@ describe('HttpLink', () => {
       done();
     });
   });
+
   it('adds uri to the request from the setup', done => {
     const variables = { params: 'stub' };
     const link = createHttpLink({ uri: 'data' });
@@ -381,6 +392,7 @@ describe('HttpLink', () => {
       done();
     });
   });
+
   it('prioritizes context uri over setup uri', done => {
     const variables = { params: 'stub' };
     const middleware = new ApolloLink((operation, forward) => {
@@ -400,6 +412,7 @@ describe('HttpLink', () => {
       done();
     });
   });
+
   it('allows uri to be a function', done => {
     const variables = { params: 'stub' };
     const customFetch = (uri, options) => {
@@ -416,6 +429,7 @@ describe('HttpLink', () => {
       done();
     });
   });
+
   it('adds fetchOptions to the request from the setup', done => {
     const variables = { params: 'stub' };
     const link = createHttpLink({
@@ -431,6 +445,7 @@ describe('HttpLink', () => {
       done();
     });
   });
+
   it('supports using a GET request', done => {
     const variables = { params: 'stub' };
 
@@ -456,6 +471,7 @@ describe('HttpLink', () => {
       done();
     });
   });
+
   it('supports using a GET request on the context', done => {
     const variables = { params: 'stub' };
     const link = createHttpLink({
@@ -474,6 +490,7 @@ describe('HttpLink', () => {
       done();
     });
   });
+
   it('adds fetchOptions to the request from the context', done => {
     const variables = { params: 'stub' };
     const middleware = new ApolloLink((operation, forward) => {
@@ -492,6 +509,7 @@ describe('HttpLink', () => {
       done();
     });
   });
+
   it('prioritizes context over setup', done => {
     const variables = { params: 'stub' };
     const middleware = new ApolloLink((operation, forward) => {
@@ -512,6 +530,7 @@ describe('HttpLink', () => {
       done();
     });
   });
+
   it('allows for not sending the query with the request', done => {
     const variables = { params: 'stub' };
     const middleware = new ApolloLink((operation, forward) => {
@@ -531,6 +550,94 @@ describe('HttpLink', () => {
       expect(body.query).not.toBeDefined();
       expect(body.extensions).toEqual({ persistedQuery: { hash: '1234' } });
       done();
+    });
+  });
+
+  describe('Batching', () => {
+    it('handles batched requests', done => {
+      const link = createHttpLink({
+        uri: 'batch',
+        batchOptions: {
+          batchInterval: 0,
+          batchMax: 2,
+          reduceFetchOptions: (left, right) => right,
+        },
+      });
+
+      let nextCalls = 0;
+      let completions = 0;
+      const next = expectedData => data => {
+        try {
+          expect(data).toEqual(expectedData);
+          nextCalls++;
+        } catch (error) {
+          done.fail(error);
+        }
+      };
+
+      const complete = () => {
+        try {
+          const calls = fetchMock.calls('begin:batch');
+          expect(calls.length).toBe(1);
+          expect(nextCalls).toBe(2);
+
+          const options = fetchMock.lastOptions('begin:batch');
+          expect(options.credentials).toEqual('two'); //test reduceFetchOptions
+
+          completions++;
+
+          if (completions === 2) {
+            done();
+          }
+        } catch (error) {
+          done.fail(error);
+        }
+      };
+
+      const error = error => {
+        done.fail('error should not have been called');
+      };
+
+      execute(link, {
+        query: sampleQuery,
+        context: { credentials: 'one' },
+      }).subscribe(next(data), error, complete);
+      execute(link, {
+        query: sampleQuery,
+        context: { credentials: 'two' },
+      }).subscribe(next(data2), error, complete);
+    });
+
+    it('errors on an incorrect number of results for a batch', done => {
+      const link = createHttpLink({
+        uri: 'batch',
+        batchOptions: {
+          batchInterval: 0,
+          batchMax: 3,
+          reduceFetchOptions: (left, right) => right,
+        },
+      });
+
+      let errors = 0;
+      const next = data => {
+        done.fail('next should not have been called');
+      };
+
+      const complete = () => {
+        done.fail('complete should not have been called');
+      };
+
+      const error = error => {
+        errors++;
+
+        if (errors === 3) {
+          done();
+        }
+      };
+
+      execute(link, { query: sampleQuery }).subscribe(next, error, complete);
+      execute(link, { query: sampleQuery }).subscribe(next, error, complete);
+      execute(link, { query: sampleQuery }).subscribe(next, error, complete);
     });
   });
 });
