@@ -11,13 +11,13 @@ export default name => ({
   output: {
     file: 'lib/bundle.umd.js',
     format: 'umd',
+    name: `apolloLink.${name}`,
+    globals,
+    sourcemap: true,
+    exports: 'named',
   },
-  name: `apolloLink.${name}`,
-  exports: 'named',
-  sourcemap: true,
   external: Object.keys(globals),
   onwarn,
-  globals,
 });
 
 function onwarn(message) {
