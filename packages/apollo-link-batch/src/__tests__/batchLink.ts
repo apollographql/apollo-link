@@ -575,7 +575,7 @@ describe('BatchLink', () => {
         query,
       }).subscribe({
         next: data => {
-          throw Error('next should not be called');
+          done.fail('next should not be called');
         },
         error: error => {
           expect(error).toBeDefined();
@@ -583,7 +583,7 @@ describe('BatchLink', () => {
           done();
         },
         complete: () => {
-          throw Error('complete should not be called');
+          done.fail('complete should not be called');
         },
       });
     });

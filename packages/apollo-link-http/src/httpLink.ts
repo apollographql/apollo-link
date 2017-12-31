@@ -19,7 +19,7 @@ export namespace HttpLink {
   export interface BatchingOptions {
     batchInterval?: number;
     batchMax?: number;
-    reduceOptions: (left: RequestInit, right: RequestInit) => RequestInit;
+    reduceFetchOptions?: (left: RequestInit, right: RequestInit) => RequestInit;
   }
 
   export interface Options {
@@ -124,7 +124,13 @@ const parseAndCheckResponse = operations => (response: Response) => {
           `Response not successful: Received status code ${response.status}`,
         );
       }
-      if (!result.hasOwnProperty('data') && !result.hasOwnProperty('errors')) {
+      //TODO should really error per response in a Batch based on properties
+      //    - could be done in a validation link
+      if (
+        !Array.isArray(result) &&
+        !result.hasOwnProperty('data') &&
+        !result.hasOwnProperty('errors')
+      ) {
         //Data error
         throwServerError(
           response,
@@ -209,7 +215,7 @@ interface ConfigOptions {
   credentials?: any;
 }
 
-const createOptionsAndBody = (
+const selectOptionsAndBody = (
   operation: Operation,
   fallbackConfig: ConfigOptions,
   ...configs: Array<ConfigOptions>
@@ -271,11 +277,8 @@ const serializeBody = body => {
   return serializedBody;
 };
 
-const simpleSpread = (left, right) => {
-  return {
-    ...left,
-    ...right,
-  };
+const takeFirst = (left, right) => {
+  return left;
 };
 
 export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
@@ -302,25 +305,29 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
   if (!fetcher) fetcher = fetch;
   if (!uri) uri = '/graphql';
 
-  //currently all operations in a single batch use the same uri
-  let choosenURI: string;
+  const selectURI = operation => {
+    const context = operation.getContext();
+    const contextURI = context.uri;
+
+    if (contextURI) {
+      return contextURI;
+    } else if (typeof uri === 'function') {
+      return uri(operation);
+    } else {
+      return (uri as string) || '/graphql';
+    }
+  };
 
   return new BatchLink({
     batchInterval: (batchOptions && batchOptions.batchInterval) || 0, //default to no batching
     batchMax: (batchOptions && batchOptions.batchMax) || 1,
     batchHandler: operations => {
+      //currently all operations in a single batch use the same uri
+      //TODO Add support for multiple URI's, would need to make a fetch request per uri and then place the result in the correct index in result array
+      const chosenURI = selectURI(operations[0]);
+
       const optsAndBodies = operations.map(operation => {
         const context = operation.getContext();
-        const contextURI = context.uri;
-
-        //TODO Add support for multiple URI's, would need to make a fetch request per uri and then place the result in the correct index in result array
-        if (contextURI) {
-          choosenURI = contextURI;
-        } else if (typeof uri === 'function') {
-          choosenURI = uri(operation);
-        } else {
-          choosenURI = (uri as string) || '/graphql';
-        }
 
         const contextConfig = {
           http: context.http,
@@ -329,9 +336,9 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
           headers: context.headers,
         };
 
-        //creates an { options, body } object
+        //creates an { options, body } object from configs
         //uses fallback, link, and then context to build options
-        return createOptionsAndBody(
+        return selectOptionsAndBody(
           operation,
           fallbackConfig,
           linkConfig,
@@ -342,7 +349,7 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
       const body = optsAndBodies.map(({ body }) => body);
       const allOptions = optsAndBodies.map(({ options }) => options);
       const options = allOptions.reduce(
-        (batchOptions && batchOptions.reduceOptions) || simpleSpread,
+        (batchOptions && batchOptions.reduceFetchOptions) || takeFirst,
       );
 
       return new Observable(observer => {
@@ -356,7 +363,7 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
           (options as any).body = serializeBody(body);
         }
 
-        fetcher(choosenURI, options)
+        fetcher(chosenURI, options)
           .then(response => {
             // the raw response is attached to the context in the BatchingLink
             return response;
