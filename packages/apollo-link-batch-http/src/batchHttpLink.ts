@@ -30,7 +30,7 @@ export namespace BatchHttpLink {
     /**
      *
      */
-    reduceOptions: (left: RequestInit, right: RequestInit) => RequestInit;
+    reduceFetchOptions: (left: RequestInit, right: RequestInit) => RequestInit;
 
     /**
      * Passes the extensions field to your graphql server.
@@ -66,8 +66,36 @@ export namespace BatchHttpLink {
   export interface BatchingOptions {
     batchInterval?: number;
     batchMax?: number;
-    reduceOptions: (left: RequestInit, right: RequestInit) => RequestInit;
+    reduceFetchOptions: (left: RequestInit, right: RequestInit) => RequestInit;
   }
+}
+
+export namespace Reductions {
+  export const simpleSpread = (left, right) => {
+    return {
+      ...left,
+      ...right,
+    };
+  };
+
+  export const contextualSpread = (left, right) => {
+    return {
+      ...left,
+      ...right,
+      headers: {
+        ...left.headers,
+        ...right.headers,
+      },
+    };
+  };
+
+  export const takeFirst = (left, right) => {
+    return left;
+  };
+
+  export const takeLast = (left, right) => {
+    return right;
+  };
 }
 
 /** Transforms Operation for into HTTP results.
@@ -95,7 +123,7 @@ export class BatchHttpLink extends ApolloLink {
         batchInterval: this.batchInterval,
         batchMax: this.batchMax,
         //TODO: export some more ways to reduce the options, so that this link does something more than just mirror apollo-link-http
-        reduceOptions: options && options.reduceOptions,
+        reduceFetchOptions: options && options.reduceFetchOptions,
       },
     });
   }

@@ -39,18 +39,18 @@ describe('BatchHttpLink', () => {
     const createHttpLink = require('apollo-link-http').createHttpLink;
     const LocalScopedLink = require('../batchHttpLink').BatchHttpLink;
 
-    const reduceOptions = () => {};
+    const reduceFetchOptions = () => {};
 
     const batch = new LocalScopedLink({
       batchInterval: 20,
       batchMax: 20,
-      reduceOptions,
+      reduceFetchOptions,
     });
 
     const { batchOptions } = createHttpLink.mock.calls[0][0];
     expect(batchOptions.batchInterval).toBe(20);
     expect(batchOptions.batchMax).toBe(20);
-    expect(batchOptions.reduceOptions).toEqual(reduceOptions);
+    expect(batchOptions.reduceFetchOptions).toEqual(reduceFetchOptions);
 
     const { request } = createHttpLink();
     execute(batch, operation);
