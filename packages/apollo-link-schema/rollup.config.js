@@ -1,10 +1,12 @@
 export default {
-  entry: 'lib/schemaLink.js',
-  dest: 'lib/bundle.umd.js',
-  format: 'umd',
-  sourceMap: true,
-  moduleName: 'schemaLink',
-  exports: 'named',
+  input: 'lib/schemaLink.js',
+  output: {
+    file: 'lib/bundle.umd.js',
+    format: 'umd',
+    sourcemap: true,
+    name: 'schemaLink',
+    exports: 'named',
+  },
   onwarn,
 };
 
