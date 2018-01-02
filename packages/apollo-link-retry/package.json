@@ -56,7 +56,7 @@
     "ts-jest": "21.2.4",
     "tslint": "5.8.0",
     "typescript": "2.6.2",
-    "uglify-js": "3.2.2",
+    "uglify-js": "3.3.4",
     "wait-for-observables": "1.0.3"
   },
   "jest": {
