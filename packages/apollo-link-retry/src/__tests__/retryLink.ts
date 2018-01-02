@@ -1,5 +1,6 @@
 import gql from 'graphql-tag';
 import { execute, ApolloLink, Observable, FetchResult } from 'apollo-link';
+import { of } from 'rxjs/observable/of';
 import waitFor from 'wait-for-observables';
 
 import { RetryLink } from '../retryLink';
@@ -29,7 +30,7 @@ describe('RetryLink', () => {
   it('returns data from the underlying link on a successful operation', async () => {
     const retry = new RetryLink();
     const data = { data: { hello: 'world' } };
-    const stub = jest.fn(() => Observable.of(data));
+    const stub = jest.fn(() => of(data));
     const link = ApolloLink.from([retry, stub]);
 
     const [{ values }] = await waitFor(execute(link, { query }));
@@ -45,7 +46,7 @@ describe('RetryLink', () => {
     const data = { data: { hello: 'world' } };
     const stub = jest.fn();
     stub.mockReturnValueOnce(new Observable(o => o.error(standardError)));
-    stub.mockReturnValueOnce(Observable.of(data));
+    stub.mockReturnValueOnce(of(data));
     const link = ApolloLink.from([retry, stub]);
 
     const [{ values }] = await waitFor(execute(link, { query }));
@@ -98,7 +99,7 @@ describe('RetryLink', () => {
     const stub = jest.fn();
     stub.mockReturnValueOnce(new Observable(o => o.error(standardError)));
     stub.mockReturnValueOnce(new Observable(o => o.error(standardError)));
-    stub.mockReturnValueOnce(Observable.of(data));
+    stub.mockReturnValueOnce(of(data));
     const link = ApolloLink.from([retry, stub]);
 
     const observable = execute(link, { query });

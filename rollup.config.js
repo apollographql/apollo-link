@@ -4,6 +4,16 @@ export const globals = {
   'apollo-link': 'apolloLink.core',
   'apollo-link-batch': 'apolloLink.batch',
   'apollo-utilities': 'apollo.utilities',
+  // RxJS
+  'rxjs/Observable': 'Rx',
+  // rxjs/observable
+  'rxjs/observable/of': 'Rx.Observable',
+  'rxjs/observable/empty': 'Rx.Observable',
+  'rxjs/observable/interval': 'Rx.Observable',
+  // rxjs/operator
+  'rxjs/operator/toPromise': 'Rx.Observable',
+  // rxjs/operators
+  'rxjs/operators': 'Rx.Observable.prototype',
 };
 
 export default name => ({

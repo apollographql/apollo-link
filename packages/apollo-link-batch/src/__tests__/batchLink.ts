@@ -5,6 +5,7 @@ import {
   Operation,
   FetchResult,
 } from 'apollo-link';
+import { of } from 'rxjs/observable/of';
 import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
 
@@ -346,15 +347,11 @@ describe('OperationBatcher', () => {
 
 describe('BatchLink', () => {
   it('does not need any constructor arguments', () => {
-    expect(
-      () => new BatchLink({ batchHandler: () => Observable.of() }),
-    ).not.toThrow();
+    expect(() => new BatchLink({ batchHandler: () => of() })).not.toThrow();
   });
 
   it('passes forward on', () => {
-    const link = ApolloLink.from([
-      new BatchLink({ batchHandler: () => Observable.of() }),
-    ]);
+    const link = ApolloLink.from([new BatchLink({ batchHandler: () => of() })]);
     execute(link, {
       query: gql`
         {

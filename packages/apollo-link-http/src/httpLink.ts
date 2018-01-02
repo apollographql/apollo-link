@@ -207,7 +207,7 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
             `Network request failed. Payload is not serializable: ${e.message}`,
           ) as ClientParseError;
           parseError.parseError = e;
-          throw parseError;
+          return observer.error(parseError);
         }
 
         let options = fetchOptions;

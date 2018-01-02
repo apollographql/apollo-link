@@ -1,4 +1,5 @@
 import { Observable, ApolloLink, execute } from 'apollo-link';
+import { map } from 'rxjs/operators/map';
 import { print } from 'graphql';
 import gql from 'graphql-tag';
 import * as fetchMock from 'fetch-mock';
@@ -238,11 +239,13 @@ describe('HttpLink', () => {
       operation.setContext({
         headers: { authorization: '1234' },
       });
-      return forward(operation).map(result => {
-        const { response } = operation.getContext();
-        expect(response.headers).toBeDefined();
-        return result;
-      });
+      return forward(operation).pipe(
+        map(result => {
+          const { response } = operation.getContext();
+          expect(response.headers).toBeDefined();
+          return result;
+        }),
+      );
     });
     const link = middleware.concat(createHttpLink({ uri: 'data' }));
 
@@ -660,11 +663,15 @@ describe('error handling', () => {
         done.fail('error should have been thrown from the link');
       },
       e => {
-        expect(e.message).toMatch(/Payload is not serializable/);
-        expect(e.parseError.message).toMatch(
-          /Converting circular structure to JSON/,
-        );
-        done();
+        try {
+          expect(e.message).toMatch(/Payload is not serializable/);
+          expect(e.parseError.message).toMatch(
+            /Converting circular structure to JSON/,
+          );
+          done();
+        } catch (error) {
+          done.fail(error);
+        }
       },
     );
   });

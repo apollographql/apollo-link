@@ -1,4 +1,5 @@
-import * as Observable from 'zen-observable';
+import { Observable } from 'rxjs/Observable';
+import { of } from 'rxjs/observable/of';
 
 import {
   GraphQLRequest,
@@ -16,13 +17,12 @@ import {
   createOperation,
 } from './linkUtils';
 
-const passthrough = (op, forward) => (forward ? forward(op) : Observable.of());
+const passthrough = (op, forward) => (forward ? forward(op) : of());
 
 const toLink = (handler: RequestHandler | ApolloLink) =>
   typeof handler === 'function' ? new ApolloLink(handler) : handler;
 
-export const empty = (): ApolloLink =>
-  new ApolloLink((op, forward) => Observable.of());
+export const empty = (): ApolloLink => new ApolloLink((op, forward) => of());
 
 export const from = (links: ApolloLink[]): ApolloLink => {
   if (links.length === 0) return empty();
@@ -41,14 +41,14 @@ export const split = (
   if (isTerminating(leftLink) && isTerminating(rightLink)) {
     return new ApolloLink(operation => {
       return test(operation)
-        ? leftLink.request(operation) || Observable.of()
-        : rightLink.request(operation) || Observable.of();
+        ? leftLink.request(operation) || of()
+        : rightLink.request(operation) || of();
     });
   } else {
     return new ApolloLink((operation, forward) => {
       return test(operation)
-        ? leftLink.request(operation, forward) || Observable.of()
-        : rightLink.request(operation, forward) || Observable.of();
+        ? leftLink.request(operation, forward) || of()
+        : rightLink.request(operation, forward) || of();
     });
   }
 };
@@ -73,17 +73,15 @@ export const concat = (
   if (isTerminating(nextLink)) {
     return new ApolloLink(
       operation =>
-        firstLink.request(
-          operation,
-          op => nextLink.request(op) || Observable.of(),
-        ) || Observable.of(),
+        firstLink.request(operation, op => nextLink.request(op) || of()) ||
+        of(),
     );
   } else {
     return new ApolloLink((operation, forward) => {
       return (
         firstLink.request(operation, op => {
-          return nextLink.request(op, forward) || Observable.of();
-        }) || Observable.of()
+          return nextLink.request(op, forward) || of();
+        }) || of()
       );
     });
   }
@@ -128,6 +126,6 @@ export function execute(
         operation.context,
         transformOperation(validateOperation(operation)),
       ),
-    ) || Observable.of()
+    ) || of()
   );
 }

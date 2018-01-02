@@ -1,4 +1,5 @@
 import { ApolloLink, execute, Observable, makePromise } from 'apollo-link';
+import { of } from 'rxjs/observable/of';
 import { ApolloFetch } from 'apollo-fetch';
 import { print } from 'graphql';
 import gql from 'graphql-tag';
@@ -47,7 +48,7 @@ describe('BatchHttpLink', () => {
       expect(operations.length).toEqual(1);
       expect(operations[0].query).toEqual(print(operation.query));
       done();
-      return makePromise(Observable.of());
+      return makePromise(of());
     };
     (apolloFetch as any).use = () => void 0;
     (apolloFetch as any).useAfter = () => void 0;
