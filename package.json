@@ -29,7 +29,7 @@
     {
       "name": "apollo-link-batch",
       "path": "./packages/apollo-link-batch/lib/bundle.min.js",
-      "maxSize": "1.3 Kb"
+      "maxSize": "1.5 Kb"
     },
     {
       "name": "apollo-link-batch-http",
@@ -49,7 +49,7 @@
     {
       "name": "apollo-link-http",
       "path": "./packages/apollo-link-http/lib/bundle.min.js",
-      "maxSize": "4.5 Kb"
+      "maxSize": "6 Kb"
     },
     {
       "name": "apollo-link-polling",
