@@ -234,7 +234,7 @@ const client = new ApolloClient({
 const unsubscribe = client.onResetStore(stateLink.writeDefaults);
 ```
 
-If you would like to unsubscribe this callback, `client.onResetStore` returns an unsubscribe callback. However, we don't recommend calling unsubscribe on your state link's `writeDefaults` function unless you are planning on writing a new set of defaults to the cache.
+If you would like to unsubscribe this callback, `client.onResetStore` returns an unsubscribe function. However, we don't recommend calling unsubscribe on your state link's `writeDefaults` function unless you are planning on writing a new set of defaults to the cache.
 
 <h2 id="resolver">Resolvers</h2>
 
