@@ -20,7 +20,7 @@ Apollo Link is easy to use with a variety of GraphQL libraries. It's designed to
 
 <h3 id="apollo-client">Apollo Client</h3>
 
-Apollo Client works seamlessly with Apollo Link. A Link is one of the required items when creating an [Apollo Client instance](/core/apollo-client-api.html#constructor). For simple HTTP requests, we recommend using [`apollo-link-http`](./links/http.html):
+Apollo Client works seamlessly with Apollo Link. A Link is one of the required items when creating an [Apollo Client instance](/docs/react/reference/index.html#apollo-client). For simple HTTP requests, we recommend using [`apollo-link-http`](./links/http.html):
 
 ```js
 import { ApolloLink } from 'apollo-link';
