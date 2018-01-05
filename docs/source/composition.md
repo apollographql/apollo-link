@@ -38,7 +38,7 @@ const link = ApolloLink.concat(new Retry(), new HttpLink({ uri: '/graphql' }));
 
 <h2 id="directional">Directional Composition</h2>
 
-Given that links are a way of implementing custom control flow for your GraphQL operation, Apollo Link provides and easy way to use different links depending on the operation itself (or any other global state). This is done using the `split` method which is exported as a function and is on the `ApolloLink` interface. Using the split function can be done like this:
+Given that links are a way of implementing custom control flow for your GraphQL operation, Apollo Link provides an easy way to use different links depending on the operation itself (or any other global state). This is done using the `split` method which is exported as a function and is on the `ApolloLink` interface. Using the split function can be done like this:
 
 ```js
 import { ApolloLink } from 'apollo-link';
