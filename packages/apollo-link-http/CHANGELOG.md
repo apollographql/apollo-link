@@ -1,6 +1,7 @@
 # Change log
 
 ### vNEXT
+- add batching support [PR#364](https://github.com/apollographql/apollo-link/pull/364)
 
 ### 1.3.3
 - ApolloLink upgrade
@@ -12,7 +13,7 @@
 
 ### 1.3.1
 - export options as named interface [TypeScript]
-- Fix typescript bug with destructuring of parameter in createHttpLink (#189)
+- Fix typescript bug with destructuring of parameter in createHttpLink ([#189](https://github.com/apollographql/apollo-link/issues/189))
 
 ### 1.3.0
 - changed to initially parsing response as text to improve error handling

@@ -1,4 +1,5 @@
 ### vNext
+- deprecate package in favor of batching in apollo-link-http [PR#364](https://github.com/apollographql/apollo-link/pull/364)
 
 ### 1.0.5
 - ApolloLink upgrade
