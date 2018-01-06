@@ -1,6 +1,8 @@
 # Change log
 
 ### vNEXT
+
+### 1.0.2
 - handle synchronous result of `execute` **Fixes #351**
 
 ### 1.0.1
