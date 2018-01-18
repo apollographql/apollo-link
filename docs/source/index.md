@@ -25,12 +25,12 @@ Apollo Client works seamlessly with Apollo Link. A Link is one of the required i
 ```js
 import { ApolloLink } from 'apollo-link';
 import { ApolloClient } from 'apollo-client';
-import Cache from 'apollo-cache-inmemory';
+import {InMemoryCache} from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 
 const client = new ApolloClient({
   link: new HttpLink({ uri: 'http://api.githunt.com/graphql' }),
-  cache: new Cache()
+  cache: new InMemoryCache()
 });
 ```
 
