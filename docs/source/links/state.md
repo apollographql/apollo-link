@@ -6,6 +6,8 @@ description: Manage your local data with Apollo Client
 [**Read the announcement post!
 🎉**](https://dev-blog.apollodata.com/the-future-of-state-management-dd410864cae2)
 
+[**Video tutorial by Sara Vieira**](https://youtu.be/2RvRcnD8wHY)
+
 Managing remote data from an external API is simple with Apollo Client, but
 where do we put all of our data that doesn't fit in that category? Nearly all
 apps need some way to centralize client-side data from user interactions and
@@ -189,12 +191,54 @@ const WrappedComponent = graphql(GET_ARTICLES, {
 ```
 
 Now that you've seen how easy it is to manage your local state in Apollo Client,
-let's dive deeper into how `apollo-link-state` updates and queries your local
-data: the resolver map.
+let's dive deeper into how `apollo-link-state` updates and queries your local data with defaults and resolvers.
 
-<h2 id="resolver">Resolver map</h2>
+<h2 id="defaults">Defaults</h2>
 
-Your resolver map is where all the magic happens to retrieve and update your
+Often, you'll need to write an initial state to the cache so any components querying data before a mutation is triggered don't error out. To accomplish this, use the `defaults` property for the default values you'd like to write to the cache and pass in your cache to `withClientState`. Upon initialization, `apollo-link-state` will immediately write those values to the cache with `cache.writeData` before any operations have occurred.
+
+The shape of your initial state should match how you plan to query it in your application.
+
+```js
+const defaults = {
+  todos: [],
+  visibilityFilter: 'SHOW_ALL',
+  networkStatus: {
+    __typename: 'NetworkStatus',
+    isConnected: false,
+  }
+};
+
+const resolvers = { /* ... */ };
+
+const cache = new InMemoryCache();
+
+const stateLink = withClientState({
+  resolvers,
+  cache,
+  defaults
+});
+```
+
+Sometimes you may need to [reset the store](docs/react/features/cache-updates.html#reset-store) in your application, for example when a user logs out. If you call `client.resetStore` anywhere in your application, you will need to write your defaults to the store again. `apollo-link-state` exposes a `writeDefaults` function for you. To register your callback to Apollo Client, call `client.onResetStore` and pass in `writeDefaults`.
+
+```js
+const cache = new InMemoryCache();
+const stateLink = withClientState({ cache, resolvers, defaults });
+
+const client = new ApolloClient({
+  cache,
+  link: stateLink,
+});
+
+const unsubscribe = client.onResetStore(stateLink.writeDefaults);
+```
+
+If you would like to unsubscribe this callback, `client.onResetStore` returns an unsubscribe function. However, we don't recommend calling unsubscribe on your state link's `writeDefaults` function unless you are planning on writing a new set of defaults to the cache.
+
+<h2 id="resolver">Resolvers</h2>
+
+Your resolvers are where all the magic happens to retrieve and update your
 local data in the Apollo cache. The resolver map is an object with resolver
 functions for each GraphQL object type. You can think of a GraphQL query or
 mutation as a tree of function calls for each field. These function calls
@@ -340,9 +384,9 @@ const GET_PHOTOS = gql`
 `;
 ```
 
-<h3 id="organize">Organizing resolver maps</h3>
+<h3 id="organize">Organizing your resolvers</h3>
 
-For most applications, your resolver map will probably be too large to fit in
+For most applications, your map of resolvers will probably be too large to fit in
 one file. To organize your resolver map, we recommend splitting it up by
 feature, similar to the Redux [ducks
 pattern](https://github.com/erikras/ducks-modular-redux). Each feature will have
@@ -389,12 +433,12 @@ the single source of truth for all your local and remote data. To update and
 read from the cache, you access it via the `context`, which is the third
 argument passed to your resolver function.
 
+The [Apollo cache API](docs/react/features/caching.html) has several methods to assist you with updating and retrieving data. Let's walk through each of the methods and some common use cases for each one!
+
 <h3 id="write-data">writeData</h3>
 
 The easiest way to update the cache is with `cache.writeData`, which allows you
-to write data directly to the cache without passing in a query.
-`cache.writeData` is a method unique to `apollo-link-state`, so you won't be
-able to access it off your Apollo Client instance within your app. Here's how
+to write data directly to the cache without passing in a query. Here's how
 you use it in your resolver map for a simple update:
 
 ```js
@@ -429,17 +473,9 @@ const user = {
 
 `cache.writeData` should cover most of your needs; however, there are some cases
 where the data you're writing to the cache depends on the data that's already
-there. In that scenario, you should use [the DataProxy
-methods](/docs/react/features/caching.html) API on the Apollo cache, which
-allows you to pass in a query or a fragment. We'll explain some of those use
+there. In that scenario, you should use `readQuery` or `readFragment`, which
+allows you to pass in a query or a fragment to read data from the cache. If you'd like to validate the shape of your data that you're writing to the cache, use `writeQuery` or `writeFragment`. We'll explain some of those use
 cases below.
-
-<h2 id="cache-api">Cache API</h2>
-
-The [Apollo cache API](docs/react/features/caching.html) has several other
-methods to assist you with updating and retrieving data. Here are some common
-use cases where it's best to use the DataProxy methods instead of
-`cache.writeData`.
 
 <h3 id="write-query">writeQuery and readQuery</h3>
 
