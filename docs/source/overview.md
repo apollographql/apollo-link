@@ -18,7 +18,7 @@ At the core of a link is the `request` method. A link's request is called every 
 
 The full description of a link's request looks like this:
 - `NextLink`: A function that takes an `Operation` and returns an Observable of an `ExecutionResult`
-- `RequestHandler`: A function which receives an `Operation` and a `NextLink` and returns and Observable of an `ExecutionResult`
+- `RequestHandler`: A function which receives an `Operation` and a `NextLink` and returns an Observable of an `ExecutionResult`
 
 As you can see from these types, the next link is a way to continue the chain of events until data is fetched from some data source (typically a server).
 
