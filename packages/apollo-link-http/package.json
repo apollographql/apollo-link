@@ -45,7 +45,7 @@
     "apollo-link": "^1.0.7"
   },
   "peerDependencies": {
-    "graphql": "^0.11.0 || ^0.12.0"
+    "graphql": "0.12.3"
   },
   "devDependencies": {
     "@types/graphql": "0.12.1",
