@@ -17,6 +17,13 @@ import {
   buildRetryFunction,
 } from './retryFunction';
 
+function asPromise(result: boolean | Promise<boolean>): Promise<boolean> {
+  if (result instanceof Promise) {
+    return result;
+  }
+  return Promise.resolve(result);
+}
+
 export namespace RetryLink {
   export interface Options {
     /**
@@ -148,15 +155,21 @@ class RetryableOperation<TValue = any> {
     this.retryCount += 1;
 
     // Should we retry?
-    if (this.retryIf(this.retryCount, this.operation, error)) {
-      this.scheduleRetry(this.delayFor(this.retryCount, this.operation, error));
-      return;
-    }
+    asPromise(this.retryIf(this.retryCount, this.operation, error)).then(
+      shouldRetry => {
+        if (shouldRetry) {
+          this.scheduleRetry(
+            this.delayFor(this.retryCount, this.operation, error),
+          );
+          return;
+        }
 
-    this.error = error;
-    for (const observer of this.observers) {
-      observer.error(error);
-    }
+        this.error = error;
+        for (const observer of this.observers) {
+          observer.error(error);
+        }
+      },
+    );
   };
 
   private scheduleRetry(delay) {
