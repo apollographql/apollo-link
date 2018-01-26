@@ -145,6 +145,7 @@ describe('RetryLink', () => {
     const attemptStub = jest.fn();
     attemptStub.mockReturnValueOnce(true);
     attemptStub.mockReturnValueOnce(true);
+    attemptStub.mockReturnValueOnce(Promise.resolve(true));
     attemptStub.mockReturnValueOnce(false);
 
     const retry = new RetryLink({
@@ -161,6 +162,7 @@ describe('RetryLink', () => {
       [1, operation, standardError],
       [2, operation, standardError],
       [3, operation, standardError],
+      [4, operation, standardError],
     ]);
   });
 });
