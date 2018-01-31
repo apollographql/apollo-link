@@ -271,7 +271,7 @@ this section. Keep on reading! 😀
 You don't have to specify resolver functions for every field, however. If the
 return value from the parent object has the same property names as the fields
 requested in the child object, you won't need to specify a resolver. This is
-called a [default resolver](docs/graphql-tools/resolvers.html#Default-resolver).
+called a [default resolver](/docs/graphql-tools/resolvers.html#Default-resolver).
 
 ```js
 const getUser = gql`
