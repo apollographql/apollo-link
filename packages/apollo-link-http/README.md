@@ -45,7 +45,7 @@ This link also attaches the response from the `fetch` operation on the context a
 
 The http link supports an advanced GraphQL feature called persisted queries. This allows you to not send the stringified query over the wire, but instead send some kind of identifier of the query. To support this you need to attach the id somewhere to the extensions field and pass the following options to the context:
 
-```
+```js
 operation.setContext({
   http: {
     includeExtensions: true,
