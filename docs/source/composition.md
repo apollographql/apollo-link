@@ -2,7 +2,7 @@
 title: Composing Links
 ---
 
-Links represent small portions of how you want your GraphQL operation to be handled. In order to serve all of the needs of your app, Apollo Link is designed to be composed with other links to build complex actions as needed. Composition is managed in two main ways: additive and directional. Additive composition is how you can combine multiple links into a single chain and directional is how you can control which links are used depending on the operation.
+Links represent small portions of how you want your GraphQL operation to be handled. In order to serve all of the needs of your app, Apollo Link is designed to be composed with other links to build complex actions as needed. Composition is managed in two main ways: additive and directional. Additive composition is how you can combine multiple links into a single chain and directional composition is how you can control which links are used depending on the operation.
 
 It's important to note that no matter how many links you have in your chain, your [terminating link](./overview.html#terminating) has to be last.
 
@@ -38,7 +38,7 @@ const link = ApolloLink.concat(new Retry(), new HttpLink({ uri: '/graphql' }));
 
 <h2 id="directional">Directional Composition</h2>
 
-Given that links are a way of implementing custom control flow for your GraphQL operation, Apollo Link provides and easy way to use different links depending on the operation itself (or any other global state). This is done using the `split` method which is exported as a function and is on the `ApolloLink` interface. Using the split function can be done like this:
+Given that links are a way of implementing custom control flow for your GraphQL operation, Apollo Link provides an easy way to use different links depending on the operation itself (or any other global state). This is done using the `split` method which is exported as a function and is on the `ApolloLink` interface. Using the `split` function can be done like this:
 
 ```js
 import { ApolloLink } from 'apollo-link';

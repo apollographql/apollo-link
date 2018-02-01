@@ -82,7 +82,7 @@ ReactDOM.render(
   document.body,
 );
 ```
-<h3 id="standalone">Relay Modern</h3>
+<h3 id="relay-modern">Relay Modern</h3>
 
 You can use Apollo Link as a network layer with Relay Modern.
 
