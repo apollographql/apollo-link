@@ -9,3 +9,4 @@ Thank you to our amazing community members who have created custom Apollo Links!
 - [apollo-angular-link-http](https://www.npmjs.com/package/apollo-angular-link-http) by [@kamilkisiela](https://github.com/kamilkisiela): https://www.npmjs.com/package/apollo-angular-link-http
 - [apollo-link-logger](https://github.com/blackxored/apollo-link-logger) by [@blackxored](https://github.com/blackxored): Logger for Apollo Link that uses a similar format to redux-logger. Includes performance information.
 - [apollo-link-redux](https://github.com/AdamYee/apollo-link-redux) by [@AdamYee](https://github.com/AdamYee): Dispatches apollo-client 1.0-ish Redux actions.
+- [react-apollo-network-status](https://github.com/molindo/react-apollo-network-status) by [@amannn](https://github.com/amannn): Brings information about the global network status from Apollo into React.
