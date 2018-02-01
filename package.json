@@ -87,14 +87,14 @@
   "dependencies": {},
   "devDependencies": {
     "@types/zen-observable": "0.5.3",
-    "bundlesize": "0.15.3",
+    "bundlesize": "0.16.0",
     "codecov": "3.0.0",
     "danger": "1.2.0",
-    "lerna": "2.5.1",
-    "lint-staged": "6.0.0",
+    "lerna": "2.8.0",
+    "lint-staged": "6.1.0",
     "pre-commit": "1.2.2",
-    "prettier": "1.9.2",
+    "prettier": "1.10.2",
     "ts-jest": "21.2.4",
-    "typescript": "2.6.2"
+    "typescript": "2.7.1"
   }
 }

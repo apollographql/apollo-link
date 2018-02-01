@@ -9,7 +9,7 @@ Apollo Link is designed to be a powerful way to compose actions around data hand
 - `operationName`: A string name of the query if it is named, otherwise it is null
 - `extensions`: A map to store extensions data to be sent to the server
 - `getContext`: A function to return the context of the request
-- `setContext`: A function that takes either a new context object, or a function which receives the previous context and retuns a new one. (Think of it like `setState` from React)
+- `setContext`: A function that takes either a new context object, or a function which receives the previous context and returns a new one. (Think of it like `setState` from React)
 - `toKey`: A function to convert the current operation into a string to be used as a unique identifier
 
 <h2 id="request">Request</h2>
