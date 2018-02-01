@@ -4,9 +4,9 @@ description: Manage your local data with Apollo Client
 ---
 
 [**Read the announcement post!
-🎉**](https://dev-blog.apollodata.com/the-future-of-state-management-dd410864cae2)
-
-[**Video tutorial by Sara Vieira**](https://youtu.be/2RvRcnD8wHY)
+🎉**](https://dev-blog.apollodata.com/the-future-of-state-management-dd410864cae2) |
+[**Video tutorial by Sara Vieira**](https://youtu.be/2RvRcnD8wHY) |
+[**apollo-link-state on GitHub**](https://github.com/apollographql/apollo-link-state)
 
 Managing remote data from an external API is simple with Apollo Client, but
 where do we put all of our data that doesn't fit in that category? Nearly all
