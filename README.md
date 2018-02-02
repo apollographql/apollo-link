@@ -19,7 +19,7 @@ Some common choices include Browserify, Webpack, and Meteor +1.3.
 
 ## [Documentation](http://www.apollographql.com/docs/link/index.html)
 
-To start, begin by reading this [introduction](https://www.apollographql.com/docs/link/docs/link/index.html). For a deeper understanding and to fully leverage the power of Apollo Links, please view the [concepts overview](https://www.apollographql.com/docs/link/overview.html). To see example links from around the community, check out this [list](http://www.apollographql.com/docs/link/links/community.html). If you would like your link to be featured, please open a pull request.
+To start, begin by reading this [introduction](https://www.apollographql.com/docs/link/index.html). For a deeper understanding and to fully leverage the power of Apollo Links, please view the [concepts overview](https://www.apollographql.com/docs/link/overview.html). To see example links from around the community, check out this [list](http://www.apollographql.com/docs/link/links/community.html). If you would like your link to be featured, please open a pull request.
 
 ## Contributing
 
