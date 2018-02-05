@@ -1,21 +1,20 @@
 import { ApolloLink, Operation, FetchResult, Observable } from 'apollo-link';
-import { ApolloFetch, createApolloFetch } from 'apollo-fetch';
+import {
+  serializeBody,
+  selectURI,
+  parseAndCheckResponse,
+  checkFetcher,
+  selectOptionsAndBody,
+  createSignalIfSupported,
+  LinkUtils,
+} from 'apollo-link-utilities';
 import { BatchLink } from 'apollo-link-batch';
-
-import { print } from 'graphql/language/printer';
 
 export namespace BatchHttpLink {
   /**
    * Note: This package will be updated to remove the dependency on apollo-fetch an use the same options / API as the http-link.
    */
-  export interface Options {
-    /**
-     * The URI to use when fetching operations.
-     *
-     * Defaults to '/graphql'.
-     */
-    uri?: string;
-
+  export interface Options extends LinkUtils.Options {
     /**
      * The maximum number of operations to include in one fetch.
      *
@@ -29,67 +28,120 @@ export namespace BatchHttpLink {
      * Defaults to 10.
      */
     batchInterval?: number;
-
-    /**
-     * An instance of ApolloFetch to use when making requests.
-     */
-    fetch?: ApolloFetch;
   }
 }
 
-/** Transforms Operation for into HTTP results.
+/**
+ * Transforms Operation for into HTTP results.
  * context can include the headers property, which will be passed to the fetch function
  */
 export class BatchHttpLink extends ApolloLink {
-  private headers = {};
-  private apolloFetch: ApolloFetch;
   private batchInterval: number;
   private batchMax: number;
   private batcher: ApolloLink;
 
-  constructor(fetchParams?: BatchHttpLink.Options) {
+  constructor(fetchParams: BatchHttpLink.Options = {}) {
     super();
+    // dev warnings to ensure fetch is present
+    checkFetcher(fetchParams.fetch);
 
-    this.batchInterval = (fetchParams && fetchParams.batchInterval) || 10;
-    this.batchMax = (fetchParams && fetchParams.batchMax) || 10;
+    let {
+      uri = '/graphql',
+      // use default global fetch is nothing passed in
+      fetch: fetcher = fetch,
+      includeExtensions,
+      batchInterval,
+      batchMax,
+      ...requestOptions
+    } = fetchParams;
 
-    this.apolloFetch =
-      (fetchParams && fetchParams.fetch) ||
-      createApolloFetch({ uri: fetchParams && fetchParams.uri });
+    const linkConfig = {
+      http: { includeExtensions },
+      options: requestOptions.fetchOptions,
+      credentials: requestOptions.credentials,
+      headers: requestOptions.headers,
+    };
 
-    this.apolloFetch.batchUse((request, next) => {
-      request.options.headers = {
-        ...request.options.headers,
-        ...this.headers,
-      };
-      next();
-    });
+    this.batchInterval = batchInterval || 10;
+    this.batchMax = batchMax || 10;
 
     const batchHandler = (operations: Operation[]) => {
-      return new Observable<FetchResult[]>(observer => {
-        const printedOperations = operations.map((operation: Operation) => ({
-          ...operation,
-          query: print(operation.query),
-        }));
+      const chosenURI = selectURI(operations[0], uri);
 
-        this.apolloFetch(printedOperations)
-          .then(data => {
-            observer.next(data);
+      const context = operations[0].getContext();
+
+      const contextConfig = {
+        http: context.http,
+        options: context.fetchOptions,
+        credentials: context.credentials,
+        headers: context.headers,
+      };
+
+      //uses fallback, link, and then context to build options
+      const optsAndBody = operations.map(operation =>
+        selectOptionsAndBody(
+          operation,
+          LinkUtils.fallbackConfig,
+          linkConfig,
+          contextConfig,
+        ),
+      );
+
+      const body = optsAndBody.map(({ body }) => body);
+      const options = optsAndBody[0].options;
+
+      (options as any).body = serializeBody(body);
+
+      return new Observable<FetchResult[]>(observer => {
+        const { controller, signal } = createSignalIfSupported();
+        if (controller) (options as any).signal = signal;
+
+        // the raw response is attached to the context in the BatchingLink
+        fetcher(chosenURI, options)
+          .then(parseAndCheckResponse(operations))
+          .then(result => {
+            // we have data and can send it to back up the link chain
+            observer.next(result);
             observer.complete();
+            return result;
           })
-          .catch(observer.error.bind(observer));
+          .catch(err => {
+            // fetch was cancelled so its already been cleaned up in the unsubscribe
+            if (err.name === 'AbortError') return;
+            observer.error(err);
+          });
+
+        return () => {
+          // XXX support canceling this request
+          // https://developers.google.com/web/updates/2017/09/abortable-fetch
+          if (controller) controller.abort();
+        };
       });
+    };
+
+    const batchKey = (operation: Operation) => {
+      const context = operation.getContext();
+
+      const contextConfig = {
+        http: context.http,
+        options: context.fetchOptions,
+        credentials: context.credentials,
+        headers: context.headers,
+      };
+
+      //may throw error if config not serializable
+      return selectURI(operation) + JSON.stringify(contextConfig);
     };
 
     this.batcher = new BatchLink({
       batchInterval: this.batchInterval,
       batchMax: this.batchMax,
+      batchKey,
       batchHandler,
     });
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
-    this.headers = operation.getContext().headers || this.headers;
     return this.batcher.request(operation);
   }
 }

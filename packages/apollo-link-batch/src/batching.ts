@@ -23,27 +23,31 @@ export interface BatchableRequest {
 // into one query.
 export class OperationBatcher {
   // Queue on which the QueryBatcher will operate on a per-tick basis.
-  public queuedRequests: BatchableRequest[] = [];
+  public queuedRequests: Map<string, BatchableRequest[]>;
 
   private batchInterval: number;
   private batchMax: number;
 
   //This function is called to the queries in the queue to the server.
   private batchHandler: BatchHandler;
+  private batchKey: (Operation) => string;
 
   constructor({
     batchInterval,
     batchMax = 0,
     batchHandler,
+    batchKey,
   }: {
     batchInterval: number;
     batchMax?: number;
     batchHandler: BatchHandler;
+    batchKey: (Operation) => string;
   }) {
-    this.queuedRequests = [];
+    this.queuedRequests = new Map();
     this.batchInterval = batchInterval;
     this.batchMax = batchMax;
     this.batchHandler = batchHandler;
+    this.batchKey = batchKey;
   }
 
   public enqueueRequest(request: BatchableRequest): Observable<FetchResult> {
@@ -52,12 +56,14 @@ export class OperationBatcher {
     };
     let queued = false;
 
+    const key = this.batchKey(request.operation);
+
     requestCopy.observable =
       requestCopy.observable ||
       new Observable<FetchResult>(observer => {
         //called for each subscriber, so need to save all listeners(next, error, complete)
         if (!queued) {
-          this.queuedRequests.push(requestCopy);
+          this.queuedRequests[key].push(requestCopy);
           queued = true;
         }
 
@@ -73,13 +79,13 @@ export class OperationBatcher {
           requestCopy.complete.push(observer.complete.bind(observer));
 
         // The first enqueued request triggers the queue consumption after `batchInterval` milliseconds.
-        if (this.queuedRequests.length === 1) {
-          this.scheduleQueueConsumption();
+        if (this.queuedRequests[key].length === 1) {
+          this.scheduleQueueConsumption(key);
         }
 
         // When amount of requests reaches `batchMax`, trigger the queue consumption without waiting on the `batchInterval`.
-        if (this.queuedRequests.length === this.batchMax) {
-          this.consumeQueue();
+        if (this.queuedRequests[key].length === this.batchMax) {
+          this.consumeQueue(key);
         }
       });
 
@@ -88,12 +94,14 @@ export class OperationBatcher {
 
   // Consumes the queue.
   // Returns a list of promises (one for each query).
-  public consumeQueue(): (Observable<FetchResult> | undefined)[] | undefined {
-    const requests: Operation[] = this.queuedRequests.map(
+  public consumeQueue(
+    key: string,
+  ): (Observable<FetchResult> | undefined)[] | undefined {
+    const requests: Operation[] = this.queuedRequests[key].map(
       queuedRequest => queuedRequest.operation,
     );
 
-    const forwards: NextLink[] = this.queuedRequests.map(
+    const forwards: NextLink[] = this.queuedRequests[key].map(
       queuedRequest => queuedRequest.forward,
     );
 
@@ -101,14 +109,14 @@ export class OperationBatcher {
     const nexts: any[] = [];
     const errors: any[] = [];
     const completes: any[] = [];
-    this.queuedRequests.forEach((batchableRequest, index) => {
+    this.queuedRequests[key].forEach((batchableRequest, index) => {
       observables.push(batchableRequest.observable);
       nexts.push(batchableRequest.next);
       errors.push(batchableRequest.error);
       completes.push(batchableRequest.complete);
     });
 
-    this.queuedRequests = [];
+    this.queuedRequests.delete(key);
 
     const batchedObservable =
       this.batchHandler(requests, forwards) || Observable.of();
@@ -162,10 +170,10 @@ export class OperationBatcher {
     return observables;
   }
 
-  private scheduleQueueConsumption(): void {
+  private scheduleQueueConsumption(key: string): void {
     setTimeout(() => {
-      if (this.queuedRequests.length) {
-        this.consumeQueue();
+      if (this.queuedRequests[key] && this.queuedRequests[key].length) {
+        this.consumeQueue(key);
       }
     }, this.batchInterval);
   }
