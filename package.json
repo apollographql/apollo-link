@@ -34,7 +34,7 @@
     {
       "name": "apollo-link-batch-http",
       "path": "./packages/apollo-link-batch-http/lib/bundle.min.js",
-      "maxSize": "6.7 Kb"
+      "maxSize": "6.8 Kb"
     },
     {
       "name": "apollo-link-dedup",
