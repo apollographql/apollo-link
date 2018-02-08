@@ -2,6 +2,7 @@
 
 ### vNEXT
 
+# 1.1.0
 - Expose `#execute` on ApolloLink as static
 
 # 1.0.7

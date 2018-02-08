@@ -2,6 +2,9 @@
 
 ### vNEXT
 
+### 1.0.3
+- ApolloLink upgrade
+
 ### 1.0.2
 - handle synchronous result of `execute` **Fixes #351**
 
