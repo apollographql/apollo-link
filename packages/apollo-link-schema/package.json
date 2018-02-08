@@ -44,15 +44,15 @@
     "apollo-link": "^1.0.7"
   },
   "peerDependencies": {
-    "graphql": "^0.11.0 || ^0.12.0"
+    "graphql": "^0.11.0 || ^0.12.0 || ^0.13.0"
   },
   "devDependencies": {
     "@types/graphql": "0.12.3",
     "@types/jest": "21.1.10",
     "browserify": "14.5.0",
-    "graphql": "0.12.3",
-    "graphql-tag": "2.6.1",
-    "graphql-tools": "2.19.0",
+    "graphql": "0.13.0",
+    "graphql-tag": "2.7.3",
+    "graphql-tools": "2.20.1",
     "jest": "21.2.1",
     "rimraf": "2.6.1",
     "rollup": "0.55.3",

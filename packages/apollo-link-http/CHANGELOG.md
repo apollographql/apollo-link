@@ -2,6 +2,9 @@
 
 ### vNEXT
 
+### 1.3.3
+- Allow graphql results to fire even if there is a network error
+
 ### 1.3.2
 
 - Update to graphql@0.12
