@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-retry",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Retry Apollo Link for GraphQL Network Stack",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@types/zen-observable": "0.5.3",
-    "apollo-link": "^1.0.7"
+    "apollo-link": "^1.1.0"
   },
   "devDependencies": {
     "@types/graphql": "0.12.3",

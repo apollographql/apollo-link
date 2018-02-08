@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-dedup",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Deduplicates queries that are currently on the wire",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -41,7 +41,7 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-link": "^1.0.7"
+    "apollo-link": "^1.1.0"
   },
   "devDependencies": {
     "@types/graphql": "0.12.3",

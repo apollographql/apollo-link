@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-schema",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Use a GraphQL Schema to request data",
   "author": "Tomas Trescak <tomi.trescak@gmail.com>",
   "contributors": [
@@ -41,7 +41,7 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-link": "^1.0.7"
+    "apollo-link": "^1.1.0"
   },
   "peerDependencies": {
     "graphql": "^0.11.0 || ^0.12.0 || ^0.13.0"
