@@ -42,7 +42,7 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-link": "^1.1.0"
+    "apollo-link": "^1.1.0",
     "apollo-link-utilities": "0.0.0"
   },
   "peerDependencies": {
