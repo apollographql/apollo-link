@@ -58,15 +58,18 @@ export class OperationBatcher {
 
     const key = this.batchKey(request.operation);
 
-    requestCopy.observable =
-      requestCopy.observable ||
-      new Observable<FetchResult>(observer => {
-        //called for each subscriber, so need to save all listeners(next, error, complete)
+    if (!requestCopy.observable) {
+      requestCopy.observable = new Observable<FetchResult>(observer => {
+        if (!this.queuedRequests.has(key)) {
+          this.queuedRequests.set(key, []);
+        }
+
         if (!queued) {
-          this.queuedRequests[key].push(requestCopy);
+          this.queuedRequests.get(key).push(requestCopy);
           queued = true;
         }
 
+        //called for each subscriber, so need to save all listeners(next, error, complete)
         requestCopy.next = requestCopy.next || [];
         if (observer.next) requestCopy.next.push(observer.next.bind(observer));
 
@@ -79,15 +82,16 @@ export class OperationBatcher {
           requestCopy.complete.push(observer.complete.bind(observer));
 
         // The first enqueued request triggers the queue consumption after `batchInterval` milliseconds.
-        if (this.queuedRequests[key].length === 1) {
+        if (this.queuedRequests.get(key).length === 1) {
           this.scheduleQueueConsumption(key);
         }
 
         // When amount of requests reaches `batchMax`, trigger the queue consumption without waiting on the `batchInterval`.
-        if (this.queuedRequests[key].length === this.batchMax) {
+        if (this.queuedRequests.get(key).length === this.batchMax) {
           this.consumeQueue(key);
         }
       });
+    }
 
     return requestCopy.observable;
   }
@@ -97,19 +101,19 @@ export class OperationBatcher {
   public consumeQueue(
     key: string,
   ): (Observable<FetchResult> | undefined)[] | undefined {
-    const requests: Operation[] = this.queuedRequests[key].map(
-      queuedRequest => queuedRequest.operation,
-    );
+    const requests: Operation[] = this.queuedRequests
+      .get(key)
+      .map(queuedRequest => queuedRequest.operation);
 
-    const forwards: NextLink[] = this.queuedRequests[key].map(
-      queuedRequest => queuedRequest.forward,
-    );
+    const forwards: NextLink[] = this.queuedRequests
+      .get(key)
+      .map(queuedRequest => queuedRequest.forward);
 
     const observables: (Observable<FetchResult> | undefined)[] = [];
     const nexts: any[] = [];
     const errors: any[] = [];
     const completes: any[] = [];
-    this.queuedRequests[key].forEach((batchableRequest, index) => {
+    this.queuedRequests.get(key).forEach((batchableRequest, index) => {
       observables.push(batchableRequest.observable);
       nexts.push(batchableRequest.next);
       errors.push(batchableRequest.error);
@@ -137,6 +141,7 @@ export class OperationBatcher {
           results = [results];
         }
 
+        debugger;
         if (nexts.length !== results.length) {
           const error = new Error(
             `server returned results wtih length ${
@@ -172,7 +177,7 @@ export class OperationBatcher {
 
   private scheduleQueueConsumption(key: string): void {
     setTimeout(() => {
-      if (this.queuedRequests[key] && this.queuedRequests[key].length) {
+      if (this.queuedRequests.get(key) && this.queuedRequests.get(key).length) {
         this.consumeQueue(key);
       }
     }, this.batchInterval);
