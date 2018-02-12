@@ -141,10 +141,9 @@ export class OperationBatcher {
           results = [results];
         }
 
-        debugger;
         if (nexts.length !== results.length) {
           const error = new Error(
-            `server returned results wtih length ${
+            `server returned results with length ${
               results.length
             }, expected length of ${nexts.length}`,
           );
