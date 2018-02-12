@@ -224,21 +224,7 @@ const stateLink = withClientState({
 });
 ```
 
-Sometimes you may need to [reset the store](docs/react/features/cache-updates.html#reset-store) in your application, for example when a user logs out. If you call `client.resetStore` anywhere in your application, you will need to write your defaults to the store again. `apollo-link-state` exposes a `writeDefaults` function for you. To register your callback to Apollo Client, call `client.onResetStore` and pass in `writeDefaults`.
-
-```js
-const cache = new InMemoryCache();
-const stateLink = withClientState({ cache, resolvers, defaults });
-
-const client = new ApolloClient({
-  cache,
-  link: stateLink,
-});
-
-const unsubscribe = client.onResetStore(stateLink.writeDefaults);
-```
-
-If you would like to unsubscribe this callback, `client.onResetStore` returns an unsubscribe function. However, we don't recommend calling unsubscribe on your state link's `writeDefaults` function unless you are planning on writing a new set of defaults to the cache.
+Sometimes you may need to [reset the store](docs/react/features/cache-updates.html#reset-store) in your application, for example when a user logs out. If you call `client.resetStore` anywhere in your application, the `defaults` will repopulate the store. If you wish to have alternate values after a `resetStore` or any other cache invalidation, you may specify Query resolvers, which are detailed in the [following section](resolvers).
 
 <h2 id="resolver">Resolvers</h2>
 
@@ -261,7 +247,8 @@ The four most important things to keep in mind about resolvers in
    side effects.
 4. Query resolvers are only called on a cache miss. Since the first time you
    call the query will be a cache miss, you should return any default state from
-   your resolver function.
+   your resolver function. Also note you will not be able to utilize
+   `cache.readQuery` on a fresh store, such as after `resetStore`.
 
 If any of that sounds confusing, I promise it will be cleared up by the end of
 this section. Keep on reading! 😀
