@@ -52,6 +52,7 @@ export class BatchHttpLink extends ApolloLink {
       includeExtensions,
       batchInterval,
       batchMax,
+      batchKey,
       ...requestOptions
     } = fetchParams;
 
@@ -122,19 +123,21 @@ export class BatchHttpLink extends ApolloLink {
       });
     };
 
-    const batchKey = (operation: Operation) => {
-      const context = operation.getContext();
+    batchKey =
+      batchKey ||
+      ((operation: Operation) => {
+        const context = operation.getContext();
 
-      const contextConfig = {
-        http: context.http,
-        options: context.fetchOptions,
-        credentials: context.credentials,
-        headers: context.headers,
-      };
+        const contextConfig = {
+          http: context.http,
+          options: context.fetchOptions,
+          credentials: context.credentials,
+          headers: context.headers,
+        };
 
-      //may throw error if config not serializable
-      return selectURI(operation) + JSON.stringify(contextConfig);
-    };
+        //may throw error if config not serializable
+        return selectURI(operation) + JSON.stringify(contextConfig);
+      });
 
     this.batcher = new BatchLink({
       batchInterval: this.batchInterval,

@@ -90,6 +90,7 @@ describe('BatchHttpLink', () => {
       batchMax,
       batchKey: batchKeyArg,
     } = BatchLink.mock.calls[0][0];
+
     expect(batchInterval).toBe(20);
     expect(batchMax).toBe(20);
     expect(batchKeyArg()).toEqual(batchKey());
@@ -120,7 +121,7 @@ describe('BatchHttpLink', () => {
         expect(nextCalls).toBe(2);
 
         const options = fetchMock.lastOptions('begin:batch');
-        expect(options.credentials).toEqual('two'); //test reduceFetchOptions
+        expect(options.credentials).toEqual('two');
 
         completions++;
 
@@ -138,8 +139,9 @@ describe('BatchHttpLink', () => {
 
     execute(link, {
       query: sampleQuery,
-      context: { credentials: 'one' },
+      context: { credentials: 'two' },
     }).subscribe(next(data), error, complete);
+
     execute(link, {
       query: sampleQuery,
       context: { credentials: 'two' },
