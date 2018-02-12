@@ -18,7 +18,8 @@
     "danger": "danger run --verbose",
     "predeploy": "npm run build",
     "deploy": "lerna publish -m \"chore: Publish\" --independent",
-    "watch": "lerna run --parallel watch"
+    "watch":
+      "trap \"kill 0\" SIGINT; for f in `ls packages`; do (cd `pwd`/packages/$f && [[ -e package.json ]] && npm run watch) & done; "
   },
   "bundlesize": [
     {

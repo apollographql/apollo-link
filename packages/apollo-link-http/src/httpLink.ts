@@ -19,9 +19,6 @@ export import FetchOptions = HttpLink.Options;
 export import UriFunction = HttpLink.UriFunction;
 
 export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
-  // dev warnings to ensure fetch is present
-  checkFetcher(linkOptions.fetch);
-
   let {
     uri = '/graphql',
     // use default global fetch is nothing passed in
@@ -29,6 +26,9 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
     includeExtensions,
     ...requestOptions
   } = linkOptions;
+
+  // dev warnings to ensure fetch is present
+  checkFetcher(fetcher);
 
   const linkConfig = {
     http: { includeExtensions },
