@@ -3,6 +3,7 @@
 ### vNEXT
 
 ### 1.3.3
+- ApolloLink upgrade
 - Allow graphql results to fire even if there is a network error
 
 ### 1.3.2

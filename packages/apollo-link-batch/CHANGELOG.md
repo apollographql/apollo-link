@@ -1,6 +1,9 @@
 
 ### vNext
 
+### 1.0.4
+- ApolloLink upgrade
+
 ### 1.0.3
 - export options as named interface [TypeScript]
 

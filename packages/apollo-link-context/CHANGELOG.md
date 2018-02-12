@@ -2,6 +2,9 @@
 
 ### vNEXT
 
+### 1.0.4
+- ApolloLink upgrade
+
 ### 1.0.3
 - update rollup build
 
