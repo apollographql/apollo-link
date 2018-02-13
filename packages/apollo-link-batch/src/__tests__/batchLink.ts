@@ -5,6 +5,7 @@ import {
   Operation,
   FetchResult,
   createOperation,
+  GraphQLRequest,
 } from 'apollo-link';
 import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
@@ -17,13 +18,24 @@ import {
 } from '../batchLink';
 
 interface MockedResponse {
-  request: Operation;
+  request: GraphQLRequest;
   result?: FetchResult;
   error?: Error;
   delay?: number;
 }
 
-function requestToKey(request: Operation): string {
+const terminatingCheck = (done, body) => {
+  return (...args) => {
+    try {
+      body(...args);
+      done();
+    } catch (error) {
+      done.fail(error);
+    }
+  };
+};
+
+function requestToKey(request: GraphQLRequest): string {
   const queryString =
     typeof request.query === 'string' ? request.query : print(request.query);
 
@@ -92,7 +104,7 @@ describe('OperationBatcher', () => {
         batchInterval: 10,
         batchHandler: () => null,
       });
-      querySched.consumeQueue();
+      querySched.consumeQueue('');
     }).not.toThrow();
   });
 
@@ -102,11 +114,14 @@ describe('OperationBatcher', () => {
       batchHandler: () => {
         return null;
       },
+      batchKey: () => 'yo',
     });
 
-    expect(batcher.queuedRequests.length).toBe(0);
+    expect(batcher.queuedRequests.get('')).toBeUndefined();
+    expect(batcher.queuedRequests.get('yo')).toBeUndefined();
     batcher.consumeQueue();
-    expect(batcher.queuedRequests.length).toBe(0);
+    expect(batcher.queuedRequests.get('')).toBeUndefined();
+    expect(batcher.queuedRequests.get('yo')).toBeUndefined();
   });
 
   it('should be able to add to the queue', () => {
@@ -127,14 +142,14 @@ describe('OperationBatcher', () => {
     `;
 
     const request: BatchableRequest = {
-      operation: { query },
+      operation: createOperation({}, { query }),
     };
 
-    expect(batcher.queuedRequests.length).toBe(0);
+    expect(batcher.queuedRequests.get('')).toBeUndefined();
     batcher.enqueueRequest(request).subscribe({});
-    expect(batcher.queuedRequests.length).toBe(1);
+    expect(batcher.queuedRequests.get('').length).toBe(1);
     batcher.enqueueRequest(request).subscribe({});
-    expect(batcher.queuedRequests.length).toBe(2);
+    expect(batcher.queuedRequests.get('').length).toBe(2);
   });
 
   describe('request queue', () => {
@@ -175,16 +190,21 @@ describe('OperationBatcher', () => {
         batchHandler,
       });
 
-      myBatcher.enqueueRequest({ operation }).subscribe(resultObj => {
-        expect(myBatcher.queuedRequests.length).toBe(0);
-        expect(resultObj).toEqual({ data });
-        done();
-      });
+      myBatcher.enqueueRequest({ operation }).subscribe(
+        terminatingCheck(done, resultObj => {
+          expect(myBatcher.queuedRequests.get('')).toBeUndefined();
+          expect(resultObj).toEqual({ data });
+        }),
+      );
       const observables: (
         | Observable<FetchResult>
         | undefined)[] = myBatcher.consumeQueue()!;
 
-      expect(observables.length).toBe(1);
+      try {
+        expect(observables.length).toBe(1);
+      } catch (e) {
+        done.fail(e);
+      }
     });
 
     it('should be able to consume from a queue containing multiple queries', done => {
@@ -215,7 +235,11 @@ describe('OperationBatcher', () => {
       const observable2 = myBatcher.enqueueRequest({ operation: request2 });
       let notify = false;
       observable1.subscribe(resultObj1 => {
-        expect(resultObj1).toEqual({ data });
+        try {
+          expect(resultObj1).toEqual({ data });
+        } catch (e) {
+          done.fail(e);
+        }
 
         if (notify) {
           done();
@@ -225,7 +249,11 @@ describe('OperationBatcher', () => {
       });
 
       observable2.subscribe(resultObj2 => {
-        expect(resultObj2).toEqual({ data });
+        try {
+          expect(resultObj2).toEqual({ data });
+        } catch (e) {
+          done.fail(e);
+        }
 
         if (notify) {
           done();
@@ -234,12 +262,16 @@ describe('OperationBatcher', () => {
         }
       });
 
-      expect(myBatcher.queuedRequests.length).toBe(2);
-      const observables: (
-        | Observable<FetchResult>
-        | undefined)[] = myBatcher.consumeQueue()!;
-      expect(myBatcher.queuedRequests.length).toBe(0);
-      expect(observables.length).toBe(2);
+      try {
+        expect(myBatcher.queuedRequests.get('').length).toBe(2);
+        const observables: (
+          | Observable<FetchResult>
+          | undefined)[] = myBatcher.consumeQueue()!;
+        expect(myBatcher.queuedRequests.get('')).toBeUndefined();
+        expect(observables.length).toBe(2);
+      } catch (e) {
+        done.fail(e);
+      }
     });
 
     it('should return a promise when we enqueue a request and resolve it with a result', done => {
@@ -252,10 +284,11 @@ describe('OperationBatcher', () => {
         batchHandler: BH,
       });
       const observable = myBatcher.enqueueRequest({ operation });
-      observable.subscribe(result => {
-        expect(result).toEqual({ data });
-        done();
-      });
+      observable.subscribe(
+        terminatingCheck(done, result => {
+          expect(result).toEqual({ data });
+        }),
+      );
       myBatcher.consumeQueue();
     });
   });
@@ -284,13 +317,19 @@ describe('OperationBatcher', () => {
     const operation: Operation = createOperation({}, { query });
 
     batcher.enqueueRequest({ operation }).subscribe({});
-    expect(batcher.queuedRequests.length).toBe(1);
+    try {
+      expect(batcher.queuedRequests.get('').length).toBe(1);
+    } catch (e) {
+      done.fail(e);
+    }
 
-    setTimeout(() => {
-      expect(batcher.queuedRequests.length).toBe(0);
-      expect(operation.getContext()).toEqual({ response: { data } });
-      done();
-    }, 20);
+    setTimeout(
+      terminatingCheck(done, () => {
+        expect(batcher.queuedRequests.get('')).toBeUndefined();
+        expect(operation.getContext()).toEqual({ response: { data } });
+      }),
+      20,
+    );
   });
 
   it('should correctly batch multiple queries', done => {
@@ -324,22 +363,32 @@ describe('OperationBatcher', () => {
 
     batcher.enqueueRequest({ operation }).subscribe({});
     batcher.enqueueRequest({ operation: operation2 }).subscribe({});
-    expect(batcher.queuedRequests.length).toBe(2);
+    try {
+      expect(batcher.queuedRequests.get('').length).toBe(2);
+    } catch (e) {
+      done.fail(e);
+    }
 
     setTimeout(() => {
       // The batch shouldn't be fired yet, so we can add one more request.
       batcher.enqueueRequest({ operation: operation3 }).subscribe({});
-      expect(batcher.queuedRequests.length).toBe(3);
+      try {
+        expect(batcher.queuedRequests.get('').length).toBe(3);
+      } catch (e) {
+        done.fail(e);
+      }
     }, 5);
 
-    setTimeout(() => {
-      // The batch should've been fired by now.
-      expect(operation.getContext()).toEqual({ response: { data } });
-      expect(operation2.getContext()).toEqual({ response: { data: data2 } });
-      expect(operation3.getContext()).toEqual({ response: { data } });
-      expect(batcher.queuedRequests.length).toBe(0);
-      done();
-    }, 20);
+    setTimeout(
+      terminatingCheck(done, () => {
+        // The batch should've been fired by now.
+        expect(operation.getContext()).toEqual({ response: { data } });
+        expect(operation2.getContext()).toEqual({ response: { data: data2 } });
+        expect(operation3.getContext()).toEqual({ response: { data } });
+        expect(batcher.queuedRequests.get('')).toBeUndefined();
+      }),
+      20,
+    );
   });
 
   it('should reject the promise if there is a network error', done => {
@@ -364,10 +413,9 @@ describe('OperationBatcher', () => {
 
     const observable = batcher.enqueueRequest({ operation });
     observable.subscribe({
-      error: (resError: Error) => {
+      error: terminatingCheck(done, (resError: Error) => {
         expect(resError.message).toBe('Network error');
-        done();
-      },
+      }),
     });
     batcher.consumeQueue();
   });
@@ -392,14 +440,20 @@ describe('BatchLink', () => {
         batchInterval: 0,
         batchMax: 1,
         batchHandler: (operation, forward) => {
-          expect(forward.length).toBe(1);
-          expect(operation.length).toBe(1);
-          return forward[0](operation[0]);
+          try {
+            expect(forward.length).toBe(1);
+            expect(operation.length).toBe(1);
+          } catch (e) {
+            done.fail(e);
+          }
+          return forward[0](operation[0]).map(result => [result]);
         },
       }),
       new ApolloLink(operation => {
-        expect(operation.query).toEqual(query);
-        done();
+        terminatingCheck(done, () => {
+          expect(operation.query).toEqual(query);
+        })();
+        return null;
       }),
     ]);
 
@@ -411,13 +465,14 @@ describe('BatchLink', () => {
           query,
         },
       ),
-    ).subscribe();
+    ).subscribe(result => done.fail());
   });
 
   it('raises warning if terminating', () => {
     let calls = 0;
     const link_full = new BatchLink({
-      batchHandler: (operation, forward) => forward(operation),
+      batchHandler: (operation, forward) =>
+        forward[0](operation[0]).map(r => [r]),
     });
     const link_one_op = new BatchLink({
       batchHandler: operation => Observable.of(),
@@ -447,7 +502,11 @@ describe('BatchLink', () => {
   it('correctly uses batch size', done => {
     const sizes = [1, 2, 3];
     const terminating = new ApolloLink(operation => {
-      expect(operation.query).toEqual(query);
+      try {
+        expect(operation.query).toEqual(query);
+      } catch (e) {
+        done.fail(e);
+      }
       return Observable.of(operation.variables.count);
     });
 
@@ -456,8 +515,12 @@ describe('BatchLink', () => {
       if (!size) done();
 
       const batchHandler = jest.fn((operation, forward) => {
-        expect(operation.length).toBe(size);
-        expect(forward.length).toBe(size);
+        try {
+          expect(operation.length).toBe(size);
+          expect(forward.length).toBe(size);
+        } catch (e) {
+          done.fail(e);
+        }
         const observables = forward.map((f, i) => f(operation[i]));
         return new Observable(observer => {
           const data = [];
@@ -491,7 +554,11 @@ describe('BatchLink', () => {
             expect(data).toBe(i);
           },
           complete: () => {
-            expect(batchHandler.mock.calls.length).toBe(1);
+            try {
+              expect(batchHandler.mock.calls.length).toBe(1);
+            } catch (e) {
+              done.fail(e);
+            }
             runBatchSize();
           },
         });
@@ -535,7 +602,11 @@ describe('BatchLink', () => {
         ),
       ).subscribe({
         next: data => {
-          expect(data).toBe(42);
+          try {
+            expect(data).toBe(42);
+          } catch (e) {
+            done.fail(e);
+          }
         },
         complete: () => {
           mock(batchHandler.mock.calls.length);
@@ -544,10 +615,14 @@ describe('BatchLink', () => {
 
       setTimeout(() => {
         const checkCalls = mock.mock.calls.slice(0, -1);
-        expect(checkCalls.length).toBe(2);
-        checkCalls.forEach(args => expect(args[0]).toBe(0));
-        expect(mock).lastCalledWith(1);
-        expect(batchHandler.mock.calls.length).toBe(1);
+        try {
+          expect(checkCalls.length).toBe(2);
+          checkCalls.forEach(args => expect(args[0]).toBe(0));
+          expect(mock).lastCalledWith(1);
+          expect(batchHandler.mock.calls.length).toBe(1);
+        } catch (e) {
+          done.fail(e);
+        }
 
         runBatchInterval();
       }, batchInterval + 5);
@@ -577,11 +652,10 @@ describe('BatchLink', () => {
         next: data => {
           done.fail('next should not be called');
         },
-        error: error => {
+        error: terminatingCheck(done, error => {
           expect(error).toBeDefined();
           expect(error.result).toEqual(result);
-          done();
-        },
+        }),
         complete: () => {
           done.fail('complete should not be called');
         },
