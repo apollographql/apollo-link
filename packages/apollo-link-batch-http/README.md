@@ -3,7 +3,7 @@ title: apollo-link-batch-http
 description: Batch multiple operations into a single HTTP request
 ---
 
-**Note: This package will be updated to remove the dependency on apollo-fetch an use the same options / API as the http-link**
+**Note: This package will be updated to remove the dependency on apollo-fetch and use the same options / API as the http-link**
 
 `apollo-link-batch-http` batches multiple operations into a single HTTP request. Instead of sending a single operation, it sends an array of operations to the server.
 
