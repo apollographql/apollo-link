@@ -1,9 +1,6 @@
 import { Operation } from 'apollo-link';
 import { print } from 'graphql/language/printer';
 
-// types
-import { ApolloFetch } from 'apollo-fetch';
-
 // XXX replace with actual typings when available
 declare var AbortController: any;
 
@@ -161,17 +158,8 @@ export const parseAndCheckResponse = operations => (response: Response) => {
   );
 };
 
-export const checkFetcher = (fetcher: ApolloFetch | GlobalFetch['fetch']) => {
+export const checkFetcher = (fetcher: GlobalFetch['fetch']) => {
   warnIfNoFetch(fetcher);
-
-  if ((fetcher as ApolloFetch).use) {
-    throw new Error(`
-      It looks like you're using apollo-fetch! Apollo Link now uses native fetch
-      implementation, so apollo-fetch is not needed. If you want to use your existing
-      apollo-fetch middleware, please check this guide to upgrade:
-        https://github.com/apollographql/apollo-link/blob/master/docs/implementation.md
-    `);
-  }
 };
 
 const warnIfNoFetch = fetcher => {
