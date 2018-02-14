@@ -46,7 +46,7 @@
     "apollo-link": "^1.1.0"
   },
   "devDependencies": {
-    "@types/graphql": "0.12.3",
+    "@types/graphql": "0.12.4",
     "@types/jest": "21.1.10",
     "browserify": "16.1.0",
     "graphql": "0.13.0",
