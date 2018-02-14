@@ -632,22 +632,6 @@ export const sharedHttpTest = (
         const link = createLink({ uri: 'data', fetch: () => {} });
       }).not.toThrow();
     });
-    it('warns if apollo-fetch is used', done => {
-      try {
-        const mockFetch = {
-          use: () => {},
-          useAfter: () => {},
-          batchUse: () => {},
-          batchUseAfter: () => {},
-        };
-        const link = createLink({ uri: 'data', fetch: mockFetch });
-        done.fail("warning wasn't called");
-      } catch (e) {
-        makeCallback(done, () =>
-          expect(e.message).toMatch(/It looks like you're using apollo-fetch/),
-        )();
-      }
-    });
   });
 
   describe('error handling', () => {
