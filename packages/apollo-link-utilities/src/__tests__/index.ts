@@ -1,4 +1,4 @@
-import { Observable, ApolloLink, execute } from 'apollo-link';
+import { createOperation, Observable, ApolloLink, execute } from 'apollo-link';
 import gql from 'graphql-tag';
 import * as fetchMock from 'fetch-mock';
 
@@ -9,7 +9,7 @@ import {
   serializeFetchBody,
 } from '../index';
 
-const sampleQuery = gql`
+const query = gql`
   query SampleQuery {
     stub {
       id
@@ -25,14 +25,28 @@ describe('Link Utilities', () => {
       it('is able to return a correct result and add it to the context', () => {});
     });
 
-    describe('selectOptionsAndBody', () => {
+    describe('selectHttpOptionsAndBody', () => {
       it('throws a network error', () => {});
     });
 
     describe('selectURI', () => {
-      it('returns a passed in string', () => {});
-      it('returns a fallback of /graphql', () => {});
-      it('returns the result of a UriFunction', () => {});
+      it('returns a passed in string', () => {
+        const uri = '/somewhere';
+        const operation = createOperation({ uri }, { query });
+        expect(selectURI(operation)).toEqual(uri);
+      });
+
+      it('returns a fallback of /graphql', () => {
+        const uri = '/graphql';
+        const operation = createOperation({}, { query });
+        expect(selectURI(operation)).toEqual(uri);
+      });
+
+      it('returns the result of a UriFunction', () => {
+        const uri = '/somewhere';
+        const operation = createOperation({}, { query });
+        expect(selectURI(operation, () => uri)).toEqual(uri);
+      });
     });
 
     describe('serializeFetchBody', () => {
