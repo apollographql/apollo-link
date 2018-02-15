@@ -1,16 +1,17 @@
 import { ApolloLink, Operation, FetchResult, Observable } from 'apollo-link';
 import {
-  serializeBody,
+  serializeFetchBody,
   selectURI,
-  parseAndCheckResponse,
-  selectOptionsAndBody,
+  parseAndCheckHttpResponse,
+  selectHttpOptionsAndBody,
   createSignalIfSupported,
-  LinkUtils,
+  fallbackHttpConfig,
+  HttpOptions,
 } from 'apollo-link-utilities';
 import { BatchLink } from 'apollo-link-batch';
 
 export namespace BatchHttpLink {
-  export interface Options extends LinkUtils.Options {
+  export interface Options extends HttpOptions {
     /**
      * The maximum number of operations to include in one fetch.
      *
@@ -79,9 +80,9 @@ export class BatchHttpLink extends ApolloLink {
 
       //uses fallback, link, and then context to build options
       const optsAndBody = operations.map(operation =>
-        selectOptionsAndBody(
+        selectHttpOptionsAndBody(
           operation,
-          LinkUtils.fallbackConfig,
+          fallbackHttpConfig,
           linkConfig,
           contextConfig,
         ),
@@ -91,7 +92,7 @@ export class BatchHttpLink extends ApolloLink {
       const options = optsAndBody[0].options;
 
       try {
-        (options as any).body = serializeBody(body);
+        (options as any).body = serializeFetchBody(body);
       } catch (parseError) {
         return new Observable<FetchResult[]>(observer => {
           observer.error(parseError);
@@ -104,7 +105,7 @@ export class BatchHttpLink extends ApolloLink {
       return new Observable<FetchResult[]>(observer => {
         // the raw response is attached to the context in the BatchingLink
         fetcher(chosenURI, options)
-          .then(parseAndCheckResponse(operations))
+          .then(parseAndCheckHttpResponse(operations))
           .then(result => {
             // we have data and can send it to back up the link chain
             observer.next(result);
