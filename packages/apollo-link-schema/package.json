@@ -52,7 +52,7 @@
     "browserify": "16.1.0",
     "graphql": "0.13.0",
     "graphql-tag": "2.7.3",
-    "graphql-tools": "2.20.2",
+    "graphql-tools": "2.21.0",
     "jest": "21.2.1",
     "rimraf": "2.6.1",
     "rollup": "0.55.5",
