@@ -1,6 +1,10 @@
 import { Operation } from 'apollo-link';
 import { print } from 'graphql/language/printer';
 
+/*
+ * Http Utilities: shared across links that make http requests
+ */
+
 // XXX replace with actual typings when available
 declare var AbortController: any;
 
@@ -24,80 +28,78 @@ export type ClientParseError = Error & {
   parseError: Error;
 };
 
-export interface HttpOptions {
+export interface HttpQueryOptions {
   includeQuery?: boolean;
   includeExtensions?: boolean;
 }
 
-export interface ConfigOptions {
-  http?: HttpOptions;
+export interface HttpConfig {
+  http?: HttpQueryOptions;
   options?: any;
   headers?: any; //overrides headers in options
   credentials?: any;
 }
 
-export namespace LinkUtils {
-  export interface UriFunction {
-    (operation: Operation): string;
-  }
-
-  export interface Options {
-    /**
-     * The URI to use when fetching operations.
-     *
-     * Defaults to '/graphql'.
-     */
-    uri?: string | UriFunction;
-
-    /**
-     * Passes the extensions field to your graphql server.
-     *
-     * Defaults to false.
-     */
-    includeExtensions?: boolean;
-
-    /**
-     * A `fetch`-compatible API to use when making requests.
-     */
-    fetch?: GlobalFetch['fetch'];
-
-    /**
-     * An object representing values to be sent as headers on the request.
-     */
-    headers?: any;
-
-    /**
-     * The credentials policy you want to use for the fetch call.
-     */
-    credentials?: string;
-
-    /**
-     * Any overrides of the fetch options argument to pass to the fetch call.
-     */
-    fetchOptions?: any;
-  }
-
-  const defaultHttpOptions: HttpOptions = {
-    includeQuery: true,
-    includeExtensions: false,
-  };
-
-  const defaultHeaders = {
-    // headers are case insensitive (https://stackoverflow.com/a/5259004)
-    accept: '*/*',
-    'content-type': 'application/json',
-  };
-
-  const defaultOptions = {
-    method: 'POST',
-  };
-
-  export const fallbackConfig = {
-    http: defaultHttpOptions,
-    headers: defaultHeaders,
-    options: defaultOptions,
-  };
+export interface UriFunction {
+  (operation: Operation): string;
 }
+
+export interface HttpOptions {
+  /**
+   * The URI to use when fetching operations.
+   *
+   * Defaults to '/graphql'.
+   */
+  uri?: string | UriFunction;
+
+  /**
+   * Passes the extensions field to your graphql server.
+   *
+   * Defaults to false.
+   */
+  includeExtensions?: boolean;
+
+  /**
+   * A `fetch`-compatible API to use when making requests.
+   */
+  fetch?: GlobalFetch['fetch'];
+
+  /**
+   * An object representing values to be sent as headers on the request.
+   */
+  headers?: any;
+
+  /**
+   * The credentials policy you want to use for the fetch call.
+   */
+  credentials?: string;
+
+  /**
+   * Any overrides of the fetch options argument to pass to the fetch call.
+   */
+  fetchOptions?: any;
+}
+
+const defaultHttpOptions: HttpQueryOptions = {
+  includeQuery: true,
+  includeExtensions: false,
+};
+
+const defaultHeaders = {
+  // headers are case insensitive (https://stackoverflow.com/a/5259004)
+  accept: '*/*',
+  'content-type': 'application/json',
+};
+
+const defaultOptions = {
+  method: 'POST',
+};
+
+export const fallbackHttpConfig = {
+  http: defaultHttpOptions,
+  headers: defaultHeaders,
+  options: defaultOptions,
+};
 
 export const throwServerError = (response, result, message) => {
   const error = new Error(message) as ServerError;
@@ -110,7 +112,7 @@ export const throwServerError = (response, result, message) => {
 };
 
 //TODO: when conditional types come in ts 2.8, operations should be a generic type that extends Operation | Array<Operation>
-export const parseAndCheckResponse = operations => (response: Response) => {
+export const parseAndCheckHttpResponse = operations => (response: Response) => {
   return (
     response
       .text()
@@ -167,17 +169,17 @@ export const createSignalIfSupported = () => {
   return { controller, signal };
 };
 
-export const selectOptionsAndBody = (
+export const selectHttpOptionsAndBody = (
   operation: Operation,
-  fallbackConfig: ConfigOptions,
-  ...configs: Array<ConfigOptions>
+  fallbackConfig: HttpConfig,
+  ...configs: Array<HttpConfig>
 ) => {
-  let options: ConfigOptions = {
+  let options: HttpConfig = {
     ...fallbackConfig.options,
     headers: fallbackConfig.headers,
     credentials: fallbackConfig.credentials,
   };
-  let http: HttpOptions = fallbackConfig.http;
+  let http: HttpQueryOptions = fallbackConfig.http;
 
   /*
    * use the rest of the configs to populate the options
@@ -215,7 +217,7 @@ export const selectOptionsAndBody = (
   };
 };
 
-export const serializeBody = body => {
+export const serializeFetchBody = body => {
   let serializedBody;
   try {
     serializedBody = JSON.stringify(body);

@@ -1,16 +1,19 @@
 import { ApolloLink, Observable, RequestHandler } from 'apollo-link';
 import {
-  serializeBody,
+  serializeFetchBody,
   selectURI,
-  parseAndCheckResponse,
-  selectOptionsAndBody,
+  parseAndCheckHttpResponse,
+  selectHttpOptionsAndBody,
   createSignalIfSupported,
-  LinkUtils,
+  fallbackHttpConfig,
+  HttpOptions,
+  UriFunction as _UriFunction,
 } from 'apollo-link-utilities';
 
 export namespace HttpLink {
-  export interface UriFunction extends LinkUtils.UriFunction {}
-  export interface Options extends LinkUtils.Options {}
+  //TODO Would much rather be able to export directly
+  export interface UriFunction extends _UriFunction {}
+  export interface Options extends HttpOptions {}
 }
 
 // For backwards compatibility.
@@ -46,9 +49,9 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
     };
 
     //uses fallback, link, and then context to build options
-    const { options, body } = selectOptionsAndBody(
+    const { options, body } = selectHttpOptionsAndBody(
       operation,
-      LinkUtils.fallbackConfig,
+      fallbackHttpConfig,
       linkConfig,
       contextConfig,
     );
@@ -57,7 +60,7 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
     if (controller) (options as any).signal = signal;
 
     try {
-      (options as any).body = serializeBody(body);
+      (options as any).body = serializeFetchBody(body);
     } catch (parseError) {
       return new Observable(observer => {
         observer.error(parseError);
@@ -70,7 +73,7 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
           operation.setContext({ response });
           return response;
         })
-        .then(parseAndCheckResponse(operation))
+        .then(parseAndCheckHttpResponse(operation))
         .then(result => {
           // we have data and can send it to back up the link chain
           observer.next(result);
