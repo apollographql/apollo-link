@@ -53,12 +53,18 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
       contextConfig,
     );
 
-    return new Observable(observer => {
-      const { controller, signal } = createSignalIfSupported();
-      if (controller) (options as any).signal = signal;
+    const { controller, signal } = createSignalIfSupported();
+    if (controller) (options as any).signal = signal;
 
+    try {
       (options as any).body = serializeBody(body);
+    } catch (parseError) {
+      return new Observable(observer => {
+        observer.error(parseError);
+      });
+    }
 
+    return new Observable(observer => {
       fetcher(chosenURI, options)
         .then(response => {
           operation.setContext({ response });

@@ -90,12 +90,18 @@ export class BatchHttpLink extends ApolloLink {
       const body = optsAndBody.map(({ body }) => body);
       const options = optsAndBody[0].options;
 
-      (options as any).body = serializeBody(body);
+      try {
+        (options as any).body = serializeBody(body);
+      } catch (parseError) {
+        return new Observable<FetchResult[]>(observer => {
+          observer.error(parseError);
+        });
+      }
+
+      const { controller, signal } = createSignalIfSupported();
+      if (controller) (options as any).signal = signal;
 
       return new Observable<FetchResult[]>(observer => {
-        const { controller, signal } = createSignalIfSupported();
-        if (controller) (options as any).signal = signal;
-
         // the raw response is attached to the context in the BatchingLink
         fetcher(chosenURI, options)
           .then(parseAndCheckResponse(operations))

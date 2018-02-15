@@ -46,12 +46,13 @@ describe('BatchHttpLink', () => {
   const data2 = { data: { hello: 'everyone' } };
   const roflData = { data: { haha: 'hehe' } };
   const lawlData = { data: { tehe: 'haaa' } };
+  const makePromise = res =>
+    new Promise((resolve, reject) => setTimeout(() => resolve(res)));
 
   let subscriber;
 
   beforeEach(() => {
-    const makePromise = res =>
-      new Promise((resolve, reject) => setTimeout(() => resolve(res)));
+    fetchMock.restore();
     fetchMock.post('begin:batch', makePromise([data, data2]));
     fetchMock.post('begin:rofl', makePromise([roflData, roflData]));
     fetchMock.post('begin:lawl', makePromise([lawlData, lawlData]));
