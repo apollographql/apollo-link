@@ -1,5 +1,5 @@
 ---
-title: apollo-link-utilites
+title: apollo-link-utilities
 description: Http utilities shared across Apollo Links
 ---
 

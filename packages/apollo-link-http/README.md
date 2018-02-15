@@ -3,6 +3,20 @@ title: apollo-link-http
 description: Get GraphQL results over a network using HTTP fetch.
 ---
 
+The http link is the most common Apollo Link, a system of modular components
+for GraphQL networking. If you haven't done so already, [read the Apollo Link
+docs](https://www.apollographql.com/docs/link/#usage) to learn about the Apollo
+Link ecosystem and how to use this link with libraries like Apollo Client and
+graphql-tools, or as a standalone client.
+
+The http link is a terminating link that fetches GraphQL results from a GraphQL
+endpoint over an http connection. The http link support both POST and GET
+requests with the ability change the http options on a per query basis. This
+can be used for authentication, persisted queries, dynamic uris, and other
+granualar updates.
+
+<h2 id="usage">Usage</h2>
+
 Import and initialize this link in just two lines:
 
 ```js
@@ -10,12 +24,6 @@ import { createHttpLink } from "apollo-link-http";
 
 const link = createHttpLink({ uri: "/graphql" });
 ```
-
-Apollo Link is a system of modular components for GraphQL networking. [Read the docs](https://www.apollographql.com/docs/link/#usage) to learn how to use this link with libraries like Apollo Client and graphql-tools, or as a standalone client.
-
-<h2 id="fetch">Fetch polyfill</h2>
-
-The HTTP Link relies on having `fetch` present in your runtime environment. If you are running on react-native, or modern browsers, this should be no problem. If you are targeting an environment without `fetch` such as older browsers of the server, you will need to pass your own `fetch` to the link through the options. We recommend [`unfetch`](https://github.com/developit/unfetch) for older browsers and [`node-fetch`](https://github.com/bitinn/node-fetch) for running in Node.
 
 <h2 id="options">Options</h2>
 
@@ -27,6 +35,10 @@ HTTP Link takes an object with some options on it to customize the behavior of t
 * `headers`: an object representing values to be sent as headers on the request
 * `credentials`: a string representing the credentials policy you want for the fetch call
 * `fetchOptions`: any overrides of the fetch options argument to pass to the fetch call
+
+<h2 id="fetch">Fetch polyfill</h2>
+
+The HTTP Link relies on having `fetch` present in your runtime environment. If you are running on react-native, or modern browsers, this should be no problem. If you are targeting an environment without `fetch` such as older browsers of the server, you will need to pass your own `fetch` to the link through the options. We recommend [`unfetch`](https://github.com/developit/unfetch) for older browsers and [`node-fetch`](https://github.com/bitinn/node-fetch) for running in Node.
 
 <h2 id="context">Context</h2>
 
