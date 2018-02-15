@@ -575,11 +575,16 @@ describe('BatchLink', () => {
       const mock = jest.fn();
 
       const batchInterval = intervals.pop();
-      if (!batchInterval) done();
+      if (!batchInterval) return done();
 
       const batchHandler = jest.fn((operation, forward) => {
-        expect(operation.length).toBe(1);
-        expect(forward.length).toBe(1);
+        try {
+          expect(operation.length).toBe(1);
+          expect(forward.length).toBe(1);
+        } catch (e) {
+          done.fail(e);
+        }
+
         return forward[0](operation[0]).map(d => [d]);
       });
 
@@ -659,6 +664,64 @@ describe('BatchLink', () => {
         complete: () => {
           done.fail('complete should not be called');
         },
+      });
+    });
+  });
+
+  describe('batchKey', () => {
+    it('should allow different batches to be created separately', done => {
+      const data = { data: {} };
+      const result = [data, data];
+
+      const batchHandler = jest.fn(op => {
+        try {
+          expect(op.length).toBe(2);
+        } catch (e) {
+          done.fail(e);
+        }
+        return Observable.of(result);
+      });
+      let key = true;
+      const batchKey = () => {
+        key = !key;
+        return '' + !key;
+      };
+
+      const link = ApolloLink.from([
+        new BatchLink({
+          batchInterval: 1,
+          //if batchKey does not work, then the batch size would be 3
+          batchMax: 3,
+          batchHandler,
+          batchKey,
+        }),
+      ]);
+
+      let count = 0;
+      [1, 2, 3, 4].forEach(x => {
+        execute(link, {
+          query,
+        }).subscribe({
+          next: d => {
+            try {
+              expect(d).toEqual(data);
+            } catch (e) {
+              done.fail(e);
+            }
+          },
+          error: done.fail,
+          complete: () => {
+            count++;
+            if (count === 4) {
+              try {
+                expect(batchHandler.mock.calls.length).toBe(2);
+                done();
+              } catch (e) {
+                done.fail(e);
+              }
+            }
+          },
+        });
       });
     });
   });

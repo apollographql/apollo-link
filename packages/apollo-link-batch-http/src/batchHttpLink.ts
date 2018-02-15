@@ -132,7 +132,7 @@ export class BatchHttpLink extends ApolloLink {
         };
 
         //may throw error if config not serializable
-        return selectURI(operation) + JSON.stringify(contextConfig);
+        return selectURI(operation, uri) + JSON.stringify(contextConfig);
       });
 
     this.batcher = new BatchLink({

@@ -44,6 +44,8 @@ describe('BatchHttpLink', () => {
 
   const data = { data: { hello: 'world' } };
   const data2 = { data: { hello: 'everyone' } };
+  const roflData = { data: { haha: 'hehe' } };
+  const lawlData = { data: { tehe: 'haaa' } };
 
   let subscriber;
 
@@ -51,6 +53,8 @@ describe('BatchHttpLink', () => {
     const makePromise = res =>
       new Promise((resolve, reject) => setTimeout(() => resolve(res)));
     fetchMock.post('begin:batch', makePromise([data, data2]));
+    fetchMock.post('begin:rofl', makePromise([roflData, roflData]));
+    fetchMock.post('begin:lawl', makePromise([lawlData, lawlData]));
 
     const next = jest.fn();
     const error = jest.fn();
@@ -175,5 +179,79 @@ describe('BatchHttpLink', () => {
     execute(link, { query: sampleQuery }).subscribe(next, error, complete);
     execute(link, { query: sampleQuery }).subscribe(next, error, complete);
     execute(link, { query: sampleQuery }).subscribe(next, error, complete);
+  });
+
+  describe('batchKey', () => {
+    const query = gql`
+      query {
+        author {
+          firstName
+          lastName
+        }
+      }
+    `;
+
+    it('should batch queries with different options separately', done => {
+      let key = true;
+      const batchKey = () => {
+        key = !key;
+        return '' + !key;
+      };
+
+      const link = ApolloLink.from([
+        new BatchHttpLink({
+          uri: operation => {
+            return operation.variables.endpoint;
+          },
+          batchInterval: 1,
+          //if batchKey does not work, then the batch size would be 3
+          batchMax: 3,
+          batchKey,
+        }),
+      ]);
+
+      let count = 0;
+      const next = expected => received => {
+        try {
+          expect(received).toEqual(expected);
+        } catch (e) {
+          done.fail(e);
+        }
+      };
+      const complete = () => {
+        count++;
+        if (count === 4) {
+          try {
+            const lawlCalls = fetchMock.calls('begin:lawl');
+            expect(lawlCalls.length).toBe(1);
+            const roflCalls = fetchMock.calls('begin:rofl');
+            expect(roflCalls.length).toBe(1);
+            done();
+          } catch (e) {
+            done.fail(e);
+          }
+        }
+      };
+
+      [1, 2].forEach(x => {
+        execute(link, {
+          query,
+          variables: { endpoint: 'rofl' },
+        }).subscribe({
+          next: next(roflData),
+          error: done.fail,
+          complete,
+        });
+
+        execute(link, {
+          query,
+          variables: { endpoint: 'lawl' },
+        }).subscribe({
+          next: next(lawlData),
+          error: done.fail,
+          complete,
+        });
+      });
+    });
   });
 });

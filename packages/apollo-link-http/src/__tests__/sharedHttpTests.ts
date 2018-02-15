@@ -615,25 +615,6 @@ export const sharedHttpTest = (
     });
   });
 
-  describe('dev warnings', () => {
-    it('warns if no fetch is present', done => {
-      if (typeof fetch !== 'undefined') fetch = undefined;
-      try {
-        const link = createLink({ uri: 'data' });
-        done.fail("warning wasn't called");
-      } catch (e) {
-        makeCallback(done, () =>
-          expect(e.message).toMatch(/fetch is not found globally/),
-        )();
-      }
-    });
-    it('does not warn if no fetch is present but a fetch is passed', () => {
-      expect(() => {
-        const link = createLink({ uri: 'data', fetch: () => {} });
-      }).not.toThrow();
-    });
-  });
-
   describe('error handling', () => {
     let responseBody;
     const text = jest.fn(() => {
