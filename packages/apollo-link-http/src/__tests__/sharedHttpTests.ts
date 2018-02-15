@@ -51,14 +51,16 @@ export const sharedHttpTest = (
     const data2 = { data: { hello: 'everyone' } };
     const mockError = { throws: new TypeError('mock me') };
 
+    const makePromise = res =>
+      new Promise((resolve, reject) => setTimeout(() => resolve(res)));
+
     let subscriber;
 
     beforeEach(() => {
-      const makePromise = res =>
-        new Promise((resolve, reject) => setTimeout(() => resolve(res)));
+      fetchMock.restore();
       fetchMock.post('begin:data2', makePromise(data2));
       fetchMock.post('begin:data', makePromise(data));
-      fetchMock.post('begin:error', makePromise(mockError));
+      fetchMock.post('begin:error', mockError);
       fetchMock.post('begin:apollo', makePromise(data));
 
       fetchMock.get('begin:data', makePromise(data));
