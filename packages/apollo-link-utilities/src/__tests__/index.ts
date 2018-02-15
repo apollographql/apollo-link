@@ -35,9 +35,20 @@ describe('Link Utilities', () => {
       it('returns the result of a UriFunction', () => {});
     });
 
-    describe('serializeBody', () => {
-      it('throws a parse error on an unparsable body', () => {});
-      it('returns a correctly parsed body', () => {});
+    describe('serializeFetchBody', () => {
+      it('throws a parse error on an unparsable body', () => {
+        const b = {};
+        const a = { b };
+        (b as any).a = a;
+
+        expect(() => serializeFetchBody(b)).toThrow();
+      });
+
+      it('returns a correctly parsed body', () => {
+        const body = { no: 'thing' };
+
+        expect(serializeFetchBody(body)).toEqual('{"no":"thing"}');
+      });
     });
   });
 });
