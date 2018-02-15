@@ -2,6 +2,7 @@
 ### vNext
 - add input validation logic [PR#364](https://github.com/apollographql/apollo-link/pull/364)
 - ensure batch observables can handle multiple subscribers [PR#364](https://github.com/apollographql/apollo-link/pull/364)
+- share logic with apollo-link-http through apollo-link-utilities [PR#364](https://github.com/apollographql/apollo-link/pull/364)
 
 ### 1.0.4
 - ApolloLink upgrade

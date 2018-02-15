@@ -1,7 +1,7 @@
 # Change log
 
 ### vNEXT
-- add batching support [PR#364](https://github.com/apollographql/apollo-link/pull/364)
+- move logic to apollo-link-utilities [PR#364](https://github.com/apollographql/apollo-link/pull/364)
 
 ### 1.3.3
 - ApolloLink upgrade
