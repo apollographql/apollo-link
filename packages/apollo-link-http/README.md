@@ -13,7 +13,7 @@ The http link is a terminating link that fetches GraphQL results from a GraphQL
 endpoint over an http connection. The http link support both POST and GET
 requests with the ability change the http options on a per query basis. This
 can be used for authentication, persisted queries, dynamic uris, and other
-granualar updates.
+granular updates.
 
 <h2 id="usage">Usage</h2>
 
@@ -31,7 +31,7 @@ HTTP Link takes an object with some options on it to customize the behavior of t
 
 * `uri`: the URI key is a string endpoint or function resolving to an endpoint -- will default to "/graphql" if not specified
 * `includeExtensions`: allow passing the extensions field to your graphql server, defaults to false
-* `fetch`: a `fetch` compatiable API for making a request
+* `fetch`: a `fetch` compatible API for making a request
 * `headers`: an object representing values to be sent as headers on the request
 * `credentials`: a string representing the credentials policy you want for the fetch call
 * `fetchOptions`: any overrides of the fetch options argument to pass to the fetch call
@@ -101,7 +101,7 @@ client.query({
 
 <h2 id="error">Errors</h2>
 
-The Http Link draws a distinction between client, server and GraphQL errors. Server errors can occur in three different scenerios: parse, network and data errors. [`apollo-link-error`](error.html) provides an [interface](error.html#Usage) for handling these errors. This list describes the scenerios that cause different errors:
+The Http Link draws a distinction between client, server and GraphQL errors. Server errors can occur in three different scenarios: parse, network and data errors. [`apollo-link-error`](error.html) provides an [interface](error.html#Usage) for handling these errors. This list describes the scenarios that cause different errors:
 
 * _Client parse error_: the request body is not-serializable due to circular references for example
 * _Server parse error_: the response from the server cannot be parsed ([response.json()](https://developer.mozilla.org/en-US/docs/Web/API/Body/json))
