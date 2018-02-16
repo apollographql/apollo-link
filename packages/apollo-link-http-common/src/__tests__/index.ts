@@ -26,7 +26,9 @@ describe('Link Utilities', () => {
     });
 
     describe('selectHttpOptionsAndBody', () => {
-      it('throws a network error', () => {});
+      it('includeQuery allows the query to be ignored', () => {});
+      it('the fallbackConfig is used if no other configs are specified', () => {});
+      it('allows headers, credentials, and setting of method to function correctly', () => {});
     });
 
     describe('selectURI', () => {
