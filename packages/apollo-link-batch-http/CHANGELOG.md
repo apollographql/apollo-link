@@ -1,4 +1,6 @@
 ### vNext
+- share logic with apollo-link-http through apollo-link-http-core [PR#364](https://github.com/apollographql/apollo-link/pull/364)
+- remove apollo-fetch [PR#364](https://github.com/apollographql/apollo-link/pull/364)
 
 ### 1.0.5
 - ApolloLink upgrade
