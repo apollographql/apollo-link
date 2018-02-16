@@ -49,7 +49,7 @@ export class BatchHttpLink extends ApolloLink {
     let {
       uri = '/graphql',
       // use default global fetch is nothing passed in
-      fetch: fetcher = fetch,
+      fetch: fetcher,
       includeExtensions,
       batchInterval,
       batchMax,
@@ -59,6 +59,13 @@ export class BatchHttpLink extends ApolloLink {
 
     // dev warnings to ensure fetch is present
     checkFetcher(fetcher);
+
+    //fetcher is set here rather than the destructuring to ensure fetch is
+    //declared before referencing it. Reference in the destructuring would cause
+    //a ReferenceError
+    if (!fetcher) {
+      fetcher = fetch;
+    }
 
     const linkConfig = {
       http: { includeExtensions },

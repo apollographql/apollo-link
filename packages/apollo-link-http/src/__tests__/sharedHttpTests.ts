@@ -618,8 +618,17 @@ export const sharedHttpTest = (
   });
 
   describe('dev warnings', () => {
-    it('warns if no fetch is present', done => {
-      if (typeof fetch !== 'undefined') fetch = undefined;
+    let oldFetch;
+    beforeEach(() => {
+      oldFetch = window.fetch;
+      delete window.fetch;
+    });
+
+    afterEach(() => {
+      window.fetch = oldFetch;
+    });
+
+    it('warns if fetch is undeclared', done => {
       try {
         const link = createLink({ uri: 'data' });
         done.fail("warning wasn't called");
@@ -630,8 +639,19 @@ export const sharedHttpTest = (
       }
     });
 
-    it('does not warn if no fetch is present but a fetch is passed', () => {
-      if (typeof fetch !== 'undefined') fetch = undefined;
+    it('warns if fetch is undefined', done => {
+      window.fetch = undefined;
+      try {
+        const link = createLink({ uri: 'data' });
+        done.fail("warning wasn't called");
+      } catch (e) {
+        makeCallback(done, () =>
+          expect(e.message).toMatch(/fetch is not found globally/),
+        )();
+      }
+    });
+
+    it('does not warn if fetch is undeclared but a fetch is passed', () => {
       expect(() => {
         const link = createLink({ uri: 'data', fetch: () => {} });
       }).not.toThrow();
