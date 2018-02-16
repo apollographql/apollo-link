@@ -164,17 +164,15 @@ export const checkFetcher = (fetcher: GlobalFetch['fetch']) => {
   if (!fetcher && typeof fetch === 'undefined') {
     let library: string = 'unfetch';
     if (typeof window === 'undefined') library = 'nodefetch';
-    throw new Error(
-      `fetch is not found globally and no fetcher passed, to fix pass a fetch for
-      your environment like https://www.npmjs.com/package/${library}.
+    throw new Error(`
+fetch is not found globally and no fetcher passed, to fix pass a fetch for
+your environment like https://www.npmjs.com/package/${library}.
 
-      For example:
-      import fetch from '${library}';
-      import { createHttpLink } from 'apollo-link-http';
+For example:
+import fetch from '${library}';
+import { createHttpLink } from 'apollo-link-http';
 
-      const link = createHttpLink({ uri: '/graphql', fetch: fetch });
-      `,
-    );
+const link = createHttpLink({ uri: '/graphql', fetch: fetch });`);
   }
 };
 

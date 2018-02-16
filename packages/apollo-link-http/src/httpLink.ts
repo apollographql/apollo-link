@@ -25,13 +25,20 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
   let {
     uri = '/graphql',
     // use default global fetch is nothing passed in
-    fetch: fetcher = fetch,
+    fetch: fetcher,
     includeExtensions,
     ...requestOptions
   } = linkOptions;
 
   // dev warnings to ensure fetch is present
   checkFetcher(fetcher);
+
+  //fetcher is set here rather than the destructuring to ensure fetch is
+  //declared before referencing it. Reference in the destructuring would cause
+  //a ReferenceError
+  if (!fetcher) {
+    fetcher = fetch;
+  }
 
   const linkConfig = {
     http: { includeExtensions },
