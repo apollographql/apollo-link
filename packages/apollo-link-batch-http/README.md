@@ -15,7 +15,7 @@ const link = createBatchHttpLink({ uri: "/graphql" });
 
 <h2 id="options">Options</h2>
 
-The batch http link accpets an object with some options to customize the behavior
+The batch http link accepts an object with some options to customize the behavior
 of the link. There are two different categories of options: http and batch. The
 http options follow the same structure as the
 [apollo-link-http](http.html#options):
@@ -24,7 +24,7 @@ http options follow the same structure as the
   specified
 * `includeExtensions`: allow passing the extensions field to your graphql
   server, defaults to false
-* `fetch`: a `fetch` compatiable API for making a request
+* `fetch`: a `fetch` compatible API for making a request
 * `headers`: an object representing values to be sent as headers on the request
 * `credentials`: a string representing the credentials policy you want for the
   fetch call

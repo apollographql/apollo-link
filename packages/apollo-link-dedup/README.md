@@ -20,7 +20,7 @@ const link = new DedupLink();
 The Dedup Link does not take any options when creating the link.
 
 ## Context
-The Dedup Link can be overriden by using the context on a per opearation basis:
+The Dedup Link can be overridden by using the context on a per operation basis:
 - `forceFetch`: a true or false (defaults to false) to bypass deduplication per request
 
 ```js
@@ -41,5 +41,3 @@ client.query({
   }
 })
 ```
-
-
