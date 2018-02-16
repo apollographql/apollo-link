@@ -3,6 +3,7 @@ import {
   serializeFetchBody,
   selectURI,
   parseAndCheckHttpResponse,
+  checkFetcher,
   selectHttpOptionsAndBody,
   createSignalIfSupported,
   fallbackHttpConfig,
@@ -28,6 +29,9 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
     includeExtensions,
     ...requestOptions
   } = linkOptions;
+
+  // dev warnings to ensure fetch is present
+  checkFetcher(fetcher);
 
   const linkConfig = {
     http: { includeExtensions },

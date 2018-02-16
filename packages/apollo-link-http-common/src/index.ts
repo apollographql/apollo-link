@@ -160,6 +160,24 @@ export const parseAndCheckHttpResponse = operations => (response: Response) => {
   );
 };
 
+export const checkFetcher = (fetcher: GlobalFetch['fetch']) => {
+  if (!fetcher && typeof fetch === 'undefined') {
+    let library: string = 'unfetch';
+    if (typeof window === 'undefined') library = 'nodefetch';
+    throw new Error(
+      `fetch is not found globally and no fetcher passed, to fix pass a fetch for
+      your environment like https://www.npmjs.com/package/${library}.
+
+      For example:
+      import fetch from '${library}';
+      import { createHttpLink } from 'apollo-link-http';
+
+      const link = createHttpLink({ uri: '/graphql', fetch: fetch });
+      `,
+    );
+  }
+};
+
 export const createSignalIfSupported = () => {
   if (typeof AbortController === 'undefined')
     return { controller: false, signal: false };
@@ -174,7 +192,7 @@ export const selectHttpOptionsAndBody = (
   fallbackConfig: HttpConfig,
   ...configs: Array<HttpConfig>
 ) => {
-  let options: HttpConfig = {
+  let options: HttpConfig & Record<string, any> = {
     ...fallbackConfig.options,
     headers: fallbackConfig.headers,
     credentials: fallbackConfig.credentials,

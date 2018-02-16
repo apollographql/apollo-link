@@ -3,6 +3,7 @@ import {
   serializeFetchBody,
   selectURI,
   parseAndCheckHttpResponse,
+  checkFetcher,
   selectHttpOptionsAndBody,
   createSignalIfSupported,
   fallbackHttpConfig,
@@ -55,6 +56,9 @@ export class BatchHttpLink extends ApolloLink {
       batchKey,
       ...requestOptions
     } = fetchParams;
+
+    // dev warnings to ensure fetch is present
+    checkFetcher(fetcher);
 
     const linkConfig = {
       http: { includeExtensions },
