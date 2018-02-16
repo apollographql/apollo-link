@@ -102,6 +102,15 @@ export class BatchHttpLink extends ApolloLink {
       const body = optsAndBody.map(({ body }) => body);
       const options = optsAndBody[0].options;
 
+      // There's no spec for using GET with batches.
+      if (options.method === 'GET') {
+        return new Observable<FetchResult[]>(observer => {
+          observer.error(
+            new Error('apollo-link-batch-http does not support GET requests'),
+          );
+        });
+      }
+
       try {
         (options as any).body = serializeFetchBody(body);
       } catch (parseError) {
