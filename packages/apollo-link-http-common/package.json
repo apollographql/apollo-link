@@ -1,7 +1,8 @@
 {
-  "name": "apollo-link-utilities",
+  "name": "apollo-link-http-common",
   "version": "0.0.0",
-  "description": "Http utilities for Apollo Link",
+  "description":
+    "Http utilities for Apollo Link shared across all links using http",
   "main": "./lib/bundle.umd.js",
   "module": "./lib/index.js",
   "jsnext:main": "./lib/index.js",
@@ -28,10 +29,10 @@
   "author": "Evans Hauser",
   "license": "MIT",
   "dependencies": {
-    "apollo-link": "^1.0.7"
+    "apollo-link": "^1.1.0"
   },
   "peerDependencies": {
-    "graphql": "^0.11.0 || ^0.12.0"
+    "graphql": "^0.11.0 || ^0.12.0 || ^0.13.0"
   },
   "devDependencies": {
     "@types/graphql": "0.11.7",

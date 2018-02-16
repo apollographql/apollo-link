@@ -8,7 +8,7 @@ import {
   fallbackHttpConfig,
   HttpOptions,
   UriFunction as _UriFunction,
-} from 'apollo-link-utilities';
+} from 'apollo-link-http-common';
 
 export namespace HttpLink {
   //TODO Would much rather be able to export directly
