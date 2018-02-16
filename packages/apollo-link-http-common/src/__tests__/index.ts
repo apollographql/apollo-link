@@ -4,9 +4,11 @@ import * as fetchMock from 'fetch-mock';
 
 import {
   parseAndCheckHttpResponse,
+  checkFetcher,
   selectHttpOptionsAndBody,
   selectURI,
   serializeFetchBody,
+  fallbackHttpConfig,
 } from '../index';
 
 const query = gql`
@@ -17,54 +19,205 @@ const query = gql`
   }
 `;
 
-describe('Link Utilities', () => {
-  describe('Http utilities', () => {
-    describe('parseAndCheckResponse', () => {
-      it('throws a network error with a status code and result', () => {});
-      it('throws a server error on incorrect data', () => {});
-      it('is able to return a correct result and add it to the context', () => {});
+describe('Common Http functions', () => {
+  describe('parseAndCheckResponse', () => {
+    beforeEach(() => {
+      fetchMock.restore();
     });
 
-    describe('selectHttpOptionsAndBody', () => {
-      it('includeQuery allows the query to be ignored', () => {});
-      it('the fallbackConfig is used if no other configs are specified', () => {});
-      it('allows headers, credentials, and setting of method to function correctly', () => {});
+    const operations = [createOperation({}, { query })];
+
+    it('throws a parse error with a status code on unparsable response', done => {
+      const status = 400;
+      fetchMock.mock('begin:error', status);
+      fetch('error')
+        .then(parseAndCheckHttpResponse(operations))
+        .then(done.fail)
+        .catch(e => {
+          expect(e.statusCode).toBe(status);
+          expect(e).toHaveProperty('response');
+          expect(e).toHaveProperty('bodyText');
+          done();
+        })
+        .catch(done.fail);
     });
 
-    describe('selectURI', () => {
-      it('returns a passed in string', () => {
-        const uri = '/somewhere';
-        const operation = createOperation({ uri }, { query });
-        expect(selectURI(operation)).toEqual(uri);
+    it('throws a network error with a status code and result', done => {
+      const status = 403;
+      const body = { data: 'fail' }; //does not contain data or erros
+      fetchMock.mock('begin:error', {
+        body,
+        status,
       });
-
-      it('returns a fallback of /graphql', () => {
-        const uri = '/graphql';
-        const operation = createOperation({}, { query });
-        expect(selectURI(operation)).toEqual(uri);
-      });
-
-      it('returns the result of a UriFunction', () => {
-        const uri = '/somewhere';
-        const operation = createOperation({}, { query });
-        expect(selectURI(operation, () => uri)).toEqual(uri);
-      });
+      fetch('error')
+        .then(parseAndCheckHttpResponse(operations))
+        .then(done.fail)
+        .catch(e => {
+          expect(e.statusCode).toBe(status);
+          expect(e).toHaveProperty('response');
+          expect(e).toHaveProperty('result');
+          done();
+        })
+        .catch(done.fail);
     });
 
-    describe('serializeFetchBody', () => {
-      it('throws a parse error on an unparsable body', () => {
-        const b = {};
-        const a = { b };
-        (b as any).a = a;
+    it('throws a server error on incorrect data', done => {
+      const data = { hello: 'world' }; //does not contain data or erros
+      fetchMock.mock('begin:incorrect', data);
+      fetch('incorrect')
+        .then(parseAndCheckHttpResponse(operations))
+        .then(done.fail)
+        .catch(e => {
+          expect(e.statusCode).toBe(200);
+          expect(e).toHaveProperty('response');
+          expect(e.result).toEqual(data);
+          done();
+        })
+        .catch(done.fail);
+    });
 
-        expect(() => serializeFetchBody(b)).toThrow();
+    it('is able to return a correct GraphQL result', done => {
+      const errors = ['', '' + new Error('hi')];
+      const data = { data: { hello: 'world' }, errors };
+
+      fetchMock.mock('begin:data', {
+        body: data,
       });
+      fetch('data')
+        .then(parseAndCheckHttpResponse(operations))
+        .then(({ data, errors: e }) => {
+          expect(data).toEqual({ hello: 'world' });
+          expect(e.length).toEqual(errors.length);
+          expect(e).toEqual(errors);
+          done();
+        })
+        .catch(done.fail);
+    });
+  });
 
-      it('returns a correctly parsed body', () => {
-        const body = { no: 'thing' };
+  describe('selectHttpOptionsAndBody', () => {
+    it('includeQuery allows the query to be ignored', () => {
+      const { options, body } = selectHttpOptionsAndBody(
+        createOperation({}, { query }),
+        { http: { includeQuery: false } },
+      );
+      expect(body).not.toHaveProperty('query');
+    });
 
-        expect(serializeFetchBody(body)).toEqual('{"no":"thing"}');
-      });
+    it('includeExtensions allows the extensions to be added', () => {
+      const extensions = { yo: 'what up' };
+      const { options, body } = selectHttpOptionsAndBody(
+        createOperation({}, { query, extensions }),
+        { http: { includeExtensions: true } },
+      );
+      expect(body).toHaveProperty('extensions');
+      expect((body as any).extensions).toEqual(extensions);
+    });
+
+    it('the fallbackConfig is used if no other configs are specified', () => {
+      const defaultHeaders = {
+        accept: '*/*',
+        'content-type': 'application/json',
+      };
+
+      const defaultOptions = {
+        method: 'POST',
+      };
+
+      const extensions = { yo: 'what up' };
+      const { options, body } = selectHttpOptionsAndBody(
+        createOperation({}, { query, extensions }),
+        fallbackHttpConfig,
+      );
+
+      expect(body).toHaveProperty('query');
+      expect(body).not.toHaveProperty('extensions');
+
+      expect(options.headers).toEqual(defaultHeaders);
+      expect(options.method).toEqual(defaultOptions.method);
+    });
+
+    it('allows headers, credentials, and setting of method to function correctly', () => {
+      const headers = {
+        accept: 'application/json',
+        'content-type': 'application/graphql',
+      };
+
+      const credentials = {
+        'X-Secret': 'djmashko',
+      };
+
+      const opts = {
+        opt: 'hi',
+      };
+
+      const config = { headers, credentials, options: opts };
+
+      const extensions = { yo: 'what up' };
+
+      const { options, body } = selectHttpOptionsAndBody(
+        createOperation({}, { query, extensions }),
+        fallbackHttpConfig,
+        config,
+      );
+
+      expect(body).toHaveProperty('query');
+      expect(body).not.toHaveProperty('extensions');
+
+      expect(options.headers).toEqual(headers);
+      expect(options.credentials).toEqual(credentials);
+      expect(options.opt).toEqual('hi');
+      expect(options.method).toEqual('POST'); //from default
+    });
+  });
+
+  describe('selectURI', () => {
+    it('returns a passed in string', () => {
+      const uri = '/somewhere';
+      const operation = createOperation({ uri }, { query });
+      expect(selectURI(operation)).toEqual(uri);
+    });
+
+    it('returns a fallback of /graphql', () => {
+      const uri = '/graphql';
+      const operation = createOperation({}, { query });
+      expect(selectURI(operation)).toEqual(uri);
+    });
+
+    it('returns the result of a UriFunction', () => {
+      const uri = '/somewhere';
+      const operation = createOperation({}, { query });
+      expect(selectURI(operation, () => uri)).toEqual(uri);
+    });
+  });
+
+  describe('serializeFetchBody', () => {
+    it('throws a parse error on an unparsable body', () => {
+      const b = {};
+      const a = { b };
+      (b as any).a = a;
+
+      expect(() => serializeFetchBody(b)).toThrow();
+    });
+
+    it('returns a correctly parsed body', () => {
+      const body = { no: 'thing' };
+
+      expect(serializeFetchBody(body)).toEqual('{"no":"thing"}');
+    });
+  });
+
+  describe('checkFetcher', () => {
+    it('throws if no fetch is present', () => {
+      if (typeof fetch !== 'undefined') fetch = undefined;
+      expect(() => checkFetcher(undefined)).toThrow(
+        /fetch is not found globally/,
+      );
+    });
+
+    it('does not throws if no fetch is present but a fetch is passed', () => {
+      if (typeof fetch !== 'undefined') fetch = undefined;
+      expect(() => checkFetcher(() => {})).not.toThrow();
     });
   });
 });
