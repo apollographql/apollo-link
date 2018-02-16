@@ -208,15 +208,23 @@ describe('Common Http functions', () => {
   });
 
   describe('checkFetcher', () => {
+    let oldFetch;
+    beforeEach(() => {
+      oldFetch = window.fetch;
+      delete window.fetch;
+    });
+
+    afterEach(() => {
+      window.fetch = oldFetch;
+    });
+
     it('throws if no fetch is present', () => {
-      if (typeof fetch !== 'undefined') fetch = undefined;
       expect(() => checkFetcher(undefined)).toThrow(
         /fetch is not found globally/,
       );
     });
 
     it('does not throws if no fetch is present but a fetch is passed', () => {
-      if (typeof fetch !== 'undefined') fetch = undefined;
       expect(() => checkFetcher(() => {})).not.toThrow();
     });
   });
