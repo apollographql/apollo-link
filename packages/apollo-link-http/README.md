@@ -10,7 +10,7 @@ Link ecosystem and how to use this link with libraries like Apollo Client and
 graphql-tools, or as a standalone client.
 
 The http link is a terminating link that fetches GraphQL results from a GraphQL
-endpoint over an http connection. The http link support both POST and GET
+endpoint over an http connection. The http link supports both POST and GET
 requests with the ability change the http options on a per query basis. This
 can be used for authentication, persisted queries, dynamic uris, and other
 granular updates.
@@ -42,7 +42,9 @@ The HTTP Link relies on having `fetch` present in your runtime environment. If y
 
 <h2 id="context">Context</h2>
 
-The Http Link uses the `headers` field on the context to allow passing headers to the HTTP request. It also supports the `credentials` field for defining credentials policy, `uri` for changing the endpoint dynamically, and `fetchOptions` to allow generic fetch overrides (i.e. method: "GET"). These options will override the same key if passed when creating the the link.
+The Http Link uses the `headers` field on the context to allow passing headers to the HTTP request. It also supports the `credentials` field for defining credentials policy, `uri` for changing the endpoint dynamically, and `fetchOptions` to allow generic fetch overrides (i.e. `method: "GET"`). These options will override the same key if passed when creating the the link.
+
+Note that if you set `fetchOptions.method` to `GET`, the http link will follow the [standard GraphQL HTTP GET encoding](http://graphql.org/learn/serving-over-http/#get-request): the query, variables, operation name, and extensions will be passed as query parameters rather than in the HTTP request body.
 
 This link also attaches the response from the `fetch` operation on the context as `response` so you can access it from within another link.
 
@@ -146,24 +148,7 @@ All error types inherit the `name`, `message`, and nullable `stack` properties f
 
 <h2 id="custom">Custom fetching</h2>
 
-You can use the `fetch` option when creating an http-link to do a lot of custom networking. This is useful if you want to modify the request based on the headers calculated, send the request as a 'GET' via a query string, or calculate the uri based on the operation:
-
-<h3 id="get-request">Sending a GET request</h3>
-
-```js
-const customFetch = (uri, options) => {
-  const { body, ...newOptions } = options;
-  // turn the object into a query string, try `object-to-querystring` package
-  const queryString = objectToQuery(JSON.parse(body));
-  requestedString = uri + queryString;
-  return fetch(requestedString, newOptions);
-};
-const link = createHttpLink({
-  uri: "data",
-  fetchOptions: { method: "GET" },
-  fetch: customFetch
-});
-```
+You can use the `fetch` option when creating an http-link to do a lot of custom networking. This is useful if you want to modify the request based on the calculated headers  or calculate the uri based on the operation:
 
 <h3 id="custom-auth">Custom auth</h3>
 
@@ -171,7 +156,7 @@ const link = createHttpLink({
 const customFetch = (uri, options) => {
   const { header } = Hawk.client.header(
     "http://example.com:8000/resource/1?b=1&a=2",
-    "GET",
+    "POST",
     { credentials: credentials, ext: "some-app-data" }
   );
   options.headers.Authorization = header;

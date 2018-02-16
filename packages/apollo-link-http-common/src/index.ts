@@ -44,6 +44,14 @@ export interface UriFunction {
   (operation: Operation): string;
 }
 
+// The body of a GraphQL-over-HTTP-POST request.
+export interface Body {
+  query?: string;
+  operationName?: string;
+  variables?: Record<string, any>;
+  extensions?: Record<string, any>;
+}
+
 export interface HttpOptions {
   /**
    * The URI to use when fetching operations.
@@ -220,7 +228,7 @@ export const selectHttpOptionsAndBody = (
 
   //The body depends on the http options
   const { operationName, extensions, variables, query } = operation;
-  const body = { operationName, variables };
+  const body: Body = { operationName, variables };
 
   if (http.includeExtensions) (body as any).extensions = extensions;
 
@@ -233,18 +241,18 @@ export const selectHttpOptionsAndBody = (
   };
 };
 
-export const serializeFetchBody = body => {
-  let serializedBody;
+export const serializeFetchParameter = (p, label) => {
+  let serialized;
   try {
-    serializedBody = JSON.stringify(body);
+    serialized = JSON.stringify(p);
   } catch (e) {
     const parseError = new Error(
-      `Network request failed. Payload is not serializable: ${e.message}`,
+      `Network request failed. ${label} is not serializable: ${e.message}`,
     ) as ClientParseError;
     parseError.parseError = e;
     throw parseError;
   }
-  return serializedBody;
+  return serialized;
 };
 
 //selects "/graphql" by default

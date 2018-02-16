@@ -37,8 +37,8 @@ describe('HttpLink', () => {
 
     beforeEach(() => {
       fetchMock.restore();
-      fetchMock.post('begin:data', makePromise(data));
-      fetchMock.get('begin:data', makePromise(data));
+      fetchMock.post('begin:http://data/', makePromise(data));
+      fetchMock.get('begin:http://data/', makePromise(data));
     });
 
     afterEach(() => {
@@ -47,7 +47,7 @@ describe('HttpLink', () => {
 
     it('constructor creates link that can call next and then complete', done => {
       const next = jest.fn();
-      const link = new HttpLink({ uri: 'data' });
+      const link = new HttpLink({ uri: 'http://data/' });
       const observable = execute(link, {
         query: sampleQuery,
       });
@@ -63,27 +63,45 @@ describe('HttpLink', () => {
 
     it('supports using a GET request', done => {
       const variables = { params: 'stub' };
+      const extensions = { myExtension: 'foo' };
 
-      let requestedString;
-      const customFetch = (uri, options) => {
-        const { body, ...newOptions } = options;
-        const queryString = objectToQuery(JSON.parse(body));
-        requestedString = uri + queryString;
-        return fetch(requestedString, newOptions);
-      };
       const link = createHttpLink({
-        uri: 'data',
+        uri: 'http://data/',
         fetchOptions: { method: 'GET' },
-        fetch: customFetch,
+        includeExtensions: true,
+      });
+
+      execute(link, { query: sampleQuery, variables, extensions }).subscribe({
+        next: makeCallback(done, result => {
+          const [uri, options] = fetchMock.lastCall();
+          const { method, body } = options;
+          expect(body).toBeUndefined();
+          expect(method).toBe('GET');
+          expect(uri).toBe(
+            'http://data/?query=query%20SampleQuery%20%7B%0A%20%20stub%20%7B%0A%20%20%20%20id%0A%20%20%7D%0A%7D%0A&operationName=SampleQuery&variables=%7B%22params%22%3A%22stub%22%7D&extensions=%7B%22myExtension%22%3A%22foo%22%7D',
+          );
+        }),
+        error: error => done.fail(error),
+      });
+    });
+
+    it('supports using a GET request with search and fragment', done => {
+      const variables = { params: 'stub' };
+
+      const link = createHttpLink({
+        uri: 'http://data/?foo=bar#frag',
+        fetchOptions: { method: 'GET' },
       });
 
       execute(link, { query: sampleQuery, variables }).subscribe({
         next: makeCallback(done, result => {
           const [uri, options] = fetchMock.lastCall();
-          const { method, body, ...rest } = options;
+          const { method, body } = options;
           expect(body).toBeUndefined();
-
           expect(method).toBe('GET');
+          expect(uri).toBe(
+            'http://data/?foo=bar&query=query%20SampleQuery%20%7B%0A%20%20stub%20%7B%0A%20%20%20%20id%0A%20%20%7D%0A%7D%0A&operationName=SampleQuery&variables=%7B%22params%22%3A%22stub%22%7D#frag',
+          );
         }),
         error: error => done.fail(error),
       });
@@ -92,7 +110,7 @@ describe('HttpLink', () => {
     it('supports using a GET request on the context', done => {
       const variables = { params: 'stub' };
       const link = createHttpLink({
-        uri: 'data',
+        uri: 'http://data/',
       });
 
       execute(link, {
@@ -103,8 +121,13 @@ describe('HttpLink', () => {
         },
       }).subscribe(
         makeCallback(done, result => {
-          const method = fetchMock.lastCall()[1].method;
+          const [uri, options] = fetchMock.lastCall();
+          const { method, body } = options;
+          expect(body).toBeUndefined();
           expect(method).toBe('GET');
+          expect(uri).toBe(
+            'http://data/?query=query%20SampleQuery%20%7B%0A%20%20stub%20%7B%0A%20%20%20%20id%0A%20%20%7D%0A%7D%0A&operationName=SampleQuery&variables=%7B%22params%22%3A%22stub%22%7D',
+          );
         }),
       );
     });

@@ -7,7 +7,7 @@ import {
   checkFetcher,
   selectHttpOptionsAndBody,
   selectURI,
-  serializeFetchBody,
+  serializeFetchParameter,
   fallbackHttpConfig,
 } from '../index';
 
@@ -191,19 +191,19 @@ describe('Common Http functions', () => {
     });
   });
 
-  describe('serializeFetchBody', () => {
+  describe('serializeFetchParameter', () => {
     it('throws a parse error on an unparsable body', () => {
       const b = {};
       const a = { b };
       (b as any).a = a;
 
-      expect(() => serializeFetchBody(b)).toThrow();
+      expect(() => serializeFetchParameter(b, 'Label')).toThrow(/Label/);
     });
 
     it('returns a correctly parsed body', () => {
       const body = { no: 'thing' };
 
-      expect(serializeFetchBody(body)).toEqual('{"no":"thing"}');
+      expect(serializeFetchParameter(body, 'Label')).toEqual('{"no":"thing"}');
     });
   });
 

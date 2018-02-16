@@ -6,7 +6,7 @@ import {
   fromError,
 } from 'apollo-link';
 import {
-  serializeFetchBody,
+  serializeFetchParameter,
   selectURI,
   parseAndCheckHttpResponse,
   checkFetcher,
@@ -116,7 +116,7 @@ export class BatchHttpLink extends ApolloLink {
       }
 
       try {
-        (options as any).body = serializeFetchBody(body);
+        (options as any).body = serializeFetchParameter(body, 'Payload');
       } catch (parseError) {
         return fromError<FetchResult[]>(parseError);
       }
