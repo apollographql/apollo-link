@@ -7,7 +7,7 @@ import {
   createSignalIfSupported,
   fallbackHttpConfig,
   HttpOptions,
-} from 'apollo-link-utilities';
+} from 'apollo-link-http-common';
 import { BatchLink } from 'apollo-link-batch';
 
 export namespace BatchHttpLink {
