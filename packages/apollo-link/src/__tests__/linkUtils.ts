@@ -1,4 +1,9 @@
-import { validateOperation, fromPromise, makePromise } from '../linkUtils';
+import {
+  validateOperation,
+  fromPromise,
+  makePromise,
+  fromError,
+} from '../linkUtils';
 import * as Observable from 'zen-observable';
 
 describe('Link utilities:', () => {
@@ -33,7 +38,7 @@ describe('Link utilities:', () => {
     });
 
     it('return error call as Promise rejection', () => {
-      return makePromise(new Observable(observer => observer.error(error)))
+      return makePromise(fromError(error))
         .then(expect.fail)
         .catch(actualError => expect(error).toEqual(actualError));
     });
@@ -77,6 +82,15 @@ describe('Link utilities:', () => {
 
     it('return Promise rejection as error call', () => {
       const observable = fromPromise(Promise.reject(error));
+      return makePromise(observable)
+        .then(expect.fail)
+        .catch(actualError => expect(error).toEqual(actualError));
+    });
+  });
+  describe('fromError', () => {
+    it('acts as error call', () => {
+      const error = new Error('I always error');
+      const observable = fromError(error);
       return makePromise(observable)
         .then(expect.fail)
         .catch(actualError => expect(error).toEqual(actualError));

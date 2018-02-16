@@ -1,4 +1,4 @@
-import { ApolloLink, Observable, RequestHandler } from 'apollo-link';
+import { ApolloLink, Observable, RequestHandler, fromError } from 'apollo-link';
 import {
   serializeFetchBody,
   selectURI,
@@ -73,9 +73,7 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
     try {
       (options as any).body = serializeFetchBody(body);
     } catch (parseError) {
-      return new Observable(observer => {
-        observer.error(parseError);
-      });
+      return fromError(parseError);
     }
 
     return new Observable(observer => {
