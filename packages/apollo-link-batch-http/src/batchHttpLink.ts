@@ -1,4 +1,10 @@
-import { ApolloLink, Operation, FetchResult, Observable } from 'apollo-link';
+import {
+  ApolloLink,
+  Operation,
+  FetchResult,
+  Observable,
+  fromError,
+} from 'apollo-link';
 import {
   serializeFetchBody,
   selectURI,
@@ -104,19 +110,15 @@ export class BatchHttpLink extends ApolloLink {
 
       // There's no spec for using GET with batches.
       if (options.method === 'GET') {
-        return new Observable<FetchResult[]>(observer => {
-          observer.error(
-            new Error('apollo-link-batch-http does not support GET requests'),
-          );
-        });
+        return fromError<FetchResult[]>(
+          new Error('apollo-link-batch-http does not support GET requests'),
+        );
       }
 
       try {
         (options as any).body = serializeFetchBody(body);
       } catch (parseError) {
-        return new Observable<FetchResult[]>(observer => {
-          observer.error(parseError);
-        });
+        return fromError<FetchResult[]>(parseError);
       }
 
       const { controller, signal } = createSignalIfSupported();
