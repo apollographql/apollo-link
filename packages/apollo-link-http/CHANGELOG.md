@@ -2,6 +2,7 @@
 
 ### vNEXT
 - move logic to apollo-link-http-core [PR#364](https://github.com/apollographql/apollo-link/pull/364)
+- follow the spec properly for GET requests [PR#490](https://github.com/apollographql/apollo-link/pull/490)
 
 ### 1.3.3
 - ApolloLink upgrade
