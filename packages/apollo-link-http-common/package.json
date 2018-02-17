@@ -42,7 +42,7 @@
     "graphql": "0.13.1",
     "graphql-tag": "2.7.3",
     "jest": "21.2.1",
-    "object-to-querystring": "1.0.4",
+    "object-to-querystring": "1.0.8",
     "rimraf": "2.6.1",
     "rollup": "0.53.3",
     "ts-jest": "21.2.4",
