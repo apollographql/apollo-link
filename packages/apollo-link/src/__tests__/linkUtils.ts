@@ -4,7 +4,7 @@ import {
   makePromise,
   fromError,
 } from '../linkUtils';
-import * as Observable from 'zen-observable';
+import Observable from 'zen-observable';
 
 describe('Link utilities:', () => {
   describe('validateOperation', () => {
