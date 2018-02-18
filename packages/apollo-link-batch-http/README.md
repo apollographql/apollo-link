@@ -8,7 +8,7 @@ operations into a single HTTP request. This link batches together individual
 operations into an array that is sent to a single GraphQL endpoint.
 
 ```js
-import BatchHttpLink from "apollo-link-batch-http";
+import { BatchHttpLink } from "apollo-link-batch-http";
 
 const link = new BatchHttpLink({ uri: "/graphql" });
 ```
