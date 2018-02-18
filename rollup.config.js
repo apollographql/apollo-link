@@ -1,3 +1,5 @@
+import sourcemaps from 'rollup-plugin-sourcemaps';
+
 export const globals = {
   // Apollo
   'apollo-client': 'apollo.core',
@@ -24,6 +26,7 @@ export default name => ({
   },
   external: Object.keys(globals),
   onwarn,
+  plugins: [sourcemaps()],
 });
 
 export function onwarn(message) {
