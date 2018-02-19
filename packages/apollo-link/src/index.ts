@@ -8,6 +8,6 @@ export {
 } from './linkUtils';
 export * from './types';
 
-import * as Observable from 'zen-observable';
+import Observable = require('zen-observable');
 
 export { Observable };
