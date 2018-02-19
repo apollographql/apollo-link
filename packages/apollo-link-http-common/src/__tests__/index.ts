@@ -1,6 +1,6 @@
 import { createOperation, Observable, ApolloLink, execute } from 'apollo-link';
 import gql from 'graphql-tag';
-import * as fetchMock from 'fetch-mock';
+import fetchMock from 'fetch-mock';
 
 import {
   parseAndCheckHttpResponse,
