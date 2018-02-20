@@ -71,6 +71,7 @@
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
     "moduleFileExtensions": ["ts", "tsx", "js", "json"],
-    "testPathIgnorePatterns": ["/node_modules/", "sharedHttpTests.ts"]
+    "testPathIgnorePatterns": ["/node_modules/", "sharedHttpTests.ts"],
+    "mapCoverage": true
   }
 }

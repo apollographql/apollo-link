@@ -41,6 +41,7 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
+    "@types/node": "^9.4.6",
     "@types/zen-observable": "0.5.3",
     "apollo-utilities": "^1.0.0",
     "zen-observable": "^0.8.0"
@@ -67,6 +68,7 @@
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "json"]
+    "moduleFileExtensions": ["ts", "tsx", "js", "json"],
+    "mapCoverage": true
   }
 }
