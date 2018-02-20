@@ -1,15 +1,17 @@
 # Change log
 
 ### vNEXT
+
+### 1.4.0
 - move logic to apollo-link-http-core [PR#364](https://github.com/apollographql/apollo-link/pull/364)
 - follow the spec properly for GET requests [PR#490](https://github.com/apollographql/apollo-link/pull/490)
+- ApolloLink upgrade
 
 ### 1.3.3
 - ApolloLink upgrade
 - Allow graphql results to fire even if there is a network error
 
 ### 1.3.2
-
 - Update to graphql@0.12
 
 ### 1.3.1

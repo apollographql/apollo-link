@@ -1,5 +1,8 @@
+# Change log
 
 ### vNext
+
+### 1.1.0
 - add input validation logic [PR#364](https://github.com/apollographql/apollo-link/pull/364)
 - ensure batch observables can handle multiple subscribers [PR#364](https://github.com/apollographql/apollo-link/pull/364)
 

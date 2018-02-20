@@ -1,4 +1,8 @@
+# Change log
+
 ### vNext
+
+### 1.1.0
 - share logic with apollo-link-http through apollo-link-http-core [PR#364](https://github.com/apollographql/apollo-link/pull/364)
 - remove apollo-fetch [PR#364](https://github.com/apollographql/apollo-link/pull/364)
 - GET is no longer supported for batching (it never worked anyway) [PR#490](https://github.com/apollographql/apollo-link/pull/490)

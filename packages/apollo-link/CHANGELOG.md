@@ -1,6 +1,8 @@
 # Change log
 
 ### vNEXT
+
+### 1.2.0
 - Add `fromError` Observable helper
 - change import method of zen-observable for rollup compat
 
@@ -8,7 +10,6 @@
 - Expose `#execute` on ApolloLink as static
 
 ### 1.0.7
-
 - Update to graphql@0.12
 
 ### 1.0.6

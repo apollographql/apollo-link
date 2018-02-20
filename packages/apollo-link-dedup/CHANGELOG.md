@@ -1,6 +1,9 @@
-
+# Change log
 
 ### vNext
+
+### 1.0.6
+- ApolloLink upgrade
 
 ### 1.0.5
 - ApolloLink upgrade
