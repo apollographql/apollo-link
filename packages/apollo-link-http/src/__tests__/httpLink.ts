@@ -185,5 +185,60 @@ describe('HttpLink', () => {
     });
   });
 
+  it("throws for GET if the variables can't be stringified", done => {
+    const link = createHttpLink({
+      uri: 'http://data/',
+      useGETForQueries: true,
+    });
+
+    let b;
+    const a = { b };
+    b = { a };
+    a.b = b;
+    const variables = {
+      a,
+      b,
+    };
+    execute(link, { query: sampleQuery, variables }).subscribe(
+      result => {
+        done.fail('next should have been thrown from the link');
+      },
+      makeCallback(done, e => {
+        expect(e.message).toMatch(/Variables map is not serializable/);
+        expect(e.parseError.message).toMatch(
+          /Converting circular structure to JSON/,
+        );
+      }),
+    );
+  });
+
+  it("throws for GET if the extensions can't be stringified", done => {
+    const link = createHttpLink({
+      uri: 'http://data/',
+      useGETForQueries: true,
+      includeExtensions: true,
+    });
+
+    let b;
+    const a = { b };
+    b = { a };
+    a.b = b;
+    const extensions = {
+      a,
+      b,
+    };
+    execute(link, { query: sampleQuery, extensions }).subscribe(
+      result => {
+        done.fail('next should have been thrown from the link');
+      },
+      makeCallback(done, e => {
+        expect(e.message).toMatch(/Extensions map is not serializable/);
+        expect(e.parseError.message).toMatch(
+          /Converting circular structure to JSON/,
+        );
+      }),
+    );
+  });
+
   sharedHttpTest('HttpLink', createHttpLink);
 });
