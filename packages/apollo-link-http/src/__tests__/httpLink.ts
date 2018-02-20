@@ -14,6 +14,14 @@ const sampleQuery = gql`
   }
 `;
 
+const sampleMutation = gql`
+  mutation SampleMutation {
+    stub {
+      id
+    }
+  }
+`;
+
 const makeCallback = (done, body) => {
   return (...args) => {
     try {
@@ -128,6 +136,50 @@ describe('HttpLink', () => {
           expect(uri).toBe(
             'http://data/?query=query%20SampleQuery%20%7B%0A%20%20stub%20%7B%0A%20%20%20%20id%0A%20%20%7D%0A%7D%0A&operationName=SampleQuery&variables=%7B%22params%22%3A%22stub%22%7D',
           );
+        }),
+      );
+    });
+
+    it('uses GET with useGETForQueries', done => {
+      const variables = { params: 'stub' };
+      const link = createHttpLink({
+        uri: 'http://data/',
+        useGETForQueries: true,
+      });
+
+      execute(link, {
+        query: sampleQuery,
+        variables,
+      }).subscribe(
+        makeCallback(done, result => {
+          const [uri, options] = fetchMock.lastCall();
+          const { method, body } = options;
+          expect(body).toBeUndefined();
+          expect(method).toBe('GET');
+          expect(uri).toBe(
+            'http://data/?query=query%20SampleQuery%20%7B%0A%20%20stub%20%7B%0A%20%20%20%20id%0A%20%20%7D%0A%7D%0A&operationName=SampleQuery&variables=%7B%22params%22%3A%22stub%22%7D',
+          );
+        }),
+      );
+    });
+
+    it('uses POST for mutations with useGETForQueries', done => {
+      const variables = { params: 'stub' };
+      const link = createHttpLink({
+        uri: 'http://data/',
+        useGETForQueries: true,
+      });
+
+      execute(link, {
+        query: sampleMutation,
+        variables,
+      }).subscribe(
+        makeCallback(done, result => {
+          const [uri, options] = fetchMock.lastCall();
+          const { method, body } = options;
+          expect(body).toBeDefined();
+          expect(method).toBe('POST');
+          expect(uri).toBe('http://data/');
         }),
       );
     });

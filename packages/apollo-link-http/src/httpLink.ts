@@ -11,11 +11,19 @@ import {
   HttpOptions,
   UriFunction as _UriFunction,
 } from 'apollo-link-http-common';
+import { DefinitionNode } from 'graphql';
 
 export namespace HttpLink {
   //TODO Would much rather be able to export directly
   export interface UriFunction extends _UriFunction {}
-  export interface Options extends HttpOptions {}
+  export interface Options extends HttpOptions {
+    /**
+     * If set to true, use the HTTP GET method for query operations. Mutations
+     * will still use the method specified in fetchOptions.method (which defaults
+     * to POST).
+     */
+    useGETForQueries?: boolean;
+  }
 }
 
 // For backwards compatibility.
@@ -28,6 +36,7 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
     // use default global fetch is nothing passed in
     fetch: fetcher,
     includeExtensions,
+    useGETForQueries,
     ...requestOptions
   } = linkOptions;
 
@@ -70,6 +79,17 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
 
     const { controller, signal } = createSignalIfSupported();
     if (controller) (options as any).signal = signal;
+
+    // If requested, set method to GET if there are no mutations.
+    const definitionIsMutation = (d: DefinitionNode) => {
+      return d.kind === 'OperationDefinition' && d.operation === 'mutation';
+    };
+    if (
+      useGETForQueries &&
+      !operation.query.definitions.some(definitionIsMutation)
+    ) {
+      options.method = 'GET';
+    }
 
     if (options.method === 'GET') {
       const { newURI, parseError } = rewriteURIForGET(chosenURI, body);

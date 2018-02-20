@@ -35,6 +35,7 @@ HTTP Link takes an object with some options on it to customize the behavior of t
 * `headers`: an object representing values to be sent as headers on the request
 * `credentials`: a string representing the credentials policy you want for the fetch call
 * `fetchOptions`: any overrides of the fetch options argument to pass to the fetch call
+* `useGETForQueries`: set to `true` to use the HTTP `GET` method for queries (but not for mutations)
 
 <h2 id="fetch">Fetch polyfill</h2>
 
@@ -44,7 +45,7 @@ The HTTP Link relies on having `fetch` present in your runtime environment. If y
 
 The Http Link uses the `headers` field on the context to allow passing headers to the HTTP request. It also supports the `credentials` field for defining credentials policy, `uri` for changing the endpoint dynamically, and `fetchOptions` to allow generic fetch overrides (i.e. `method: "GET"`). These options will override the same key if passed when creating the the link.
 
-Note that if you set `fetchOptions.method` to `GET`, the http link will follow the [standard GraphQL HTTP GET encoding](http://graphql.org/learn/serving-over-http/#get-request): the query, variables, operation name, and extensions will be passed as query parameters rather than in the HTTP request body.
+Note that if you set `fetchOptions.method` to `GET`, the http link will follow the [standard GraphQL HTTP GET encoding](http://graphql.org/learn/serving-over-http/#get-request): the query, variables, operation name, and extensions will be passed as query parameters rather than in the HTTP request body. If you want mutations to continue to be sent as non-idempotent `POST` requests, set the top-level `useGETForQueries` option to `true` instead of setting `fetchOptions.method` to `GET`.
 
 This link also attaches the response from the `fetch` operation on the context as `response` so you can access it from within another link.
 
