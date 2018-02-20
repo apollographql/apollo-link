@@ -8,9 +8,9 @@ operations into a single HTTP request. This link batches together individual
 operations into an array that is sent to a single GraphQL endpoint.
 
 ```js
-import { createBatchHttpLink } from "apollo-link-batch-http";
+import { BatchHttpLink } from "apollo-link-batch-http";
 
-const link = createBatchHttpLink({ uri: "/graphql" });
+const link = new BatchHttpLink({ uri: "/graphql" });
 ```
 
 <h2 id="options">Options</h2>
@@ -104,7 +104,7 @@ const customFetch = (uri, options) => {
   return fetch(uri, options);
 };
 
-const link = createBatchHttpLink({ fetch: customFetch });
+const link = new BatchHttpLink({ fetch: customFetch });
 ```
 
 <h3 id="dynamic-uri">Dynamic URI</h3>
@@ -115,5 +115,5 @@ const customFetch = (uri, options) => {
   return fetch(`${uri}/graph/graphql?opname=${operationNames}`, options);
 };
 
-const link = createBatchHttpLink({ fetch: customFetch });
+const link = new BatchHttpLink({ fetch: customFetch });
 ```
