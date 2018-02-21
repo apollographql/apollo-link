@@ -14,6 +14,14 @@ const sampleQuery = gql`
   }
 `;
 
+const sampleMutation = gql`
+  mutation SampleMutation {
+    stub {
+      id
+    }
+  }
+`;
+
 const makeCallback = (done, body) => {
   return (...args) => {
     try {
@@ -131,6 +139,105 @@ describe('HttpLink', () => {
         }),
       );
     });
+
+    it('uses GET with useGETForQueries', done => {
+      const variables = { params: 'stub' };
+      const link = createHttpLink({
+        uri: 'http://data/',
+        useGETForQueries: true,
+      });
+
+      execute(link, {
+        query: sampleQuery,
+        variables,
+      }).subscribe(
+        makeCallback(done, result => {
+          const [uri, options] = fetchMock.lastCall();
+          const { method, body } = options;
+          expect(body).toBeUndefined();
+          expect(method).toBe('GET');
+          expect(uri).toBe(
+            'http://data/?query=query%20SampleQuery%20%7B%0A%20%20stub%20%7B%0A%20%20%20%20id%0A%20%20%7D%0A%7D%0A&operationName=SampleQuery&variables=%7B%22params%22%3A%22stub%22%7D',
+          );
+        }),
+      );
+    });
+
+    it('uses POST for mutations with useGETForQueries', done => {
+      const variables = { params: 'stub' };
+      const link = createHttpLink({
+        uri: 'http://data/',
+        useGETForQueries: true,
+      });
+
+      execute(link, {
+        query: sampleMutation,
+        variables,
+      }).subscribe(
+        makeCallback(done, result => {
+          const [uri, options] = fetchMock.lastCall();
+          const { method, body } = options;
+          expect(body).toBeDefined();
+          expect(method).toBe('POST');
+          expect(uri).toBe('http://data/');
+        }),
+      );
+    });
+  });
+
+  it("throws for GET if the variables can't be stringified", done => {
+    const link = createHttpLink({
+      uri: 'http://data/',
+      useGETForQueries: true,
+    });
+
+    let b;
+    const a = { b };
+    b = { a };
+    a.b = b;
+    const variables = {
+      a,
+      b,
+    };
+    execute(link, { query: sampleQuery, variables }).subscribe(
+      result => {
+        done.fail('next should have been thrown from the link');
+      },
+      makeCallback(done, e => {
+        expect(e.message).toMatch(/Variables map is not serializable/);
+        expect(e.parseError.message).toMatch(
+          /Converting circular structure to JSON/,
+        );
+      }),
+    );
+  });
+
+  it("throws for GET if the extensions can't be stringified", done => {
+    const link = createHttpLink({
+      uri: 'http://data/',
+      useGETForQueries: true,
+      includeExtensions: true,
+    });
+
+    let b;
+    const a = { b };
+    b = { a };
+    a.b = b;
+    const extensions = {
+      a,
+      b,
+    };
+    execute(link, { query: sampleQuery, extensions }).subscribe(
+      result => {
+        done.fail('next should have been thrown from the link');
+      },
+      makeCallback(done, e => {
+        expect(e.message).toMatch(/Extensions map is not serializable/);
+        expect(e.parseError.message).toMatch(
+          /Converting circular structure to JSON/,
+        );
+      }),
+    );
   });
 
   sharedHttpTest('HttpLink', createHttpLink);

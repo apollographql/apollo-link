@@ -1,6 +1,7 @@
 # Change log
 
 ### vNEXT
+- New useGETForQueries option: if set, uses GET for queries (but not mutations)
 
 ### 1.4.0
 - move logic to apollo-link-http-core [PR#364](https://github.com/apollographql/apollo-link/pull/364)
