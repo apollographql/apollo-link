@@ -20,17 +20,17 @@ Apollo Link is easy to use with a variety of GraphQL libraries. It's designed to
 
 <h3 id="apollo-client">Apollo Client</h3>
 
-Apollo Client works seamlessly with Apollo Link. A Link is one of the required items when creating an [Apollo Client instance](/core/apollo-client-api.html#constructor). For simple HTTP requests, we recommend using [`apollo-link-http`](./links/http.html):
+Apollo Client works seamlessly with Apollo Link. A Link is one of the required items when creating an [Apollo Client instance](/docs/react/reference/index.html#apollo-client). For simple HTTP requests, we recommend using [`apollo-link-http`](./links/http.html):
 
 ```js
 import { ApolloLink } from 'apollo-link';
 import { ApolloClient } from 'apollo-client';
-import Cache from 'apollo-cache-inmemory';
+import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 
 const client = new ApolloClient({
   link: new HttpLink({ uri: 'http://api.githunt.com/graphql' }),
-  cache: new Cache()
+  cache: new InMemoryCache()
 });
 ```
 
@@ -82,7 +82,7 @@ ReactDOM.render(
   document.body,
 );
 ```
-<h3 id="standalone">Relay Modern</h3>
+<h3 id="relay-modern">Relay Modern</h3>
 
 You can use Apollo Link as a network layer with Relay Modern.
 
