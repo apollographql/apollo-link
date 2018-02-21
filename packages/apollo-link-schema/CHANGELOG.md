@@ -3,6 +3,9 @@
 ### vNEXT
 
 ### 1.0.5
+- Include sourcemap in bundle
+
+### 1.0.4
 - ApolloLink upgrade
 
 ### 1.0.3
