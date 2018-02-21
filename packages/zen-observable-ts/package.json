@@ -51,5 +51,8 @@
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
     "moduleFileExtensions": ["ts", "tsx", "js", "json"]
+  },
+  "dependencies": {
+    "zen-observable": "^0.8.6"
   }
 }
