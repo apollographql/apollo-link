@@ -19,18 +19,7 @@ export default class Observable<T> {
   }
 
   public static of<R>(...items: R[]): Observable<R> {
-    return new Observable(observer => {
-      for (let i = 0; i < items.length; ++i) {
-        observer.next(items[i]);
-        if (observer.closed) {
-          return;
-        }
-      }
-
-      if (observer.complete) {
-        observer.complete();
-      }
-    });
+    return _Observable.of(...items);
   }
 
   constructor(subscriber: ZenObservable.Subscriber<T>) {
@@ -42,7 +31,7 @@ export default class Observable<T> {
     error?: (error: any) => void,
     complete?: () => void,
   ): ZenObservable.Subscription {
-    return new _Observable(observerOrNext, error, complete);
+    return this.observable.subscribe(observerOrNext, error, complete);
   }
 
   public forEach(fn: (value: T) => void): Promise<void> {

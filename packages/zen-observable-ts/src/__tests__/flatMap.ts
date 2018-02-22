@@ -1,6 +1,6 @@
 import Observable from '../zenObservable';
 
-describe('flatMap', () => {
+describe.skip('flatMap', () => {
   it('Observable.from', done => {
     let list: Array<number> = [];
 

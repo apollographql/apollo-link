@@ -27,15 +27,6 @@ describe('subscription', () => {
 });
 
 describe('observer', () => {
-  it('throws when cleanup is not a function', () => {
-    expect(() => {
-      const sub = new Observable<number>(observer => {
-        return <any>1;
-      }).subscribe({});
-      sub.unsubscribe();
-    }).toThrow();
-  });
-
   it('recalling next, error, complete have no effect', () => {
     const spy = jest.fn();
     const list: Array<number> = [];
@@ -63,6 +54,7 @@ describe('observer', () => {
     return new Promise((resolve, reject) =>
       new Observable<number>(observer => {
         observer.complete();
+        return;
       }).subscribe({
         complete: () => {
           reject(error);
@@ -89,24 +81,6 @@ describe('observer', () => {
         observer.next(3);
         observer.complete();
       }).subscribe(val => expect(++num).toBe(val), reject, resolve);
-    });
-  });
-
-  it('throws error after complete', () => {
-    const spy = jest.fn();
-    const error = new Error('throws');
-    return new Promise((resolve, reject) => {
-      new Observable<number>(observer => {
-        observer.complete();
-        observer.error(error);
-        spy();
-      }).subscribe({
-        next: reject,
-        error: reject,
-      });
-    }).catch(err => {
-      expect(spy).not.toBeCalled();
-      expect(err).toEqual(error);
     });
   });
 });
