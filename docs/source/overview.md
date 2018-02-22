@@ -25,7 +25,7 @@ At the core of a link is the `request` method. It takes the following arguments:
 - `operation`: The operation being passed through the link.
 - `forward`: (optional) Specifies the next link in the chain of links.
 
-A link's `request` method is called every time `execute` is run on that link chain, which typically occurs for every operation passed through the link chain. When the `request` method is called, the link "receives" an operation has to return back data of some kind in the form of an `Observable`. Depending on where the link is in the chain (i.e. whether or it is at the end of the chain), it will either use the `forward`, the second parameter specifying the next link in the chain, or return back an `ExecutionResult` on its own.
+A link's `request` method is called every time `execute` is run on that link chain, which typically occurs for every operation passed through the link chain. When the `request` method is called, the link "receives" an operation and has to return back data of some kind in the form of an `Observable`. Depending on where the link is in the chain (i.e. whether or it is at the end of the chain), it will either use the `forward`, the second parameter specifying the next link in the chain, or return back an `ExecutionResult` on its own.
 
 The full description of a link's request looks like this:
 - `NextLink`: A function that takes an `Operation` and returns an Observable of an `ExecutionResult`
@@ -43,7 +43,7 @@ Links are designed to be composed together to form control flow chains to manage
 
 When writing a `RequestHandler`, the second argument is the way to call the next link in the chain. We refer to this argument as `forward` in the docs for a couple of reasons. First, `observers` have a `next` function for sending new results to the subscriber. Second, if you think of composed links like a chain, the request goes `forward` until it gets data (for example from a server request), then it begins to go `back` up the chain to any subscriptions. The `forward` function allows the `RequestHandler` to continue the process to the next link in the chain.
 
-The helper functions exported from the `apollo-link` package can be used to perform composition of links. These functions are also conveniently located on the `ApolloLink` class itself. They are explained in further detail [here](./composition.html). We suggest using the helpers directly on the instance of `ApolloLink` to make it easier to read and reason about what is being done in your code.
+The helper functions exported from the `apollo-link` package can be used to perform composition of links. These functions are also conveniently located on the `ApolloLink` class itself. They are explained in further detail [here](./composition.html). 
 
 <h2 id="context">Context</h2>
 
