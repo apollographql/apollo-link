@@ -18,7 +18,13 @@ At a basic level, a link is a function that takes an operation and returns an ob
 - `setContext`: A function that takes either a new context object, or a function which receives the previous context and returns a new one. It behaves similarly to `setState` from React.
 - `toKey`: A function to convert the current operation into a string to be used as a unique identifier
 
-We can chain these links together so that the first link operates on an operation object and each subsequent link operates on the result of the previous link. This allows us to "compose" actions and implement complex data handling logicin an elegant manner.  
+We can chain these links together so that the first link operates on an operation object and each subsequent link operates on the result of the previous link. This allows us to "compose" actions and implement complex data handling logic in an elegant manner. We can visualize them like this:
+
+<div style="text-align:center;">
+![Figure 2](https://imgur.com/YmiOwJj.png)
+</div>
+
+Note that although we have the terminating link requesting GraphQL results from a server in this figure, this doesn't necessarily have to be the case: your GraphQL results can come from anywhere. For example, `apollo-link-state` allows to use GraphQL operations to query client state. 
 
 <h2 id="request">Request</h2>
 
