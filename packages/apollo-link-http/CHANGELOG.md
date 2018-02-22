@@ -1,6 +1,8 @@
 # Change log
 
 ### vNEXT
+
+### 1.5.0
 - New useGETForQueries option: if set, uses GET for queries (but not mutations)
 
 ### 1.4.0
