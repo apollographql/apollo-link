@@ -12,14 +12,14 @@ Thank you to our amazing community members who have created custom Apollo Links!
 - [apollo-link-redux](https://github.com/AdamYee/apollo-link-redux) by [@AdamYee](https://github.com/AdamYee): Dispatches apollo-client 1.0-ish Redux actions.
 - [react-apollo-network-status](https://github.com/molindo/react-apollo-network-status) by [@amannn](https://github.com/amannn): Brings information about the global network status from Apollo into React.
 - [apollo-link-watched-mutation](https://github.com/haytko/apollo-link-watched-mutation) by [@haytko](https://github.com/haytko): Organizes cache invalidations per query on a mutation
-- [apollo-link-token-refresh](https://github.com/newsiberian/apollo-link-token-refresh) by [@newsiberian](https://github.com/newsiberian/apollo-link-token-refresh): Performs expired JWT renewal
+- [apollo-link-token-refresh](https://github.com/newsiberian/apollo-link-token-refresh) by [@newsiberian](https://github.com/newsiberian): Performs expired JWT renewal
 - [apollo-link-response-resolver](https://github.com/lionize/apollo-link-response-resolver) by [@lionize](https://github.com/lionize): Automatically format incoming GraphQL data
 - [apollo-link-electron](https://github.com/firede/apollo-link-electron) by [@firede](https://github.com/firede): Get GraphQL results over IPC for Electron apps
 - [link-http-dataloader](https://github.com/graphcool/http-link-dataloader) by [@graphcool](https://github.com/graphcool): Batching and caching provided by dataloader
 - [@absinthe/socker-apollo-link](https://github.com/absinthe-graphql/absinthe-socket/tree/master/packages/socket-apollo-link) by [@absinthe-graphql](https://github.com/absinthe-graphql): Communicate over an Absinthe socket
 - [apollo-absinthe-upload-link](https://github.com/bytewitchcraft/apollo-absinthe-upload-link) by [@bytewitchcraft](https://github.com/bytewitchcraft): Enables file-uploading to Absinth backends
 - [apollo-link-logger](https://github.com/blackxored/apollo-link-logger) by [@blackxored](https://github.com/blackxored): Logger that uses similar format to redux-logger and includes performance infomation
-- [apollo-link-tracer](https://github.com/convoyinc/apollo-link-tracer) by [@convoyinc](https://github.com/convoyinc/apollo-link-tracer): Trace Apollo queries and mutations
+- [apollo-link-tracer](https://github.com/convoyinc/apollo-link-tracer) by [@convoyinc](https://github.com/convoyinc): Trace Apollo queries and mutations
 - [apollo-link-queue](https://github.com/helfer/apollo-link-queue) by [@helfer](https://github.com/helfer): Buffers requests on a toggle, such as an on/offline event
 - [apollo-link-optimistic](https://github.com/helfer/apollo-link-optimistic) by [@helfer](https://github.com/helfer): Returns an immediate optimistic response before returning server results
 - [apollo-link-serialize](https://github.com/helfer/apollo-link-serialize) by [@helfer](https://github.com/helfer): Serializes requests by key to ensure execution order
