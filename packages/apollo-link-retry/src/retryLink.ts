@@ -144,12 +144,15 @@ class RetryableOperation<TValue = any> {
     }
   };
 
-  private onError = error => {
+  private onError = async error => {
     this.retryCount += 1;
 
     // Should we retry?
-    if (this.retryIf(this.retryCount, this.operation, error)) {
-      this.scheduleRetry(this.delayFor(this.retryCount, this.operation, error));
+    const shouldRetry = await this.retryIf(this.retryCount, this.operation, error)
+    if (shouldRetry) {
+      this.scheduleRetry(
+        this.delayFor(this.retryCount, this.operation, error),
+      );
       return;
     }
 

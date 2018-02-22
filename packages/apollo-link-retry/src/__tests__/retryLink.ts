@@ -169,4 +169,27 @@ describe('RetryLink', () => {
       [3, operation, standardError],
     ]);
   });
-});
+
+
+  it('supports custom attempt functions that return either Promises or booleans', async () => {
+    const attemptStub = jest.fn();
+    attemptStub.mockReturnValueOnce(true);
+    attemptStub.mockReturnValueOnce(Promise.resolve(true));
+    attemptStub.mockReturnValueOnce(Promise.resolve(false));
+
+    const retry = new RetryLink({
+      delay: { initial: 1 },
+      attempts: attemptStub,
+    });
+    const linkStub = jest.fn(() => new Observable(o => o.error(standardError)));
+    const link = ApolloLink.from([retry, linkStub]);
+    const [{ error }] = await waitFor(execute(link, { query }));
+
+    expect(error).toEqual(standardError);
+    const operation = attemptStub.mock.calls[0][1];
+    expect(attemptStub.mock.calls).toEqual([
+      [1, operation, standardError],
+      [2, operation, standardError],
+      [3, operation, standardError],
+    ]);
+  });
