@@ -1,7 +1,7 @@
 import { Observable, ApolloLink, execute } from 'apollo-link';
 import { print } from 'graphql';
 import gql from 'graphql-tag';
-import fetchMock from 'fetch-mock';
+import * as fetchMock from 'fetch-mock';
 
 const sampleQuery = gql`
   query SampleQuery {
