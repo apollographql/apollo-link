@@ -9,21 +9,23 @@ export type Observer<T> = ZenObservable.Observer<T>;
 export type Subscriber<T> = ZenObservable.Subscriber<T>;
 export type ObservableLike<T> = ZenObservable.ObservableLike<T>;
 
-export default class Observable<T> {
-  private observable: any;
-
+export default class Observable<T> extends (_Observable as {
+  new (subscriber: any): any;
+  from(...args): any;
+  of(...args): any;
+}) {
   public static from<R>(
     observable: Observable<R> | ZenObservable.ObservableLike<R> | ArrayLike<R>,
   ): Observable<R> {
-    return _Observable.from(observable);
+    return super.from(observable);
   }
 
   public static of<R>(...items: R[]): Observable<R> {
-    return _Observable.of(...items);
+    return super.of(...items);
   }
 
   constructor(subscriber: ZenObservable.Subscriber<T>) {
-    this.observable = new _Observable(subscriber);
+    super(subscriber) as any;
   }
 
   public subscribe(
@@ -31,37 +33,37 @@ export default class Observable<T> {
     error?: (error: any) => void,
     complete?: () => void,
   ): ZenObservable.Subscription {
-    return this.observable.subscribe(observerOrNext, error, complete);
+    return super.subscribe(observerOrNext, error, complete);
   }
 
   public forEach(fn: (value: T) => void): Promise<void> {
-    return this.observable.forEach(fn);
+    return super.forEach(fn);
   }
 
   public map<R>(fn: (value: T) => R): Observable<R> {
-    return this.observable.map(fn);
+    return super.map(fn);
   }
 
   public filter(fn: (value: T) => boolean): Observable<T> {
-    return this.observable.filter(fn);
+    return super.filter(fn);
   }
 
   public reduce<R = T>(
     fn: (previousValue: R | T, currentValue: T) => R | T,
     initialValue?: R | T,
   ): Observable<R | T> {
-    return this.observable.reduce(fn, initialValue);
+    return super.reduce(fn, initialValue);
   }
 
   public concat(...sources: Array<Observable<T>>) {
-    return this.observable.concat(...sources);
+    return super.concat(...sources);
   }
 
   public flatMap<R>(
     fn: (value: T) => ZenObservable.ObservableLike<R>,
   ): Observable<R> {
     if (this.observable.flatMap) {
-      return this.observable.flatMap(fn);
+      return super.flatMap(fn);
     } else {
       console.error('this zen-observable does does not support flatMap');
     }
