@@ -37,7 +37,7 @@ export class WebSocketLink extends ApolloLink {
 
   constructor(
     paramsOrClient: WebSocketLink.Configuration | SubscriptionClient,
-    options: WebSocketLinkOptions = {},
+    options?: WebSocketLinkOptions,
   ) {
     super();
     if (paramsOrClient instanceof SubscriptionClient) {
@@ -49,7 +49,7 @@ export class WebSocketLink extends ApolloLink {
         paramsOrClient.webSocketImpl,
       );
     }
-    this.requeryOnReconnect = options.requeryOnReconnect;
+    this.requeryOnReconnect = options && options.requeryOnReconnect;
   }
   public on(eventName: string, callback: ListenerFn, context?: any) {
     return this.subscriptionClient.on(eventName, callback, context);
