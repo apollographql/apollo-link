@@ -28,12 +28,12 @@ export import WebSocketParams = WebSocketLink.Configuration;
 
 export type WebSocketLinkOptions = {
   connectionCallback?: (connectionState: String) => void;
-  isRequeried?: (operation: Operation) => Boolean;
+  requeryOnReconnect?: (operation: Operation) => Boolean;
 };
 
 export class WebSocketLink extends ApolloLink {
   private subscriptionClient: SubscriptionClient;
-  private isRequeried?: (operation: Operation) => Boolean;
+  private requeryOnReconnect?: (operation: Operation) => Boolean;
 
   constructor(
     paramsOrClient: WebSocketLink.Configuration | SubscriptionClient,
@@ -49,7 +49,7 @@ export class WebSocketLink extends ApolloLink {
         paramsOrClient.webSocketImpl,
       );
     }
-    this.isRequeried = options.isRequeried;
+    this.requeryOnReconnect = options.requeryOnReconnect;
     if (options.connectionCallback) {
       this.subscriptionClient.on('connected', () =>
         options.connectionCallback('connected'),
@@ -75,7 +75,7 @@ export class WebSocketLink extends ApolloLink {
         FetchResult
       >;
     };
-    if (this.isRequeried && this.isRequeried(operation)) {
+    if (this.requeryOnReconnect && this.requeryOnReconnect(operation)) {
       return new Observable<FetchResult>(obs => {
         const off = this.subscriptionClient.on('reconnected', () => {
           request().subscribe(

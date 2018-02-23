@@ -169,12 +169,12 @@ describe('WebSocketLink', () => {
     client.request
       .mockReturnValueOnce(observable)
       .mockReturnValueOnce(observable1);
-    const isRequeried = jest.fn().mockReturnValue(true);
-    const link = new WebSocketLink(client, { isRequeried });
+    const requeryOnReconnect = jest.fn().mockReturnValue(true);
+    const link = new WebSocketLink(client, { requeryOnReconnect });
 
     const obs = execute(link, { query });
-    expect(isRequeried).toHaveBeenCalledTimes(1);
-    expect(isRequeried.mock.calls[0][0]).toMatchObject({ query });
+    expect(requeryOnReconnect).toHaveBeenCalledTimes(1);
+    expect(requeryOnReconnect.mock.calls[0][0]).toMatchObject({ query });
     let count = 0;
     obs.subscribe(data => {
       if (count === 0) {
