@@ -10,6 +10,8 @@ export const globals = {
 
   //GraphQL
   'graphql/language/printer': 'printer',
+
+  'zen-observable': 'Observable',
 };
 
 export default name => ({
