@@ -1,4 +1,4 @@
-import Observable from '../zenObservable';
+import { Observable } from '../zenObservable';
 
 describe('concat', () => {
   it('concatenates the supplied Observable arguments', async () => {
