@@ -28,9 +28,8 @@ WS Link takes either a subscription client or an object with three options on it
 
 By default, this link uses the [subscriptions-transport-ws](https://github.com/apollographql/subscriptions-transport-ws) library for the transport.
 
-### options
+<h2 id="config">Config</h2>
 
 an object with the following keys
 
-- `connectionCallback`: callback for connection state changes
-- `requeried`: a function passed the operation and returns a truth value indicating if it should be refetched on web socket reconnect
+* `requeryOnReconnect`: a function passed the operation and returns a truth value indicating if it should be refetched on web socket reconnect
