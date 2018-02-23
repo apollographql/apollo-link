@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-ws",
-  "version": "1.0.7",
+  "version": "1.1.0-alpha.1",
   "description": "WebSocket transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
