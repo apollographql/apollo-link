@@ -10,7 +10,6 @@
     "noImplicitAny": false,
     "noUnusedParameters": false,
     "noUnusedLocals": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true
+    "skipLibCheck": true
   }
 }
