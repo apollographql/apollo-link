@@ -1,6 +1,6 @@
 {
   "name": "apollo-link",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Flexible, lightweight transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/apollographql/apollo-link#readme",
   "scripts": {
-    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-utilities --i graphql --i zen-observable && npm run minify:browser",
+    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-utilities --i graphql --i zen-observable-ts && npm run minify:browser",
     "build": "tsc -p .",
     "bundle": "rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
@@ -39,9 +39,8 @@
   },
   "dependencies": {
     "@types/node": "^9.4.6",
-    "@types/zen-observable": "0.5.3",
     "apollo-utilities": "^1.0.0",
-    "zen-observable": "^0.8.0"
+    "zen-observable-ts": "^0.8.6"
   },
   "peerDependencies": {
     "graphql": "^0.11.3 || ^0.12.3 || ^0.13.0"

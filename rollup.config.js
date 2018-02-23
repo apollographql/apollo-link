@@ -6,11 +6,11 @@ export const globals = {
   'apollo-link': 'apolloLink.core',
   'apollo-link-batch': 'apolloLink.batch',
   'apollo-utilities': 'apollo.utilities',
+  'zen-observable-ts': 'apolloLink.zenObservable',
 
   //GraphQL
   'graphql/language/printer': 'printer',
 
-  //zen-observable
   'zen-observable': 'Observable',
 };
 

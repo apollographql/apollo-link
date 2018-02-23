@@ -2,6 +2,9 @@
 
 ### vNEXT
 
+### 1.2.1
+- udate apollo link with zen-observable-ts to remove import issues [PR#515](https://github.com/apollographql/apollo-link/pull/515)
+
 ### 1.2.0
 - Add `fromError` Observable helper
 - change import method of zen-observable for rollup compat
