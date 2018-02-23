@@ -19,7 +19,7 @@
   "homepage": "https://github.com/zenparsing/zen-observable",
   "scripts": {
     "build:browser":
-      "browserify ./lib/bundle.umd.js -o=./lib/bundle.js && npm run minify:browser",
+      "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i zen-observable && npm run minify:browser",
     "build": "tsc -p .",
     "bundle": "rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
