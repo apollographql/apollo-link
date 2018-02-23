@@ -1,5 +1,6 @@
 import { ApolloLink, Operation, FetchResult, Observable } from 'apollo-link';
 import { SubscriptionClient, ClientOptions } from 'subscriptions-transport-ws';
+import { ListenerFn } from 'eventemitter3';
 
 export namespace WebSocketLink {
   /**
@@ -27,7 +28,6 @@ export namespace WebSocketLink {
 export import WebSocketParams = WebSocketLink.Configuration;
 
 export type WebSocketLinkOptions = {
-  connectionCallback?: (connectionState: String) => void;
   requeryOnReconnect?: (operation: Operation) => Boolean;
 };
 
@@ -50,25 +50,10 @@ export class WebSocketLink extends ApolloLink {
       );
     }
     this.requeryOnReconnect = options.requeryOnReconnect;
-    if (options.connectionCallback) {
-      this.subscriptionClient.on('connected', () =>
-        options.connectionCallback('connected'),
-      );
-      this.subscriptionClient.on('connecting', () =>
-        options.connectionCallback('connecting'),
-      );
-      this.subscriptionClient.on('reconnected', () =>
-        options.connectionCallback('reconnected'),
-      );
-      this.subscriptionClient.on('reconnecting', () =>
-        options.connectionCallback('reconnecting'),
-      );
-      this.subscriptionClient.on('disconnected', () =>
-        options.connectionCallback('disconnected'),
-      );
-    }
   }
-
+  public on(eventName: string, callback: ListenerFn, context?: any) {
+    return this.subscriptionClient.on(eventName, callback, context);
+  }
   public request(operation: Operation): Observable<FetchResult> | null {
     const request = () => {
       return this.subscriptionClient.request(operation) as Observable<

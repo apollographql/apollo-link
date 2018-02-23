@@ -123,36 +123,17 @@ describe('WebSocketLink', () => {
     const client: any = {};
     client.__proto__ = SubscriptionClient.prototype;
     client.on = jest.fn();
-    const connectionCallback = jest.fn();
-    const link = new WebSocketLink(client, {
-      connectionCallback,
-    });
-    expect(client.on).toHaveBeenCalledTimes(5);
+    client.on.mockReturnValueOnce('return from on');
+    const link = new WebSocketLink(client, {});
+    const fn = () => {};
 
-    expect(client.on.mock.calls[0][0]).toEqual('connected');
-    client.on.mock.calls[0][1]();
-    expect(connectionCallback).toHaveBeenCalledTimes(1);
-    expect(connectionCallback.mock.calls[0][0]).toEqual('connected');
+    expect(link.on('event name', fn, 'context')).toEqual('return from on');
 
-    expect(client.on.mock.calls[1][0]).toEqual('connecting');
-    client.on.mock.calls[1][1]();
-    expect(connectionCallback).toHaveBeenCalledTimes(2);
-    expect(connectionCallback.mock.calls[1][0]).toEqual('connecting');
+    expect(client.on).toHaveBeenCalledTimes(1);
 
-    expect(client.on.mock.calls[2][0]).toEqual('reconnected');
-    client.on.mock.calls[2][1]();
-    expect(connectionCallback).toHaveBeenCalledTimes(3);
-    expect(connectionCallback.mock.calls[2][0]).toEqual('reconnected');
-
-    expect(client.on.mock.calls[3][0]).toEqual('reconnecting');
-    client.on.mock.calls[3][1]();
-    expect(connectionCallback).toHaveBeenCalledTimes(4);
-    expect(connectionCallback.mock.calls[3][0]).toEqual('reconnecting');
-
-    expect(client.on.mock.calls[4][0]).toEqual('disconnected');
-    client.on.mock.calls[4][1]();
-    expect(connectionCallback).toHaveBeenCalledTimes(5);
-    expect(connectionCallback.mock.calls[4][0]).toEqual('disconnected');
+    expect(client.on.mock.calls[0][0]).toEqual('event name');
+    expect(client.on.mock.calls[0][1]).toEqual(fn);
+    expect(client.on.mock.calls[0][2]).toEqual('context');
   });
   it('should call request on the client for a query and then requery', done => {
     console.log('TEST here');
