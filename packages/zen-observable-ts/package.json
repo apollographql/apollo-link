@@ -1,15 +1,9 @@
 {
-  "name": "apollo-link-schema",
-  "version": "1.0.6",
-  "description": "Use a GraphQL Schema to request data",
-  "author": "Tomas Trescak <tomi.trescak@gmail.com>",
-  "contributors": [
-    "James Baxley <james@meteor.com>",
-    "Jonas Helfer <jonas@helfer.email>",
-    "jon wong <j@jnwng.com>",
-    "Sashko Stubailo <sashko@stubailo.com>",
-    "Zephraph <zephraph@gmail.com>"
-  ],
+  "name": "zen-observable-ts",
+  "version": "0.8.6",
+  "description": "An Implementation of ES Observables in Typescript",
+  "author": "Evans Hauser <evanshauser@gmail.com>",
+  "contributors": [],
   "license": "MIT",
   "main": "./lib/bundle.umd.js",
   "module": "./lib/index.js",
@@ -22,9 +16,9 @@
   "bugs": {
     "url": "https://github.com/apollographql/apollo-link/issues"
   },
-  "homepage": "https://github.com/apollographql/apollo-link#readme",
+  "homepage": "https://github.com/zenparsing/zen-observable",
   "scripts": {
-    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-link && npm run minify:browser",
+    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i zen-observable && npm run minify:browser",
     "build": "tsc -p .",
     "bundle": "rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
@@ -35,28 +29,18 @@
     "prebuild": "npm run clean",
     "prepublishOnly": "npm run clean && npm run build",
     "test": "jest",
-    "watch": "tsc -w -p . & rollup -c -w"
-  },
-  "dependencies": {
-    "apollo-link": "^1.2.1"
-  },
-  "peerDependencies": {
-    "graphql": "^0.11.0 || ^0.12.0 || ^0.13.0"
+    "watch": "tsc -w -p ."
   },
   "devDependencies": {
-    "@types/graphql": "0.12.4",
-    "@types/jest": "21.1.10",
-    "browserify": "16.1.0",
-    "graphql": "0.13.1",
-    "graphql-tag": "2.7.3",
-    "graphql-tools": "2.21.0",
-    "jest": "21.2.1",
-    "rimraf": "2.6.1",
-    "rollup": "0.56.2",
-    "ts-jest": "21.2.4",
-    "tslint": "5.9.1",
-    "typescript": "2.7.2",
-    "uglify-js": "3.3.11"
+    "@types/jest": "^22.1.3",
+    "browserify": "^16.1.0",
+    "jest": "^22.4.0",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.56.2",
+    "ts-jest": "^22.0.4",
+    "tslint": "^5.9.1",
+    "typescript": "^2.7.2",
+    "uglify-js": "^3.3.11"
   },
   "jest": {
     "transform": {
@@ -68,7 +52,9 @@
       "tsx",
       "js",
       "json"
-    ],
-    "mapCoverage": true
+    ]
+  },
+  "dependencies": {
+    "zen-observable": "^0.8.6"
   }
 }

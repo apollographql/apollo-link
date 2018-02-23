@@ -1,5 +1,5 @@
 import { getOperationName } from 'apollo-utilities';
-import Observable from 'zen-observable';
+import Observable from 'zen-observable-ts';
 import { print } from 'graphql/language/printer';
 
 import { GraphQLRequest, Operation } from './types';

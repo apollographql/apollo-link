@@ -2,6 +2,12 @@
 
 ### vNEXT
 
+### 1.5.1
+- udate apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
+
+### 1.5.0
+- New useGETForQueries option: if set, uses GET for queries (but not mutations)
+
 ### 1.4.0
 - move logic to apollo-link-http-core [PR#364](https://github.com/apollographql/apollo-link/pull/364)
 - follow the spec properly for GET requests [PR#490](https://github.com/apollographql/apollo-link/pull/490)
