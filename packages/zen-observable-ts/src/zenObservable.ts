@@ -14,7 +14,9 @@ export type ObservableLike<T> = ZenObservable.ObservableLike<T>;
 
 export const Observable: {
   new <T>(subscriber: Subscriber<T>): Observable<T>;
-  from<R>(...args: Array<R>): Observable<R>;
+  from<R>(
+    observable: Observable<R> | ZenObservable.ObservableLike<R> | ArrayLike<R>,
+  ): Observable<R>;
   of<R>(...args: Array<R>): Observable<R>;
 } = require('zen-observable');
 
@@ -36,11 +38,12 @@ export interface Observable<T> {
     initialValue?: R | T,
   ): Observable<R | T>;
 
-  concat(...sources: Array<Observable<T>>);
+  concat(...sources: Array<Observable<T>>): Observable<T>;
 
   flatMap<R>(fn: (value: T) => ZenObservable.ObservableLike<R>): Observable<R>;
 
-  from<R>(...args: Array<R>): Observable<R>;
-
+  from<R>(
+    observable: Observable<R> | ZenObservable.ObservableLike<R> | ArrayLike<R>,
+  ): Observable<R>;
   of<R>(...args: Array<R>): Observable<R>;
 }
