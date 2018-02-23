@@ -144,7 +144,7 @@ describe('WebSocketLink', () => {
     expect(connectionCallback).toHaveBeenCalledTimes(3);
     expect(connectionCallback.mock.calls[2][0]).toEqual('reconnected');
 
-    expect(client.on.mock.calls[3][0]).toEqual('reconnecting')
+    expect(client.on.mock.calls[3][0]).toEqual('reconnecting');
     client.on.mock.calls[3][1]();
     expect(connectionCallback).toHaveBeenCalledTimes(4);
     expect(connectionCallback.mock.calls[3][0]).toEqual('reconnecting');
@@ -155,7 +155,7 @@ describe('WebSocketLink', () => {
     expect(connectionCallback.mock.calls[4][0]).toEqual('disconnected');
   });
   it('should call request on the client for a query and then requery', done => {
-    console.log('TEST here')
+    console.log('TEST here');
     const result = { data: { data: 'result' } };
     const client: any = {};
     const observable = Observable.of(result);
@@ -170,7 +170,7 @@ describe('WebSocketLink', () => {
       .mockReturnValueOnce(observable)
       .mockReturnValueOnce(observable1);
     const isRequeried = jest.fn().mockReturnValue(true);
-    const link = new WebSocketLink(client, { isRequeried});
+    const link = new WebSocketLink(client, { isRequeried });
 
     const obs = execute(link, { query });
     expect(isRequeried).toHaveBeenCalledTimes(1);
@@ -180,13 +180,12 @@ describe('WebSocketLink', () => {
       if (count === 0) {
         expect(data).toEqual(result);
         expect(client.request).toHaveBeenCalledTimes(1);
-        console.log('hhdhdhddhdhdhdhdh')
         expect(client.on).toHaveBeenCalledTimes(1);
         setTimeout(() => client.on.mock.calls[0][1](), 1);
       }
       if (count === 1) {
         expect(data).toEqual(result1);
-        expect(client.request).toHaveBeenCalledTimes(2);  
+        expect(client.request).toHaveBeenCalledTimes(2);
         done();
       }
       count += 1;

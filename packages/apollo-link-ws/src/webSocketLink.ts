@@ -31,7 +31,6 @@ export type WebSocketLinkOptions = {
   isRequeried?: (operation: Operation) => Boolean;
 };
 
-
 export class WebSocketLink extends ApolloLink {
   private subscriptionClient: SubscriptionClient;
   private isRequeried?: (operation: Operation) => Boolean;
@@ -50,70 +49,49 @@ export class WebSocketLink extends ApolloLink {
         paramsOrClient.webSocketImpl,
       );
     }
-    console.log({ itis: 'options', options })
     this.isRequeried = options.isRequeried;
     if (options.connectionCallback) {
-      this.subscriptionClient.on(
-        'connected',
-        () => options.connectionCallback('connected'),
+      this.subscriptionClient.on('connected', () =>
+        options.connectionCallback('connected'),
       );
-      this.subscriptionClient.on(
-        'connecting',
-        () => options.connectionCallback('connecting'),
+      this.subscriptionClient.on('connecting', () =>
+        options.connectionCallback('connecting'),
       );
-      this.subscriptionClient.on(
-        'reconnected',
-          () => options.connectionCallback('reconnected'),
+      this.subscriptionClient.on('reconnected', () =>
+        options.connectionCallback('reconnected'),
       );
-      this.subscriptionClient.on(
-        'reconnecting',
-        () => options.connectionCallback('reconnecting'),
-      )
-      this.subscriptionClient.on(
-        'disconnected',
-        () => options.connectionCallback('disconnected'),
-      )
+      this.subscriptionClient.on('reconnecting', () =>
+        options.connectionCallback('reconnecting'),
+      );
+      this.subscriptionClient.on('disconnected', () =>
+        options.connectionCallback('disconnected'),
+      );
     }
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
-    const request = (requerying) => {
-      return this.subscriptionClient
-        .request(operation) as Observable<
-          FetchResult
-        >;
+    const request = () => {
+      return this.subscriptionClient.request(operation) as Observable<
+        FetchResult
+      >;
     };
-    if(this.isRequeried && this.isRequeried(operation)) {
-        // console.log('reques from...', new Error().stack)
-        return new Observable<
-          FetchResult
-        >(obs => {
-          console.log('getting requeried subscrioption');
-          console.log(new Error().stack);
-          const off = 
-            this.subscriptionClient
-              .on('reconnected', () => {
-                console.log('requerying!!!!');
-                request(true)
-                  .subscribe(
-                    result => {
-                      console.log({ result })
-                      obs.next(result);
-                    },
-                    err => console.log({ err }),
-                    () => console.log('requerying complete'),
-                  );
-                });
-          request(false)
-            .subscribe(result => obs.next(result));
-          return () => {
-            console.log('disposing requreried subscription');
-            console.log(new Error().stack);
-            off();
-          }
-        })
-      }
+    if (this.isRequeried && this.isRequeried(operation)) {
+      return new Observable<FetchResult>(obs => {
+        const off = this.subscriptionClient.on('reconnected', () => {
+          request().subscribe(
+            result => {
+              obs.next(result);
+            },
+            err => obs.error(err),
+          );
+        });
+        request().subscribe(result => obs.next(result));
+        return () => {
+          off();
+        };
+      });
+    }
 
-    return request(false);
+    return request();
   }
 }
