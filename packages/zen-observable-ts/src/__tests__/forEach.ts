@@ -1,4 +1,4 @@
-import Observable from '../zenObservable';
+import { Observable } from '../zenObservable';
 
 describe('forEach ', () => {
   it('throws on not a function', done => {

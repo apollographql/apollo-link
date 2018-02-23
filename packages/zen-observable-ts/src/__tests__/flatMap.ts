@@ -1,4 +1,4 @@
-import Observable from '../zenObservable';
+import { Observable } from '../zenObservable';
 
 describe.skip('flatMap', () => {
   it('Observable.from', done => {

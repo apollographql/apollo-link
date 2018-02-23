@@ -1,4 +1,4 @@
-import Observable from '../zenObservable';
+import { Observable } from '../zenObservable';
 describe('reduce ', () => {
   it('No seed', () => {
     return Observable.from([1, 2, 3, 4, 5, 6])
