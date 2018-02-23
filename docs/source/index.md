@@ -66,7 +66,7 @@ import GraphiQL from 'graphiql';
 import { parse } from 'graphql';
 
 import { execute } from 'apollo-link';
-import HttpLink from 'apollo-link-http';
+import { HttpLink } from 'apollo-link-http';
 
 const link = new HttpLink({
   uri: 'http://api.githunt.com/graphql'
