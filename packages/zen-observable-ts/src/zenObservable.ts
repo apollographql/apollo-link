@@ -1,12 +1,8 @@
 declare function require(name: string);
 
-const Observable: {
-  new <T>(subscriber: Subscriber<T>): Observable<T>;
-  from<R>(...args: Array<R>): Observable<R>;
-  of<R>(...args: Array<R>): Observable<R>;
-} = require('zen-observable');
+namespace Observable {
 
-export default Observable;
+}
 
 import { ZenObservable } from './types';
 
@@ -15,6 +11,12 @@ export { ZenObservable };
 export type Observer<T> = ZenObservable.Observer<T>;
 export type Subscriber<T> = ZenObservable.Subscriber<T>;
 export type ObservableLike<T> = ZenObservable.ObservableLike<T>;
+
+export const Observable: {
+  new <T>(subscriber: Subscriber<T>): Observable<T>;
+  from<R>(...args: Array<R>): Observable<R>;
+  of<R>(...args: Array<R>): Observable<R>;
+} = require('zen-observable');
 
 export interface Observable<T> {
   subscribe(
