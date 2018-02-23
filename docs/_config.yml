@@ -3,7 +3,7 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Apollo Link Docs
+title: Apollo Link
 propertytitle: Using Apollo Link
 subtitle: Apollo Link Guide
 description: A guide to using Apollo Link to customize Apollo Client.
@@ -22,12 +22,15 @@ sidebar_categories:
     - composition
   Links:
     - links/http
+    - links/state
     - links/error
     - links/context
     - links/retry
     - links/ws
     - links/batch-http
     - links/dedup
+    - links/schema
+    - links/community
 github_repo: apollographql/apollo-link
 content_root: docs/source
 
@@ -48,7 +51,7 @@ apis:
   gtm: GTM-PNFDVBB
 
 logo:
-  nav_mobile: links/logo/logo-apollo-space-left.svg
+  nav_mobile: images/logo-apollo-space-left.svg
   title: Apollo
   url: https://www.apollographql.com/
 
@@ -111,3 +114,7 @@ theme: meteor
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
   type:
+
+marked:
+  gfm: true
+  breaks: false

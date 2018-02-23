@@ -6,63 +6,199 @@ import {
   FetchResult,
 } from 'apollo-link';
 
-const operationFnOrNumber = prop =>
-  typeof prop === 'number' ? () => prop : prop;
+import {
+  DelayFunction,
+  DelayFunctionOptions,
+  buildDelayFunction,
+} from './delayFunction';
+import {
+  RetryFunction,
+  RetryFunctionOptions,
+  buildRetryFunction,
+} from './retryFunction';
 
-const defaultInterval = delay => delay;
+export namespace RetryLink {
+  export interface Options {
+    /**
+     * Configuration for the delay strategy to use, or a custom delay strategy.
+     */
+    delay?: DelayFunctionOptions | DelayFunction;
 
-export type ParamFnOrNumber = (operation: Operation) => number | number;
+    /**
+     * Configuration for the retry strategy to use, or a custom retry strategy.
+     */
+    attempts?: RetryFunctionOptions | RetryFunction;
+  }
+}
+
+/**
+ * Tracking and management of operations that may be (or currently are) retried.
+ */
+class RetryableOperation<TValue = any> {
+  private retryCount: number = 0;
+  private values: any[] = [];
+  private error: any;
+  private complete = false;
+  private canceled = false;
+  private observers: ZenObservable.Observer<TValue>[] = [];
+  private currentSubscription: ZenObservable.Subscription = null;
+  private timerId: number;
+
+  constructor(
+    private operation: Operation,
+    private nextLink: NextLink,
+    private delayFor: DelayFunction,
+    private retryIf: RetryFunction,
+  ) {}
+
+  /**
+   * Register a new observer for this operation.
+   *
+   * If the operation has previously emitted other events, they will be
+   * immediately triggered for the observer.
+   */
+  subscribe(observer: ZenObservable.Observer<TValue>) {
+    if (this.canceled) {
+      throw new Error(
+        `Subscribing to a retryable link that was canceled is not supported`,
+      );
+    }
+    this.observers.push(observer);
+
+    // If we've already begun, catch this observer up.
+    for (const value of this.values) {
+      observer.next(value);
+    }
+
+    if (this.complete) {
+      observer.complete();
+    } else if (this.error) {
+      observer.error(this.error);
+    }
+  }
+
+  /**
+   * Remove a previously registered observer from this operation.
+   *
+   * If no observers remain, the operation will stop retrying, and unsubscribe
+   * from its downstream link.
+   */
+  unsubscribe(observer: ZenObservable.Observer<TValue>) {
+    const index = this.observers.indexOf(observer);
+    if (index < 0) {
+      throw new Error(
+        `RetryLink BUG! Attempting to unsubscribe unknown observer!`,
+      );
+    }
+    // Note that we are careful not to change the order of length of the array,
+    // as we are often mid-iteration when calling this method.
+    this.observers[index] = null;
+
+    // If this is the last observer, we're done.
+    if (this.observers.every(o => o === null)) {
+      this.cancel();
+    }
+  }
+
+  /**
+   * Start the initial request.
+   */
+  start() {
+    if (this.currentSubscription) return; // Already started.
+
+    this.try();
+  }
+
+  /**
+   * Stop retrying for the operation, and cancel any in-progress requests.
+   */
+  cancel() {
+    if (this.currentSubscription) {
+      this.currentSubscription.unsubscribe();
+    }
+    clearTimeout(this.timerId);
+    this.timerId = null;
+    this.currentSubscription = null;
+    this.canceled = true;
+  }
+
+  private try() {
+    this.currentSubscription = this.nextLink(this.operation).subscribe({
+      next: this.onNext,
+      error: this.onError,
+      complete: this.onComplete,
+    });
+  }
+
+  private onNext = (value: any) => {
+    this.values.push(value);
+    for (const observer of this.observers) {
+      observer.next(value);
+    }
+  };
+
+  private onComplete = () => {
+    this.complete = true;
+    for (const observer of this.observers) {
+      observer.complete();
+    }
+  };
+
+  private onError = error => {
+    this.retryCount += 1;
+
+    // Should we retry?
+    if (this.retryIf(this.retryCount, this.operation, error)) {
+      this.scheduleRetry(this.delayFor(this.retryCount, this.operation, error));
+      return;
+    }
+
+    this.error = error;
+    for (const observer of this.observers) {
+      observer.error(error);
+    }
+  };
+
+  private scheduleRetry(delay) {
+    if (this.timerId) {
+      throw new Error(`RetryLink BUG! Encountered overlapping retries`);
+    }
+
+    this.timerId = setTimeout(() => {
+      this.timerId = null;
+      this.try();
+    }, delay);
+  }
+}
 
 export class RetryLink extends ApolloLink {
-  private delay: ParamFnOrNumber;
-  private max: ParamFnOrNumber;
-  private interval: (delay: number, count: number) => number;
-  private subscriptions: { [key: string]: ZenObservable.Subscription } = {};
-  private timers = {};
-  private counts: { [key: string]: number } = {};
+  private delayFor: DelayFunction;
+  private retryIf: RetryFunction;
 
-  constructor(params?: {
-    max?: ParamFnOrNumber;
-    delay?: ParamFnOrNumber;
-    interval?: (delay: number, count: number) => number;
-  }) {
+  constructor({ delay, attempts }: RetryLink.Options = {}) {
     super();
-    this.max = operationFnOrNumber((params && params.max) || 10);
-    this.delay = operationFnOrNumber((params && params.delay) || 300);
-    this.interval = (params && params.interval) || defaultInterval;
+    this.delayFor =
+      typeof delay === 'function' ? delay : buildDelayFunction(delay);
+    this.retryIf =
+      typeof attempts === 'function' ? attempts : buildRetryFunction(attempts);
   }
 
   public request(
     operation: Operation,
-    forward: NextLink,
+    nextLink: NextLink,
   ): Observable<FetchResult> {
-    const key = operation.toKey();
-    if (!this.counts[key]) this.counts[key] = 0;
+    const retryable = new RetryableOperation(
+      operation,
+      nextLink,
+      this.delayFor,
+      this.retryIf,
+    );
+    retryable.start();
+
     return new Observable(observer => {
-      const subscriber = {
-        next: data => {
-          this.counts[key] = 0;
-          observer.next(data);
-        },
-        error: error => {
-          this.counts[key]++;
-          if (this.counts[key] < this.max(operation)) {
-            this.timers[key] = setTimeout(() => {
-              const observable = forward(operation);
-              this.subscriptions[key] = observable.subscribe(subscriber);
-            }, this.interval(this.delay(operation), this.counts[key]));
-          } else {
-            observer.error(error);
-          }
-        },
-        complete: observer.complete.bind(observer),
-      };
-
-      this.subscriptions[key] = forward(operation).subscribe(subscriber);
-
+      retryable.subscribe(observer);
       return () => {
-        this.subscriptions[key].unsubscribe();
-        if (this.timers[key]) clearTimeout(this.timers[key]);
+        retryable.unsubscribe(observer);
       };
     });
   }

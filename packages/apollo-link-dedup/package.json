@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-dedup",
-  "version": "1.0.0",
+  "version": "1.0.7",
   "description": "Deduplicates queries that are currently on the wire",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -11,9 +11,9 @@
   ],
   "license": "MIT",
   "main": "./lib/bundle.umd.js",
-  "module": "./lib/dedupLink.js",
-  "jsnext:main": "./lib/dedupLink.js",
-  "typings": "./lib/dedupLink.d.ts",
+  "module": "./lib/index.js",
+  "jsnext:main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-link.git"
@@ -23,45 +23,48 @@
   },
   "homepage": "https://github.com/apollographql/apollo-link#readme",
   "scripts": {
-    "build:browser":
-      "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-link && npm run minify:browser",
+    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-link && npm run minify:browser",
     "build": "tsc -p .",
     "bundle": "rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
+    "coverage": "jest --coverage",
     "filesize": "npm run build && npm run build:browser",
-    "lint":
-      "tslint --type-check -p tsconfig.json -c ../../tslint.json src/*.ts",
-    "minify:browser":
-      "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
+    "lint": "tslint --type-check -p tsconfig.json -c ../../tslint.json src/*.ts",
+    "minify:browser": "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
     "postbuild": "npm run bundle",
     "prebuild": "npm run clean",
     "prepublishOnly": "npm run clean && npm run build",
     "test": "jest",
-    "watch": "tsc -w -p ."
+    "watch": "tsc -w -p . & rollup -c -w"
   },
-  "peerDependencies": {
-    "apollo-link": "^1.0.0"
+  "dependencies": {
+    "apollo-link": "^1.2.0"
   },
   "devDependencies": {
-    "@types/graphql": "0.11.6",
-    "@types/jest": "21.1.6",
-    "apollo-link": "^1.0.0",
-    "browserify": "14.5.0",
-    "graphql": "0.11.7",
-    "graphql-tag": "2.5.0",
+    "@types/graphql": "0.12.4",
+    "@types/jest": "21.1.10",
+    "browserify": "16.1.0",
+    "graphql": "0.13.1",
+    "graphql-tag": "2.7.3",
     "jest": "21.2.1",
     "rimraf": "2.6.1",
-    "rollup": "0.51.5",
-    "ts-jest": "21.2.2",
-    "tslint": "5.8.0",
-    "typescript": "2.6.1",
-    "uglify-js": "3.1.9"
+    "rollup": "0.56.2",
+    "ts-jest": "21.2.4",
+    "tslint": "5.9.1",
+    "typescript": "2.7.2",
+    "uglify-js": "3.3.11"
   },
   "jest": {
     "transform": {
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "json"]
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ],
+    "mapCoverage": true
   }
 }

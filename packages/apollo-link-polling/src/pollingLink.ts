@@ -6,12 +6,21 @@ import {
   Observable,
 } from 'apollo-link';
 
+export namespace PollingLink {
+  /**
+   * Frequency (in milliseconds) that an operation should be polled on.
+   */
+  export interface PollInterval {
+    (operation: Operation): number | null;
+  }
+}
+
 export class PollingLink extends ApolloLink {
-  private pollInterval: (operation: Operation) => number | null;
+  private pollInterval: PollingLink.PollInterval;
   private timer;
   private subscription: ZenObservable.Subscription;
 
-  constructor(pollInterval: (operation: Operation) => number | null) {
+  constructor(pollInterval: PollingLink.PollInterval) {
     super();
     this.pollInterval = pollInterval;
   }

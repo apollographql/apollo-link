@@ -1,207 +1,202 @@
-import { ApolloLink, Observable, RequestHandler } from 'apollo-link';
-import { print } from 'graphql/language/printer';
+import { ApolloLink, Observable, RequestHandler, fromError } from 'apollo-link';
+import {
+  serializeFetchParameter,
+  selectURI,
+  parseAndCheckHttpResponse,
+  checkFetcher,
+  selectHttpOptionsAndBody,
+  createSignalIfSupported,
+  fallbackHttpConfig,
+  HttpOptions,
+  UriFunction as _UriFunction,
+} from 'apollo-link-http-common';
 
-// types
-import { ExecutionResult } from 'graphql';
-import { ApolloFetch } from 'apollo-fetch';
-
-// XXX replace with actual typings when available
-declare var AbortController: any;
-
-type ResponseError = Error & {
-  response?: Response;
-  parseError: Error;
-  statusCode?: number;
-};
-
-const parseAndCheckResponse = request => (response: Response) => {
-  return response
-    .json()
-    .then(result => {
-      if (response.status >= 300)
-        throw new Error(
-          `Response not successful: Received status code ${response.status}`,
-        );
-      if (!result.hasOwnProperty('data') && !result.hasOwnProperty('errors')) {
-        throw new Error(
-          `Server response was missing for query '${request.operationName}'.`,
-        );
-      }
-      return result;
-    })
-    .catch(e => {
-      const httpError = new Error(
-        `Network request failed with status ${response.status} - "${response.statusText}"`,
-      ) as ResponseError;
-      httpError.response = response;
-      httpError.parseError = e;
-      httpError.statusCode = response.status;
-
-      throw httpError;
-    });
-};
-
-const checkFetcher = (fetcher: ApolloFetch | GlobalFetch['fetch']) => {
-  if (
-    (fetcher as ApolloFetch).use &&
-    (fetcher as ApolloFetch).useAfter &&
-    (fetcher as ApolloFetch).batchUse &&
-    (fetcher as ApolloFetch).batchUseAfter
-  ) {
-    throw new Error(`
-      It looks like you're using apollo-fetch! Apollo Link now uses the native fetch
-      implementation, so apollo-fetch is not needed. If you want to use your existing
-      apollo-fetch middleware, please check this guide to upgrade:
-        https://github.com/apollographql/apollo-link/blob/master/docs/implementation.md
-    `);
-  }
-};
-
-const warnIfNoFetch = fetcher => {
-  if (!fetcher && typeof fetch === 'undefined') {
-    let library: string = 'unfetch';
-    if (typeof window === 'undefined') library = 'node-fetch';
-    throw new Error(
-      `fetch is not found globally and no fetcher passed, to fix pass a fetch for
-      your environment like https://www.npmjs.com/package/${library}.
-
-      For example:
-        import fetch from '${library}';
-        import { createHttpLink } from 'apollo-link-http';
-
-        const link = createHttpLink({ uri: '/graphql', fetch: fetch });
-      `,
-    );
-  }
-};
-
-const createSignalIfSupported = () => {
-  if (typeof AbortController === 'undefined')
-    return { controller: false, signal: false };
-
-  const controller = new AbortController();
-  const signal = controller.signal;
-  return { controller, signal };
-};
-
-export interface FetchOptions {
-  uri?: string;
-  fetch?: GlobalFetch['fetch'];
-  includeExtensions?: boolean;
-  credentials?: string;
-  headers?: any;
-  fetchOptions?: any;
+export namespace HttpLink {
+  //TODO Would much rather be able to export directly
+  export interface UriFunction extends _UriFunction {}
+  export interface Options extends HttpOptions {}
 }
-export const createHttpLink = (
-  {
-    uri,
+
+// For backwards compatibility.
+export import FetchOptions = HttpLink.Options;
+export import UriFunction = HttpLink.UriFunction;
+
+export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
+  let {
+    uri = '/graphql',
+    // use default global fetch is nothing passed in
     fetch: fetcher,
     includeExtensions,
-    ...requestOptions,
-  }: FetchOptions = {},
-) => {
+    ...requestOptions
+  } = linkOptions;
+
   // dev warnings to ensure fetch is present
-  warnIfNoFetch(fetcher);
-  if (fetcher) checkFetcher(fetcher);
+  checkFetcher(fetcher);
 
-  // use default global fetch is nothing passed in
-  if (!fetcher) fetcher = fetch;
-  if (!uri) uri = '/graphql';
+  //fetcher is set here rather than the destructuring to ensure fetch is
+  //declared before referencing it. Reference in the destructuring would cause
+  //a ReferenceError
+  if (!fetcher) {
+    fetcher = fetch;
+  }
 
-  return new ApolloLink(
-    operation =>
-      new Observable(observer => {
-        const {
-          headers,
-          credentials,
-          fetchOptions = {},
-          uri: contextURI,
-        } = operation.getContext();
-        const { operationName, extensions, variables, query } = operation;
+  const linkConfig = {
+    http: { includeExtensions },
+    options: requestOptions.fetchOptions,
+    credentials: requestOptions.credentials,
+    headers: requestOptions.headers,
+  };
 
-        const body = {
-          operationName,
-          variables,
-          query: print(query),
-        };
-        if (includeExtensions) (body as any).extensions = extensions;
+  return new ApolloLink(operation => {
+    let chosenURI = selectURI(operation, uri);
 
-        let serializedBody;
+    const context = operation.getContext();
+
+    const contextConfig = {
+      http: context.http,
+      options: context.fetchOptions,
+      credentials: context.credentials,
+      headers: context.headers,
+    };
+
+    //uses fallback, link, and then context to build options
+    const { options, body } = selectHttpOptionsAndBody(
+      operation,
+      fallbackHttpConfig,
+      linkConfig,
+      contextConfig,
+    );
+
+    const { controller, signal } = createSignalIfSupported();
+    if (controller) (options as any).signal = signal;
+
+    if (options.method === 'GET') {
+      // Implement the standard HTTP GET serialization, plus 'extensions'. Note
+      // the extra level of JSON serialization!
+      const queryParams = [];
+      const addQueryParam = (key: string, value: string) => {
+        queryParams.push(`${key}=${encodeURIComponent(value)}`);
+      };
+
+      if ('query' in body) {
+        addQueryParam('query', body.query);
+      }
+      if (body.operationName) {
+        addQueryParam('operationName', body.operationName);
+      }
+      if (body.variables) {
+        let serializedVariables;
         try {
-          serializedBody = JSON.stringify(body);
-        } catch (e) {
-          const parseError = new Error(
-            `Network request failed. Payload is not serializable: ${e.message}`,
-          ) as ResponseError;
-          parseError.parseError = e;
-          throw parseError;
+          serializedVariables = serializeFetchParameter(
+            body.variables,
+            'Variables map',
+          );
+        } catch (parseError) {
+          return fromError(parseError);
         }
+        addQueryParam('variables', serializedVariables);
+      }
+      if (body.extensions) {
+        let serializedExtensions;
+        try {
+          serializedExtensions = serializeFetchParameter(
+            body.extensions,
+            'Extensions map',
+          );
+        } catch (parseError) {
+          return fromError(parseError);
+        }
+        addQueryParam('extensions', serializedExtensions);
+      }
 
-        let options = fetchOptions;
-        if (requestOptions.fetchOptions)
-          options = { ...requestOptions.fetchOptions, ...options };
-        const fetcherOptions = {
-          method: 'POST',
-          ...options,
-          headers: {
-            // headers are case insensitive (https://stackoverflow.com/a/5259004)
-            accept: '*/*',
-            'content-type': 'application/json',
-          },
-          body: serializedBody,
-        };
+      // Reconstruct the URI with added query params.
+      // XXX This assumes that the URI is well-formed and that it doesn't
+      //     already contain any of these query params. We could instead use the
+      //     URL API and take a polyfill (whatwg-url@6) for older browsers that
+      //     don't support URLSearchParams. Note that some browsers (and
+      //     versions of whatwg-url) support URL but not URLSearchParams!
+      let fragment = '',
+        preFragment = chosenURI;
+      const fragmentStart = chosenURI.indexOf('#');
+      if (fragmentStart !== -1) {
+        fragment = chosenURI.substr(fragmentStart);
+        preFragment = chosenURI.substr(0, fragmentStart);
+      }
+      const queryParamsPrefix = preFragment.indexOf('?') === -1 ? '?' : '&';
+      chosenURI =
+        preFragment + queryParamsPrefix + queryParams.join('&') + fragment;
+    } else {
+      try {
+        (options as any).body = serializeFetchParameter(body, 'Payload');
+      } catch (parseError) {
+        return fromError(parseError);
+      }
+    }
 
-        if (requestOptions.credentials)
-          fetcherOptions.credentials = requestOptions.credentials;
-        if (credentials) fetcherOptions.credentials = credentials;
+    return new Observable(observer => {
+      fetcher(chosenURI, options)
+        .then(response => {
+          operation.setContext({ response });
+          return response;
+        })
+        .then(parseAndCheckHttpResponse(operation))
+        .then(result => {
+          // we have data and can send it to back up the link chain
+          observer.next(result);
+          observer.complete();
+          return result;
+        })
+        .catch(err => {
+          // fetch was cancelled so its already been cleaned up in the unsubscribe
+          if (err.name === 'AbortError') return;
+          // if it is a network error, BUT there is graphql result info
+          // fire the next observer before calling error
+          // this gives apollo-client (and react-apollo) the `graphqlErrors` and `networErrors`
+          // to pass to UI
+          if (err.result && err.result.errors) {
+            // if we dont' call next, the UI can only show networkError because AC didn't
+            // get andy graphqlErrors
+            // this is graphql execution result info (i.e errors and possibly data)
+            // this is because there is no formal spec how errors should translate to
+            // http status codes. So an auth error (401) could have both data
+            // from a public field, errors from a private field, and a status of 401
+            // {
+            //  user { // this will have errors
+            //    firstName
+            //  }
+            //  products { // this is public so will have data
+            //    cost
+            //  }
+            // }
+            //
+            // the result of above *could* look like this:
+            // {
+            //   data: { products: [{ cost: "$10" }] },
+            //   errors: [{
+            //      message: 'your session has timed out',
+            //      path: []
+            //   }]
+            // }
+            // status code of above would be a 401
+            // in the UI you want to show data where you can, errors as data where you can
+            // and use correct http status codes
+            observer.next(err.result);
+          }
+          observer.error(err);
+        });
 
-        if (requestOptions.headers)
-          fetcherOptions.headers = {
-            ...fetcherOptions.headers,
-            ...requestOptions.headers,
-          };
-        if (headers)
-          fetcherOptions.headers = { ...fetcherOptions.headers, ...headers };
-
-        const { controller, signal } = createSignalIfSupported();
-        if (controller) fetcherOptions.signal = signal;
-
-        fetcher(contextURI || uri, fetcherOptions)
-          // attach the raw response to the context for usage
-          .then(response => {
-            operation.setContext({ response });
-            return response;
-          })
-          .then(parseAndCheckResponse(operation))
-          .then(result => {
-            // we have data and can send it to back up the link chain
-            observer.next(result);
-            observer.complete();
-            return result;
-          })
-          .catch(err => {
-            // fetch was cancelled so its already been cleaned up in the unsubscribe
-            if (err.name === 'AbortError') return;
-            observer.error(err);
-          });
-
-        return () => {
-          // XXX support canceling this request
-          // https://developers.google.com/web/updates/2017/09/abortable-fetch
-          if (controller) controller.abort();
-        };
-      }),
-  );
+      return () => {
+        // XXX support canceling this request
+        // https://developers.google.com/web/updates/2017/09/abortable-fetch
+        if (controller) controller.abort();
+      };
+    });
+  });
 };
 
 export class HttpLink extends ApolloLink {
   public requester: RequestHandler;
-  constructor(opts: FetchOptions) {
-    super();
-    this.requester = createHttpLink(opts).request;
-  }
-
-  public request(op): Observable<ExecutionResult> | null {
-    return this.requester(op);
+  constructor(opts?: HttpLink.Options) {
+    super(createHttpLink(opts).request);
   }
 }

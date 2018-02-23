@@ -1,18 +1,15 @@
-import { validateOperation, fromPromise, makePromise } from '../linkUtils';
-import * as Observable from 'zen-observable';
+import {
+  validateOperation,
+  fromPromise,
+  makePromise,
+  fromError,
+} from '../linkUtils';
+import Observable from 'zen-observable';
 
 describe('Link utilities:', () => {
   describe('validateOperation', () => {
     it('should throw when invalid field in operation', () => {
       expect(() => validateOperation(<any>{ qwerty: '' })).toThrow();
-    });
-
-    it('should throw when missing a query of some kind', () => {
-      expect(() =>
-        validateOperation(<any>{
-          query: '',
-        }),
-      ).toThrow();
     });
 
     it('should not throw when valid fields in operation', () => {
@@ -41,7 +38,7 @@ describe('Link utilities:', () => {
     });
 
     it('return error call as Promise rejection', () => {
-      return makePromise(new Observable(observer => observer.error(error)))
+      return makePromise(fromError(error))
         .then(expect.fail)
         .catch(actualError => expect(error).toEqual(actualError));
     });
@@ -85,6 +82,15 @@ describe('Link utilities:', () => {
 
     it('return Promise rejection as error call', () => {
       const observable = fromPromise(Promise.reject(error));
+      return makePromise(observable)
+        .then(expect.fail)
+        .catch(actualError => expect(error).toEqual(actualError));
+    });
+  });
+  describe('fromError', () => {
+    it('acts as error call', () => {
+      const error = new Error('I always error');
+      const observable = fromError(error);
       return makePromise(observable)
         .then(expect.fail)
         .catch(actualError => expect(error).toEqual(actualError));

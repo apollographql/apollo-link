@@ -1,5 +1,5 @@
 import { getOperationName } from 'apollo-utilities';
-import * as Observable from 'zen-observable';
+import Observable from 'zen-observable';
 import { print } from 'graphql/language/printer';
 
 import { GraphQLRequest, Operation } from './types';
@@ -13,7 +13,6 @@ export function validateOperation(operation: GraphQLRequest): GraphQLRequest {
     'extensions',
     'context',
   ];
-  if (!operation.query) throw new Error('ApolloLink requires a query');
   for (let key of Object.keys(operation)) {
     if (OPERATION_FIELDS.indexOf(key) < 0) {
       throw new Error(`illegal argument: ${key}`);
@@ -68,6 +67,12 @@ export function fromPromise<T>(promise: Promise<T>): Observable<T> {
   });
 }
 
+export function fromError<T>(errorValue: any): Observable<T> {
+  return new Observable<T>(observer => {
+    observer.error(errorValue);
+  });
+}
+
 export function transformOperation(operation: GraphQLRequest): GraphQLRequest {
   const transformedOperation: GraphQLRequest = {
     variables: operation.variables || {},
@@ -94,9 +99,9 @@ export function createOperation(
   let context = { ...starting };
   const setContext = next => {
     if (typeof next === 'function') {
-      context = next(context);
+      context = { ...context, ...next(context) };
     } else {
-      context = { ...next };
+      context = { ...context, ...next };
     }
   };
   const getContext = () => ({ ...context });
@@ -122,7 +127,7 @@ export function createOperation(
 export function getKey(operation: GraphQLRequest) {
   // XXX we're assuming here that variables will be serialized in the same order.
   // that might not always be true
-  return `${print(operation.query)}|${JSON.stringify(
-    operation.variables,
-  )}|${operation.operationName}`;
+  return `${print(operation.query)}|${JSON.stringify(operation.variables)}|${
+    operation.operationName
+  }`;
 }

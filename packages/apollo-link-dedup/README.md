@@ -1,9 +1,7 @@
 ---
-title: Dedup Link
+title: apollo-link-dedup
+description: Deduplicate matching requests before making a request
 ---
-
-## Purpose
-An Apollo Link to deduplicate matching requests before making a request.
 
 *NOTE* This link is included by default when using apollo-client so you don't need to add it to your link chain if using apollo-client.
 
@@ -22,7 +20,7 @@ const link = new DedupLink();
 The Dedup Link does not take any options when creating the link.
 
 ## Context
-The Dedup Link can be overriden by using the context on a per opearation basis:
+The Dedup Link can be overridden by using the context on a per operation basis:
 - `forceFetch`: a true or false (defaults to false) to bypass deduplication per request
 
 ```js
@@ -43,5 +41,3 @@ client.query({
   }
 })
 ```
-
-
