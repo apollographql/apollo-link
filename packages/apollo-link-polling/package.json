@@ -1,7 +1,7 @@
 {
   "name": "apollo-link-polling",
   "private": true,
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "Polling Apollo Link for GraphQL Network Stack",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -24,17 +24,14 @@
   },
   "homepage": "https://github.com/apollographql/apollo-link#readme",
   "scripts": {
-    "build:browser":
-      "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-link && npm run minify:browser",
+    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-link && npm run minify:browser",
     "build": "tsc -p .",
     "bundle": "rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
     "coverage": "jest --coverage",
     "filesize": "npm run build && npm run build:browser",
-    "lint":
-      "tslint --type-check -p tsconfig.json -c ../../tslint.json src/*.ts",
-    "minify:browser":
-      "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
+    "lint": "tslint --type-check -p tsconfig.json -c ../../tslint.json src/*.ts",
+    "minify:browser": "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
     "postbuild": "npm run bundle",
     "prebuild": "npm run clean",
     "prepublishOnly": "npm run clean && npm run build",
@@ -43,7 +40,7 @@
   },
   "dependencies": {
     "@types/zen-observable": "0.5.3",
-    "apollo-link": "^1.1.0"
+    "apollo-link": "^1.2.1"
   },
   "devDependencies": {
     "@types/graphql": "0.12.4",
@@ -53,7 +50,7 @@
     "graphql-tag": "2.7.3",
     "jest": "21.2.1",
     "rimraf": "2.6.1",
-    "rollup": "0.56.1",
+    "rollup": "0.56.2",
     "ts-jest": "21.2.4",
     "tslint": "5.9.1",
     "typescript": "2.7.2",
@@ -64,6 +61,12 @@
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "json"]
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ],
+    "mapCoverage": true
   }
 }

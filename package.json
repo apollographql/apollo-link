@@ -16,7 +16,7 @@
     "coverage": "lerna run -- coverage",
     "coverage:upload": "codecov",
     "danger": "danger run --verbose",
-    "predeploy": "npm run build",
+    "predeploy": "npm run bootstrap",
     "deploy": "lerna publish -m \"chore: Publish\" --independent",
     "watch":
       "trap \"kill 0\" SIGINT; for f in `ls packages`; do (cd `pwd`/packages/$f && [[ -e package.json ]] && npm run watch) & done; "
@@ -60,7 +60,7 @@
     {
       "name": "apollo-link-retry",
       "path": "./packages/apollo-link-retry/lib/bundle.min.js",
-      "maxSize": "2 Kb"
+      "maxSize": "2.5 Kb"
     },
     {
       "name": "apollo-link-ws",
@@ -95,6 +95,7 @@
     "lint-staged": "6.1.1",
     "pre-commit": "1.2.2",
     "prettier": "1.10.2",
+    "rollup-plugin-sourcemaps": "^0.4.2",
     "ts-jest": "21.2.4",
     "typescript": "2.7.2"
   }

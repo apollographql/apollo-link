@@ -8,9 +8,9 @@ operations into a single HTTP request. This link batches together individual
 operations into an array that is sent to a single GraphQL endpoint.
 
 ```js
-import { createBatchHttpLink } from "apollo-link-batch-http";
+import { BatchHttpLink } from "apollo-link-batch-http";
 
-const link = createBatchHttpLink({ uri: "/graphql" });
+const link = new BatchHttpLink({ uri: "/graphql" });
 ```
 
 <h2 id="options">Options</h2>
@@ -29,7 +29,7 @@ http options follow the same structure as the
 * `credentials`: a string representing the credentials policy you want for the
   fetch call
 * `fetchOptions`: any overrides of the fetch options argument to pass to the
-  fetch call
+  fetch call. Note that you cannot use batching with the GET HTTP method.
 
 The batching options indicate how operations are batched together, the size of
 batches, and the maximum time a batch will wait before automatically being sent
@@ -89,24 +89,7 @@ The batch http link handles errors on a per batch basis with the same semantics 
 
 <h2 id="custom">Custom fetching</h2>
 
-You can use the `fetch` option when creating an http-link to do a lot of custom networking. This is useful if you want to modify the request based on the headers calculated, send the request as a 'GET' via a query string, or calculate the uri based on the operation:
-
-<h3 id="get-request">Sending a GET request</h3>
-
-```js
-const customFetch = (uri, options) => {
-  const { body, ...newOptions } = options;
-  // turn the object into a query string, try `object-to-querystring` package
-  const queryString = objectToQuery(JSON.parse(body));
-  requestedString = uri + queryString;
-  return fetch(requestedString, newOptions);
-};
-const link = createBatchHttpLink({
-  uri: "data",
-  fetchOptions: { method: "GET" },
-  fetch: customFetch
-});
-```
+You can use the `fetch` option when creating an http-link to do a lot of custom networking. This is useful if you want to modify the request based on the calculated headers or calculate the uri based on the operation:
 
 <h3 id="custom-auth">Custom auth</h3>
 
@@ -114,14 +97,14 @@ const link = createBatchHttpLink({
 const customFetch = (uri, options) => {
   const { header } = Hawk.client.header(
     "http://example.com:8000/resource/1?b=1&a=2",
-    "GET",
+    "POST",
     { credentials: credentials, ext: "some-app-data" }
   );
   options.headers.Authorization = header;
   return fetch(uri, options);
 };
 
-const link = createBatchHttpLink({ fetch: customFetch });
+const link = new BatchHttpLink({ fetch: customFetch });
 ```
 
 <h3 id="dynamic-uri">Dynamic URI</h3>
@@ -132,5 +115,5 @@ const customFetch = (uri, options) => {
   return fetch(`${uri}/graph/graphql?opname=${operationNames}`, options);
 };
 
-const link = createBatchHttpLink({ fetch: customFetch });
+const link = new BatchHttpLink({ fetch: customFetch });
 ```
