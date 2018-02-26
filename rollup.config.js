@@ -6,6 +6,7 @@ export const globals = {
   'apollo-link': 'apolloLink.core',
   'apollo-link-batch': 'apolloLink.batch',
   'apollo-utilities': 'apollo.utilities',
+  'apollo-link-http-common': 'apolloLink.utilities',
   'zen-observable-ts': 'apolloLink.zenObservable',
 
   //GraphQL
