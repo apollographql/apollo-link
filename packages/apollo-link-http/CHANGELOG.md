@@ -2,8 +2,11 @@
 
 ### vNEXT
 
+### 1.5.2
+- fix issue where execution result with only `errors` key fired the `next` event
+
 ### 1.5.1
-- udate apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
+- update apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
 
 ### 1.5.0
 - New useGETForQueries option: if set, uses GET for queries (but not mutations)
