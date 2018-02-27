@@ -2,8 +2,11 @@
 
 ### vNext
 
+### 1.2.0
+- support passing data and errors back as data to next link
+
 ### 1.1.1
-- udate apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
+- update apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
 
 ### 1.1.0
 - share logic with apollo-link-http through apollo-link-http-core [PR#364](https://github.com/apollographql/apollo-link/pull/364)
