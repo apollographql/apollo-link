@@ -171,7 +171,7 @@ export const parseAndCheckHttpResponse = operations => (response: Response) => {
 export const checkFetcher = (fetcher: GlobalFetch['fetch']) => {
   if (!fetcher && typeof fetch === 'undefined') {
     let library: string = 'unfetch';
-    if (typeof window === 'undefined') library = 'nodefetch';
+    if (typeof window === 'undefined') library = 'node-fetch';
     throw new Error(`
 fetch is not found globally and no fetcher passed, to fix pass a fetch for
 your environment like https://www.npmjs.com/package/${library}.
