@@ -125,7 +125,9 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
           // fire the next observer before calling error
           // this gives apollo-client (and react-apollo) the `graphqlErrors` and `networErrors`
           // to pass to UI
-          if (err.result && err.result.errors) {
+          // this should only happen if we *also* have data as part of the response key per
+          // the spec
+          if (err.result && err.result.errors && err.result.data) {
             // if we dont' call next, the UI can only show networkError because AC didn't
             // get andy graphqlErrors
             // this is graphql execution result info (i.e errors and possibly data)
