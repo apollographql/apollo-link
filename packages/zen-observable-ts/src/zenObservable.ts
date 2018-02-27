@@ -38,8 +38,6 @@ export interface Observable<T> {
     initialValue?: R | T,
   ): Observable<R | T>;
 
-  concat(...sources: Array<Observable<T>>): Observable<T>;
-
   flatMap<R>(fn: (value: T) => ZenObservable.ObservableLike<R>): Observable<R>;
 
   from<R>(

@@ -617,6 +617,22 @@ export const sharedHttpTest = (
       responseBody = JSON.parse(responseBodyText);
       return Promise.resolve(responseBodyText);
     });
+    const textWithData = jest.fn(() => {
+      responseBody = {
+        data: { stub: { id: 1 } },
+        errors: [{ message: 'dangit' }],
+      };
+
+      return Promise.resolve(JSON.stringify(responseBody));
+    });
+
+    const textWithErrors = jest.fn(() => {
+      responseBody = {
+        errors: [{ message: 'dangit' }],
+      };
+
+      return Promise.resolve(JSON.stringify(responseBody));
+    });
     const fetch = jest.fn((uri, options) => {
       return Promise.resolve({ text });
     });
@@ -667,6 +683,50 @@ export const sharedHttpTest = (
           expect(e.statusCode).toBe(400);
           expect(e.result).toEqual(responseBody);
         }),
+      );
+    });
+    it('throws an error if response code is > 300 and returns data', done => {
+      fetch.mockReturnValueOnce(
+        Promise.resolve({ status: 400, text: textWithData }),
+      );
+
+      const link = createLink({ uri: 'data', fetch });
+
+      let called = false;
+
+      execute(link, { query: sampleQuery }).subscribe(
+        result => {
+          called = true;
+          expect(result).toEqual(responseBody);
+        },
+        e => {
+          expect(called).toBe(true);
+          expect(e.message).toMatch(/Received status code 400/);
+          expect(e.statusCode).toBe(400);
+          expect(e.result).toEqual(responseBody);
+          done();
+        },
+      );
+    });
+    it('throws an error if only errors are returned', done => {
+      fetch.mockReturnValueOnce(
+        Promise.resolve({ status: 400, text: textWithErrors }),
+      );
+
+      const link = createLink({ uri: 'data', fetch });
+
+      let called = false;
+
+      execute(link, { query: sampleQuery }).subscribe(
+        result => {
+          done.fail('should not have called result because we have no data');
+        },
+        e => {
+          expect(e.message).toMatch(/Received status code 400/);
+          expect(e.statusCode).toBe(400);
+          expect(e.result).toEqual(responseBody);
+          done();
+        },
       );
     });
     it('throws an error if empty response from the server ', done => {
