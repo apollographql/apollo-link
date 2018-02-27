@@ -275,7 +275,6 @@ _Before_
 
 ```js
 import ApolloClient, { createNetworkInterface } from "apollo-client";
-import { logout } from "./logout";
 
 const networkInterface = createNetworkInterface({ uri: "/graphql" });
 
