@@ -33,7 +33,7 @@ export namespace BatchLink {
     /**
      * creates the key for a batch
      */
-    batchKey?: (Operation) => string;
+    batchKey?: (operation: Operation) => string;
   }
 }
 

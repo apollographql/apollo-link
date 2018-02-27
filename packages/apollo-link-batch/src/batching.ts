@@ -31,7 +31,7 @@ export class OperationBatcher {
 
   //This function is called to the queries in the queue to the server.
   private batchHandler: BatchHandler;
-  private batchKey: (Operation) => string;
+  private batchKey: (operation: Operation) => string;
 
   constructor({
     batchInterval,
@@ -42,7 +42,7 @@ export class OperationBatcher {
     batchInterval: number;
     batchMax?: number;
     batchHandler: BatchHandler;
-    batchKey?: (Operation) => string;
+    batchKey?: (operation: Operation) => string;
   }) {
     this.queuedRequests = new Map();
     this.batchInterval = batchInterval;
