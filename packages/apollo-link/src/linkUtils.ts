@@ -1,5 +1,5 @@
 import { getOperationName } from 'apollo-utilities';
-import * as Observable from 'zen-observable';
+import Observable from 'zen-observable-ts';
 import { print } from 'graphql/language/printer';
 
 import { GraphQLRequest, Operation } from './types';
@@ -64,6 +64,12 @@ export function fromPromise<T>(promise: Promise<T>): Observable<T> {
         observer.complete();
       })
       .catch(observer.error.bind(observer));
+  });
+}
+
+export function fromError<T>(errorValue: any): Observable<T> {
+  return new Observable<T>(observer => {
+    observer.error(errorValue);
   });
 }
 
