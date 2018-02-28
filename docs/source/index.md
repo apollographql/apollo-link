@@ -161,8 +161,20 @@ If you want to control how you handle errors, `next` will receive GraphQL errors
 
 There are a number of useful links that have already been implemented that may be useful for your application.
 
+[`apollo-link-http`](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-http)
+Get the results for a GraphQL query over HTTP. 
+
+[`apollo-link-state`](https://github.com/apollographql/apollo-link-state)
+Allows you to manage your application's non-data state and interact with it via GraphQL.
+
+[`apollo-link-error`](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-error)
+Handle and inspect errors within your GraphQL stack.
+
+[`apollo-link-retry`](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-retry)
+Attempts an operation multiple times if it fails due to network or server errors.
+
 [`apollo-link-batch`](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-batch)
-Batches multiple GraphQL operations into a single request.
+Batches and manipulates a grouping of multiple GraphQL operations.
 
 [`apollo-link-batch-http`](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-batch-http)
 Batches multiple GraphQL operations into a single HTTP request as an array of operations.
@@ -173,23 +185,11 @@ Sets a context on your operation, which can be used other links further down the
 [`apollo-link-dedup`](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-dedup)
 Deduplicates requests before sending them down the wire. This link is included by default on Apollo Client.
 
-[`apollo-link-error`](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-error)
-Handle and inspect errors within your GraphQL stack.
-
-[`apollo-link-http`](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-http)
-Get the results for a GraphQL query over HTTP. 
-
-[`apollo-link-retry`](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-retry)
-Attempts an operation multiple times if it fails due to network or server errors.
-
 [`apollo-link-schema`](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-schema)
 Assists with mocking and server-side rendering.
 
 [`apollo-link-ws`](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-ws)
 Send GraphQL operations over a WebSocket. Works with GraphQL subscriptions.
-
-[`apollo-link-state`](https://github.com/apollographql/apollo-link-state)
-Allows you to manage your application's non-data state and interact with it via GraphQL.
 
 <h2 id="customization">Customizing your own links</h2>
 
