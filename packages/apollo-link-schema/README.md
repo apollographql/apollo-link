@@ -60,3 +60,10 @@ const graphqlClient = new ApolloClient({
 });
 ```
 
+### Options
+
+The `SchemaLink` constructor an be called with an object that has the following properties:
+
+* `schema`: an executable graphql schema
+* `rootValue`: the root value that is used (e.g. the user)
+* `context`: the context that is used (e.g. an object that stores all the data-fetching connectors)

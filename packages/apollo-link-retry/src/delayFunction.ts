@@ -41,9 +41,11 @@ export interface DelayFunctionOptions {
   jitter?: boolean;
 }
 
-export function buildDelayFunction(
-  { initial = 300, max = Infinity, jitter = true }: DelayFunctionOptions = {},
-): DelayFunction {
+export function buildDelayFunction({
+  initial = 300,
+  max = Infinity,
+  jitter = true,
+}: DelayFunctionOptions = {}): DelayFunction {
   let baseDelay;
   if (jitter) {
     // If we're jittering, baseDelay is half of the maximum delay for that

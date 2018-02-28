@@ -1,5 +1,16 @@
+# Change log
 
 ### vNext
+
+### 1.1.1
+- udate apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
+
+### 1.1.0
+- add input validation logic [PR#364](https://github.com/apollographql/apollo-link/pull/364)
+- ensure batch observables can handle multiple subscribers [PR#364](https://github.com/apollographql/apollo-link/pull/364)
+
+### 1.0.4
+- ApolloLink upgrade
 
 ### 1.0.3
 - export options as named interface [TypeScript]

@@ -2,13 +2,30 @@
 
 ### vNEXT
 
-### 1.3.2
+### 1.5.2
+- fix issue where execution result with only `errors` key fired the `next` event
 
+### 1.5.1
+- update apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
+
+### 1.5.0
+- New useGETForQueries option: if set, uses GET for queries (but not mutations)
+
+### 1.4.0
+- move logic to apollo-link-http-core [PR#364](https://github.com/apollographql/apollo-link/pull/364)
+- follow the spec properly for GET requests [PR#490](https://github.com/apollographql/apollo-link/pull/490)
+- ApolloLink upgrade
+
+### 1.3.3
+- ApolloLink upgrade
+- Allow graphql results to fire even if there is a network error
+
+### 1.3.2
 - Update to graphql@0.12
 
 ### 1.3.1
 - export options as named interface [TypeScript]
-- Fix typescript bug with destructuring of parameter in createHttpLink (#189)
+- Fix typescript bug with destructuring of parameter in createHttpLink ([#189](https://github.com/apollographql/apollo-link/issues/189))
 
 ### 1.3.0
 - changed to initially parsing response as text to improve error handling

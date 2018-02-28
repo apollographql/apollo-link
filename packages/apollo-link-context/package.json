@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-context",
-  "version": "1.0.4",
+  "version": "1.0.7",
   "description": "An easy way to set and cache context changes for Apollo Link",
   "author": "James Baxley <james@meteor.com>",
   "license": "MIT",
@@ -17,17 +17,14 @@
   },
   "homepage": "https://github.com/apollographql/apollo-link#readme",
   "scripts": {
-    "build:browser":
-      "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-link && npm run minify:browser",
+    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-link && npm run minify:browser",
     "build": "tsc -p .",
     "bundle": "rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
     "coverage": "jest --coverage",
     "filesize": "npm run build && npm run build:browser",
-    "lint":
-      "tslint --type-check -p tsconfig.json -c ../../tslint.json src/*.ts",
-    "minify:browser":
-      "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
+    "lint": "tslint --type-check -p tsconfig.json -c ../../tslint.json src/*.ts",
+    "minify:browser": "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
     "postbuild": "npm run bundle",
     "prebuild": "npm run clean",
     "prepublishOnly": "npm run clean && npm run build",
@@ -35,27 +32,33 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-link": "^1.0.7"
+    "apollo-link": "^1.2.1"
   },
   "devDependencies": {
-    "@types/graphql": "0.12.3",
+    "@types/graphql": "0.12.4",
     "@types/jest": "21.1.10",
-    "browserify": "14.5.0",
-    "graphql": "0.12.3",
-    "graphql-tag": "2.6.1",
+    "browserify": "16.1.0",
+    "graphql": "0.13.1",
+    "graphql-tag": "2.7.3",
     "jest": "21.2.1",
     "rimraf": "2.6.1",
-    "rollup": "0.55.3",
+    "rollup": "0.56.2",
     "ts-jest": "21.2.4",
     "tslint": "5.9.1",
-    "typescript": "2.7.1",
-    "uglify-js": "3.3.9"
+    "typescript": "2.7.2",
+    "uglify-js": "3.3.11"
   },
   "jest": {
     "transform": {
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "json"]
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ],
+    "mapCoverage": true
   }
 }
