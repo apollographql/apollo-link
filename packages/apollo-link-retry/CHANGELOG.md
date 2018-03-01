@@ -2,6 +2,8 @@
 
 ### vNext
 
+### 2.2.1
+- Fix a bug where `observer` is null during onComplete, onNext, onError [#528](https://github.com/apollographql/apollo-link/pull/528)
 ### 2.2.0
 - handle Promises from `retryIf` and `attempts` [#436](https://github.com/apollographql/apollo-link/pull/436)
 - udate apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
