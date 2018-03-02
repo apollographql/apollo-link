@@ -7,12 +7,12 @@
   but please check the label for feature below
 -->
 
-**Expected Behavior**
+Expected Behavior
 <!--
 What you were trying to accomplish when the bug occurred, and as much code as possible related to the source of the problem.
 -->
 
-**Actual Behavior**
+Actual Behavior
 <!--
 A description of what actually happened, including a screenshot or copy-paste of any related error messages, logs, or other output that might be related.
 Places to look for information include your browser console, server console, and network logs.
@@ -23,7 +23,7 @@ A **simple** reproduction
 example: A Codesandbox or GitHub repository that anyone can clone to observe the problem
 -->
 
-**Issue Labels**
+Issue Labels
 
 <!--
 While not necessary, you can help organize our issues by labeling this issue when you open it.  To add a label automatically, simply [x] mark the appropriate box below:
