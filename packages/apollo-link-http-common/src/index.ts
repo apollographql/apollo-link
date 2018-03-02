@@ -112,6 +112,7 @@ export const fallbackHttpConfig = {
 export const throwServerError = (response, result, message) => {
   const error = new Error(message) as ServerError;
 
+  error.name = 'ServerError';
   error.response = response;
   error.statusCode = response.status;
   error.result = result;
@@ -129,6 +130,7 @@ export const parseAndCheckHttpResponse = operations => (response: Response) => {
           return JSON.parse(bodyText);
         } catch (err) {
           const parseError = err as ServerParseError;
+          parseError.name = 'ServerParseError';
           parseError.response = response;
           parseError.statusCode = response.status;
           parseError.bodyText = bodyText;

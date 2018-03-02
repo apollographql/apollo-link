@@ -48,7 +48,7 @@ const withToken = setContext(() => {
 });
 
 const resetToken = onError(({ networkError }) => {
-  if (networkError && networkError.statusCode === 401) {
+  if (networkError && networkError.name ==='ServerError' && networkError.statusCode === 401) {
     // remove cached token on 401 from the server
     token = null;
   }

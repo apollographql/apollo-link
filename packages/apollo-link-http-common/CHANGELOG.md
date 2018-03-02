@@ -1,6 +1,7 @@
 # Change log
 
 ### vNEXT
+- add error name when throw errors [PR#530](https://github.com/apollographql/apollo-link/pull/530)
 
 ### v0.2.3
 - correct the warning message on no fetch found to node-fetch[PR#526](https://github.com/apollographql/apollo-link/pull/526)

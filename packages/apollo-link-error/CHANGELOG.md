@@ -1,6 +1,7 @@
 # Change log
 
 ### vNEXT
+- changed networkError type to union type `Error | ServerError | ServerParseError`
 
 ### 1.0.6
 - udate apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
