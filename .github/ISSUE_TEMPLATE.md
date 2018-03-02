@@ -29,3 +29,15 @@ Be as specific as possible, and only mention what is necessary to reproduce the 
 If possible, try to isolate the exact circumstances in which the bug occurs and avoid speculation over what the cause might be.
 -->
 
+
+<!--**Issue Labels**
+
+While not necessary, you can help organize our issues by labeling this issue when you open it.  To add a label automatically, simply [x] mark the appropriate box below:
+
+- [ ] has-reproduction
+- [ ] feature
+- [ ] blocking
+- [ ] good first issue
+
+To add a label not listed above, simply place `/label another-label-name` on a line by itself.
+-->
