@@ -36,7 +36,7 @@ export namespace BatchHttpLink {
     /**
      * Sets the key for an Operation, which specifies the batch an operation is included in
      */
-    batchKey?: (Operation) => string;
+    batchKey?: (operation: Operation) => string;
   }
 }
 
