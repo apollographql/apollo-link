@@ -2,8 +2,11 @@
 
 ### vNext
 
+### 1.1.2
+- Fix typing of Operation parameters [PR#525](https://github.com/apollographql/apollo-link/pull/525)
+
 ### 1.1.1
-- udate apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
+- update apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
 
 ### 1.1.0
 - add input validation logic [PR#364](https://github.com/apollographql/apollo-link/pull/364)
