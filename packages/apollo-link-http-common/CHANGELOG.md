@@ -2,7 +2,7 @@
 
 ### vNEXT
 
-### v0.3.0
+### v0.2.3
 - correct the warning message on no fetch found to node-fetch[PR#526](https://github.com/apollographql/apollo-link/pull/526)
 
 ### v0.2.2
