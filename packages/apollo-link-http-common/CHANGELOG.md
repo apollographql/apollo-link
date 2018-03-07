@@ -2,8 +2,11 @@
 
 ### vNEXT
 
+### v0.2.3
+- correct the warning message on no fetch found to node-fetch[PR#526](https://github.com/apollographql/apollo-link/pull/526)
+
 ### v0.2.2
-- udate apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
+- update apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
 
 ### v0.2.1
 - Apollo link upgrade

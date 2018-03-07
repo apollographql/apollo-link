@@ -2,6 +2,9 @@
 
 ### vNext
 
+### 1.2.1
+- Fix typing of Operation parameters [PR#525](https://github.com/apollographql/apollo-link/pull/525)
+
 ### 1.2.0
 - support passing data and errors back as data to next link
 

@@ -258,7 +258,7 @@ export const serializeFetchParameter = (p, label) => {
 //selects "/graphql" by default
 export const selectURI = (
   operation,
-  fallbackURI?: string | ((Operation) => string),
+  fallbackURI?: string | ((operation: Operation) => string),
 ) => {
   const context = operation.getContext();
   const contextURI = context.uri;
