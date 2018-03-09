@@ -42,7 +42,6 @@
   },
   "dependencies": {
     "@types/graphql": "0.12.6",
-    "@types/node": "^9.4.6",
     "apollo-utilities": "^1.0.0",
     "zen-observable-ts": "^0.8.6"
   },
@@ -51,6 +50,7 @@
   },
   "devDependencies": {
     "@types/jest": "21.1.10",
+    "@types/node": "^9.4.6",
     "browserify": "16.1.1",
     "graphql": "0.13.2",
     "graphql-tag": "2.8.0",
