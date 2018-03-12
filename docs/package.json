@@ -21,8 +21,8 @@
   },
   "scripts": {
     "start": "hexo serve",
-    "develop-theme": "nodemon -x 'rm db.json; hexo serve' -w assets/ -w code/ -w source/ -w themes/ -w scripts/",
     "build": "hexo generate",
+    "develop-theme": "nodemon -x 'rm db.json; hexo serve' -w assets/ -w code/ -w source/ -w themes/ -w scripts/",
     "clean": "hexo clean",
     "test": "npm run clean; npm run build"
   }
