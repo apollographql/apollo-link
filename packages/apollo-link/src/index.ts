@@ -8,6 +8,5 @@ export {
 } from './linkUtils';
 export * from './types';
 
-import * as Observable from 'zen-observable';
-
+import Observable from 'zen-observable-ts';
 export { Observable };

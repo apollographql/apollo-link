@@ -1,35 +1,35 @@
 {
   "name": "apollo-link-http-common",
-  "version": "0.2.0",
-  "description":
-    "Http utilities for Apollo Link shared across all links using http",
+  "version": "0.2.3",
+  "description": "Http utilities for Apollo Link shared across all links using http",
   "main": "./lib/bundle.umd.js",
   "module": "./lib/index.js",
   "jsnext:main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "scripts": {
-    "build:browser":
-      "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-link && npm run minify:browser",
+    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-link && npm run minify:browser",
     "build": "tsc -p .",
     "bundle": "rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
     "coverage": "jest --coverage",
     "filesize": "npm run build && npm run build:browser",
-    "lint":
-      "tslint --type-check -p tsconfig.json -c ../../tslint.json src/*.ts",
-    "minify:browser":
-      "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
+    "lint": "tslint --type-check -p tsconfig.json -c ../../tslint.json src/*.ts",
+    "minify:browser": "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
     "postbuild": "npm run bundle",
     "prebuild": "npm run clean",
     "prepublishOnly": "npm run clean && npm run build",
     "test": "jest",
     "watch": "tsc -w -p . & rollup -c -w"
   },
-  "keywords": ["apollo", "http", "network"],
+  "keywords": [
+    "apollo",
+    "http",
+    "network"
+  ],
   "author": "Evans Hauser",
   "license": "MIT",
   "dependencies": {
-    "apollo-link": "^1.1.0"
+    "apollo-link": "^1.2.1"
   },
   "peerDependencies": {
     "graphql": "^0.11.0 || ^0.12.0 || ^0.13.0"
@@ -63,6 +63,12 @@
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "json"]
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ],
+    "mapCoverage": true
   }
 }

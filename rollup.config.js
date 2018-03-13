@@ -1,14 +1,17 @@
+import sourcemaps from 'rollup-plugin-sourcemaps';
+
 export const globals = {
   // Apollo
   'apollo-client': 'apollo.core',
   'apollo-link': 'apolloLink.core',
   'apollo-link-batch': 'apolloLink.batch',
   'apollo-utilities': 'apollo.utilities',
+  'apollo-link-http-common': 'apolloLink.httpCommon',
+  'zen-observable-ts': 'apolloLink.zenObservable',
 
   //GraphQL
   'graphql/language/printer': 'printer',
 
-  //zen-observable
   'zen-observable': 'Observable',
 };
 
@@ -24,6 +27,7 @@ export default name => ({
   },
   external: Object.keys(globals),
   onwarn,
+  plugins: [sourcemaps()],
 });
 
 export function onwarn(message) {

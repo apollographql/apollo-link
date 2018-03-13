@@ -133,6 +133,7 @@ class RetryableOperation<TValue = any> {
   private onNext = (value: any) => {
     this.values.push(value);
     for (const observer of this.observers) {
+      if (!observer) continue;
       observer.next(value);
     }
   };
@@ -140,21 +141,28 @@ class RetryableOperation<TValue = any> {
   private onComplete = () => {
     this.complete = true;
     for (const observer of this.observers) {
+      if (!observer) continue;
       observer.complete();
     }
   };
 
-  private onError = error => {
+  private onError = async error => {
     this.retryCount += 1;
 
     // Should we retry?
-    if (this.retryIf(this.retryCount, this.operation, error)) {
+    const shouldRetry = await this.retryIf(
+      this.retryCount,
+      this.operation,
+      error,
+    );
+    if (shouldRetry) {
       this.scheduleRetry(this.delayFor(this.retryCount, this.operation, error));
       return;
     }
 
     this.error = error;
     for (const observer of this.observers) {
+      if (!observer) continue;
       observer.error(error);
     }
   };

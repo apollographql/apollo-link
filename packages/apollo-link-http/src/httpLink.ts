@@ -7,14 +7,23 @@ import {
   selectHttpOptionsAndBody,
   createSignalIfSupported,
   fallbackHttpConfig,
+  Body,
   HttpOptions,
   UriFunction as _UriFunction,
 } from 'apollo-link-http-common';
+import { DefinitionNode } from 'graphql';
 
 export namespace HttpLink {
   //TODO Would much rather be able to export directly
   export interface UriFunction extends _UriFunction {}
-  export interface Options extends HttpOptions {}
+  export interface Options extends HttpOptions {
+    /**
+     * If set to true, use the HTTP GET method for query operations. Mutations
+     * will still use the method specified in fetchOptions.method (which defaults
+     * to POST).
+     */
+    useGETForQueries?: boolean;
+  }
 }
 
 // For backwards compatibility.
@@ -27,6 +36,7 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
     // use default global fetch is nothing passed in
     fetch: fetcher,
     includeExtensions,
+    useGETForQueries,
     ...requestOptions
   } = linkOptions;
 
@@ -70,61 +80,23 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
     const { controller, signal } = createSignalIfSupported();
     if (controller) (options as any).signal = signal;
 
+    // If requested, set method to GET if there are no mutations.
+    const definitionIsMutation = (d: DefinitionNode) => {
+      return d.kind === 'OperationDefinition' && d.operation === 'mutation';
+    };
+    if (
+      useGETForQueries &&
+      !operation.query.definitions.some(definitionIsMutation)
+    ) {
+      options.method = 'GET';
+    }
+
     if (options.method === 'GET') {
-      // Implement the standard HTTP GET serialization, plus 'extensions'. Note
-      // the extra level of JSON serialization!
-      const queryParams = [];
-      const addQueryParam = (key: string, value: string) => {
-        queryParams.push(`${key}=${encodeURIComponent(value)}`);
-      };
-
-      if ('query' in body) {
-        addQueryParam('query', body.query);
+      const { newURI, parseError } = rewriteURIForGET(chosenURI, body);
+      if (parseError) {
+        return fromError(parseError);
       }
-      if (body.operationName) {
-        addQueryParam('operationName', body.operationName);
-      }
-      if (body.variables) {
-        let serializedVariables;
-        try {
-          serializedVariables = serializeFetchParameter(
-            body.variables,
-            'Variables map',
-          );
-        } catch (parseError) {
-          return fromError(parseError);
-        }
-        addQueryParam('variables', serializedVariables);
-      }
-      if (body.extensions) {
-        let serializedExtensions;
-        try {
-          serializedExtensions = serializeFetchParameter(
-            body.extensions,
-            'Extensions map',
-          );
-        } catch (parseError) {
-          return fromError(parseError);
-        }
-        addQueryParam('extensions', serializedExtensions);
-      }
-
-      // Reconstruct the URI with added query params.
-      // XXX This assumes that the URI is well-formed and that it doesn't
-      //     already contain any of these query params. We could instead use the
-      //     URL API and take a polyfill (whatwg-url@6) for older browsers that
-      //     don't support URLSearchParams. Note that some browsers (and
-      //     versions of whatwg-url) support URL but not URLSearchParams!
-      let fragment = '',
-        preFragment = chosenURI;
-      const fragmentStart = chosenURI.indexOf('#');
-      if (fragmentStart !== -1) {
-        fragment = chosenURI.substr(fragmentStart);
-        preFragment = chosenURI.substr(0, fragmentStart);
-      }
-      const queryParamsPrefix = preFragment.indexOf('?') === -1 ? '?' : '&';
-      chosenURI =
-        preFragment + queryParamsPrefix + queryParams.join('&') + fragment;
+      chosenURI = newURI;
     } else {
       try {
         (options as any).body = serializeFetchParameter(body, 'Payload');
@@ -153,7 +125,9 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
           // fire the next observer before calling error
           // this gives apollo-client (and react-apollo) the `graphqlErrors` and `networErrors`
           // to pass to UI
-          if (err.result && err.result.errors) {
+          // this should only happen if we *also* have data as part of the response key per
+          // the spec
+          if (err.result && err.result.errors && err.result.data) {
             // if we dont' call next, the UI can only show networkError because AC didn't
             // get andy graphqlErrors
             // this is graphql execution result info (i.e errors and possibly data)
@@ -193,6 +167,66 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
     });
   });
 };
+
+// For GET operations, returns the given URI rewritten with parameters, or a
+// parse error.
+function rewriteURIForGET(chosenURI: string, body: Body) {
+  // Implement the standard HTTP GET serialization, plus 'extensions'. Note
+  // the extra level of JSON serialization!
+  const queryParams = [];
+  const addQueryParam = (key: string, value: string) => {
+    queryParams.push(`${key}=${encodeURIComponent(value)}`);
+  };
+
+  if ('query' in body) {
+    addQueryParam('query', body.query);
+  }
+  if (body.operationName) {
+    addQueryParam('operationName', body.operationName);
+  }
+  if (body.variables) {
+    let serializedVariables;
+    try {
+      serializedVariables = serializeFetchParameter(
+        body.variables,
+        'Variables map',
+      );
+    } catch (parseError) {
+      return { parseError };
+    }
+    addQueryParam('variables', serializedVariables);
+  }
+  if (body.extensions) {
+    let serializedExtensions;
+    try {
+      serializedExtensions = serializeFetchParameter(
+        body.extensions,
+        'Extensions map',
+      );
+    } catch (parseError) {
+      return { parseError };
+    }
+    addQueryParam('extensions', serializedExtensions);
+  }
+
+  // Reconstruct the URI with added query params.
+  // XXX This assumes that the URI is well-formed and that it doesn't
+  //     already contain any of these query params. We could instead use the
+  //     URL API and take a polyfill (whatwg-url@6) for older browsers that
+  //     don't support URLSearchParams. Note that some browsers (and
+  //     versions of whatwg-url) support URL but not URLSearchParams!
+  let fragment = '',
+    preFragment = chosenURI;
+  const fragmentStart = chosenURI.indexOf('#');
+  if (fragmentStart !== -1) {
+    fragment = chosenURI.substr(fragmentStart);
+    preFragment = chosenURI.substr(0, fragmentStart);
+  }
+  const queryParamsPrefix = preFragment.indexOf('?') === -1 ? '?' : '&';
+  const newURI =
+    preFragment + queryParamsPrefix + queryParams.join('&') + fragment;
+  return { newURI };
+}
 
 export class HttpLink extends ApolloLink {
   public requester: RequestHandler;
