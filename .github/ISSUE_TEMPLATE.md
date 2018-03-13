@@ -31,6 +31,7 @@ While not necessary, you can help organize our issues by labeling this issue whe
 
 - [ ] has-reproduction
 - [ ] feature
+- [ ] docs
 - [ ] blocking
 - [ ] good first issue
 
