@@ -404,7 +404,7 @@ import { withClientState } from 'apollo-link-state';
 
 import currentUser from './resolvers/user';
 import cameraRoll from './resolvers/camera';
-import networkStatus from './resolvers/camera';
+import networkStatus from './resolvers/network';
 
 const stateLink = withClientState({
   cache,
