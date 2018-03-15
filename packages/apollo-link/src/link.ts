@@ -1,4 +1,4 @@
-import * as Observable from 'zen-observable';
+import Observable from 'zen-observable-ts';
 
 import {
   GraphQLRequest,
@@ -97,6 +97,7 @@ export class ApolloLink {
   public static empty = empty;
   public static from = from;
   public static split = split;
+  public static execute = execute;
 
   public split(
     test: (op: Operation) => boolean,

@@ -1,4 +1,4 @@
-import * as Observable from 'zen-observable';
+import Observable from 'zen-observable-ts';
 import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
 
@@ -427,7 +427,8 @@ describe('Link static library', () => {
         },
       };
       const chain = ApolloLink.from([new MockLink(() => Observable.of(data))]);
-      const observable = execute(chain, uniqueOperation);
+      // Smoke tests execute as a static method
+      const observable = ApolloLink.execute(chain, uniqueOperation);
       observable.subscribe({
         next: actualData => {
           expect(data).toEqual(actualData);

@@ -17,7 +17,7 @@ const link = new BatchLink({
 ```
 
 ## Options
-Batch Link takes an object with three options on it to customize the behavoir of the link. The only required option is the batchHandler function
+Batch Link takes an object with three options on it to customize the behavior of the link. The only required option is the batchHandler function
 
 |name|value|default|required|
 |---|---|---|---|

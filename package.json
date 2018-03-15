@@ -16,9 +16,10 @@
     "coverage": "lerna run -- coverage",
     "coverage:upload": "codecov",
     "danger": "danger run --verbose",
-    "predeploy": "npm run build",
+    "predeploy": "npm run bootstrap",
     "deploy": "lerna publish -m \"chore: Publish\" --independent",
-    "watch": "lerna run --parallel watch"
+    "watch":
+      "trap \"kill 0\" SIGINT; for f in `ls packages`; do (cd `pwd`/packages/$f && [[ -e package.json ]] && npm run watch) & done; "
   },
   "bundlesize": [
     {
@@ -29,12 +30,12 @@
     {
       "name": "apollo-link-batch",
       "path": "./packages/apollo-link-batch/lib/bundle.min.js",
-      "maxSize": "1.3 Kb"
+      "maxSize": "1.5 Kb"
     },
     {
       "name": "apollo-link-batch-http",
       "path": "./packages/apollo-link-batch-http/lib/bundle.min.js",
-      "maxSize": "6.7 Kb"
+      "maxSize": "6.8 Kb"
     },
     {
       "name": "apollo-link-dedup",
@@ -49,7 +50,7 @@
     {
       "name": "apollo-link-http",
       "path": "./packages/apollo-link-http/lib/bundle.min.js",
-      "maxSize": "4.5 Kb"
+      "maxSize": "6 Kb"
     },
     {
       "name": "apollo-link-polling",
@@ -59,7 +60,7 @@
     {
       "name": "apollo-link-retry",
       "path": "./packages/apollo-link-retry/lib/bundle.min.js",
-      "maxSize": "2 Kb"
+      "maxSize": "2.5 Kb"
     },
     {
       "name": "apollo-link-ws",
@@ -87,14 +88,15 @@
   "dependencies": {},
   "devDependencies": {
     "@types/zen-observable": "0.5.3",
-    "bundlesize": "0.15.3",
+    "bundlesize": "0.16.0",
     "codecov": "3.0.0",
-    "danger": "1.2.0",
-    "lerna": "2.8.0",
-    "lint-staged": "6.1.0",
+    "danger": "3.1.7",
+    "lerna": "2.9.0",
+    "lint-staged": "6.1.1",
     "pre-commit": "1.2.2",
     "prettier": "1.10.2",
+    "rollup-plugin-sourcemaps": "^0.4.2",
     "ts-jest": "21.2.4",
-    "typescript": "2.6.2"
+    "typescript": "2.7.2"
   }
 }
