@@ -371,6 +371,13 @@ You can write also mutations with the apollo-link-rest, for example:
   }
 ```
 
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+As you start using `apollo-link-rest` you may run into some standard issues that we thought we could help you solve.
+
+* `Missing field __typename in ...` -- If you see this, it's possible you haven't provided `type:` to the [`@rest(...)`](#rest)-directive. Alternately you need to set up a [`typePatcher`](#options.typePatcher)
+* `Headers is undefined` -- If you see something like this, you're running in a browser or other Javascript environment that does not yet support the full specification for the `Headers` API.
+
 <h2 id="examples">Example apps</h2>
 
 To get you started, here are some example apps:
