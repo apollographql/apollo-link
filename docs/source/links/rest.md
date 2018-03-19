@@ -161,7 +161,7 @@ const restLink = new RestLink({
       patchDeeper: RestLink.FunctionalTypePatcher,
     ): any => {
       if (data.results != null) {
-        data.results = {...data.results, __typename: "Planet" };
+        data.results = data.results.map( planet => { __typename: "Planet", ...planet });
       }
       return data;
     },
