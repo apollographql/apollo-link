@@ -1,7 +1,7 @@
 # Change log
 
 ### vNEXT
-
+- fix to stop combining require and exoprt
 ### 0.8.8
 - revert to zen-observable 0.7
 
