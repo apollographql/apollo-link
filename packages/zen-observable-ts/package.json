@@ -54,6 +54,6 @@
     "moduleFileExtensions": ["ts", "tsx", "js", "json"]
   },
   "dependencies": {
-    "zen-observable": "^0.7.0"
+    "zen-observable": "^0.8.0"
   }
 }
