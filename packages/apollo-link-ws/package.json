@@ -44,10 +44,10 @@
     "subscriptions-transport-ws": "^0.9.0"
   },
   "devDependencies": {
-    "@types/graphql": "0.12.4",
+    "@types/graphql": "0.12.6",
     "@types/jest": "21.1.10",
     "browserify": "16.1.1",
-    "graphql": "0.13.1",
+    "graphql": "0.13.2",
     "graphql-tag": "2.8.0",
     "jest": "21.2.1",
     "rimraf": "2.6.1",
