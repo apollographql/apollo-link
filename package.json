@@ -88,7 +88,7 @@
   "dependencies": {},
   "devDependencies": {
     "@types/zen-observable": "0.5.3",
-    "bundlesize": "0.16.0",
+    "bundlesize": "0.17.0",
     "codecov": "3.0.0",
     "danger": "3.3.2",
     "lerna": "2.9.0",
