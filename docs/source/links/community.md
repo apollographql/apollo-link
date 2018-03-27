@@ -24,3 +24,4 @@ Thank you to our amazing community members who have created custom Apollo Links!
 - [apollo-link-serialize](https://github.com/helfer/apollo-link-serialize) by [@helfer](https://github.com/helfer): Serializes requests by key to ensure execution order
 - [apollo-link-debounce](https://github.com/helfer/apollo-link-debounce) by [@helfer](https://github.com/helfer): Debounce requests made within an interval
 - [apollo-link-defer](https://github.com/leadiq/apollo-link-defer) by [@leadiq](https://github.com/leadiq): Prepare links asynchronously, even after `ApolloClient` construction
+- [apollo-link-firebase](https://github.com/Canner/apollo-link-firebase) by [@canner](https://github.com/Canner): Query Firebase with Apollo
