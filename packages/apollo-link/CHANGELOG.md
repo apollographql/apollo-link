@@ -1,9 +1,10 @@
 # Change log
 
 ### vNEXT
+- export graphql types and add @types/graphql as a regular dependency [PR#576](https://github.com/apollographql/apollo-link/pull/576)
 
 ### 1.2.1
-- udate apollo link with zen-observable-ts to remove import issues [PR#515](https://github.com/apollographql/apollo-link/pull/515)
+- update apollo link with zen-observable-ts to remove import issues [PR#515](https://github.com/apollographql/apollo-link/pull/515)
 
 ### 1.2.0
 - Add `fromError` Observable helper

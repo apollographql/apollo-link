@@ -4,7 +4,7 @@
     "lib": ["es6", "dom"],
     "module": "es2015",
     "moduleResolution": "node",
-    "removeComments": true,
+    "removeComments": false,
     "sourceMap": true,
     "declaration": true,
     "noImplicitAny": false,
