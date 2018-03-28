@@ -3,8 +3,6 @@ title: apollo-link-rest
 description: Call your REST APIs inside your GraphQL queries.
 ---
 
-[**Read the announcement post! (to be published soon) 🎉**](https://dev-blog.apollodata.com/)
-
 Calling REST APIs from a GraphQL client opens the benefits GraphQL for more people, whether:
 
 * You are in a front-end developer team that wants to try GraphQL without asking for the backend team to implement a GraphQL server.
@@ -12,7 +10,7 @@ Calling REST APIs from a GraphQL client opens the benefits GraphQL for more peop
 * You have an existing codebase, but you're looking to evaluate whether GraphQL can work for your needs.
 * You have a large codebase, and the GraphQL migration is happening on the backend, but you want to use GraphQL *now* without waiting!
 
-With `apollo-link-rest`, you can now call your endpoints inside your GraphQL queries and have all your data managed by [`ApolloClient`](../../react/basics/setup.html#ApolloClient). `apollo-link-rest` is suitable for just dipping your toes in the water, or doing a full-steam ahead integration, and then later on migrating to a backend-driven GraphQL experience. `apollo-link-rest` combines well with other links such as [`apollo-link-context`](./context.html), [`apollo-link-state`](./state.html), and others!
+With `apollo-link-rest`, you can now call your endpoints inside your GraphQL queries and have all your data managed by [`ApolloClient`](../../react/basics/setup.html#ApolloClient). `apollo-link-rest` is suitable for just dipping your toes in the water, or doing a full-steam ahead integration, and then later on migrating to a backend-driven GraphQL experience. `apollo-link-rest` combines well with other links such as [`apollo-link-context`](./context.html), [`apollo-link-state`](./state.html), and others! _For complex back-ends, you may want to consider consider using [`apollo-server`](/docs/apollo-server/) which you can try out at [launchpad.graphql.com](https://launchpad.graphql.com/)_
 
 You can start using ApolloClient in your app today, let's see how!
 
@@ -24,7 +22,7 @@ To get started, you need first to install apollo-client:
 npm install --save apollo-client
 ```
 
-For an apollo client to work, you need a link and a cache, [more infos here](/docs/react/basics/setup.html#installation). Let's install the default in memory cache:
+For an apollo client to work, you need a link and a cache, [more info here](/docs/react/basics/setup.html#installation). Let's install the default in memory cache:
 
 ```bash
 npm install --save apollo-cache-inmemory
@@ -59,7 +57,7 @@ Now it is time to write our first query, for this you need to install the `graph
 npm install graphql-tag --save
 ```
 
-Defining a query is pretty straightforward:
+Defining a query is straightforward:
 
 ```js
 const query = gql`
@@ -333,6 +331,8 @@ mutation encryptedPost(
 <h2 id="export">@export directive</h2>
 
 The export directive re-exposes a field for use in a later (nested) query. These are the same semantics that will be supported on the server, but when used in a `RestLink` you can use the exported variables for further calls (i.e. waterfall requests from nested fields)
+
+ _Note: If you're constantly using @export you may prefer to take a look at [`apollo-server`](/docs/apollo-server/) which you can try out at [launchpad.graphql.com](https://launchpad.graphql.com/)_
 
 <h3 id="export.arguments">Arguments</h3>
 
