@@ -23,14 +23,17 @@
   },
   "homepage": "https://github.com/apollographql/apollo-link#readme",
   "scripts": {
-    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-utilities --i graphql --i zen-observable-ts && npm run minify:browser",
+    "build:browser":
+      "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-utilities --i graphql --i zen-observable-ts && npm run minify:browser",
     "build": "tsc -p .",
     "bundle": "rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
     "coverage": "jest --coverage",
     "filesize": "npm run build && npm run build:browser",
-    "lint": "tslint --type-check -p tsconfig.json -c ../../tslint.json src/*.ts",
-    "minify:browser": "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
+    "lint":
+      "tslint --type-check -p tsconfig.json -c ../../tslint.json src/*.ts",
+    "minify:browser":
+      "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
     "postbuild": "npm run bundle",
     "prebuild": "npm run clean",
     "prepublishOnly": "npm run clean && npm run build",
@@ -38,6 +41,7 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
+    "@types/graphql": "0.12.6",
     "@types/node": "^9.4.6",
     "apollo-utilities": "^1.0.0",
     "zen-observable-ts": "^0.8.6"
@@ -46,7 +50,6 @@
     "graphql": "^0.11.3 || ^0.12.3 || ^0.13.0"
   },
   "devDependencies": {
-    "@types/graphql": "0.12.6",
     "@types/jest": "21.1.10",
     "browserify": "16.1.1",
     "graphql": "0.13.2",
@@ -64,12 +67,7 @@
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "json"
-    ],
+    "moduleFileExtensions": ["ts", "tsx", "js", "json"],
     "mapCoverage": true
   }
 }
