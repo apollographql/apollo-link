@@ -32,6 +32,8 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
+      #undo the changes made by npm install
+      - run: git checkout package.json
       - run: npm run lint-check
 
   Docs:
