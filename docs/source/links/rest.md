@@ -223,7 +223,7 @@ const authRestLink = setContext(async () => {
 const restLink = new RestLink({ uri: "uri" });
 
 const client = new ApolloClient({
-  link: ApolloLink.from([authRestLink, restLink ]),
+  link: ApolloLink.from([authRestLink, restLink]),
   cache: new InMemoryCache(),
 });
 ```
@@ -239,7 +239,9 @@ const httpLink = createHttpLink({ uri: "server.com/graphql" });
 const restLink = new RestLink({ uri: "api.server.com" });
 
 const client = new ApolloClient({
-  link: ApolloLink.from([authLink, restLink, httpLink, retryLink, errorLink]),
+  link: ApolloLink.from([authLink, restLink, errorLink, retryLink, httpLink]),
+  // Note: httpLink is terminating so must be last, while retry & error wrap the links to their right
+  //       state & context links should happen before (to the left of) restLink.
   cache: new InMemoryCache()
 });
 ```
