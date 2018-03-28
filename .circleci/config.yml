@@ -9,8 +9,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm
           command: npm install
@@ -25,8 +24,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm
           command: npm install
@@ -42,9 +40,9 @@ jobs:
       - checkout
       - restore_cache:
         keys:
-          - dependency-cache-{{ checksum "package.json" }}-{{ checksum "./docs/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ checksum "./docs/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm
           command: npm install
@@ -64,8 +62,8 @@ jobs:
       - checkout
       - restore_cache:
         keys:
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm
           command: npm install
@@ -97,8 +95,8 @@ jobs:
       - checkout
       - restore_cache:
         keys:
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm
           command: npm install
@@ -117,9 +115,9 @@ jobs:
       - checkout
       - restore_cache:
         keys:
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm
           command: npm install
@@ -127,6 +125,7 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}
           paths:
             - ./node_modules
+            - ./packages/apoll-link/node_modules
       - run:
           name: lerna-bootstrap
           command: npx lerna bootstrap --scope=apollo-link --include-filtered-dependencies
@@ -149,14 +148,14 @@ jobs:
       - checkout
       - restore_cache:
         keys:
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm
           command: npm install
       - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}
           paths:
             - ./node_modules
       - run:
@@ -181,14 +180,14 @@ jobs:
       - checkout
       - restore_cache:
         keys:
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm
           command: npm install
       - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}
           paths:
             - ./node_modules
       - run:
@@ -213,9 +212,9 @@ jobs:
       - checkout
       - restore_cache:
         keys:
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-context/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-context/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm
           command: npm install
@@ -245,9 +244,9 @@ jobs:
       - checkout
       - restore_cache:
         keys:
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm
           command: npm install
@@ -274,9 +273,9 @@ jobs:
       - checkout
       - restore_cache:
         keys:
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-error/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-error/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm
           command: npm install
@@ -306,9 +305,9 @@ jobs:
       - checkout
       - restore_cache:
         keys:
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm
           command: npm install
@@ -335,9 +334,9 @@ jobs:
       - checkout
       - restore_cache:
         keys:
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-http/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-http/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm
           command: npm install
@@ -367,9 +366,9 @@ jobs:
       - checkout
       - restore_cache:
         keys:
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm
           command: npm install
@@ -399,9 +398,9 @@ jobs:
       - checkout
       - restore_cache:
         keys:
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm
           command: npm install
@@ -431,9 +430,9 @@ jobs:
       - checkout
       - restore_cache:
         keys:
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm
           command: npm install
@@ -463,9 +462,9 @@ jobs:
       - checkout
       - restore_cache:
         keys:
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm
           command: npm install
@@ -495,9 +494,9 @@ jobs:
       - checkout
       - restore_cache:
         keys:
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
-          - dependency-cache-{{ checksum "package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}-{{ "./packages/apollo-link-context/package.json" }}-{{ "./packages/apollo-link-dedup/package.json" }}-{{ "./packages/apollo-link-error/package.json" }}-{{ "./packages/apollo-link-http/package.json" }}-{{ "./packages/apollo-link-http-common/package.json" }}-{{ "./packages/apollo-link-polling/package.json" }}-{{ "./packages/apollo-link-retry/package.json" }}-{{ "./packages/apollo-link-schema/package.json" }}-{{ "./packages/apollo-link-ws/package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/zen-observable-ts/package.json" }}
+        - dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm
           command: npm install
