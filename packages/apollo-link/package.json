@@ -49,12 +49,12 @@
     "graphql": "^0.11.3 || ^0.12.3 || ^0.13.0"
   },
   "devDependencies": {
-    "@types/jest": "21.1.10",
+    "@types/jest": "22.2.2",
     "@types/node": "^9.4.6",
     "browserify": "16.1.1",
     "graphql": "0.13.2",
     "graphql-tag": "2.8.0",
-    "jest": "21.2.1",
+    "jest": "22.4.3",
     "rimraf": "2.6.1",
     "rollup": "0.57.1",
     "ts-jest": "21.2.4",
