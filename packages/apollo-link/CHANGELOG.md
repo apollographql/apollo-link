@@ -2,6 +2,7 @@
 
 ### vNEXT
 - export graphql types and add @types/graphql as a regular dependency [PR#576](https://github.com/apollographql/apollo-link/pull/576)
+- moved @types/node to dev dependencies in package.josn to avoid collisions with other projects. [PR#540](https://github.com/apollographql/apollo-link/pull/540)
 
 ### 1.2.1
 - update apollo link with zen-observable-ts to remove import issues [PR#515](https://github.com/apollographql/apollo-link/pull/515)
