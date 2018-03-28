@@ -248,6 +248,29 @@ jobs:
       - store_artifacts:
           path: reports/junit
 
+  Apollo Link Polling:
+    docker: [ { image: 'circleci/node:8' } ]
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: install-npm
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: Jest suite
+          command: npx lerna run --scope=apollo-link-polling -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
+          environment:
+            JEST_JUNIT_OUTPUT: "../../reports/junit/js-test-results.xml"
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit
+
   Apollo Link Retry:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
@@ -360,4 +383,4 @@ workflows:
       - Apollo Link Retry
       - Apollo Link Schema
       - Apollo Link Web Socket
-      - Zen Obervable Typescript
+      - Zen Observable Typescript
