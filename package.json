@@ -12,6 +12,8 @@
     "lint-fix":
       "prettier --trailing-comma all --single-quote --write \"packages/*/{src,tests,test,benchmark}/**/*.{j,t}s*\"",
     "lint-staged": "lint-staged",
+    "lint-check":
+      "prettier-check --single-quote --trailing-comma all \"{package.json,packages/*/package.json,packages/*/{src,__tests__}/**/*.ts}\"",
     "filesize": "lerna run -- filesize && bundlesize",
     "type-check": "lerna run -- type-check",
     "coverage": "lerna run -- coverage",
@@ -85,7 +87,7 @@
     ],
     "*.json*": ["prettier --write", "git add"]
   },
-  "pre-commit": "lint-staged",
+  "pre-commit": ["lint-staged", "lint-check"],
   "dependencies": {},
   "devDependencies": {
     "@types/zen-observable": "0.5.3",
@@ -98,6 +100,7 @@
     "lint-staged": "6.1.1",
     "pre-commit": "1.2.2",
     "prettier": "1.11.1",
+    "prettier-check": "^2.0.0",
     "rollup": "^0.57.1",
     "rollup-plugin-sourcemaps": "0.4.2",
     "ts-jest": "21.2.4",

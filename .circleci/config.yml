@@ -19,6 +19,12 @@ jobs:
             - ./node_modules
       - run: npm run danger
 
+  Prettier Check:
+    docker: [ { image: 'circleci/node:8' } ]
+    steps:
+      - checkout
+      - run: npm run lint-check
+
   Docs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
@@ -447,6 +453,7 @@ workflows:
     jobs:
       - Danger
       - Docs
+      - Prettier Check
       - Filesize
       # XXX fix issues and turn this back on
       # - Typecheck
