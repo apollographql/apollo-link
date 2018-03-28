@@ -47,6 +47,9 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
+      - run:
+          name: lerna-bootstrap
+          command: npx lerna bootstrap
       - run: npm run filesize
 
   Typecheck:
@@ -62,6 +65,9 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
+      - run:
+          name: lerna-bootstrap
+          command: npx lerna bootstrap
       - run: npm run type-check
 
   Apollo Link:
@@ -77,6 +83,12 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
+      - run:
+          name: lerna-bootstrap
+          command: npx lerna bootstrap --scope=apollo-link --include-filtered-dependencies
+      - run:
+          name: lerna-build
+          command: npx lerna run --scope=apollo-link --include-filtered-dependencies -- build
       - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -101,6 +113,12 @@ jobs:
           paths:
             - ./node_modules
       - run:
+          name: lerna-bootstrap
+          command: npx lerna bootstrap --scope=apollo-link-batch-http --include-filtered-dependencies
+      - run:
+          name: lerna-build
+          command: npx lerna run --scope=apollo-link-batch-http --include-filtered-dependencies -- build
+      - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-batch-http -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
           environment:
@@ -123,6 +141,12 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
+      - run:
+          name: lerna-bootstrap
+          command: npx lerna bootstrap --scope=apollo-link-batch --include-filtered-dependencies
+      - run:
+          name: lerna-build
+          command: npx lerna run --scope=apollo-link-batch --include-filtered-dependencies -- build
       - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-batch -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -147,6 +171,12 @@ jobs:
           paths:
             - ./node_modules
       - run:
+          name: lerna-bootstrap
+          command: npx lerna bootstrap --scope=apollo-link-context --include-filtered-dependencies
+      - run:
+          name: lerna-build
+          command: npx lerna run --scope=apollo-link-context --include-filtered-dependencies -- build
+      - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-context -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
           environment:
@@ -169,6 +199,9 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
+      - run:
+          name: lerna-bootstrap
+          command: npx lerna bootstrap --scope=apollo-link-dedup
       - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-dedup -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -193,6 +226,12 @@ jobs:
           paths:
             - ./node_modules
       - run:
+          name: lerna-bootstrap
+          command: npx lerna bootstrap --scope=apollo-link-error --include-filtered-dependencies
+      - run:
+          name: lerna-build
+          command: npx lerna run --scope=apollo-link-error --include-filtered-dependencies -- build
+      - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-error -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
           environment:
@@ -215,6 +254,9 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
+      - run:
+          name: lerna-bootstrap
+          command: npx lerna bootstrap --scope=apollo-link-http-common
       - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-http-common -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -239,6 +281,12 @@ jobs:
           paths:
             - ./node_modules
       - run:
+          name: lerna-bootstrap
+          command: npx lerna bootstrap --scope=apollo-link-http --include-filtered-dependencies
+      - run:
+          name: lerna-build
+          command: npx lerna run --scope=apollo-link-http --include-filtered-dependencies -- build
+      - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-http -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
           environment:
@@ -261,6 +309,12 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
+      - run:
+          name: lerna-bootstrap
+          command: npx lerna bootstrap --scope=apollo-link-polling --include-filtered-dependencies
+      - run:
+          name: lerna-build
+          command: npx lerna run --scope=apollo-link-polling --include-filtered-dependencies -- build
       - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-polling -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -285,6 +339,12 @@ jobs:
           paths:
             - ./node_modules
       - run:
+          name: lerna-bootstrap
+          command: npx lerna bootstrap --scope=apollo-link-retry --include-filtered-dependencies
+      - run:
+          name: lerna-build
+          command: npx lerna run --scope=apollo-link-retry --include-filtered-dependencies -- build
+      - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-retry -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
           environment:
@@ -307,6 +367,12 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
+      - run:
+          name: lerna-bootstrap
+          command: npx lerna bootstrap --scope=apollo-link-schema --include-filtered-dependencies
+      - run:
+          name: lerna-build
+          command: npx lerna run --scope=apollo-link-schema --include-filtered-dependencies -- build
       - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-schema -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -331,6 +397,12 @@ jobs:
           paths:
             - ./node_modules
       - run:
+          name: lerna-bootstrap
+          command: npx lerna bootstrap --scope=apollo-link-ws --include-filtered-dependencies
+      - run:
+          name: lerna-build
+          command: npx lerna run --scope=apollo-link-ws --include-filtered-dependencies -- build
+      - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-ws -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
           environment:
@@ -353,6 +425,12 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
+      - run:
+          name: lerna-bootstrap
+          command: npx lerna bootstrap --scope=zen-observable-ts --include-filtered-dependencies
+      - run:
+          name: lerna-build
+          command: npx lerna run --scope=zen-observable-ts --include-filtered-dependencies -- build
       - run:
           name: Jest suite
           command: npx lerna run --scope=zen-observable-ts -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
