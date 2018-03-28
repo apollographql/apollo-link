@@ -18,7 +18,7 @@ export const Observable: {
     observable: Observable<R> | ZenObservable.ObservableLike<R> | ArrayLike<R>,
   ): Observable<R>;
   of<R>(...args: Array<R>): Observable<R>;
-} = <any>zenObservable;
+} = <any>zenObservable['default'];
 
 export interface Observable<T> {
   subscribe(
