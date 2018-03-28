@@ -339,3 +339,25 @@ jobs:
           path: reports/junit
       - store_artifacts:
           path: reports/junit
+
+workflows:
+  version: 2
+  Build and Test:
+    jobs:
+      - Danger
+      - Docs
+      - Filesize
+      # XXX fix issues and turn this back on
+      # - Typecheck
+      - Apollo Link
+      - Apollo Link Batch Http
+      - Apollo Link Batch
+      - Apollo Link Context
+      - Apollo Link Dedup
+      - Apollo Link Error
+      - Apollo Link Http Common
+      - Apollo Link Polling
+      - Apollo Link Retry
+      - Apollo Link Schema
+      - Apollo Link Web Socket
+      - Zen Obervable Typescript
