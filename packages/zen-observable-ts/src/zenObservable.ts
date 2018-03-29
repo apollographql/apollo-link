@@ -1,4 +1,4 @@
-import * as zenObservable from 'zen-observable';
+import zenObservable from 'zen-observable';
 
 namespace Observable {
 
@@ -18,7 +18,7 @@ export const Observable: {
     observable: Observable<R> | ZenObservable.ObservableLike<R> | ArrayLike<R>,
   ): Observable<R>;
   of<R>(...args: Array<R>): Observable<R>;
-} = <any>zenObservable['default'];
+} = <any>zenObservable;
 
 export interface Observable<T> {
   subscribe(
