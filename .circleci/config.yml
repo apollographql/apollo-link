@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  Build and Bootstrap:
+  Build:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
@@ -312,7 +312,7 @@ workflows:
   version: 2
   Build and Test:
     jobs:
-      - Build and Bootstrap
+      - Build
       - Danger:
           requires:
             - Build
