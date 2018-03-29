@@ -311,6 +311,9 @@ workflows:
       - Apollo Link Http Common:
           requires:
             - Build
+      - Apollo Link Http:
+          requires:
+            - Build
       - Apollo Link Polling:
           requires:
             - Build
