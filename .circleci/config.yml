@@ -95,14 +95,6 @@ jobs:
           at: .
       - run: npm run filesize
 
-  Typecheck:
-    docker: [ { image: 'circleci/node:8' } ]
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
-      - run: npm run type-check
-
   Apollo Link:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
@@ -328,8 +320,6 @@ workflows:
       - Filesize:
           requires:
             - Build
-      # XXX fix issues and turn this back on
-      # - Typecheck
       - Apollo Link:
           requires:
             - Build
