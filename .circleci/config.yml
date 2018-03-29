@@ -55,7 +55,7 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - attach_to_workspace:
+      - attach_workspace:
           at: .
       - run: npm run danger
 
@@ -63,7 +63,7 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - attach_to_workspace:
+      - attach_workspace:
           at: .
       - run: npm run lint-check
 
@@ -71,7 +71,7 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - attach_to_workspace:
+      - attach_workspace:
           at: .
       - restore_cache:
           keys:
@@ -89,7 +89,7 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - attach_to_workspace:
+      - attach_workspace:
           at: .
       - run: npm run filesize
 
@@ -97,7 +97,7 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - attach_to_workspace:
+      - attach_workspace:
           at: .
       - run: npm run type-check
 
@@ -105,7 +105,7 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - attach_to_workspace:
+      - attach_workspace:
           at: .
       - run:
           name: Jest suite
@@ -121,7 +121,7 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - attach_to_workspace:
+      - attach_workspace:
           at: .
       - run:
           name: Jest suite
@@ -137,7 +137,7 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - attach_to_workspace:
+      - attach_workspace:
           at: .
       - run:
           name: Jest suite
@@ -153,7 +153,7 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - attach_to_workspace:
+      - attach_workspace:
           at: .
       - run:
           name: Jest suite
@@ -169,7 +169,7 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - attach_to_workspace:
+      - attach_workspace:
           at: .
       - run:
           name: Jest suite
@@ -185,7 +185,7 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - attach_to_workspace:
+      - attach_workspace:
           at: .
       - run:
           name: Jest suite
@@ -201,7 +201,7 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - attach_to_workspace:
+      - attach_workspace:
           at: .
       - run:
           name: Jest suite
@@ -217,7 +217,7 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - attach_to_workspace:
+      - attach_workspace:
           at: .
       - run:
           name: Jest suite
@@ -233,7 +233,7 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - attach_to_workspace:
+      - attach_workspace:
           at: .
       - run:
           name: Jest suite
@@ -249,7 +249,7 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - attach_to_workspace:
+      - attach_workspace:
           at: .
       - run:
           name: Jest suite
@@ -265,7 +265,7 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - attach_to_workspace:
+      - attach_workspace:
           at: .
       - run:
           name: Jest suite
@@ -281,7 +281,7 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - attach_to_workspace:
+      - attach_workspace:
           at: .
       - run:
           name: Jest suite
@@ -297,7 +297,7 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - attach_to_workspace:
+      - attach_workspace:
           at: .
       - run:
           name: Jest suite
