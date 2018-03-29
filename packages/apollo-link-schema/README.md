@@ -3,10 +3,11 @@ title: apollo-link-schema
 description: Assists with mocking and server-side rendering
 ---
 
+The schema link provides a [graphql execution environment](http://graphql.org/graphql-js/graphql/#graphql), which allows you to perform GraphQL operations on a provided schema. This type of behavior is commonly used for server-side rendering(SSR) to avoid network calls and mocking data. While the schema link could provide graphql results on the client, currently the graphql execution layer is [too heavy weight](https://bundlephobia.com/result?p=graphql) for practical application. To unify your state management with client-side GraphQL operations, you should use [apollo-link-state](state.html), because it integrates with the Apollo Client cache and is much more lightweight.
+
 ## Installation
 
 `npm install apollo-link-schema --save`
-
 
 ## Usage
 
@@ -65,5 +66,5 @@ const graphqlClient = new ApolloClient({
 The `SchemaLink` constructor an be called with an object that has the following properties:
 
 * `schema`: an executable graphql schema
-* `rootValue`: the root value that is used (e.g. the user)
-* `context`: the context that is used (e.g. an object that stores all the data-fetching connectors)
+* `rootValue`: the root value that is passed to the resolvers (i.e. the first parameter for the [rootQuery](http://graphql.org/learn/execution/#root-fields-resolvers))
+* `context`: an object passed to the resolvers, following the [graphql specification](http://graphql.org/learn/execution/#root-fields-resolvers) or a function that accepts the opration and returns the resolver conext. The resolver context is could contain all the data-fetching connectors for an operation for example.

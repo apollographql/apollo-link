@@ -2,6 +2,10 @@ import { ApolloLink, Operation, FetchResult, Observable } from 'apollo-link';
 import { execute, GraphQLSchema } from 'graphql';
 
 export namespace SchemaLink {
+  export type ResolverContextFunction = (
+    operation: Operation,
+  ) => Record<string, any>;
+
   export interface Options {
     /**
      * The schema to generate responses from.
@@ -12,18 +16,25 @@ export namespace SchemaLink {
      * The root value to use when generating responses.
      */
     rootValue?: any;
+
+    /**
+     * A context to provide to resolvers declared within the schema.
+     */
+    context?: ResolverContextFunction | Record<string, any>;
   }
 }
 
 export class SchemaLink extends ApolloLink {
   public schema: GraphQLSchema;
   public rootValue: any;
+  public context: SchemaLink.ResolverContextFunction | any;
 
-  constructor({ schema, rootValue }: SchemaLink.Options) {
+  constructor({ schema, rootValue, context }: SchemaLink.Options) {
     super();
 
     this.schema = schema;
     this.rootValue = rootValue;
+    this.context = context;
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
@@ -33,7 +44,9 @@ export class SchemaLink extends ApolloLink {
           this.schema,
           operation.query,
           this.rootValue,
-          operation.getContext(),
+          typeof this.context === 'function'
+            ? this.context(operation)
+            : this.context,
           operation.variables,
           operation.operationName,
         ),

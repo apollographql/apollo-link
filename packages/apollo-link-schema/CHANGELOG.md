@@ -1,8 +1,7 @@
 # Change log
 
 ### vNEXT
-- pass context from operation into execute
-- remove `context` constructor param
+- allow context to be a function that accept an operation and returns a context for the resolvers [PR#363](https://github.com/apollographql/apollo-link/pull/363)
 
 ### 1.0.6
 - udate apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
