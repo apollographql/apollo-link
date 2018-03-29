@@ -37,25 +37,11 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - ./node_modules
-            - ./packages/apollo-link/node_modules
-            - ./packages/apollo-link-batch/node_modules
-            - ./packages/apollo-link-batch-http/node_modules
-            - ./packages/apollo-link-context/node_modules
-            - ./packages/apollo-link-dedup/node_modules
-            - ./packages/apollo-link-error/node_modules
-            - ./packages/apollo-link-http/node_modules
-            - ./packages/apollo-link-http-common/node_modules
-            - ./packages/apollo-link-polling/node_modules
-            - ./packages/apollo-link-retry/node_modules
-            - ./packages/apollo-link-schema/node_modules
-            - ./packages/apollo-link-ws/node_modules
-            - ./packages/zen-observable-ts/node_modules
+            - .
 
   Danger:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
-      - checkout
       - attach_workspace:
           at: .
       - run: npm run danger
@@ -63,7 +49,6 @@ jobs:
   Prettier Check:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
-      - checkout
       - attach_workspace:
           at: .
       - run: npm run lint-check
@@ -71,7 +56,6 @@ jobs:
   Docs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
-      - checkout
       - attach_workspace:
           at: .
       - restore_cache:
@@ -90,7 +74,6 @@ jobs:
   Filesize:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
-      - checkout
       - attach_workspace:
           at: .
       - run: npm run filesize
@@ -98,12 +81,11 @@ jobs:
   Apollo Link:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
-      - checkout
       - attach_workspace:
           at: .
       - run:
           name: Jest suite
-          command: npx lerna run --scope=apollo-link -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
+          command: npx lerna run --scope=apollo-link -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload
           environment:
             JEST_JUNIT_OUTPUT: "../../reports/junit/js-test-results.xml"
       - store_test_results:
@@ -114,12 +96,11 @@ jobs:
   Apollo Link Batch Http:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
-      - checkout
       - attach_workspace:
           at: .
       - run:
           name: Jest suite
-          command: npx lerna run --scope=apollo-link-batch-http -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
+          command: npx lerna run --scope=apollo-link-batch-http -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload
           environment:
             JEST_JUNIT_OUTPUT: "../../reports/junit/js-test-results.xml"
       - store_test_results:
@@ -130,12 +111,11 @@ jobs:
   Apollo Link Batch:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
-      - checkout
       - attach_workspace:
           at: .
       - run:
           name: Jest suite
-          command: npx lerna run --scope=apollo-link-batch -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
+          command: npx lerna run --scope=apollo-link-batch -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload
           environment:
             JEST_JUNIT_OUTPUT: "../../reports/junit/js-test-results.xml"
       - store_test_results:
@@ -146,12 +126,11 @@ jobs:
   Apollo Link Context:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
-      - checkout
       - attach_workspace:
           at: .
       - run:
           name: Jest suite
-          command: npx lerna run --scope=apollo-link-context -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
+          command: npx lerna run --scope=apollo-link-context -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload
           environment:
             JEST_JUNIT_OUTPUT: "../../reports/junit/js-test-results.xml"
       - store_test_results:
@@ -162,12 +141,11 @@ jobs:
   Apollo Link Dedup:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
-      - checkout
       - attach_workspace:
           at: .
       - run:
           name: Jest suite
-          command: npx lerna run --scope=apollo-link-dedup -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
+          command: npx lerna run --scope=apollo-link-dedup -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload
           environment:
             JEST_JUNIT_OUTPUT: "../../reports/junit/js-test-results.xml"
       - store_test_results:
@@ -178,12 +156,11 @@ jobs:
   Apollo Link Error:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
-      - checkout
       - attach_workspace:
           at: .
       - run:
           name: Jest suite
-          command: npx lerna run --scope=apollo-link-error -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
+          command: npx lerna run --scope=apollo-link-error -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload
           environment:
             JEST_JUNIT_OUTPUT: "../../reports/junit/js-test-results.xml"
       - store_test_results:
@@ -194,12 +171,11 @@ jobs:
   Apollo Link Http Common:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
-      - checkout
       - attach_workspace:
           at: .
       - run:
           name: Jest suite
-          command: npx lerna run --scope=apollo-link-http-common -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
+          command: npx lerna run --scope=apollo-link-http-common -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload
           environment:
             JEST_JUNIT_OUTPUT: "../../reports/junit/js-test-results.xml"
       - store_test_results:
@@ -210,12 +186,11 @@ jobs:
   Apollo Link Http:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
-      - checkout
       - attach_workspace:
           at: .
       - run:
           name: Jest suite
-          command: npx lerna run --scope=apollo-link-http -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
+          command: npx lerna run --scope=apollo-link-http -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload
           environment:
             JEST_JUNIT_OUTPUT: "../../reports/junit/js-test-results.xml"
       - store_test_results:
@@ -226,12 +201,11 @@ jobs:
   Apollo Link Polling:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
-      - checkout
       - attach_workspace:
           at: .
       - run:
           name: Jest suite
-          command: npx lerna run --scope=apollo-link-polling -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
+          command: npx lerna run --scope=apollo-link-polling -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload
           environment:
             JEST_JUNIT_OUTPUT: "../../reports/junit/js-test-results.xml"
       - store_test_results:
@@ -242,12 +216,11 @@ jobs:
   Apollo Link Retry:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
-      - checkout
       - attach_workspace:
           at: .
       - run:
           name: Jest suite
-          command: npx lerna run --scope=apollo-link-retry -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
+          command: npx lerna run --scope=apollo-link-retry -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload
           environment:
             JEST_JUNIT_OUTPUT: "../../reports/junit/js-test-results.xml"
       - store_test_results:
@@ -258,12 +231,11 @@ jobs:
   Apollo Link Schema:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
-      - checkout
       - attach_workspace:
           at: .
       - run:
           name: Jest suite
-          command: npx lerna run --scope=apollo-link-schema -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
+          command: npx lerna run --scope=apollo-link-schema -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload
           environment:
             JEST_JUNIT_OUTPUT: "../../reports/junit/js-test-results.xml"
       - store_test_results:
@@ -274,12 +246,11 @@ jobs:
   Apollo Link Web Socket:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
-      - checkout
       - attach_workspace:
           at: .
       - run:
           name: Jest suite
-          command: npx lerna run --scope=apollo-link-ws -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
+          command: npx lerna run --scope=apollo-link-ws -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload
           environment:
             JEST_JUNIT_OUTPUT: "../../reports/junit/js-test-results.xml"
       - store_test_results:
@@ -290,12 +261,11 @@ jobs:
   Zen Observable Typescript:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
-      - checkout
       - attach_workspace:
           at: .
       - run:
           name: Jest suite
-          command: npx lerna run --scope=zen-observable-ts -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
+          command: npx lerna run --scope=zen-observable-ts -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload
           environment:
             JEST_JUNIT_OUTPUT: "../../reports/junit/js-test-results.xml"
       - store_test_results:
