@@ -33,10 +33,7 @@ jobs:
             - ./packages/apollo-link-ws/node_modules
             - ./packages/zen-observable-ts/node_modules
       - persist_to_workspace:
-          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
-          # taken to be the root directory of the workspace.
           root: .
-          # Must be relative path from root
           paths:
             - ./node_modules
             - ./packages/apollo-link/node_modules
