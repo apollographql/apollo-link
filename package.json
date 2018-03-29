@@ -10,9 +10,9 @@
     "test": "lerna run -- test",
     "prelint": "npm run lint-fix",
     "lint": "lerna run -- lint",
-    "lint-fix":
-      "prettier --trailing-comma all --single-quote --write \"packages/*/{src,tests,test,benchmark}/**/*.{j,t}s*\"",
+    "lint-fix": "prettier --trailing-comma all --single-quote --write \"packages/*/{src,tests,test,benchmark}/**/*.{j,t}s*\"",
     "lint-staged": "lint-staged",
+    "lint-check": "prettier-check --single-quote --trailing-comma all \"packages/*/{src,__tests__}/**/*.ts\"",
     "filesize": "lerna run -- filesize && bundlesize",
     "type-check": "lerna run -- type-check",
     "coverage": "lerna run -- coverage",
@@ -20,8 +20,7 @@
     "danger": "danger run --verbose",
     "predeploy": "npm run bootstrap",
     "deploy": "lerna publish -m \"chore: Publish\" --independent",
-    "watch":
-      "trap \"kill 0\" SIGINT; for f in `ls packages`; do (cd `pwd`/packages/$f && [[ -e package.json ]] && npm run watch) & done; "
+    "watch": "trap \"kill 0\" SIGINT; for f in `ls packages`; do (cd `pwd`/packages/$f && [[ -e package.json ]] && npm run watch) & done; "
   },
   "bundlesize": [
     {
@@ -76,17 +75,17 @@
     }
   },
   "lint-staged": {
-    "*.ts*": [
+    "*.{ts, tsx, js, jsx}": [
       "prettier --trailing-comma all --single-quote --write",
       "git add"
     ],
-    "*.js*": [
-      "prettier --trailing-comma all --single-quote --write",
+    "!(package).json": [
+      "prettier --write",
       "git add"
-    ],
-    "*.json*": ["prettier --write", "git add"]
+    ]
   },
   "pre-commit": "lint-staged",
+  "pre-push": "lint-check",
   "dependencies": {},
   "devDependencies": {
     "@types/zen-observable": "0.5.3",
@@ -96,9 +95,11 @@
     "danger": "3.3.2",
     "jest-junit": "^3.6.0",
     "lerna": "2.9.0",
-    "lint-staged": "6.1.1",
+    "lint-staged": "^7.0.0",
     "pre-commit": "1.2.2",
+    "pre-push": "^0.1.1",
     "prettier": "1.11.1",
+    "prettier-check": "^2.0.0",
     "rollup": "^0.57.1",
     "rollup-plugin-sourcemaps": "0.4.2",
     "ts-jest": "21.2.4",
