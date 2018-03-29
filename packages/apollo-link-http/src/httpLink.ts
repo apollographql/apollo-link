@@ -77,8 +77,12 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
       contextConfig,
     );
 
-    const { controller, signal } = createSignalIfSupported();
-    if (controller) (options as any).signal = signal;
+    let controller;
+    if (!(options as any).signal) {
+      const { controller: _controller, signal } = createSignalIfSupported();
+      controller = _controller;
+      if (controller) (options as any).signal = signal;
+    }
 
     // If requested, set method to GET if there are no mutations.
     const definitionIsMutation = (d: DefinitionNode) => {
