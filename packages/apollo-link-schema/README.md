@@ -30,6 +30,9 @@ const graphqlClient = new ApolloClient({
 ```
 
 ### Mocking
+
+For more detailerd information about mocking, please look the [graphql-tools documentation](https://www.apollographql.com/docs/graphql-tools/mocking.html).
+
 ```js
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
