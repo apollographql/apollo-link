@@ -1,6 +1,7 @@
 # Change log
 
 ### vNext
+- Check for signal already present on `fetchOptions` [#584](https://github.com/apollographql/apollo-link/pull/584)
 
 ### 1.2.1
 - Fix typing of Operation parameters [PR#525](https://github.com/apollographql/apollo-link/pull/525)

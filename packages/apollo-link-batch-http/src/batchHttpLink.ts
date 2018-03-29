@@ -121,8 +121,12 @@ export class BatchHttpLink extends ApolloLink {
         return fromError<FetchResult[]>(parseError);
       }
 
-      const { controller, signal } = createSignalIfSupported();
-      if (controller) (options as any).signal = signal;
+      let controller;
+      if (!(options as any).signal) {
+        const { controller: _controller, signal } = createSignalIfSupported();
+        controller = _controller;
+        if (controller) (options as any).signal = signal;
+      }
 
       return new Observable<FetchResult[]>(observer => {
         // the raw response is attached to the context in the BatchingLink

@@ -1,6 +1,7 @@
 # Change log
 
 ### vNEXT
+- Check for signal already present on `fetchOptions` [#584](https://github.com/apollographql/apollo-link/pull/584)
 
 ### 1.5.3
 - updated dependency on `apolloLink.httpCommon` [#522](https://github.com/apollographql/apollo-link/pull/522)
