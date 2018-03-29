@@ -16,6 +16,7 @@ jobs:
       - run:
           name: install-npm
           command: npm install
+      - run: git checkout package.json
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-checksum" }}
           paths:
@@ -79,6 +80,7 @@ jobs:
       - run:
           name: install-docs-npm
           command: cd docs && npm i
+      - run: git checkout ./docs/package.json
       - save_cache:
           key: dependency-cache-{{ checksum "./docs/package.json" }}
           paths:
