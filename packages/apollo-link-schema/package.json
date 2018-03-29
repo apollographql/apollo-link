@@ -4,6 +4,7 @@
   "description": "Use a GraphQL Schema to request data",
   "author": "Tomas Trescak <tomi.trescak@gmail.com>",
   "contributors": [
+    "Evans Hauser <evanshauser@gmail.com>",
     "James Baxley <james@meteor.com>",
     "Jonas Helfer <jonas@helfer.email>",
     "jon wong <j@jnwng.com>",
