@@ -4,64 +4,9 @@
 #
 version: 2
 jobs:
-  Danger:
+  Build and Bootstrap:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
-      - checkout
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-      - run: npm run danger
-
-  Prettier Check:
-    docker: [ { image: 'circleci/node:8' } ]
-    steps:
-      - checkout
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-      #undo the changes made by npm install
-      - run: git checkout package.json
-      - run: npm run lint-check
-
-  Docs:
-    docker: [ { image: 'circleci/node:8' } ]
-    steps:
-      - checkout
-      - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
-      - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "./docs/package.json" }}
-            - dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm
-          command: npm install
-      - run:
-          name: install-docs-npm
-          command: cd docs && npm i
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "./docs/package.json" }}
-          paths:
-            - ./node_modules
-            - ./docs/node_modules
-      - run: cd docs && npm run build
-
-  Filesize:
-    docker: [ { image: 'circleci/node:8' } ]
-    steps:
-      - checkout
       - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
       - restore_cache:
           keys:
@@ -70,9 +15,6 @@ jobs:
       - run:
           name: install-npm
           command: npm install
-      - run:
-          name: lerna-bootstrap
-          command: npx lerna bootstrap
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-checksum" }}
           paths:
@@ -90,53 +32,83 @@ jobs:
             - ./packages/apollo-link-schema/node_modules
             - ./packages/apollo-link-ws/node_modules
             - ./packages/zen-observable-ts/node_modules
+      - persist_to_workspace:
+          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
+          # taken to be the root directory of the workspace.
+          root: .
+          # Must be relative path from root
+          paths:
+            - ./node_modules
+            - ./packages/apollo-link/node_modules
+            - ./packages/apollo-link-batch/node_modules
+            - ./packages/apollo-link-batch-http/node_modules
+            - ./packages/apollo-link-context/node_modules
+            - ./packages/apollo-link-dedup/node_modules
+            - ./packages/apollo-link-error/node_modules
+            - ./packages/apollo-link-http/node_modules
+            - ./packages/apollo-link-http-common/node_modules
+            - ./packages/apollo-link-polling/node_modules
+            - ./packages/apollo-link-retry/node_modules
+            - ./packages/apollo-link-schema/node_modules
+            - ./packages/apollo-link-ws/node_modules
+            - ./packages/zen-observable-ts/node_modules
+
+  Danger:
+    docker: [ { image: 'circleci/node:8' } ]
+    steps:
+      - checkout
+      - attach_to_workspace:
+          at: .
+      - run: npm run danger
+
+  Prettier Check:
+    docker: [ { image: 'circleci/node:8' } ]
+    steps:
+      - checkout
+      - attach_to_workspace:
+          at: .
+      - run: npm run lint-check
+
+  Docs:
+    docker: [ { image: 'circleci/node:8' } ]
+    steps:
+      - checkout
+      - attach_to_workspace:
+          at: .
+      - restore_cache:
+          keys:
+            - dependency-cache-{{ checksum "./docs/package.json" }}
+      - run:
+          name: install-docs-npm
+          command: cd docs && npm i
+      - save_cache:
+          key: dependency-cache-{{ checksum "./docs/package.json" }}
+          paths:
+            - ./docs/node_modules
+      - run: cd docs && npm run build
+
+  Filesize:
+    docker: [ { image: 'circleci/node:8' } ]
+    steps:
+      - checkout
+      - attach_to_workspace:
+          at: .
       - run: npm run filesize
 
   Typecheck:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
-      - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-checksum" }}
-            - dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm
-          command: npm install
-      - run:
-          name: lerna-bootstrap
-          command: npx lerna bootstrap
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-checksum" }}
-          paths:
-            - ./node_modules
+      - attach_to_workspace:
+          at: .
       - run: npm run type-check
 
   Apollo Link:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
-      - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-checksum" }}
-            - dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}
-            - dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link/package.json" }}
-          paths:
-            - ./node_modules
-            - ./packages/apoll-link/node_modules
-      - run:
-          name: lerna-bootstrap
-          command: npx lerna bootstrap --scope=apollo-link --include-filtered-dependencies
-      - run:
-          name: lerna-build
-          command: npx lerna run --scope=apollo-link --include-filtered-dependencies -- build
+      - attach_to_workspace:
+          at: .
       - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -151,25 +123,8 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
-      - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "package.json" }}-{{ "package-checksum" }}
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "./packages/apollo-link-batch-http/package.json" }}
-            - dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-batch-http/package.json" }}
-          paths:
-            - ./node_modules
-      - run:
-          name: lerna-bootstrap
-          command: npx lerna bootstrap --scope=apollo-link-batch-http --include-filtered-dependencies
-      - run:
-          name: lerna-build
-          command: npx lerna run --scope=apollo-link-batch-http --include-filtered-dependencies -- build
+      - attach_to_workspace:
+          at: .
       - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-batch-http -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -184,25 +139,8 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
-      - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-checksum" }}
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "./packages/apollo-link-batch/package.json" }}
-            - dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}-{{ "./packages/apollo-link-batch/package.json" }}
-          paths:
-            - ./node_modules
-      - run:
-          name: lerna-bootstrap
-          command: npx lerna bootstrap --scope=apollo-link-batch --include-filtered-dependencies
-      - run:
-          name: lerna-build
-          command: npx lerna run --scope=apollo-link-batch --include-filtered-dependencies -- build
+      - attach_to_workspace:
+          at: .
       - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-batch -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -217,25 +155,8 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
-      - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-checksum" }}
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "./packages/apollo-link-context/package.json" }}
-            - dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-      - run:
-          name: lerna-bootstrap
-          command: npx lerna bootstrap --scope=apollo-link-context --include-filtered-dependencies
-      - run:
-          name: lerna-build
-          command: npx lerna run --scope=apollo-link-context --include-filtered-dependencies -- build
+      - attach_to_workspace:
+          at: .
       - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-context -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -250,22 +171,8 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
-      - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-checksum" }}
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "./packages/apollo-link-dedup/package.json" }}
-            - dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-      - run:
-          name: lerna-bootstrap
-          command: npx lerna bootstrap --scope=apollo-link-dedup
+      - attach_to_workspace:
+          at: .
       - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-dedup -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -280,25 +187,8 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
-      - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-checksum" }}
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "./packages/apollo-link-error/package.json" }}
-            - dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-      - run:
-          name: lerna-bootstrap
-          command: npx lerna bootstrap --scope=apollo-link-error --include-filtered-dependencies
-      - run:
-          name: lerna-build
-          command: npx lerna run --scope=apollo-link-error --include-filtered-dependencies -- build
+      - attach_to_workspace:
+          at: .
       - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-error -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -313,22 +203,8 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
-      - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-checksum" }}
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "./packages/apollo-link-http-common/package.json" }}
-            - dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-      - run:
-          name: lerna-bootstrap
-          command: npx lerna bootstrap --scope=apollo-link-http-common
+      - attach_to_workspace:
+          at: .
       - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-http-common -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -343,25 +219,8 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
-      - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-checksum" }}
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "./packages/apollo-link-http/package.json" }}
-            - dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-      - run:
-          name: lerna-bootstrap
-          command: npx lerna bootstrap --scope=apollo-link-http --include-filtered-dependencies
-      - run:
-          name: lerna-build
-          command: npx lerna run --scope=apollo-link-http --include-filtered-dependencies -- build
+      - attach_to_workspace:
+          at: .
       - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-http -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -376,25 +235,8 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
-      - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-checksum" }}
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "./packages/apollo-link-polling/package.json" }}
-            - dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-      - run:
-          name: lerna-bootstrap
-          command: npx lerna bootstrap --scope=apollo-link-polling --include-filtered-dependencies
-      - run:
-          name: lerna-build
-          command: npx lerna run --scope=apollo-link-polling --include-filtered-dependencies -- build
+      - attach_to_workspace:
+          at: .
       - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-polling -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -409,25 +251,8 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
-      - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-checksum" }}
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "./packages/apollo-link-retry/package.json" }}
-            - dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-      - run:
-          name: lerna-bootstrap
-          command: npx lerna bootstrap --scope=apollo-link-retry --include-filtered-dependencies
-      - run:
-          name: lerna-build
-          command: npx lerna run --scope=apollo-link-retry --include-filtered-dependencies -- build
+      - attach_to_workspace:
+          at: .
       - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-retry -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -442,25 +267,8 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
-      - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-checksum" }}
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "./packages/apollo-link-schema/package.json" }}
-            - dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-      - run:
-          name: lerna-bootstrap
-          command: npx lerna bootstrap --scope=apollo-link-schema --include-filtered-dependencies
-      - run:
-          name: lerna-build
-          command: npx lerna run --scope=apollo-link-schema --include-filtered-dependencies -- build
+      - attach_to_workspace:
+          at: .
       - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-schema -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -475,25 +283,8 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
-      - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-checksum" }}
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "./packages/apollo-link-ws/package.json" }}
-            - dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-      - run:
-          name: lerna-bootstrap
-          command: npx lerna bootstrap --scope=apollo-link-ws --include-filtered-dependencies
-      - run:
-          name: lerna-build
-          command: npx lerna run --scope=apollo-link-ws --include-filtered-dependencies -- build
+      - attach_to_workspace:
+          at: .
       - run:
           name: Jest suite
           command: npx lerna run --scope=apollo-link-ws -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -508,25 +299,8 @@ jobs:
     docker: [ { image: 'circleci/node:8' } ]
     steps:
       - checkout
-      - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
-      - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-checksum" }}
-            - dependency-cache-{{ checksum "package.json" }}-{{ checksum "./packages/zen-observable-ts/package.json" }}
-            - dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: install-npm
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-      - run:
-          name: lerna-bootstrap
-          command: npx lerna bootstrap --scope=zen-observable-ts --include-filtered-dependencies
-      - run:
-          name: lerna-build
-          command: npx lerna run --scope=zen-observable-ts --include-filtered-dependencies -- build
+      - attach_to_workspace:
+          at: .
       - run:
           name: Jest suite
           command: npx lerna run --scope=zen-observable-ts -- coverage -- --ci --testResultsProcessor=jest-junit && npm run coverage:upload || true
@@ -541,21 +315,54 @@ workflows:
   version: 2
   Build and Test:
     jobs:
-      - Danger
-      - Docs
-      - Prettier Check
-      - Filesize
+      - Build and Bootstrap
+      - Danger:
+          requires:
+            - Build
+      - Docs:
+          requires:
+            - Build
+      - Prettier Check:
+          requires:
+            - Build
+      - Filesize:
+          requires:
+            - Build
       # XXX fix issues and turn this back on
       # - Typecheck
-      - Apollo Link
-      - Apollo Link Batch Http
-      - Apollo Link Batch
-      - Apollo Link Context
-      - Apollo Link Dedup
-      - Apollo Link Error
-      - Apollo Link Http Common
-      - Apollo Link Polling
-      - Apollo Link Retry
-      - Apollo Link Schema
-      - Apollo Link Web Socket
-      - Zen Observable Typescript
+      - Apollo Link:
+          requires:
+            - Build
+      - Apollo Link Batch Http:
+          requires:
+            - Build
+      - Apollo Link Batch:
+          requires:
+            - Build
+      - Apollo Link Context:
+          requires:
+            - Build
+      - Apollo Link Dedup:
+          requires:
+            - Build
+      - Apollo Link Error:
+          requires:
+            - Build
+      - Apollo Link Http Common:
+          requires:
+            - Build
+      - Apollo Link Polling:
+          requires:
+            - Build
+      - Apollo Link Retry:
+          requires:
+            - Build
+      - Apollo Link Schema:
+          requires:
+            - Build
+      - Apollo Link Web Socket:
+          requires:
+            - Build
+      - Zen Observable Typescript:
+          requires:
+            - Build

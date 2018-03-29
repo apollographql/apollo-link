@@ -2,8 +2,9 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "bootstrap": "npm i && lerna bootstrap",
+    "bootstrap": "lerna bootstrap",
     "diff": "check-if-folder-contents-changed-in-git-commit-range",
+    "postinstall": "npm run bootstrap",
     "postbootstrap": "npm run build",
     "build": "lerna run -- build",
     "test": "lerna run -- test",
