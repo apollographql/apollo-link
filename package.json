@@ -2,7 +2,9 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "bootstrap": "npm i && lerna bootstrap",
+    "bootstrap": "lerna bootstrap",
+    "diff": "check-if-folder-contents-changed-in-git-commit-range",
+    "postinstall": "npm run bootstrap",
     "postbootstrap": "npm run build",
     "build": "lerna run -- build",
     "test": "lerna run -- test",
@@ -70,7 +72,7 @@
   ],
   "jest": {
     "transform": {
-      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+      ".(ts|tsx)": "ts-jest"
     }
   },
   "lint-staged": {
@@ -88,14 +90,17 @@
   "dependencies": {},
   "devDependencies": {
     "@types/zen-observable": "0.5.3",
-    "bundlesize": "0.16.0",
+    "bundlesize": "0.17.0",
+    "check-if-folder-contents-changed-in-git-commit-range": "^1.0.0",
     "codecov": "3.0.0",
-    "danger": "1.2.0",
+    "danger": "3.3.2",
+    "jest-junit": "^3.6.0",
     "lerna": "2.9.0",
     "lint-staged": "6.1.1",
     "pre-commit": "1.2.2",
-    "prettier": "1.10.2",
-    "rollup-plugin-sourcemaps": "^0.4.2",
+    "prettier": "1.11.1",
+    "rollup": "^0.57.1",
+    "rollup-plugin-sourcemaps": "0.4.2",
     "ts-jest": "21.2.4",
     "typescript": "2.7.2"
   }
