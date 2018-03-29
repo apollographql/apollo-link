@@ -1,3 +1,4 @@
+import execute from 'rollup-plugin-execute';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 
 export const globals = {
@@ -27,7 +28,11 @@ export default name => ({
   },
   external: Object.keys(globals),
   onwarn,
-  plugins: [sourcemaps()],
+  plugins: [
+    sourcemaps(),
+    // Embed the base tsconfig into the deployed bundle of every sub-package
+    execute(`cp "../../tsconfig.json" ./lib/tsconfig.base.json; sed 's|../../tsconfig"|./tsconfig.base"|' < tsconfig.json > ./lib/tsconfig.json`),
+  ]
 });
 
 export function onwarn(message) {
