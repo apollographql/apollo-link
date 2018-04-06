@@ -9,5 +9,11 @@
   "automerge": "minor",
   "labels": ["tooling", "dependencies"],
   "assignees": ["@jbaxleyiii"],
-  "reviewers": ["@jbaxleyiii"]
+  "reviewers": ["@jbaxleyiii"],
+  "pathRules": [{
+    "paths": ["docs/package.json"],
+    "extends": [
+      "apollo-docs"
+    ]
+  }]
 }
