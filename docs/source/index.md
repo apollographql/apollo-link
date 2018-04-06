@@ -4,15 +4,15 @@ sidebar_title: Introduction
 description: Apollo Link is a standard interface for modifying control flow of GraphQL requests and fetching GraphQL results.
 ---
 
-This is the official guide for getting started with Apollo Link in your application. Apollo Link is a simple yet powerful way to describe how you want to get the result of a GraphQL operation, and what you want to do with the results. You've probably come across "middleware" that might transform a request and its result: Apollo Link is an abstraction that's meant to solve similar problems in a much more flexible and elegant way. 
+This is the official guide for getting started with Apollo Link in your application. Apollo Link is a simple yet powerful way to describe how you want to get the result of a GraphQL operation, and what you want to do with the results. You've probably come across "middleware" that might transform a request and its result: Apollo Link is an abstraction that's meant to solve similar problems in a much more flexible and elegant way.
 
 You can use Apollo Link with Apollo Client, `graphql-tools` schema stitching, GraphiQL, and even as a standalone client, allowing you to reuse the same authorization, error handling, and control flow across all of your GraphQL fetching.
 
 <h2 id="introduction">Introduction</h2>
 
-In a few words, Apollo Links are chainable "units" that you can snap together to define how each GraphQL request is handled by your GraphQL client. When you fire a GraphQL request, each Link's functionality is applied one after another. This allows you to control the request lifecycle in a way that makes sense for your application. For example, Links can provide [retrying](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-retry), [polling](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-polling), [batching](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-batch), and more!  
+In a few words, Apollo Links are chainable "units" that you can snap together to define how each GraphQL request is handled by your GraphQL client. When you fire a GraphQL request, each Link's functionality is applied one after another. This allows you to control the request lifecycle in a way that makes sense for your application. For example, Links can provide [retrying](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-retry), [polling](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-polling), [batching](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-batch), and more!
 
-If you're new to Apollo Link, you should read the [concepts guide](https://www.apollographql.com/docs/link/overview.html) which explains the motivation behind the package and its different pieces. The original [blog post](https://dev-blog.apollodata.com/apollo-link-the-modular-graphql-network-stack-3b6d5fcf9244) for the project is also a great first resource. 
+If you're new to Apollo Link, you should read the [concepts guide](https://www.apollographql.com/docs/link/overview.html) which explains the motivation behind the package and its different pieces. The original [blog post](https://dev-blog.apollodata.com/apollo-link-the-modular-graphql-network-stack-3b6d5fcf9244) for the project is also a great first resource.
 
 <h2 id="installation">Installation</h2>
 
@@ -66,7 +66,7 @@ You can read more about schema stitching with `graphql-tools` [here](https://www
 
 <h3 id="graphiql">GraphiQL</h3>
 
-GraphiQL is a great way to document and explore your GraphQL API. In this example, we're setting up GraphiQL's fetcher function by using the `execute` function exported from Apollo Link. This function takes a link and an operation to create a GraphQL request. 
+GraphiQL is a great way to document and explore your GraphQL API. In this example, we're setting up GraphiQL's fetcher function by using the `execute` function exported from Apollo Link. This function takes a link and an operation to create a GraphQL request.
 
 ```js
 import React from 'react';
@@ -133,22 +133,33 @@ You can also use Apollo Link as a standalone client. That is, you can use it to 
 ```js
 import { execute, makePromise } from 'apollo-link';
 import { HttpLink } from 'apollo-link-http';
+import gql from 'graphql-tag';
 
 const uri = 'http://api.githunt.com/graphql';
 const link = new HttpLink({ uri });
 
+const operation = {
+  query: gql`query { hello }`,
+  variables: {} //optional
+  operationName: {} //optional
+  context: {} //optional
+  extensions: {} //optional
+};
+
 // execute returns an Observable so it can be subscribed to
 execute(link, operation).subscribe({
-  next: data => console.log(`received data ${data}`),
+  next: data => console.log(`received data: ${JSON.stringify(data, null, 2)}`),
   error: error => console.log(`received error ${error}`),
   complete: () => console.log(`complete`),
 })
 
 // For single execution operations, a Promise can be used
 makePromise(execute(link, operation))
-  .then(data => console.log(`received data ${data}`))
+  .then(data => console.log(`received data ${JSON.stringify(data, null, 2)}`))
   .catch(error => console.log(`received error ${error}`))
 ```
+
+> Note: to run Apollo Link on the server, ensure that you install `node-fetch` and pass its default export to as the `fetch` parameter to `HttpLink`
 
 `execute` accepts a standard GraphQL request and returns an [Observable](https://github.com/tc39/proposal-observable) that allows subscribing. A GraphQL request is an object with a `query` which is a GraphQL document AST, `variables` which is an object to be sent to the server, an optional `operationName` string to make it easy to debug a query on the server, and a `context` object to send data directly to a link in the chain.
 Links use observables to support GraphQL subscriptions, live queries, and polling, in addition to single response queries and mutations.
@@ -162,7 +173,7 @@ If you want to control how you handle errors, `next` will receive GraphQL errors
 There are a number of useful links that have already been implemented that may be useful for your application.
 
 [`apollo-link-http`](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-http)
-Get the results for a GraphQL query over HTTP. 
+Get the results for a GraphQL query over HTTP.
 
 [`apollo-link-state`](https://github.com/apollographql/apollo-link-state)
 Allows you to manage your application's non-data state and interact with it via GraphQL.
