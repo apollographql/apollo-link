@@ -2,7 +2,6 @@
 
 ### vNEXT
 - allow context to be a function that accept an operation and returns a context for the resolvers [PR#363](https://github.com/apollographql/apollo-link/pull/363)
-- Update README
 
 ### 1.0.6
 - update apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
