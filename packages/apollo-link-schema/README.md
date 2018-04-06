@@ -16,11 +16,11 @@ The schema link provides a [graphql execution environment](http://graphql.org/gr
 When performing SSR _on the same server_ you can use this library to avoid making network calls.
 
 ```js
-import { ApolloClient } from "apollo-client";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { SchemaLink } from "apollo-link-schema";
+import { ApolloClient } from 'apollo-client';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { SchemaLink } from 'apollo-link-schema';
 
-import schema from "./path/to/your/schema";
+import schema from './path/to/your/schema';
 
 const graphqlClient = new ApolloClient({
   ssr: true,
@@ -34,10 +34,10 @@ const graphqlClient = new ApolloClient({
 For more detailed information about mocking, please look the [graphql-tools documentation](https://www.apollographql.com/docs/graphql-tools/mocking.html).
 
 ```js
-import { ApolloClient } from "apollo-client";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { SchemaLink } from "apollo-link-schema";
-import { makeExecutableSchema, addMockFunctionsToSchema } from "graphql-tools";
+import { ApolloClient } from 'apollo-client';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { SchemaLink } from 'apollo-link-schema';
+import { makeExecutableSchema, addMockFunctionsToSchema } from 'graphql-tools';
 
 const typeDefs = `
   Query {
