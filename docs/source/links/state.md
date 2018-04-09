@@ -136,9 +136,11 @@ This is the same as calling `writeData` yourself with an initial value:
 ```js
 // Same as passing defaults above
 cache.writeData({
-  networkStatus: {
-    __typename: 'NetworkStatus',
-    isConnected: true,
+  data: {
+    networkStatus: {
+      __typename: 'NetworkStatus',
+     isConnected: true,
+    },
   },
 });
 ```
