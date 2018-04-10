@@ -226,7 +226,7 @@ const stateLink = withClientState({
 });
 ```
 
-Sometimes you may need to [reset the store](docs/react/features/cache-updates.html#reset-store) in your application, for example when a user logs out. If you call `client.resetStore` anywhere in your application, you will need to write your defaults to the store again. `apollo-link-state` exposes a `writeDefaults` function for you. To register your callback to Apollo Client, call `client.onResetStore` and pass in `writeDefaults`.
+Sometimes you may need to [reset the store](/docs/react/features/cache-updates.html#reset-store) in your application, for example when a user logs out. If you call `client.resetStore` anywhere in your application, you will need to write your defaults to the store again. `apollo-link-state` exposes a `writeDefaults` function for you. To register your callback to Apollo Client, call `client.onResetStore` and pass in `writeDefaults`.
 
 ```js
 const cache = new InMemoryCache();
@@ -314,7 +314,7 @@ fieldName: (obj, args, context, info) => result;
    Apollo cache to the context for you, so you can manipulate the cache with
    `cache.writeData({})`. If you want to set additional values on the context,
    you can set them from [within your
-   component](docs/react/basics/queries.html#graphql-config-options-context) or
+   component](/docs/react/basics/queries.html#graphql-config-options-context) or
    by [using `apollo-link-context`](/docs/link/links/context.html).
 4. `info`: Information about the execution state of the query. You will probably
    never have to use this one.
@@ -439,7 +439,7 @@ the single source of truth for all your local and remote data. To update and
 read from the cache, you access it via the `context`, which is the third
 argument passed to your resolver function.
 
-The [Apollo cache API](docs/react/features/caching.html) has several methods to assist you with updating and retrieving data. Let's walk through each of the methods and some common use cases for each one!
+The [Apollo cache API](/docs/react/features/caching.html) has several methods to assist you with updating and retrieving data. Let's walk through each of the methods and some common use cases for each one!
 
 <h3 id="write-data">writeData</h3>
 
