@@ -15,7 +15,7 @@ const client = new SubscriptionClient(GRAPHQL_ENDPOINT, {
   reconnect: true
 });
 
-const link = new WebSocketLink(client);
+const link = new WebSocketLink(client, config);
 ```
 
 <h2 id="options">Options</h2>
@@ -27,3 +27,9 @@ WS Link takes either a subscription client or an object with three options on it
 * `webSocketImpl`: a custom WebSocket implementation
 
 By default, this link uses the [subscriptions-transport-ws](https://github.com/apollographql/subscriptions-transport-ws) library for the transport.
+
+<h2 id="config">Config</h2>
+
+an object with the following keys
+
+* `requeryOnReconnect`: a function passed the operation and returns a truth value indicating if it should be refetched on web socket reconnect
