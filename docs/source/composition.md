@@ -30,10 +30,10 @@ const link = ApolloLink.from([
 
 ```js
 import { ApolloLink } from 'apollo-link';
-import Retry from 'apollo-link-retry';
+import { RetryLink } from 'apollo-link-retry';
 import HttpLink from 'apollo-link-http';
 
-const link = ApolloLink.concat(new Retry(), new HttpLink({ uri: '/graphql' }));
+const link = ApolloLink.concat(new RetryLink(), new HttpLink({ uri: '/graphql' }));
 ```
 
 <h2 id="directional">Directional Composition</h2>
@@ -42,10 +42,10 @@ Given that links are a way of implementing custom control flow for your GraphQL 
 
 ```js
 import { ApolloLink } from 'apollo-link';
-import Retry from 'apollo-link-retry';
+import { RetryLink } from 'apollo-link-retry';
 import HttpLink from 'apollo-link-http';
 
-const link = new Retry().split(
+const link = new RetryLink().split(
   (operation) => operation.getContext().version === 1,
   new HttpLink({ uri: "/v1/graphql" }),
   new HttpLink({ uri: "/v2/graphql" })
