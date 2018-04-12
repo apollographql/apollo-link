@@ -1,4 +1,10 @@
-import { ApolloLink, Observable, Operation } from 'apollo-link';
+import {
+  ApolloLink,
+  Observable,
+  Operation,
+  NextLink,
+  FetchResult,
+} from 'apollo-link';
 import { GraphQLError, ExecutionResult } from 'graphql';
 
 export interface ErrorResponse {
@@ -66,7 +72,10 @@ export class ErrorLink extends ApolloLink {
     this.link = onError(errorHandler);
   }
 
-  public request(operation, forward): Observable<ExecutionResult> | null {
+  public request(
+    operation: Operation,
+    forward: NextLink,
+  ): Observable<FetchResult> | null {
     return this.link.request(operation, forward);
   }
 }
