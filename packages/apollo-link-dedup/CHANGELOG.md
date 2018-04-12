@@ -1,7 +1,6 @@
 # Change log
 
 ### vNext
-- Correct return type to FetchResult [#600](https://github.com/apollographql/apollo-link/pull/600)
 
 ### 1.0.9
 - Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
