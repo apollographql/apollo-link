@@ -2,6 +2,9 @@
 
 ### vNext
 
+### 2.2.3
+- Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
+
 ### 2.2.2
 - Fix a bug where `observer` is null during onComplete, onNext, onError [#528](https://github.com/apollographql/apollo-link/pull/528)
 

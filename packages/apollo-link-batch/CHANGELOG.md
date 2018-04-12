@@ -2,6 +2,9 @@
 
 ### vNext
 
+### 1.1.3
+- Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
+
 ### 1.1.2
 - Fix typing of Operation parameters [PR#525](https://github.com/apollographql/apollo-link/pull/525)
 

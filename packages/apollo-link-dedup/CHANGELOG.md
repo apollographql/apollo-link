@@ -2,6 +2,9 @@
 
 ### vNext
 
+### 1.0.8
+- Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
+
 ### 1.0.7
 - udate apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
 

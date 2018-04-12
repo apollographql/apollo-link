@@ -1,7 +1,7 @@
 {
   "name": "apollo-link-polling",
   "private": true,
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Polling Apollo Link for GraphQL Network Stack",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@types/zen-observable": "0.5.3",
-    "apollo-link": "^1.2.1"
+    "apollo-link": "^1.2.2"
   },
   "devDependencies": {
     "@types/graphql": "0.12.6",
