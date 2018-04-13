@@ -51,4 +51,8 @@ export class WebSocketLink extends ApolloLink {
       FetchResult
     >;
   }
+
+  public close(isForced?: boolean, closedByUser?: boolean) {
+    this.subscriptionClient.close(isForced, closedByUser);
+  }
 }
