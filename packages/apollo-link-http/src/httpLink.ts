@@ -159,6 +159,7 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
             // in the UI you want to show data where you can, errors as data where you can
             // and use correct http status codes
             observer.next(err.result);
+            return;
           }
           observer.error(err);
         });
