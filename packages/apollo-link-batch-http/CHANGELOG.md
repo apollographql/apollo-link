@@ -1,6 +1,7 @@
 # Change log
 
 ### vNext
+- Fix small typo in apollo-link-batch-http docs [#611](https://github.com/apollographql/apollo-link/pull/611)
 
 ### 1.2.2
 - Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
