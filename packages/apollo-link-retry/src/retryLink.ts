@@ -44,6 +44,7 @@ class RetryableOperation<TValue = any> {
   private currentSubscription: ZenObservable.Subscription = null;
   private timerId: number;
   private valueRejected = false;
+  private waitingOnRetryIf = false;
 
   constructor(
     private operation: Operation,
@@ -132,11 +133,13 @@ class RetryableOperation<TValue = any> {
   }
 
   private onNext = async (value: any) => {
+    this.waitingOnRetryIf = true;
     const shouldRetry = await this.retryIf(
       this.retryCount,
       this.operation,
       value,
     );
+    this.waitingOnRetryIf = true;
 
     if (shouldRetry) {
       this.valueRejected = true;
@@ -152,12 +155,22 @@ class RetryableOperation<TValue = any> {
       if (!observer) continue;
       observer.next(value);
     }
+
+    if (this.complete) {
+      for (const observer of this.observers) {
+        if (!observer) continue;
+        observer.complete();
+      }
+    }
   };
 
   private onComplete = () => {
     if (this.valueRejected) return;
 
     this.complete = true;
+
+    if (this.waitingOnRetryIf) return;
+
     for (const observer of this.observers) {
       if (!observer) continue;
       observer.complete();
