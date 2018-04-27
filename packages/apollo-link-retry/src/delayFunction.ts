@@ -5,7 +5,7 @@ import { Operation } from 'apollo-link';
  * for particular responses.
  */
 export interface DelayFunction {
-  (count: number, operation: Operation, error: any): number;
+  (count: number, operation: Operation, valueOrError: any): number;
 }
 
 export interface DelayFunctionOptions {

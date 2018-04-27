@@ -43,7 +43,7 @@ class RetryableOperation<TValue = any> {
   private observers: ZenObservable.Observer<TValue>[] = [];
   private currentSubscription: ZenObservable.Subscription = null;
   private timerId: number;
-  private handlingGraphqlErrors = false;
+  private valueRejected = false;
 
   constructor(
     private operation: Operation,
@@ -132,25 +132,21 @@ class RetryableOperation<TValue = any> {
   }
 
   private onNext = async (value: any) => {
-    if (value.errors && value.errors.length > 0) {
-      this.handlingGraphqlErrors = true;
+    const shouldRetry = await this.retryIf(
+      this.retryCount,
+      this.operation,
+      value,
+    );
+
+    if (shouldRetry) {
+      this.valueRejected = true;
       this.retryCount += 1;
 
-      const shouldRetry = await this.retryIf(
-        this.retryCount,
-        this.operation,
-        value.errors,
-      );
-
-      if (shouldRetry) {
-        this.scheduleRetry(
-          this.delayFor(this.retryCount, this.operation, value.errors),
-        );
-        return;
-      }
+      this.scheduleRetry(this.delayFor(this.retryCount, this.operation, value));
+      return;
     }
 
-    this.handlingGraphqlErrors = false;
+    this.valueRejected = false;
     this.values.push(value);
     for (const observer of this.observers) {
       if (!observer) continue;
@@ -159,7 +155,7 @@ class RetryableOperation<TValue = any> {
   };
 
   private onComplete = () => {
-    if (this.handlingGraphqlErrors) return;
+    if (this.valueRejected) return;
 
     this.complete = true;
     for (const observer of this.observers) {
@@ -169,7 +165,7 @@ class RetryableOperation<TValue = any> {
   };
 
   private onError = async error => {
-    this.handlingGraphqlErrors = false;
+    this.valueRejected = false;
     this.retryCount += 1;
 
     // Should we retry?
