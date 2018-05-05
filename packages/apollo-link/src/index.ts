@@ -8,5 +8,5 @@ export {
 } from './linkUtils';
 export * from './types';
 
-import Observable from 'zen-observable-ts';
+import Observable = require('zen-observable');
 export { Observable };
