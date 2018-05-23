@@ -1,6 +1,7 @@
 # Change log
 
 ### vNext
+- Update to @types/graphql@0.13
 
 ### 2.2.4
 - Minor documentation fixes

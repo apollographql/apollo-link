@@ -1,6 +1,7 @@
 # Change log
 
 ### vNext
+- Update to @types/graphql@0.13
 
 ### 1.1.3
 - Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
