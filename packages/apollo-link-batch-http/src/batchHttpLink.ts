@@ -147,7 +147,11 @@ export class BatchHttpLink extends ApolloLink {
             // to pass to UI
             // this should only happen if we *also* have data as part of the response key per
             // the spec
-            if (err.result && err.result.some(i => i.data && i.errors)) {
+            if (
+              err.result &&
+              Array.isArray(err.result) &&
+              err.result.some(i => i.data && i.errors)
+            ) {
               // if we dont' call next, the UI can only show networkError because AC didn't
               // get andy graphqlErrors
               // this is graphql execution result info (i.e errors and possibly data)
