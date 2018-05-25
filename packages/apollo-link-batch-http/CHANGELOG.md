@@ -1,6 +1,7 @@
 # Change log
 
 ### vNext
+- Fix batch link result on error
 
 ### 1.2.2
 - Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
