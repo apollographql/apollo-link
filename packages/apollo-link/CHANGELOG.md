@@ -1,6 +1,7 @@
 # Change log
 
 ### vNEXT
+- Bug fix: remove `@types/graphql` from dependencies
 
 ### 1.2.2
 - Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
