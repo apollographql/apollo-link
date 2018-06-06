@@ -31,25 +31,24 @@ export const onError = (errorHandler: ErrorHandler): ApolloLink => {
   return new ApolloLink((operation, forward) => {
     return new Observable(observer => {
       let sub;
-      let retrySub;
-      let retrying = false;
+      let retriedSub;
+      let retriedResult;
 
       try {
         sub = forward(operation).subscribe({
           next: result => {
             if (result.errors) {
-              const retryForward = errorHandler({
+              retriedResult = errorHandler({
                 graphQLErrors: result.errors,
                 response: result,
                 operation,
                 forward,
               });
 
-              if (retryForward) {
-                retrying = true;
-                retrySub = retryForward.subscribe({
-                  next: result => observer.next(result),
-                  error: networkError => observer.error(networkError),
+              if (retriedResult) {
+                retriedSub = retriedResult.subscribe({
+                  next: observer.next.bind(observer),
+                  error: observer.error.bind(observer),
                   complete: observer.complete.bind(observer),
                 });
                 return;
@@ -58,18 +57,17 @@ export const onError = (errorHandler: ErrorHandler): ApolloLink => {
             observer.next(result);
           },
           error: networkError => {
-            const retryForward = errorHandler({
+            retriedResult = errorHandler({
               operation,
               networkError,
               //Network errors can return GraphQL errors on for example a 403
               graphQLErrors: networkError.result && networkError.result.errors,
               forward,
             });
-            if (retryForward) {
-              retrying = true;
-              retrySub = retryForward.subscribe({
-                next: result => observer.next(result),
-                error: networkError => observer.error(networkError),
+            if (retriedResult) {
+              retriedSub = retriedResult.subscribe({
+                next: observer.next.bind(observer),
+                error: observer.error.bind(observer),
                 complete: observer.complete.bind(observer),
               });
               return;
@@ -79,7 +77,7 @@ export const onError = (errorHandler: ErrorHandler): ApolloLink => {
           complete: () => {
             // disable the previous sub from calling complete on observable
             // if retry is in flight.
-            if (!retrying) {
+            if (!retriedResult) {
               observer.complete.bind(observer)();
             }
           },
@@ -91,7 +89,7 @@ export const onError = (errorHandler: ErrorHandler): ApolloLink => {
 
       return () => {
         if (sub) sub.unsubscribe();
-        if (retrySub) sub.unsubscribe();
+        if (retriedSub) sub.unsubscribe();
       };
     });
   });

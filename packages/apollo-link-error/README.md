@@ -66,7 +66,9 @@ onError(({ graphQLErrors, networkError, operation, forward }) => {
     }
     if (networkError) {
       console.log(`[Network error]: ${networkError}`);
-      // no need to retry if there was a network error
+      // if you would also like to retry automatically on 
+      // network errors, we recommend that you use 
+      // apollo-link-retry
     }
   }
 );
