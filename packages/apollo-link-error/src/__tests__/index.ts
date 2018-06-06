@@ -518,8 +518,7 @@ describe('support for request retrying', () => {
         done();
       },
     });
-  })
-
+  });
 
   it('returns errors from retried requests', done => {
     let errorHandlerCalled = false;
