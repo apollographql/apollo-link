@@ -74,6 +74,11 @@ onError(({ graphQLErrors, networkError, operation, forward }) => {
 );
 ```
 
+Here is a diagram of how the request flow looks like now: 
+![Diagram of request flow after retrying in error links](https://imgur.com/a/pWy8G4k)
+
+One caveat is that the errors from the new response from retrying the request does not get passed into the error handler again. This helps to avoid being trapped in an endless request loop when you call forward() in your error handler.
+
 
 <h2 id="ignoring-errors">Ignoring errors</h2>
 
