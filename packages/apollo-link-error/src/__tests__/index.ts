@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 import { ApolloLink, execute, Observable } from 'apollo-link';
-
 import { onError, ErrorLink } from '../';
+import {} from 'jest';
 
 describe('error handling', () => {
   it('has an easy way to handle GraphQL errors', done => {
@@ -233,68 +233,6 @@ describe('error handling', () => {
       done();
     });
   });
-
-  it('allows re-forwarding in the error handler', done => {
-    const query = gql`
-      query Foo {
-        foo {
-          bar
-        }
-      }
-    `;
-
-    let called;
-    let retryCalled;
-    const errorLink = onError(
-      ({ graphQLErrors, response, operation, forward }) => {
-        if (graphQLErrors.length > 0) {
-          called = true;
-          expect(graphQLErrors[0].message).toBe('resolver blew up');
-          expect(response.data).not.toBeDefined();
-          expect(operation.operationName).toBe('Foo');
-          expect(operation.getContext().bar).toBe(true);
-          // retry operation if it resulted in an error
-          return forward(operation);
-        } else {
-          retryCalled = true;
-          expect(graphQLErrors.length).toBe(0);
-          expect(response.data.foo).toBe(true);
-          expect(operation.operationName).toBe('Foo');
-          expect(operation.getContext().bar).toBe(true);
-        }
-      },
-    );
-
-    const mockLink = new ApolloLink(operation =>
-      Observable.of(
-        // original response with errors
-        {
-          errors: [
-            {
-              message: 'resolver blew up',
-            },
-          ],
-        },
-        // simulate a second response after retrying
-        {
-          data: { foo: true },
-          errors: [],
-        },
-      ),
-    );
-
-    const link = errorLink.concat(mockLink);
-
-    execute(link, { query, context: { bar: true } }).subscribe(result => {
-      try {
-        expect(called).toBe(true);
-        expect(retryCalled).toBe(true);
-        done();
-      } catch (error) {
-        done.fail(error);
-      }
-    });
-  });
 });
 
 describe('error handling with class', () => {
@@ -452,66 +390,190 @@ describe('error handling with class', () => {
 
     setTimeout(done, 10);
   });
+});
 
-  it('allows re-forwarding in the error handler', done => {
-    const query = gql`
-      query Foo {
-        foo {
-          bar
-        }
+describe('support for request retrying', () => {
+  const QUERY = gql`
+    query Foo {
+      foo {
+        bar
       }
-    `;
+    }
+  `;
+  const ERROR_RESPONSE = {
+    errors: [
+      {
+        name: 'something bad happened',
+        message: 'resolver blew up',
+      },
+    ],
+  };
+  const GOOD_RESPONSE = {
+    data: { foo: true },
+  };
+  const NETWORK_ERROR = {
+    message: 'some other error',
+  };
 
-    let called = false;
-    let retryCalled = false;
+  it('returns the retried request when forward(operation) is called', done => {
+    let errorHandlerCalled = false;
+
+    let timesCalled = 0;
+    const mockHttpLink = new ApolloLink(operation => {
+      if (timesCalled === 0) {
+        timesCalled++;
+        // simulate the first request being an error
+        return new Observable(observer => {
+          observer.next(ERROR_RESPONSE);
+          observer.complete();
+        });
+      } else {
+        return new Observable(observer => {
+          observer.next(GOOD_RESPONSE);
+          observer.complete();
+        });
+      }
+    });
+
     const errorLink = new ErrorLink(
       ({ graphQLErrors, response, operation, forward }) => {
-        if (graphQLErrors.length > 0) {
-          called = true;
-          expect(graphQLErrors[0].message).toBe('resolver blew up');
-          expect(response.data).not.toBeDefined();
-          expect(operation.operationName).toBe('Foo');
-          expect(operation.getContext().bar).toBe(true);
-          // retry operation if it resulted in an error
-          return forward(operation);
-        } else {
-          retryCalled = true;
-          expect(graphQLErrors.length).toBe(0);
-          expect(response.data.foo).toBe(true);
-          expect(operation.operationName).toBe('Foo');
-          expect(operation.getContext().bar).toBe(true);
+        try {
+          if (graphQLErrors) {
+            errorHandlerCalled = true;
+            expect(graphQLErrors).toEqual(ERROR_RESPONSE.errors);
+            expect(response.data).not.toBeDefined();
+            expect(operation.operationName).toBe('Foo');
+            expect(operation.getContext().bar).toBe(true);
+            // retry operation if it resulted in an error
+            return forward(operation);
+          }
+        } catch (error) {
+          done.fail(error);
         }
       },
     );
 
-    const mockLink = new ApolloLink(operation =>
-      Observable.of(
-        // original response with errors
-        {
-          errors: [
-            {
-              message: 'resolver blew up',
-            },
-          ],
-        },
-        // simulate a second response after retrying
-        {
-          data: { foo: true },
-          errors: [],
-        },
-      ),
+    const link = errorLink.concat(mockHttpLink);
+
+    execute(link, { query: QUERY, context: { bar: true } }).subscribe({
+      next(result) {
+        try {
+          expect(errorHandlerCalled).toBe(true);
+          expect(result).toEqual(GOOD_RESPONSE);
+        } catch (error) {
+          return done.fail(error);
+        }
+      },
+      complete() {
+        done();
+      },
+    });
+  });
+
+  it('supports retrying when the initial request had networkError', done => {
+    let errorHandlerCalled = false;
+
+    let timesCalled = 0;
+    const mockHttpLink = new ApolloLink(operation => {
+      if (timesCalled === 0) {
+        timesCalled++;
+        // simulate the first request being an error
+        return new Observable(observer => {
+          observer.error(NETWORK_ERROR);
+        });
+      } else {
+        return new Observable(observer => {
+          observer.next(GOOD_RESPONSE);
+          observer.complete();
+        });
+      }
+    });
+
+    const errorLink = new ErrorLink(
+      ({ networkError, response, operation, forward }) => {
+        try {
+          if (networkError) {
+            errorHandlerCalled = true;
+            expect(networkError).toEqual(NETWORK_ERROR);
+            return forward(operation);
+          }
+        } catch (error) {
+          done.fail(error);
+        }
+      },
     );
 
-    const link = errorLink.concat(mockLink);
+    const link = errorLink.concat(mockHttpLink);
 
-    execute(link, { query, context: { bar: true } }).subscribe(result => {
-      try {
-        expect(called).toBe(true);
-        expect(retryCalled).toBe(true);
+    execute(link, { query: QUERY, context: { bar: true } }).subscribe({
+      next(result) {
+        try {
+          expect(errorHandlerCalled).toBe(true);
+          expect(result).toEqual(GOOD_RESPONSE);
+        } catch (error) {
+          return done.fail(error);
+        }
+      },
+      complete() {
         done();
-      } catch (error) {
-        return done.fail(error);
+      },
+    });
+  })
+
+
+  it('returns errors from retried requests', done => {
+    let errorHandlerCalled = false;
+
+    let timesCalled = 0;
+    const mockHttpLink = new ApolloLink(operation => {
+      if (timesCalled === 0) {
+        timesCalled++;
+        // simulate the first request being an error
+        return new Observable(observer => {
+          observer.next(ERROR_RESPONSE);
+          observer.complete();
+        });
+      } else {
+        return new Observable(observer => {
+          observer.error(NETWORK_ERROR);
+        });
       }
+    });
+
+    const errorLink = new ErrorLink(
+      ({ graphQLErrors, networkError, response, operation, forward }) => {
+        try {
+          if (graphQLErrors) {
+            errorHandlerCalled = true;
+            expect(graphQLErrors).toEqual(ERROR_RESPONSE.errors);
+            expect(response.data).not.toBeDefined();
+            expect(operation.operationName).toBe('Foo');
+            expect(operation.getContext().bar).toBe(true);
+            // retry operation if it resulted in an error
+            return forward(operation);
+          }
+        } catch (error) {
+          done.fail(error);
+        }
+      },
+    );
+
+    const link = errorLink.concat(mockHttpLink);
+
+    let observerNextCalled = false;
+    execute(link, { query: QUERY, context: { bar: true } }).subscribe({
+      next(result) {
+        // should not be called
+        observerNextCalled = true;
+      },
+      error(error) {
+        // note that complete will not be after an error
+        // therefore we should end the test here with done()
+        expect(errorHandlerCalled).toBe(true);
+        expect(observerNextCalled).toBe(false);
+        expect(error).toEqual(NETWORK_ERROR);
+        done();
+      },
     });
   });
 });
