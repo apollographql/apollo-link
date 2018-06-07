@@ -1,6 +1,8 @@
 # Change log
 
 ### vNEXT
+
+### 1.1.0
 - Pass `forward` into error handler for ErrorLink to support retrying a failed request 
 
 ### 1.0.9
