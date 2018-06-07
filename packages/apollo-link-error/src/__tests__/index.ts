@@ -1,7 +1,6 @@
 import gql from 'graphql-tag';
 import { ApolloLink, execute, Observable } from 'apollo-link';
 import { onError, ErrorLink } from '../';
-import {} from 'jest';
 
 describe('error handling', () => {
   it('has an easy way to handle GraphQL errors', done => {
