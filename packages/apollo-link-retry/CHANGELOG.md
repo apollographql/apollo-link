@@ -2,6 +2,9 @@
 
 ### vNext
 
+### 2.2.4
+- Minor documentation fixes
+
 ### 2.2.3
 - Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
 
