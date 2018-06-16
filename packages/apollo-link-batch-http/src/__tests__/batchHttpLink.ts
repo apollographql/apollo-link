@@ -1,9 +1,10 @@
-import { ApolloLink, execute, Observable } from 'apollo-link';
-import * as fetchMock from 'fetch-mock';
-import gql from 'graphql-tag';
+import { ApolloLink, execute } from "apollo-link";
+import { of } from "rxjs";
+import * as fetchMock from "fetch-mock";
+import gql from "graphql-tag";
 
-import { sharedHttpTest } from './sharedHttpTests';
-import { BatchHttpLink } from '../batchHttpLink';
+import { sharedHttpTest } from "./sharedHttpTests";
+import { BatchHttpLink } from "../batchHttpLink";
 
 const sampleQuery = gql`
   query SampleQuery {
@@ -20,31 +21,31 @@ const operation = {
         id
       }
     }
-  `,
+  `
 };
 
-describe('BatchHttpLink', () => {
+describe("BatchHttpLink", () => {
   sharedHttpTest(
-    'BatchHttpLink',
+    "BatchHttpLink",
     httpArgs => {
       const args = {
         ...httpArgs,
         batchInterval: 0,
-        batchMax: 1,
+        batchMax: 1
       };
       return new BatchHttpLink(args);
     },
-    true,
+    true
   );
 
   beforeAll(() => {
     jest.resetModules();
   });
 
-  const data = { data: { hello: 'world' } };
-  const data2 = { data: { hello: 'everyone' } };
-  const roflData = { data: { haha: 'hehe' } };
-  const lawlData = { data: { tehe: 'haaa' } };
+  const data = { data: { hello: "world" } };
+  const data2 = { data: { hello: "everyone" } };
+  const roflData = { data: { haha: "hehe" } };
+  const lawlData = { data: { tehe: "haaa" } };
   const makePromise = res =>
     new Promise((resolve, reject) => setTimeout(() => resolve(res)));
 
@@ -52,9 +53,9 @@ describe('BatchHttpLink', () => {
 
   beforeEach(() => {
     fetchMock.restore();
-    fetchMock.post('begin:batch', makePromise([data, data2]));
-    fetchMock.post('begin:rofl', makePromise([roflData, roflData]));
-    fetchMock.post('begin:lawl', makePromise([lawlData, lawlData]));
+    fetchMock.post("begin:batch", makePromise([data, data2]));
+    fetchMock.post("begin:rofl", makePromise([roflData, roflData]));
+    fetchMock.post("begin:lawl", makePromise([lawlData, lawlData]));
 
     const next = jest.fn();
     const error = jest.fn();
@@ -63,36 +64,36 @@ describe('BatchHttpLink', () => {
     subscriber = {
       next,
       error,
-      complete,
+      complete
     };
   });
 
-  it('does not need any constructor arguments', () => {
+  it("does not need any constructor arguments", () => {
     expect(() => new BatchHttpLink()).not.toThrow();
   });
 
-  it('should pass batchInterval, batchMax, and batchKey to BatchLink', () => {
-    jest.mock('apollo-link-batch', () => ({
-      BatchLink: jest.fn(),
+  it("should pass batchInterval, batchMax, and batchKey to BatchLink", () => {
+    jest.mock("apollo-link-batch", () => ({
+      BatchLink: jest.fn()
     }));
 
-    const BatchLink = require('apollo-link-batch').BatchLink;
-    const LocalScopedLink = require('../batchHttpLink').BatchHttpLink;
+    const BatchLink = require("apollo-link-batch").BatchLink;
+    const LocalScopedLink = require("../batchHttpLink").BatchHttpLink;
 
-    const batchKey = () => 'hi';
-    const batchHandler = operations => Observable.of();
+    const batchKey = () => "hi";
+    const batchHandler = operations => of();
 
     const batch = new LocalScopedLink({
       batchInterval: 20,
       batchMax: 20,
       batchKey,
-      batchHandler,
+      batchHandler
     });
 
     const {
       batchInterval,
       batchMax,
-      batchKey: batchKeyArg,
+      batchKey: batchKeyArg
     } = BatchLink.mock.calls[0][0];
 
     expect(batchInterval).toBe(20);
@@ -100,11 +101,11 @@ describe('BatchHttpLink', () => {
     expect(batchKeyArg()).toEqual(batchKey());
   });
 
-  it('handles batched requests', done => {
+  it("handles batched requests", done => {
     const link = new BatchHttpLink({
-      uri: 'batch',
+      uri: "batch",
       batchInterval: 0,
-      batchMax: 2,
+      batchMax: 2
     });
 
     let nextCalls = 0;
@@ -120,12 +121,12 @@ describe('BatchHttpLink', () => {
 
     const complete = () => {
       try {
-        const calls = fetchMock.calls('begin:batch');
+        const calls = fetchMock.calls("begin:batch");
         expect(calls.length).toBe(1);
         expect(nextCalls).toBe(2);
 
-        const options = fetchMock.lastOptions('begin:batch');
-        expect(options.credentials).toEqual('two');
+        const options = fetchMock.lastOptions("begin:batch");
+        expect(options.credentials).toEqual("two");
 
         completions++;
 
@@ -143,29 +144,29 @@ describe('BatchHttpLink', () => {
 
     execute(link, {
       query: sampleQuery,
-      context: { credentials: 'two' },
+      context: { credentials: "two" }
     }).subscribe(next(data), error, complete);
 
     execute(link, {
       query: sampleQuery,
-      context: { credentials: 'two' },
+      context: { credentials: "two" }
     }).subscribe(next(data2), error, complete);
   });
 
-  it('errors on an incorrect number of results for a batch', done => {
+  it("errors on an incorrect number of results for a batch", done => {
     const link = new BatchHttpLink({
-      uri: 'batch',
+      uri: "batch",
       batchInterval: 0,
-      batchMax: 3,
+      batchMax: 3
     });
 
     let errors = 0;
     const next = data => {
-      done.fail('next should not have been called');
+      done.fail("next should not have been called");
     };
 
     const complete = () => {
-      done.fail('complete should not have been called');
+      done.fail("complete should not have been called");
     };
 
     const error = error => {
@@ -181,7 +182,7 @@ describe('BatchHttpLink', () => {
     execute(link, { query: sampleQuery }).subscribe(next, error, complete);
   });
 
-  describe('batchKey', () => {
+  describe("batchKey", () => {
     const query = gql`
       query {
         author {
@@ -191,11 +192,11 @@ describe('BatchHttpLink', () => {
       }
     `;
 
-    it('should batch queries with different options separately', done => {
+    it("should batch queries with different options separately", done => {
       let key = true;
       const batchKey = () => {
         key = !key;
-        return '' + !key;
+        return "" + !key;
       };
 
       const link = ApolloLink.from([
@@ -206,8 +207,8 @@ describe('BatchHttpLink', () => {
           batchInterval: 1,
           //if batchKey does not work, then the batch size would be 3
           batchMax: 3,
-          batchKey,
-        }),
+          batchKey
+        })
       ]);
 
       let count = 0;
@@ -222,9 +223,9 @@ describe('BatchHttpLink', () => {
         count++;
         if (count === 4) {
           try {
-            const lawlCalls = fetchMock.calls('begin:lawl');
+            const lawlCalls = fetchMock.calls("begin:lawl");
             expect(lawlCalls.length).toBe(1);
-            const roflCalls = fetchMock.calls('begin:rofl');
+            const roflCalls = fetchMock.calls("begin:rofl");
             expect(roflCalls.length).toBe(1);
             done();
           } catch (e) {
@@ -236,20 +237,20 @@ describe('BatchHttpLink', () => {
       [1, 2].forEach(x => {
         execute(link, {
           query,
-          variables: { endpoint: 'rofl' },
+          variables: { endpoint: "rofl" }
         }).subscribe({
           next: next(roflData),
           error: done.fail,
-          complete,
+          complete
         });
 
         execute(link, {
           query,
-          variables: { endpoint: 'lawl' },
+          variables: { endpoint: "lawl" }
         }).subscribe({
           next: next(lawlData),
           error: done.fail,
-          complete,
+          complete
         });
       });
     });
