@@ -53,6 +53,12 @@ export function fromPromise<T>(promise: Promise<T>): Observable<T> {
   return from(promise);
 }
 
+export function fromError<T>(errorValue: any): Observable<T> {
+  return new Observable<T>(observer => {
+    observer.error(errorValue);
+  });
+}
+
 export function transformOperation(operation: GraphQLRequest): GraphQLRequest {
   const transformedOperation: GraphQLRequest = {
     variables: operation.variables || {},

@@ -2,7 +2,9 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "bootstrap": "npm i && lerna bootstrap",
+    "bootstrap": "lerna bootstrap",
+    "diff": "check-if-folder-contents-changed-in-git-commit-range",
+    "postinstall": "npm run bootstrap",
     "postbootstrap": "npm run build",
     "build": "lerna run -- build",
     "test": "lerna run -- test",
@@ -11,14 +13,17 @@
     "lint-fix":
       "prettier --trailing-comma all --single-quote --write \"packages/*/{src,tests,test,benchmark}/**/*.{j,t}s*\"",
     "lint-staged": "lint-staged",
+    "lint-check":
+      "prettier-check --single-quote --trailing-comma all \"packages/*/{src,__tests__}/**/*.ts\"",
     "filesize": "lerna run -- filesize && bundlesize",
     "type-check": "lerna run -- type-check",
     "coverage": "lerna run -- coverage",
     "coverage:upload": "codecov",
     "danger": "danger run --verbose",
-    "predeploy": "npm run build",
+    "predeploy": "npm run bootstrap",
     "deploy": "lerna publish -m \"chore: Publish\" --independent",
-    "watch": "lerna run --parallel watch"
+    "watch":
+      "trap \"kill 0\" SIGINT; for f in `ls packages`; do (cd `pwd`/packages/$f && [[ -e package.json ]] && npm run watch) & done; "
   },
   "bundlesize": [
     {
@@ -29,12 +34,12 @@
     {
       "name": "apollo-link-batch",
       "path": "./packages/apollo-link-batch/lib/bundle.min.js",
-      "maxSize": "1.3 Kb"
+      "maxSize": "1.5 Kb"
     },
     {
       "name": "apollo-link-batch-http",
       "path": "./packages/apollo-link-batch-http/lib/bundle.min.js",
-      "maxSize": "6.7 Kb"
+      "maxSize": "6.8 Kb"
     },
     {
       "name": "apollo-link-dedup",
@@ -49,7 +54,7 @@
     {
       "name": "apollo-link-http",
       "path": "./packages/apollo-link-http/lib/bundle.min.js",
-      "maxSize": "4.5 Kb"
+      "maxSize": "6 Kb"
     },
     {
       "name": "apollo-link-polling",
@@ -59,7 +64,7 @@
     {
       "name": "apollo-link-retry",
       "path": "./packages/apollo-link-retry/lib/bundle.min.js",
-      "maxSize": "2 Kb"
+      "maxSize": "2.5 Kb"
     },
     {
       "name": "apollo-link-ws",
@@ -69,32 +74,35 @@
   ],
   "jest": {
     "transform": {
-      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+      ".(ts|tsx)": "ts-jest"
     }
   },
   "lint-staged": {
-    "*.ts*": [
+    "*.{ts, tsx, js, jsx}": [
       "prettier --trailing-comma all --single-quote --write",
       "git add"
     ],
-    "*.js*": [
-      "prettier --trailing-comma all --single-quote --write",
-      "git add"
-    ],
-    "*.json*": ["prettier --write", "git add"]
+    "!(package).json": ["prettier --write", "git add"]
   },
   "pre-commit": "lint-staged",
+  "pre-push": "lint-check",
   "dependencies": {},
   "devDependencies": {
     "@types/zen-observable": "0.5.3",
-    "bundlesize": "0.15.3",
+    "bundlesize": "0.17.0",
+    "check-if-folder-contents-changed-in-git-commit-range": "^1.0.0",
     "codecov": "3.0.0",
-    "danger": "1.2.0",
-    "lerna": "2.5.1",
-    "lint-staged": "6.0.0",
+    "danger": "3.3.2",
+    "jest-junit": "^3.6.0",
+    "lerna": "2.9.0",
+    "lint-staged": "^7.0.0",
     "pre-commit": "1.2.2",
-    "prettier": "1.9.2",
+    "pre-push": "^0.1.1",
+    "prettier": "1.11.1",
+    "prettier-check": "^2.0.0",
+    "rollup": "^0.57.1",
+    "rollup-plugin-sourcemaps": "0.4.2",
     "ts-jest": "21.2.4",
-    "typescript": "2.6.2"
+    "typescript": "2.7.2"
   }
 }

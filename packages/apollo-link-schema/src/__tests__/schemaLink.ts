@@ -7,7 +7,7 @@ import { SchemaLink } from '../schemaLink';
 
 const sampleQuery = gql`
   query SampleQuery {
-    stub {
+    sampleQuery {
       id
     }
   }
@@ -63,15 +63,13 @@ describe('SchemaLink', () => {
   });
 
   it('throws if no arguments given', () => {
-    expect(() => new SchemaLink()).toThrow();
+    expect(() => new (SchemaLink as any)()).toThrow();
   });
 
   it('correctly receives the constructor arguments', () => {
     let rootValue = {};
-    let context = {};
-    let link = new SchemaLink({ schema, rootValue, context });
+    let link = new SchemaLink({ schema, rootValue });
     expect(link.rootValue).toEqual(rootValue);
-    expect(link.context).toEqual(context);
     expect(link.schema).toEqual(schema);
   });
 
@@ -133,6 +131,90 @@ describe('SchemaLink', () => {
       () => {
         expect(next).toHaveBeenCalledTimes(1);
         done();
+      },
+    );
+  });
+
+  it('passes operation context into execute with context function', done => {
+    const next = jest.fn();
+    const contextValue = { some: 'value' };
+    const contextProvider = jest.fn(operation => operation.getContext());
+    const resolvers = {
+      Query: {
+        sampleQuery: (root, args, context) => {
+          try {
+            expect(context).toEqual(contextValue);
+          } catch (error) {
+            done.fail('Should pass context into resolver');
+          }
+        },
+      },
+    };
+    const schemaWithResolvers = makeExecutableSchema({
+      typeDefs,
+      resolvers,
+    });
+    const link = new SchemaLink({
+      schema: schemaWithResolvers,
+      context: contextProvider,
+    });
+    const observable = execute(link, {
+      query: sampleQuery,
+      context: contextValue,
+    });
+    observable.subscribe(
+      next,
+      error => done.fail("Shouldn't call onError"),
+      () => {
+        try {
+          expect(next).toHaveBeenCalledTimes(1);
+          expect(contextProvider).toHaveBeenCalledTimes(1);
+          done();
+        } catch (e) {
+          done.fail(e);
+        }
+      },
+    );
+  });
+
+  it('passes static context into execute', done => {
+    const next = jest.fn();
+    const contextValue = { some: 'value' };
+    const resolver = jest.fn((root, args, context) => {
+      try {
+        expect(context).toEqual(contextValue);
+      } catch (error) {
+        done.fail('Should pass context into resolver');
+      }
+    });
+
+    const resolvers = {
+      Query: {
+        sampleQuery: resolver,
+      },
+    };
+    const schemaWithResolvers = makeExecutableSchema({
+      typeDefs,
+      resolvers,
+    });
+    const link = new SchemaLink({
+      schema: schemaWithResolvers,
+      context: contextValue,
+    });
+    const observable = execute(link, {
+      query: sampleQuery,
+    });
+    observable.subscribe(
+      next,
+      error => done.fail("Shouldn't call onError"),
+      () => {
+        try {
+          expect(next).toHaveBeenCalledTimes(1);
+          expect(resolver).toHaveBeenCalledTimes(1);
+          done();
+        } catch (e) {
+          done.fail(e);
+        }
       },
     );
   });

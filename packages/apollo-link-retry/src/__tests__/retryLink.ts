@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { execute, ApolloLink, Observable, FetchResult } from 'apollo-link';
+import { execute, ApolloLink, Observable, fromError } from 'apollo-link';
 import { of } from 'rxjs';
 import waitFor from 'wait-for-observables';
 
@@ -19,7 +19,7 @@ describe('RetryLink', () => {
   it('fails for unreachable endpoints', async () => {
     const max = 10;
     const retry = new RetryLink({ delay: { initial: 1 }, attempts: { max } });
-    const stub = jest.fn(() => new Observable(o => o.error(standardError)));
+    const stub = jest.fn(() => fromError(standardError));
     const link = ApolloLink.from([retry, stub]);
 
     const [{ error }] = await waitFor(execute(link, { query }));
@@ -45,7 +45,7 @@ describe('RetryLink', () => {
     });
     const data = { data: { hello: 'world' } };
     const stub = jest.fn();
-    stub.mockReturnValueOnce(new Observable(o => o.error(standardError)));
+    stub.mockReturnValueOnce(fromError(standardError));
     stub.mockReturnValueOnce(of(data));
     const link = ApolloLink.from([retry, stub]);
 
@@ -62,7 +62,7 @@ describe('RetryLink', () => {
     const data = { data: { hello: 'world' } };
     const unsubscribeStub = jest.fn();
 
-    const firstTry = new Observable(o => o.error(standardError));
+    const firstTry = fromError(standardError);
     // Hold the test hostage until we're hit
     let secondTry;
     const untilSecondTry = new Promise(resolve => {
@@ -97,8 +97,8 @@ describe('RetryLink', () => {
     });
     const data = { data: { hello: 'world' } };
     const stub = jest.fn();
-    stub.mockReturnValueOnce(new Observable(o => o.error(standardError)));
-    stub.mockReturnValueOnce(new Observable(o => o.error(standardError)));
+    stub.mockReturnValueOnce(fromError(standardError));
+    stub.mockReturnValueOnce(fromError(standardError));
     stub.mockReturnValueOnce(of(data));
     const link = ApolloLink.from([retry, stub]);
 
@@ -115,7 +115,7 @@ describe('RetryLink', () => {
       attempts: { max: 5 },
     });
     const data = { data: { hello: 'world' } };
-    const stub = jest.fn(() => new Observable(o => o.error(standardError)));
+    const stub = jest.fn(() => fromError(standardError));
     const link = ApolloLink.from([retry, stub]);
 
     const [result1, result2] = await waitFor(
@@ -130,7 +130,7 @@ describe('RetryLink', () => {
   it('supports custom delay functions', async () => {
     const delayStub = jest.fn(() => 1);
     const retry = new RetryLink({ delay: delayStub, attempts: { max: 3 } });
-    const linkStub = jest.fn(() => new Observable(o => o.error(standardError)));
+    const linkStub = jest.fn(() => fromError(standardError));
     const link = ApolloLink.from([retry, linkStub]);
     const [{ error }] = await waitFor(execute(link, { query }));
 
@@ -147,6 +147,29 @@ describe('RetryLink', () => {
     attemptStub.mockReturnValueOnce(true);
     attemptStub.mockReturnValueOnce(true);
     attemptStub.mockReturnValueOnce(false);
+
+    const retry = new RetryLink({
+      delay: { initial: 1 },
+      attempts: attemptStub,
+    });
+    const linkStub = jest.fn(() => fromError(standardError));
+    const link = ApolloLink.from([retry, linkStub]);
+    const [{ error }] = await waitFor(execute(link, { query }));
+
+    expect(error).toEqual(standardError);
+    const operation = attemptStub.mock.calls[0][1];
+    expect(attemptStub.mock.calls).toEqual([
+      [1, operation, standardError],
+      [2, operation, standardError],
+      [3, operation, standardError],
+    ]);
+  });
+
+  it('supports custom attempt functions that return either Promises or booleans', async () => {
+    const attemptStub = jest.fn();
+    attemptStub.mockReturnValueOnce(true);
+    attemptStub.mockReturnValueOnce(Promise.resolve(true));
+    attemptStub.mockReturnValueOnce(Promise.resolve(false));
 
     const retry = new RetryLink({
       delay: { initial: 1 },

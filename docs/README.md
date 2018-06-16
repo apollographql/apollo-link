@@ -5,8 +5,6 @@
 To run the documents locally, please use the following commands:
 
 ```
-git submodule init
-git submodule update
 npm install
 npm start
 ```

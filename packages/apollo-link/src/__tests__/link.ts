@@ -423,8 +423,9 @@ describe('Link static library', () => {
           hello: 'world',
         },
       };
-      const chain = ApolloLink.from([new MockLink(() => of(data))]);
-      const observable = execute(chain, uniqueOperation);
+      const chain = ApolloLink.from([new MockLink(() => Observable.of(data))]);
+      // Smoke tests execute as a static method
+      const observable = ApolloLink.execute(chain, uniqueOperation);
       observable.subscribe({
         next: actualData => {
           expect(data).toEqual(actualData);

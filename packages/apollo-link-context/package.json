@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-context",
-  "version": "1.0.4",
+  "version": "1.0.8",
   "description": "An easy way to set and cache context changes for Apollo Link",
   "author": "James Baxley <james@meteor.com>",
   "license": "MIT",
@@ -35,28 +35,29 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-link": "^1.0.7"
+    "apollo-link": "^1.2.2"
   },
   "devDependencies": {
-    "@types/graphql": "0.11.7",
-    "@types/jest": "21.1.9",
-    "browserify": "14.5.0",
-    "graphql": "0.12.3",
-    "graphql-tag": "2.6.1",
-    "jest": "21.2.1",
+    "@types/graphql": "0.12.6",
+    "@types/jest": "22.2.2",
+    "browserify": "16.1.1",
+    "graphql": "0.13.2",
+    "graphql-tag": "2.8.0",
+    "jest": "22.4.3",
     "rimraf": "2.6.1",
-    "rollup": "0.53.0",
+    "rollup": "0.57.1",
     "rxjs": "6.2.1",
     "ts-jest": "21.2.4",
-    "tslint": "5.8.0",
-    "typescript": "2.6.2",
-    "uglify-js": "3.2.2"
+    "tslint": "5.9.1",
+    "typescript": "2.7.2",
+    "uglify-js": "3.3.16"
   },
   "jest": {
     "transform": {
-      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+      ".(ts|tsx)": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "json"]
+    "moduleFileExtensions": ["ts", "tsx", "js", "json"],
+    "mapCoverage": true
   }
 }

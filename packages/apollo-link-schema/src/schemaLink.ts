@@ -9,6 +9,10 @@ import { execute, GraphQLSchema } from 'graphql';
 import { from, of } from 'rxjs';
 
 export namespace SchemaLink {
+  export type ResolverContextFunction = (
+    operation: Operation,
+  ) => Record<string, any>;
+
   export interface Options {
     /**
      * The schema to generate responses from.
@@ -23,14 +27,14 @@ export namespace SchemaLink {
     /**
      * A context to provide to resolvers declared within the schema.
      */
-    context?: any;
+    context?: ResolverContextFunction | Record<string, any>;
   }
 }
 
 export class SchemaLink extends ApolloLink {
   public schema: GraphQLSchema;
   public rootValue: any;
-  public context: any;
+  public context: SchemaLink.ResolverContextFunction | any;
 
   constructor({ schema, rootValue, context }: SchemaLink.Options) {
     super();
@@ -45,7 +49,9 @@ export class SchemaLink extends ApolloLink {
       this.schema,
       operation.query,
       this.rootValue,
-      this.context,
+      typeof this.context === 'function'
+        ? this.context(operation)
+        : this.context,
       operation.variables,
       operation.operationName,
     );

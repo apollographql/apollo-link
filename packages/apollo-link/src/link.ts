@@ -90,6 +90,7 @@ export class ApolloLink {
   public static empty = empty;
   public static from = from;
   public static split = split;
+  public static execute = execute;
 
   constructor(request?: RequestHandler) {
     if (request) this.request = request;

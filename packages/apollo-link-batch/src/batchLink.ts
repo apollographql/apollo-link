@@ -28,36 +28,39 @@ export namespace BatchLink {
     /**
      * The handler that should execute a batch of operations.
      */
-    batchHandler: BatchHandler;
+    batchHandler?: BatchHandler;
+
+    /**
+     * creates the key for a batch
+     */
+    batchKey?: (operation: Operation) => string;
   }
 }
 
 export class BatchLink extends ApolloLink {
-  private batchInterval: number;
-  private batchMax: number;
   private batcher: OperationBatcher;
 
-  constructor(fetchParams: BatchLink.Options) {
+  constructor(fetchParams: BatchLink.Options = {}) {
     super();
 
-    this.batchInterval = (fetchParams && fetchParams.batchInterval) || 10;
-    this.batchMax = (fetchParams && fetchParams.batchMax) || 0;
-
-    if (typeof this.batchInterval !== 'number') {
-      throw new Error(
-        `batchInterval must be a number, got ${this.batchInterval}`,
-      );
-    }
-
-    if (typeof this.batchMax !== 'number') {
-      throw new Error(`batchMax must be a number, got ${this.batchMax}`);
-    }
+    const {
+      batchInterval = 10,
+      batchMax = 0,
+      batchHandler = () => null,
+      batchKey = () => '',
+    } = fetchParams;
 
     this.batcher = new OperationBatcher({
-      batchInterval: this.batchInterval,
-      batchMax: this.batchMax,
-      batchHandler: fetchParams.batchHandler,
+      batchInterval,
+      batchMax,
+      batchHandler,
+      batchKey,
     });
+
+    //make this link terminating
+    if (fetchParams.batchHandler.length <= 1) {
+      this.request = operation => this.batcher.enqueueRequest({ operation });
+    }
   }
 
   public request(
