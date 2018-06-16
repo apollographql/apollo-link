@@ -1,5 +1,5 @@
 import { getOperationName } from 'apollo-utilities';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
 import { print } from 'graphql/language/printer';
 
 import { GraphQLRequest, Operation } from './types';
@@ -35,36 +35,14 @@ export function isTerminating(link: ApolloLink): boolean {
 }
 
 export function toPromise<R>(observable: Observable<R>): Promise<R> {
-  let completed = false;
-  return new Promise<R>((resolve, reject) => {
-    observable.subscribe({
-      next: data => {
-        if (completed) {
-          console.warn(
-            `Promise Wrapper does not support multiple results from Observable`,
-          );
-        } else {
-          completed = true;
-          resolve(data);
-        }
-      },
-      error: reject,
-    });
-  });
+  return observable.toPromise();
 }
 
 // backwards compat
 export const makePromise = toPromise;
 
 export function fromPromise<T>(promise: Promise<T>): Observable<T> {
-  return new Observable<T>(observer => {
-    promise
-      .then((value: T) => {
-        observer.next(value);
-        observer.complete();
-      })
-      .catch(observer.error.bind(observer));
-  });
+  return from(promise);
 }
 
 export function transformOperation(operation: GraphQLRequest): GraphQLRequest {
