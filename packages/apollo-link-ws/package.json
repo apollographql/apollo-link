@@ -55,6 +55,7 @@
     "jest": "22.4.3",
     "rimraf": "2.6.1",
     "rollup": "0.57.1",
+    "rollup-plugin-sourcemaps": "0.4.2",
     "rxjs": "6.2.1",
     "subscriptions-transport-ws": "0.9.7",
     "ts-jest": "21.2.4",

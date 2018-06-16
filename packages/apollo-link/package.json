@@ -42,8 +42,7 @@
   },
   "dependencies": {
     "@types/graphql": "0.12.6",
-    "apollo-utilities": "^1.0.0",
-    "zen-observable-ts": "^0.8.9"
+    "apollo-utilities": "^1.0.0"
   },
   "peerDependencies": {
     "graphql": "^0.11.3 || ^0.12.3 || ^0.13.0",
@@ -58,6 +57,7 @@
     "jest": "22.4.3",
     "rimraf": "2.6.1",
     "rollup": "0.57.1",
+    "rollup-plugin-sourcemaps": "0.4.2",
     "rxjs": "6.2.1",
     "ts-jest": "21.2.4",
     "tslint": "5.9.1",
