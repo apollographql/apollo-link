@@ -34,6 +34,14 @@ export function isTerminating(link: ApolloLink): boolean {
   return link.request.length <= 1;
 }
 
+export function isPromise(value: any): value is PromiseLike<any> {
+  return (
+    value &&
+    typeof (value as any).subscribe !== 'function' &&
+    typeof (value as any).then === 'function'
+  );
+}
+
 export function toPromise<R>(observable: Observable<R>): Promise<R> {
   return observable.toPromise();
 }

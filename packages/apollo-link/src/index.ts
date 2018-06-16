@@ -1,6 +1,7 @@
 export * from './link';
 export {
   createOperation,
+  isPromise,
   makePromise,
   toPromise,
   fromPromise,
