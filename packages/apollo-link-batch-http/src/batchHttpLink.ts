@@ -1,4 +1,4 @@
-import { ApolloLink, Operation, FetchResult, Observable } from "apollo-link";
+import { ApolloLink, Operation, FetchResult, Observable } from 'apollo-link';
 import {
   serializeFetchParameter,
   selectURI,
@@ -7,10 +7,10 @@ import {
   selectHttpOptionsAndBody,
   createSignalIfSupported,
   fallbackHttpConfig,
-  HttpOptions
-} from "apollo-link-http-common";
-import { BatchLink } from "apollo-link-batch";
-import { throwError } from "rxjs";
+  HttpOptions,
+} from 'apollo-link-http-common';
+import { BatchLink } from 'apollo-link-batch';
+import { throwError } from 'rxjs';
 
 export namespace BatchHttpLink {
   export interface Options extends HttpOptions {
@@ -48,7 +48,7 @@ export class BatchHttpLink extends ApolloLink {
     super();
 
     let {
-      uri = "/graphql",
+      uri = '/graphql',
       // use default global fetch is nothing passed in
       fetch: fetcher,
       includeExtensions,
@@ -72,7 +72,7 @@ export class BatchHttpLink extends ApolloLink {
       http: { includeExtensions },
       options: requestOptions.fetchOptions,
       credentials: requestOptions.credentials,
-      headers: requestOptions.headers
+      headers: requestOptions.headers,
     };
 
     this.batchInterval = batchInterval || 10;
@@ -87,7 +87,7 @@ export class BatchHttpLink extends ApolloLink {
         http: context.http,
         options: context.fetchOptions,
         credentials: context.credentials,
-        headers: context.headers
+        headers: context.headers,
       };
 
       //uses fallback, link, and then context to build options
@@ -96,24 +96,24 @@ export class BatchHttpLink extends ApolloLink {
           operation,
           fallbackHttpConfig,
           linkConfig,
-          contextConfig
-        )
+          contextConfig,
+        ),
       );
 
       const body = optsAndBody.map(({ body }) => body);
       const options = optsAndBody[0].options;
 
       // There's no spec for using GET with batches.
-      if (options.method === "GET") {
-        return throwError<FetchResult[]>(
-          new Error("apollo-link-batch-http does not support GET requests")
+      if (options.method === 'GET') {
+        return throwError(
+          new Error('apollo-link-batch-http does not support GET requests'),
         );
       }
 
       try {
-        (options as any).body = serializeFetchParameter(body, "Payload");
+        (options as any).body = serializeFetchParameter(body, 'Payload');
       } catch (parseError) {
-        return throwError<FetchResult[]>(parseError);
+        return throwError(parseError);
       }
 
       let controller;
@@ -135,7 +135,7 @@ export class BatchHttpLink extends ApolloLink {
           })
           .catch(err => {
             // fetch was cancelled so its already been cleaned up in the unsubscribe
-            if (err.name === "AbortError") return;
+            if (err.name === 'AbortError') return;
             // if it is a network error, BUT there is graphql result info
             // fire the next observer before calling error
             // this gives apollo-client (and react-apollo) the `graphqlErrors` and `networErrors`
@@ -192,7 +192,7 @@ export class BatchHttpLink extends ApolloLink {
           http: context.http,
           options: context.fetchOptions,
           credentials: context.credentials,
-          headers: context.headers
+          headers: context.headers,
         };
 
         //may throw error if config not serializable
@@ -203,7 +203,7 @@ export class BatchHttpLink extends ApolloLink {
       batchInterval: this.batchInterval,
       batchMax: this.batchMax,
       batchKey,
-      batchHandler
+      batchHandler,
     });
   }
 
