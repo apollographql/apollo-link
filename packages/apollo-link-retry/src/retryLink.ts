@@ -3,19 +3,20 @@ import {
   Observable,
   Operation,
   NextLink,
-  FetchResult,
-} from 'apollo-link';
+  FetchResult
+} from "apollo-link";
+import { Observer } from "rxjs";
 
 import {
   DelayFunction,
   DelayFunctionOptions,
-  buildDelayFunction,
-} from './delayFunction';
+  buildDelayFunction
+} from "./delayFunction";
 import {
   RetryFunction,
   RetryFunctionOptions,
-  buildRetryFunction,
-} from './retryFunction';
+  buildRetryFunction
+} from "./retryFunction";
 
 export namespace RetryLink {
   export interface Options {
@@ -48,7 +49,7 @@ class RetryableOperation<TValue = any> {
     private operation: Operation,
     private nextLink: NextLink,
     private delayFor: DelayFunction,
-    private retryIf: RetryFunction,
+    private retryIf: RetryFunction
   ) {}
 
   /**
@@ -57,10 +58,10 @@ class RetryableOperation<TValue = any> {
    * If the operation has previously emitted other events, they will be
    * immediately triggered for the observer.
    */
-  subscribe(observer: ZenObservable.Observer<TValue>) {
+  subscribe(observer: Observer<TValue>) {
     if (this.canceled) {
       throw new Error(
-        `Subscribing to a retryable link that was canceled is not supported`,
+        `Subscribing to a retryable link that was canceled is not supported`
       );
     }
     this.observers.push(observer);
@@ -83,11 +84,11 @@ class RetryableOperation<TValue = any> {
    * If no observers remain, the operation will stop retrying, and unsubscribe
    * from its downstream link.
    */
-  unsubscribe(observer: ZenObservable.Observer<TValue>) {
+  unsubscribe(observer: Observer<TValue>) {
     const index = this.observers.indexOf(observer);
     if (index < 0) {
       throw new Error(
-        `RetryLink BUG! Attempting to unsubscribe unknown observer!`,
+        `RetryLink BUG! Attempting to unsubscribe unknown observer!`
       );
     }
     // Note that we are careful not to change the order of length of the array,
@@ -126,7 +127,7 @@ class RetryableOperation<TValue = any> {
     this.currentSubscription = this.nextLink(this.operation).subscribe({
       next: this.onNext,
       error: this.onError,
-      complete: this.onComplete,
+      complete: this.onComplete
     });
   }
 
@@ -153,7 +154,7 @@ class RetryableOperation<TValue = any> {
     const shouldRetry = await this.retryIf(
       this.retryCount,
       this.operation,
-      error,
+      error
     );
     if (shouldRetry) {
       this.scheduleRetry(this.delayFor(this.retryCount, this.operation, error));
@@ -186,20 +187,20 @@ export class RetryLink extends ApolloLink {
   constructor({ delay, attempts }: RetryLink.Options = {}) {
     super();
     this.delayFor =
-      typeof delay === 'function' ? delay : buildDelayFunction(delay);
+      typeof delay === "function" ? delay : buildDelayFunction(delay);
     this.retryIf =
-      typeof attempts === 'function' ? attempts : buildRetryFunction(attempts);
+      typeof attempts === "function" ? attempts : buildRetryFunction(attempts);
   }
 
   public request(
     operation: Operation,
-    nextLink: NextLink,
+    nextLink: NextLink
   ): Observable<FetchResult> {
     const retryable = new RetryableOperation(
       operation,
       nextLink,
       this.delayFor,
-      this.retryIf,
+      this.retryIf
     );
     retryable.start();
 
