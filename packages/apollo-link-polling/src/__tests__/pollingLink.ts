@@ -1,5 +1,5 @@
 import { execute, Observable } from 'apollo-link';
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 import gql from 'graphql-tag';
 
 import { PollingLink } from '../pollingLink';

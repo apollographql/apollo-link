@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 import { ApolloLink, execute, Observable } from 'apollo-link';
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 
 import { onError, ErrorLink } from '../';
 

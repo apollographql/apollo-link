@@ -5,7 +5,7 @@ import {
   Operation,
   FetchResult,
 } from 'apollo-link';
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
 

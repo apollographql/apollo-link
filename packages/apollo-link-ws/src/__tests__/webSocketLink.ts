@@ -1,6 +1,6 @@
 import { SubscriptionClient } from 'subscriptions-transport-ws';
 import { Observable, execute } from 'apollo-link';
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 import { ExecutionResult } from 'graphql';
 
 import { WebSocketLink } from '../webSocketLink';

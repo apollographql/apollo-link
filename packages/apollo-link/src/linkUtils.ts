@@ -1,5 +1,5 @@
 import { getOperationName } from 'apollo-utilities';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { print } from 'graphql/language/printer';
 
 import { GraphQLRequest, Operation } from './types';

@@ -1,6 +1,6 @@
 import { Operation, NextLink, FetchResult } from '../types';
 
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 import { ApolloLink } from '../link';
 

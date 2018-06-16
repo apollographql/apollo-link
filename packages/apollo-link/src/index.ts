@@ -7,4 +7,4 @@ export {
 } from './linkUtils';
 export * from './types';
 
-export { Observable } from 'rxjs/Observable';
+export { Observable } from 'rxjs';

@@ -1,5 +1,5 @@
 import { ApolloLink, execute, Observable, makePromise } from 'apollo-link';
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 import { ApolloFetch } from 'apollo-fetch';
 import { print } from 'graphql';
 import gql from 'graphql-tag';

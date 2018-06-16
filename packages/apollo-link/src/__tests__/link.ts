@@ -1,6 +1,5 @@
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
-import { map } from 'rxjs/operators/map';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
 

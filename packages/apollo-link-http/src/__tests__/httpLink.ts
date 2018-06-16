@@ -1,5 +1,5 @@
 import { Observable, ApolloLink, execute } from 'apollo-link';
-import { map } from 'rxjs/operators/map';
+import { map } from 'rxjs/operators';
 import { print } from 'graphql';
 import gql from 'graphql-tag';
 import * as fetchMock from 'fetch-mock';

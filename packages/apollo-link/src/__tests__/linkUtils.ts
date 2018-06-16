@@ -1,6 +1,5 @@
 import { validateOperation, fromPromise, makePromise } from '../linkUtils';
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
+import { Observable, of } from 'rxjs';
 
 describe('Link utilities:', () => {
   describe('validateOperation', () => {

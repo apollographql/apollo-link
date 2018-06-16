@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { ExecutionResult, DocumentNode } from 'graphql';
 
 export interface GraphQLRequest {

@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 import { execute, ApolloLink, Observable, FetchResult } from 'apollo-link';
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 import waitFor from 'wait-for-observables';
 
 import { RetryLink } from '../retryLink';
