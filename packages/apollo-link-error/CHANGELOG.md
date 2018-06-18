@@ -2,6 +2,9 @@
 
 ### vNEXT
 
+### 1.1.0
+- Pass `forward` into error handler for ErrorLink to support retrying a failed request 
+
 ### 1.0.9
 - Correct return type to FetchResult [#600](https://github.com/apollographql/apollo-link/pull/600)
 
