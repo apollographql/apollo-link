@@ -3,36 +3,47 @@
 ### vNEXT
 
 ### 1.1.0
-- Pass `forward` into error handler for ErrorLink to support retrying a failed request 
+
+* Pass `forward` into error handler for ErrorLink to support retrying a failed request
 
 ### 1.0.9
-- Correct return type to FetchResult [#600](https://github.com/apollographql/apollo-link/pull/600)
+
+* Correct return type to FetchResult [#600](https://github.com/apollographql/apollo-link/pull/600)
 
 ### 1.0.8
-- Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
+
+* Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
 
 ### 1.0.7
-- update apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
+
+* update apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
 
 ### 1.0.6
-- ApolloLink upgrade
+
+* ApolloLink upgrade
 
 ### 1.0.5
-- ApolloLink upgrade
+
+* ApolloLink upgrade
 
 ### 1.0.4
-- ApolloLink upgrade
+
+* ApolloLink upgrade
 
 ### 1.0.3
-- export options as named interface [TypeScript]
+
+* export options as named interface [TypeScript]
 
 ### 1.0.2
-- changed peer-dependency of apollo-link to actual dependency
-- graphQLErrors alias networkError.result.errors on a networkError
+
+* changed peer-dependency of apollo-link to actual dependency
+* graphQLErrors alias networkError.result.errors on a networkError
 
 ### 1.0.1
-- moved to better rollup build
+
+* moved to better rollup build
 
 ### 1.0.0
-- Added the operation and any data to the error handler callback
-- changed graphqlErrors to be graphQLErrors to be consistent with Apollo Client
+
+* Added the operation and any data to the error handler callback
+* changed graphqlErrors to be graphQLErrors to be consistent with Apollo Client

@@ -80,7 +80,7 @@ Client constructor.
 ```js
 const client = new ApolloClient({
   cache,
-  link: ApolloLink.from([stateLink, new HttpLink()]),
+  link: ApolloLink.from([stateLink, new HttpLink()])
 });
 ```
 
@@ -104,8 +104,8 @@ would. Here's what this would look like for React:
 ```js
 const WrappedComponent = graphql(UPDATE_NETWORK_STATUS, {
   props: ({ mutate }) => ({
-    updateNetworkStatus: isConnected => mutate({ variables: { isConnected } }),
-  }),
+    updateNetworkStatus: isConnected => mutate({ variables: { isConnected } })
+  })
 })(NetworkStatus);
 ```
 
@@ -120,14 +120,14 @@ const stateLink = withClientState({
   resolvers: {
     Mutation: {
       /* same as above */
-    },
+    }
   },
   defaults: {
     networkStatus: {
-      __typename: 'NetworkStatus',
-      isConnected: true,
-    },
-  },
+      __typename: "NetworkStatus",
+      isConnected: true
+    }
+  }
 });
 ```
 
@@ -138,10 +138,10 @@ This is the same as calling `writeData` yourself with an initial value:
 cache.writeData({
   data: {
     networkStatus: {
-      __typename: 'NetworkStatus',
-     isConnected: true,
-    },
-  },
+      __typename: "NetworkStatus",
+      isConnected: true
+    }
+  }
 });
 ```
 
@@ -190,9 +190,9 @@ const WrappedComponent = graphql(GET_ARTICLES, {
     return {
       loading: false,
       networkStatus,
-      articles,
+      articles
     };
-  },
+  }
 })(Articles);
 ```
 
@@ -208,14 +208,16 @@ The shape of your initial state should match how you plan to query it in your ap
 ```js
 const defaults = {
   todos: [],
-  visibilityFilter: 'SHOW_ALL',
+  visibilityFilter: "SHOW_ALL",
   networkStatus: {
-    __typename: 'NetworkStatus',
-    isConnected: false,
+    __typename: "NetworkStatus",
+    isConnected: false
   }
 };
 
-const resolvers = { /* ... */ };
+const resolvers = {
+  /* ... */
+};
 
 const cache = new InMemoryCache();
 
@@ -234,7 +236,7 @@ const stateLink = withClientState({ cache, resolvers, defaults });
 
 const client = new ApolloClient({
   cache,
-  link: stateLink,
+  link: stateLink
 });
 
 const unsubscribe = client.onResetStore(stateLink.writeDefaults);
@@ -307,8 +309,7 @@ fieldName: (obj, args, context, info) => result;
    parent field or the `ROOT_QUERY` object in the case of a top-level query or
    mutation. Don't worry about this one too much for `apollo-link-state`.
 2. `args`: An object containing all of the arguments passed into the field. For
-   example, if you called a mutation with `updateNetworkStatus(isConnected:
-   true)`, the `args` object would be `{ isConnected: true }`.
+   example, if you called a mutation with `updateNetworkStatus(isConnected: true)`, the `args` object would be `{ isConnected: true }`.
 3. `context`: The context object, which is shared by all links in the Apollo
    Link chain. The most important thing to note here is that we've added the
    Apollo cache to the context for you, so you can manipulate the cache with
@@ -338,7 +339,7 @@ callback instead of using an async resolver. However, there are some cases where
 it's beneficial to perform the side effect within a resolver:
 
 ```js
-import { CameraRoll } from 'react-native';
+import { CameraRoll } from "react-native";
 
 const cameraRoll = {
   Query: {
@@ -346,20 +347,20 @@ const cameraRoll = {
       try {
         const media = await CameraRoll.getPhotos({
           first: 20,
-          assetType,
+          assetType
         });
 
         return {
           ...media,
           id: assetType,
-          __typename: 'CameraRoll',
+          __typename: "CameraRoll"
         };
       } catch (e) {
         console.error(e);
         return null;
       }
-    },
-  },
+    }
+  }
 };
 ```
 
@@ -401,16 +402,16 @@ merge all of your separate resolver maps into one object before you pass it to
 `withClientState`.
 
 ```js
-import merge from 'lodash.merge';
-import { withClientState } from 'apollo-link-state';
+import merge from "lodash.merge";
+import { withClientState } from "apollo-link-state";
 
-import currentUser from './resolvers/user';
-import cameraRoll from './resolvers/camera';
-import networkStatus from './resolvers/network';
+import currentUser from "./resolvers/user";
+import cameraRoll from "./resolvers/camera";
+import networkStatus from "./resolvers/network";
 
 const stateLink = withClientState({
   cache,
-  resolvers: merge(currentUser, cameraRoll, networkStatus),
+  resolvers: merge(currentUser, cameraRoll, networkStatus)
 });
 ```
 
@@ -451,10 +452,10 @@ you use it in your resolver map for a simple update:
 const filter = {
   Mutation: {
     updateVisibilityFilter: (_, { visibilityFilter }, { cache }) => {
-      const data = { visibilityFilter, __typename: 'Filter' };
+      const data = { visibilityFilter, __typename: "Filter" };
       cache.writeData({ data });
-    },
-  },
+    }
+  }
 };
 ```
 
@@ -472,8 +473,8 @@ const user = {
     updateUserEmail: (_, { id, email }, { cache }) => {
       const data = { email };
       cache.writeData({ id: `User:${id}`, data });
-    },
-  },
+    }
+  }
 };
 ```
 
@@ -567,9 +568,9 @@ const todos = {
         // you can also do cache.writeData({ data, id }) here if you prefer
         cache.writeFragment({ fragment, id, data });
         return null;
-      },
-    },
-  },
+      }
+    }
+  }
 };
 ```
 
@@ -690,9 +691,9 @@ const WrappedComponent = graphql(
     mutation updateStatus($text: String) {
       status(text: $text) @client
     }
-  `,
+  `
 )(({ mutate }) => (
-  <button onClick={() => mutate({ variables: { text: 'yo' } })} />
+  <button onClick={() => mutate({ variables: { text: "yo" } })} />
 ));
 ```
 
@@ -702,7 +703,7 @@ under the hood?
 
 ```js
 withClientMutations(({ writeField }) => (
-  <button onClick={() => writeField({ status: 'yo' })} />
+  <button onClick={() => writeField({ status: "yo" })} />
 ));
 ```
 

@@ -5,6 +5,7 @@ import {
   NextLink,
   FetchResult,
 } from 'apollo-link';
+import { Observer, Subscription } from 'rxjs';
 
 import {
   DelayFunction,
@@ -40,8 +41,8 @@ class RetryableOperation<TValue = any> {
   private error: any;
   private complete = false;
   private canceled = false;
-  private observers: ZenObservable.Observer<TValue>[] = [];
-  private currentSubscription: ZenObservable.Subscription = null;
+  private observers: Observer<TValue>[] = [];
+  private currentSubscription: Subscription = null;
   private timerId: number;
 
   constructor(
@@ -57,7 +58,7 @@ class RetryableOperation<TValue = any> {
    * If the operation has previously emitted other events, they will be
    * immediately triggered for the observer.
    */
-  subscribe(observer: ZenObservable.Observer<TValue>) {
+  subscribe(observer: Observer<TValue>) {
     if (this.canceled) {
       throw new Error(
         `Subscribing to a retryable link that was canceled is not supported`,
@@ -83,7 +84,7 @@ class RetryableOperation<TValue = any> {
    * If no observers remain, the operation will stop retrying, and unsubscribe
    * from its downstream link.
    */
-  unsubscribe(observer: ZenObservable.Observer<TValue>) {
+  unsubscribe(observer: Observer<TValue>) {
     const index = this.observers.indexOf(observer);
     if (index < 0) {
       throw new Error(

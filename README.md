@@ -33,8 +33,8 @@ Your feedback and contributions are always welcome.
 
 1. Incrementally adoptable
 2. Universally compatible
-2. Simple to get started with
-3. Inspectable and understandable
-4. Built for interactive apps
-4. Small and flexible
-5. Community driven
+3. Simple to get started with
+4. Inspectable and understandable
+5. Built for interactive apps
+6. Small and flexible
+7. Community driven

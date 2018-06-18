@@ -23,6 +23,7 @@
     "build": "chexo apollo-hexo-config -- generate",
     "clean": "hexo clean",
     "ci": "start-server-and-test start http-get://localhost:4000 test",
-    "test": "poke http://localhost:4000 --retry https://www.apollographql.com --shallow"
+    "test":
+      "poke http://localhost:4000 --retry https://www.apollographql.com --shallow"
   }
 }

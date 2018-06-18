@@ -1,17 +1,17 @@
-import { getOperationName } from 'apollo-utilities';
-import Observable from 'zen-observable-ts';
-import { print } from 'graphql/language/printer';
+import { getOperationName } from "apollo-utilities";
+import { Observable, from, throwError } from "rxjs";
+import { print } from "graphql/language/printer";
 
-import { GraphQLRequest, Operation } from './types';
-import { ApolloLink } from './link';
+import { GraphQLRequest, Operation } from "./types";
+import { ApolloLink } from "./link";
 
 export function validateOperation(operation: GraphQLRequest): GraphQLRequest {
   const OPERATION_FIELDS = [
-    'query',
-    'operationName',
-    'variables',
-    'extensions',
-    'context',
+    "query",
+    "operationName",
+    "variables",
+    "extensions",
+    "context"
   ];
   for (let key of Object.keys(operation)) {
     if (OPERATION_FIELDS.indexOf(key) < 0) {
@@ -34,43 +34,27 @@ export function isTerminating(link: ApolloLink): boolean {
   return link.request.length <= 1;
 }
 
+export function isPromise(value: any): value is PromiseLike<any> {
+  return (
+    value &&
+    typeof (value as any).subscribe !== "function" &&
+    typeof (value as any).then === "function"
+  );
+}
+
 export function toPromise<R>(observable: Observable<R>): Promise<R> {
-  let completed = false;
-  return new Promise<R>((resolve, reject) => {
-    observable.subscribe({
-      next: data => {
-        if (completed) {
-          console.warn(
-            `Promise Wrapper does not support multiple results from Observable`,
-          );
-        } else {
-          completed = true;
-          resolve(data);
-        }
-      },
-      error: reject,
-    });
-  });
+  return observable.toPromise();
 }
 
 // backwards compat
 export const makePromise = toPromise;
 
 export function fromPromise<T>(promise: Promise<T>): Observable<T> {
-  return new Observable<T>(observer => {
-    promise
-      .then((value: T) => {
-        observer.next(value);
-        observer.complete();
-      })
-      .catch(observer.error.bind(observer));
-  });
+  return from(promise);
 }
 
 export function fromError<T>(errorValue: any): Observable<T> {
-  return new Observable<T>(observer => {
-    observer.error(errorValue);
-  });
+  return throwError(errorValue);
 }
 
 export function transformOperation(operation: GraphQLRequest): GraphQLRequest {
@@ -78,15 +62,15 @@ export function transformOperation(operation: GraphQLRequest): GraphQLRequest {
     variables: operation.variables || {},
     extensions: operation.extensions || {},
     operationName: operation.operationName,
-    query: operation.query,
+    query: operation.query
   };
 
   // best guess at an operation name
   if (!transformedOperation.operationName) {
     transformedOperation.operationName =
-      typeof transformedOperation.query !== 'string'
+      typeof transformedOperation.query !== "string"
         ? getOperationName(transformedOperation.query)
-        : '';
+        : "";
   }
 
   return transformedOperation as Operation;
@@ -94,11 +78,11 @@ export function transformOperation(operation: GraphQLRequest): GraphQLRequest {
 
 export function createOperation(
   starting: any,
-  operation: GraphQLRequest,
+  operation: GraphQLRequest
 ): Operation {
   let context = { ...starting };
   const setContext = next => {
-    if (typeof next === 'function') {
+    if (typeof next === "function") {
       context = { ...context, ...next(context) };
     } else {
       context = { ...context, ...next };
@@ -106,19 +90,19 @@ export function createOperation(
   };
   const getContext = () => ({ ...context });
 
-  Object.defineProperty(operation, 'setContext', {
+  Object.defineProperty(operation, "setContext", {
     enumerable: false,
-    value: setContext,
+    value: setContext
   });
 
-  Object.defineProperty(operation, 'getContext', {
+  Object.defineProperty(operation, "getContext", {
     enumerable: false,
-    value: getContext,
+    value: getContext
   });
 
-  Object.defineProperty(operation, 'toKey', {
+  Object.defineProperty(operation, "toKey", {
     enumerable: false,
-    value: () => getKey(operation),
+    value: () => getKey(operation)
   });
 
   return operation as Operation;

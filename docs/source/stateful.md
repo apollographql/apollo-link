@@ -9,7 +9,7 @@ Links are created and shared between every request in your application. Some lin
 Stateful links typically (though are not required to) overwrite the constructor of `ApolloLink` and are required to implement a `request` function with the same signature as a stateless link. For example:
 
 ```js
-import { ApolloLink } from 'apollo-link';
+import { ApolloLink } from "apollo-link";
 
 class OperationCountLink extends ApolloLink {
   constructor() {
@@ -17,7 +17,7 @@ class OperationCountLink extends ApolloLink {
     this.operations = 0;
   }
   request(operation, forward) {
-    this.operations++
+    this.operations++;
     return forward(operation);
   }
 }
@@ -71,8 +71,6 @@ export default class DedupLink extends ApolloLink {
     });
   }
 }
-
-
 ```
 
 More commonly, stateful links are used for complex control flow like batching and deduplication of operations.

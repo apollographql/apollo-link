@@ -6,34 +6,36 @@ Links represent small portions of how you want your GraphQL operation to be hand
 
 It's important to note that no matter how many links you have in your chain, your [terminating link](./overview.html#terminating) has to be last.
 
-*NOTE Future composition mechanisms like `race` are being considered. If you have ideas please submit an issue or PR for the style you need!*
+_NOTE Future composition mechanisms like `race` are being considered. If you have ideas please submit an issue or PR for the style you need!_
 
 <h2 id="additive">Additive Composition</h2>
 
 Apollo Link ships with two ways to compose links. The first is a method called `from` which is both exported, and is on the `ApolloLink` interface. `from` takes an array of links and combines them all into a single link. For example:
 
 ```js
-import { ApolloLink } from 'apollo-link';
-import Retry from 'apollo-link-retry';
-import HttpLink from 'apollo-link-http';
-import MyAuthLink from '../auth';
+import { ApolloLink } from "apollo-link";
+import Retry from "apollo-link-retry";
+import HttpLink from "apollo-link-http";
+import MyAuthLink from "../auth";
 
 const link = ApolloLink.from([
   new Retry(),
   new AuthLink(),
-  new HttpLink({ uri: '/graphql' })
+  new HttpLink({ uri: "/graphql" })
 ]);
 ```
 
 `from` is typically used when you have many links to join together all at once. The alternative way to join links is the `concat` method which joins two links together into one.
 
-
 ```js
-import { ApolloLink } from 'apollo-link';
-import { RetryLink } from 'apollo-link-retry';
-import HttpLink from 'apollo-link-http';
+import { ApolloLink } from "apollo-link";
+import { RetryLink } from "apollo-link-retry";
+import HttpLink from "apollo-link-http";
 
-const link = ApolloLink.concat(new RetryLink(), new HttpLink({ uri: '/graphql' }));
+const link = ApolloLink.concat(
+  new RetryLink(),
+  new HttpLink({ uri: "/graphql" })
+);
 ```
 
 <h2 id="directional">Directional Composition</h2>
@@ -41,12 +43,12 @@ const link = ApolloLink.concat(new RetryLink(), new HttpLink({ uri: '/graphql' }
 Given that links are a way of implementing custom control flow for your GraphQL operation, Apollo Link provides an easy way to use different links depending on the operation itself (or any other global state). This is done using the `split` method which is exported as a function and is on the `ApolloLink` interface. Using the `split` function can be done like this:
 
 ```js
-import { ApolloLink } from 'apollo-link';
-import { RetryLink } from 'apollo-link-retry';
-import HttpLink from 'apollo-link-http';
+import { ApolloLink } from "apollo-link";
+import { RetryLink } from "apollo-link-retry";
+import HttpLink from "apollo-link-http";
 
 const link = new RetryLink().split(
-  (operation) => operation.getContext().version === 1,
+  operation => operation.getContext().version === 1,
   new HttpLink({ uri: "/v1/graphql" }),
   new HttpLink({ uri: "/v2/graphql" })
 );

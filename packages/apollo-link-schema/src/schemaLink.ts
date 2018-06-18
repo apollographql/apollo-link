@@ -1,5 +1,12 @@
-import { ApolloLink, Operation, FetchResult, Observable } from 'apollo-link';
+import {
+  ApolloLink,
+  Operation,
+  FetchResult,
+  Observable,
+  isPromise,
+} from 'apollo-link';
 import { execute, GraphQLSchema } from 'graphql';
+import { from, of } from 'rxjs';
 
 export namespace SchemaLink {
   export type ResolverContextFunction = (
@@ -38,31 +45,22 @@ export class SchemaLink extends ApolloLink {
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
-    return new Observable<FetchResult>(observer => {
-      Promise.resolve(
-        execute(
-          this.schema,
-          operation.query,
-          this.rootValue,
-          typeof this.context === 'function'
-            ? this.context(operation)
-            : this.context,
-          operation.variables,
-          operation.operationName,
-        ),
-      )
-        .then(data => {
-          if (!observer.closed) {
-            observer.next(data);
-            observer.complete();
-          }
-        })
-        .catch(error => {
-          if (!observer.closed) {
-            observer.error(error);
-          }
-        });
-    });
+    const result = execute(
+      this.schema,
+      operation.query,
+      this.rootValue,
+      typeof this.context === 'function'
+        ? this.context(operation)
+        : this.context,
+      operation.variables,
+      operation.operationName,
+    );
+
+    if (isPromise(result)) {
+      return from<FetchResult>(result);
+    }
+
+    return of<FetchResult>(result);
   }
 }
 

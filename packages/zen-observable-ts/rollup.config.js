@@ -1,3 +1,3 @@
-import build from '../../rollup.config';
+import build from "../../rollup.config";
 
-export default build('zenObservable');
+export default build("zenObservable");

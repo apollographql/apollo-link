@@ -1,5 +1,7 @@
 import gql from 'graphql-tag';
 import { ApolloLink, execute, Observable } from 'apollo-link';
+import { of } from 'rxjs';
+
 import { onError, ErrorLink } from '../';
 
 describe('error handling', () => {
@@ -19,7 +21,7 @@ describe('error handling', () => {
     });
 
     const mockLink = new ApolloLink(operation =>
-      Observable.of({
+      of({
         errors: [
           {
             message: 'resolver blew up',
@@ -114,7 +116,7 @@ describe('error handling', () => {
     });
 
     const mockLink = new ApolloLink(operation => {
-      return Observable.of({ data: { foo: { id: 1 } } });
+      return of({ data: { foo: { id: 1 } } });
     });
 
     const link = errorLink.concat(mockLink);
@@ -141,7 +143,7 @@ describe('error handling', () => {
     });
 
     const mockLink = new ApolloLink(operation => {
-      return Observable.of({
+      return of({
         data: { foo: { id: 1 } },
         errors: [{ message: 'ignore' }],
       });
@@ -214,7 +216,7 @@ describe('error handling', () => {
     });
 
     const mockLink = new ApolloLink(operation =>
-      Observable.of({
+      of({
         data: { foo: true },
         errors: [
           {
@@ -251,7 +253,7 @@ describe('error handling with class', () => {
     });
 
     const mockLink = new ApolloLink(operation =>
-      Observable.of({
+      of({
         errors: [
           {
             message: 'resolver blew up',
@@ -344,7 +346,7 @@ describe('error handling with class', () => {
     });
 
     const mockLink = new ApolloLink(operation => {
-      return Observable.of({ data: { foo: { id: 1 } } });
+      return of({ data: { foo: { id: 1 } } });
     });
 
     const link = errorLink.concat(mockLink);

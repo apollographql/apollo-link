@@ -1,4 +1,5 @@
 import { Observable, Operation, NextLink, FetchResult } from 'apollo-link';
+import { of } from 'rxjs';
 
 export type BatchHandler = (
   operations: Operation[],
@@ -130,7 +131,7 @@ export class OperationBatcher {
     });
 
     const batchedObservable =
-      this.batchHandler(requests, forwards) || Observable.of();
+      this.batchHandler(requests, forwards) || of<FetchResult[]>();
 
     const onError = error => {
       //each callback list in batch

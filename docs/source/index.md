@@ -31,13 +31,13 @@ Apollo Link is easy to use with a variety of GraphQL libraries. It's designed to
 Apollo Client works seamlessly with Apollo Link. A Link is one of the required items when creating an [Apollo Client instance](/docs/react/api/apollo-client.html). For simple HTTP requests, we recommend using [`apollo-link-http`](./links/http.html):
 
 ```js
-import { ApolloLink } from 'apollo-link';
-import { ApolloClient } from 'apollo-client';
-import { InMemoryCache } from 'apollo-cache-inmemory';
-import { HttpLink } from 'apollo-link-http';
+import { ApolloLink } from "apollo-link";
+import { ApolloClient } from "apollo-client";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { HttpLink } from "apollo-link-http";
 
 const client = new ApolloClient({
-  link: new HttpLink({ uri: 'http://api.githunt.com/graphql' }),
+  link: new HttpLink({ uri: "http://api.githunt.com/graphql" }),
   cache: new InMemoryCache()
 });
 ```
@@ -69,28 +69,25 @@ You can read more about schema stitching with `graphql-tools` [here](https://www
 GraphiQL is a great way to document and explore your GraphQL API. In this example, we're setting up GraphiQL's fetcher function by using the `execute` function exported from Apollo Link. This function takes a link and an operation to create a GraphQL request.
 
 ```js
-import React from 'react';
-import ReactDOM from 'react-dom';
-import '../node_modules/graphiql/graphiql.css'
-import GraphiQL from 'graphiql';
-import { parse } from 'graphql';
+import React from "react";
+import ReactDOM from "react-dom";
+import "../node_modules/graphiql/graphiql.css";
+import GraphiQL from "graphiql";
+import { parse } from "graphql";
 
-import { execute } from 'apollo-link';
-import { HttpLink } from 'apollo-link-http';
+import { execute } from "apollo-link";
+import { HttpLink } from "apollo-link-http";
 
 const link = new HttpLink({
-  uri: 'http://api.githunt.com/graphql'
+  uri: "http://api.githunt.com/graphql"
 });
 
-const fetcher = (operation) => {
+const fetcher = operation => {
   operation.query = parse(operation.query);
   return execute(link, operation);
 };
 
-ReactDOM.render(
-  <GraphiQL fetcher={fetcher}/>,
-  document.body,
-);
+ReactDOM.render(<GraphiQL fetcher={fetcher} />, document.body);
 ```
 
 With this setup, we're able to construct an arbitrarily complicated set of links (e.g. with polling, batching, etc.) and test it out using GraphiQL. This is incredibly useful for debugging as you're building a Link-based application.
@@ -100,19 +97,19 @@ With this setup, we're able to construct an arbitrarily complicated set of links
 You can use Apollo Link as a network layer with Relay Modern.
 
 ```js
-import {Environment, Network, RecordSource, Store} from 'relay-runtime';
-import {execute, makePromise} from 'apollo-link';
-import {HttpLink} from 'apollo-link-http';
-import {parse} from 'graphql';
+import { Environment, Network, RecordSource, Store } from "relay-runtime";
+import { execute, makePromise } from "apollo-link";
+import { HttpLink } from "apollo-link-http";
+import { parse } from "graphql";
 
 const link = new HttpLink({
-  uri: 'http://api.githunt.com/graphql'
+  uri: "http://api.githunt.com/graphql"
 });
 
 const source = new RecordSource();
 const store = new Store(source);
-const network = Network.create(
-  (operation, variables) => makePromise(
+const network = Network.create((operation, variables) =>
+  makePromise(
     execute(link, {
       query: parse(operation.text),
       variables
@@ -121,8 +118,8 @@ const network = Network.create(
 );
 
 const environment = new Environment({
-    network,
-    store
+  network,
+  store
 });
 ```
 

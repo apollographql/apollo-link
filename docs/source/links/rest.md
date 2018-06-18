@@ -8,7 +8,7 @@ Calling REST APIs from a GraphQL client opens the benefits GraphQL for more peop
 * You are in a front-end developer team that wants to try GraphQL without asking for the backend team to implement a GraphQL server.
 * You have no access to change the backend because it's an existing set of APIs, potentially managed by a 3rd party.
 * You have an existing codebase, but you're looking to evaluate whether GraphQL can work for your needs.
-* You have a large codebase, and the GraphQL migration is happening on the backend, but you want to use GraphQL *now* without waiting!
+* You have a large codebase, and the GraphQL migration is happening on the backend, but you want to use GraphQL _now_ without waiting!
 
 With `apollo-link-rest`, you can now call your endpoints inside your GraphQL queries and have all your data managed by [`ApolloClient`](../../react/basics/setup.html#ApolloClient). `apollo-link-rest` is suitable for just dipping your toes in the water, or doing a full-steam ahead integration, and then later on migrating to a backend-driven GraphQL experience. `apollo-link-rest` combines well with other links such as [`apollo-link-context`](./context.html), [`apollo-link-state`](./state.html), and others! _For complex back-ends, you may want to consider consider using [`apollo-server`](/docs/apollo-server/) which you can try out at [launchpad.graphql.com](https://launchpad.graphql.com/)_
 
@@ -37,9 +37,9 @@ npm install apollo-link-rest --save
 After this, you are ready to setup your apollo client:
 
 ```js
-import { ApolloClient } from 'apollo-client';
-import { InMemoryCache } from 'apollo-cache-inmemory';
-import { RestLink } from 'apollo-link-rest';
+import { ApolloClient } from "apollo-client";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { RestLink } from "apollo-link-rest";
 
 // setup your `RestLink` with your endpoint
 const restLink = new RestLink({ uri: "https://swapi.co/api/" });
@@ -47,7 +47,7 @@ const restLink = new RestLink({ uri: "https://swapi.co/api/" });
 // setup your client
 const client = new ApolloClient({
   link: restLink,
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache()
 });
 ```
 
@@ -96,37 +96,39 @@ Construction of `RestLink` takes an options object to customize the behavior of 
 If you want to be able to use multiple endpoints, you should create your link like so:
 
 ```js
-  const link = new RestLink({ endpoints: { v1: 'api.com/v1', v2: 'api.com/v2' } });
+const link = new RestLink({
+  endpoints: { v1: "api.com/v1", v2: "api.com/v2" }
+});
 ```
 
 Then you need to specify in the rest directive the endpoint you want to use:
 
 ```js
-  const postTitleQuery1 = gql`
-    query postTitle {
-      post @rest(type: "Post", path: "/post", endpoint: "v1") {
-        id
-        title
-      }
+const postTitleQuery1 = gql`
+  query postTitle {
+    post @rest(type: "Post", path: "/post", endpoint: "v1") {
+      id
+      title
     }
-  `;
-  const postTitleQuery2 = gql`
-    query postTitle {
-      post @rest(type: "[Tag]", path: "/tags", endpoint: "v2") {
-        id
-        tags
-      }
+  }
+`;
+const postTitleQuery2 = gql`
+  query postTitle {
+    post @rest(type: "[Tag]", path: "/tags", endpoint: "v2") {
+      id
+      tags
     }
-  `;
+  }
+`;
 ```
 
 If you have a default endpoint, you can create your link like so:
 
 ```js
-  const link = new RestLink({
-    endpoints: { github: 'github.com' },
-    uri: 'api.com',
-  });
+const link = new RestLink({
+  endpoints: { github: "github.com" },
+  uri: "api.com"
+});
 ```
 
 Then if you do not specify an endpoint in your query the default endpoint (the one you specify in the `uri` option.) will be used.
@@ -246,7 +248,7 @@ const client = new ApolloClient({
 });
 ```
 
- _Note: you should also consider this if you're using [`apollo-link-context`](#context) to set `Headers`, you need that link to be before `restLink` as well._
+_Note: you should also consider this if you're using [`apollo-link-context`](#context) to set `Headers`, you need that link to be before `restLink` as well._
 
 <h2 id="rest">@rest directive</h2>
 
@@ -288,9 +290,7 @@ If you need/want to name it something different, you can pass `bodyKey`, and we'
 In this example the publish API accepts a body in the variable `body` instead of input:
 
 ```graphql
-mutation publishPost(
-  $someApiWithACustomBodyKey: PublishablePostInput!
-) {
+mutation publishPost($someApiWithACustomBodyKey: PublishablePostInput!) {
   publishedPost: publish(input: "Foo", body: $someApiWithACustomBodyKey)
     @rest(
       type: "Post"
@@ -311,10 +311,7 @@ mutation publishPost(
 If you need to structure your data differently, or you need to custom encode your body (say as form-encoded), you can instead provide `bodyBuilder`
 
 ```graphql
-mutation encryptedPost(
-  $input: PublishablePostInput!
-  $encryptor: any
-) {
+mutation encryptedPost($input: PublishablePostInput!, $encryptor: any) {
   publishedPost: publish(input: $input)
     @rest(
       type: "Post"
@@ -334,7 +331,7 @@ mutation encryptedPost(
 
 The export directive re-exposes a field for use in a later (nested) query. These are the same semantics that will be supported on the server, but when used in a `RestLink` you can use the exported variables for further calls (i.e. waterfall requests from nested fields)
 
- _Note: If you're constantly using @export you may prefer to take a look at [`apollo-server`](/docs/apollo-server/) which you can try out at [launchpad.graphql.com](https://launchpad.graphql.com/)_
+_Note: If you're constantly using @export you may prefer to take a look at [`apollo-server`](/docs/apollo-server/) which you can try out at [launchpad.graphql.com](https://launchpad.graphql.com/)_
 
 <h3 id="export.arguments">Arguments</h3>
 
@@ -365,12 +362,12 @@ const QUERY = gql`
 You can write also mutations with the apollo-link-rest, for example:
 
 ```graphql
-  mutation deletePost($id: ID!) {
-    deletePostResponse(id: $id)
-      @rest(type: "Post", path: "/posts/:id", method: "DELETE") {
-      NoResponse
-    }
+mutation deletePost($id: ID!) {
+  deletePostResponse(id: $id)
+    @rest(type: "Post", path: "/posts/:id", method: "DELETE") {
+    NoResponse
   }
+}
 ```
 
 <h2 id="troubleshooting">Troubleshooting</h2>

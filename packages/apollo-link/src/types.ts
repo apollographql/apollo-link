@@ -1,4 +1,4 @@
-import Observable from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 import { ExecutionResult, DocumentNode } from 'graphql';
 export { ExecutionResult, DocumentNode };
 

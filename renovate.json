@@ -10,10 +10,10 @@
   "labels": ["tooling", "dependencies"],
   "assignees": ["@jbaxleyiii"],
   "reviewers": ["@jbaxleyiii"],
-  "pathRules": [{
-    "paths": ["docs/package.json"],
-    "extends": [
-      "apollo-docs"
-    ]
-  }]
+  "pathRules": [
+    {
+      "paths": ["docs/package.json"],
+      "extends": ["apollo-docs"]
+    }
+  ]
 }

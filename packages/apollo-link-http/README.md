@@ -64,9 +64,9 @@ The http link supports an advanced GraphQL feature called persisted queries. Thi
 operation.setContext({
   http: {
     includeExtensions: true,
-    includeQuery: false,
+    includeQuery: false
   }
-})
+});
 ```
 
 The `http` object on context currently supports two keys:
@@ -149,7 +149,7 @@ All error types inherit the `name`, `message`, and nullable `stack` properties f
 
 <h2 id="custom">Custom fetching</h2>
 
-You can use the `fetch` option when creating an http-link to do a lot of custom networking. This is useful if you want to modify the request based on the calculated headers  or calculate the uri based on the operation:
+You can use the `fetch` option when creating an http-link to do a lot of custom networking. This is useful if you want to modify the request based on the calculated headers or calculate the uri based on the operation:
 
 <h3 id="custom-auth">Custom auth</h3>
 

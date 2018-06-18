@@ -3,13 +3,14 @@ title: apollo-link-dedup
 description: Deduplicate matching requests before making a request
 ---
 
-*NOTE* This link is included by default when using apollo-client so you don't need to add it to your link chain if using apollo-client.
+_NOTE_ This link is included by default when using apollo-client so you don't need to add it to your link chain if using apollo-client.
 
 ## Installation
 
 `npm install apollo-link-dedup --save`
 
 ## Usage
+
 ```js
 import { DedupLink } from "apollo-link-dedup";
 
@@ -17,11 +18,14 @@ const link = new DedupLink();
 ```
 
 ## Options
+
 The Dedup Link does not take any options when creating the link.
 
 ## Context
+
 The Dedup Link can be overridden by using the context on a per operation basis:
-- `forceFetch`: a true or false (defaults to false) to bypass deduplication per request
+
+* `forceFetch`: a true or false (defaults to false) to bypass deduplication per request
 
 ```js
 import Link from "apollo-link-http";
@@ -39,5 +43,5 @@ client.query({
   context: {
     forceFetch: true
   }
-})
+});
 ```

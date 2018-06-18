@@ -1,5 +1,6 @@
 import { SubscriptionClient } from 'subscriptions-transport-ws';
 import { Observable, execute } from 'apollo-link';
+import { of } from 'rxjs';
 import { ExecutionResult } from 'graphql';
 
 import { WebSocketLink } from '../webSocketLink';
@@ -43,7 +44,7 @@ describe('WebSocketLink', () => {
   it('should call request on the client for a query', done => {
     const result = { data: { data: 'result' } };
     const client: any = {};
-    const observable = Observable.of(result);
+    const observable = of(result);
     client.__proto__ = SubscriptionClient.prototype;
     client.request = jest.fn();
     client.request.mockReturnValueOnce(observable);
@@ -61,7 +62,7 @@ describe('WebSocketLink', () => {
   it('should call query on the client for a mutation', done => {
     const result = { data: { data: 'result' } };
     const client: any = {};
-    const observable = Observable.of(result);
+    const observable = of(result);
     client.__proto__ = SubscriptionClient.prototype;
     client.request = jest.fn();
     client.request.mockReturnValueOnce(observable);
@@ -79,7 +80,7 @@ describe('WebSocketLink', () => {
   it('should call request on the subscriptions client for subscription', done => {
     const result = { data: { data: 'result' } };
     const client: any = {};
-    const observable = Observable.of(result);
+    const observable = of(result);
     client.__proto__ = SubscriptionClient.prototype;
     client.request = jest.fn();
     client.request.mockReturnValueOnce(observable);

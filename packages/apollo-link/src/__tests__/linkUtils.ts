@@ -4,7 +4,7 @@ import {
   makePromise,
   fromError,
 } from '../linkUtils';
-import Observable from 'zen-observable-ts';
+import { of } from 'rxjs';
 
 describe('Link utilities:', () => {
   describe('validateOperation', () => {
@@ -32,37 +32,13 @@ describe('Link utilities:', () => {
     const error = new Error('I always error');
 
     it('return next call as Promise resolution', () => {
-      return makePromise(Observable.of(data)).then(result =>
-        expect(data).toEqual(result),
-      );
+      return makePromise(of(data)).then(result => expect(data).toEqual(result));
     });
 
     it('return error call as Promise rejection', () => {
       return makePromise(fromError(error))
         .then(expect.fail)
         .catch(actualError => expect(error).toEqual(actualError));
-    });
-
-    describe('warnings', () => {
-      const spy = jest.fn();
-      let _warn: (message?: any, ...originalParams: any[]) => void;
-
-      beforeEach(() => {
-        _warn = console.warn;
-        console.warn = spy;
-      });
-
-      afterEach(() => {
-        console.warn = _warn;
-      });
-
-      it('return error call as Promise rejection', done => {
-        makePromise(Observable.of(data, data)).then(result => {
-          expect(data).toEqual(result);
-          expect(spy).toHaveBeenCalled();
-          done();
-        });
-      });
     });
   });
   describe('fromPromise', () => {

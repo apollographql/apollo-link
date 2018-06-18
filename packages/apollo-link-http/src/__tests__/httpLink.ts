@@ -1,7 +1,6 @@
-import { Observable, ApolloLink, execute } from 'apollo-link';
+import { execute } from 'apollo-link';
 import gql from 'graphql-tag';
 import * as fetchMock from 'fetch-mock';
-import objectToQuery from 'object-to-querystring';
 
 import { sharedHttpTest } from './sharedHttpTests';
 import { HttpLink, createHttpLink } from '../httpLink';

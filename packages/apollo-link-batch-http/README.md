@@ -35,9 +35,9 @@ The batching options indicate how operations are batched together, the size of
 batches, and the maximum time a batch will wait before automatically being sent
 over the network.
 
-- `batchMax`: a max number of items to batch, defaults at 10
-- `batchInterval`: the interval at which to batch (in ms), defaults to 10
-- `batchKey`: a function that accepts an operation and returns a string key,
+* `batchMax`: a max number of items to batch, defaults at 10
+* `batchInterval`: the interval at which to batch (in ms), defaults to 10
+* `batchKey`: a function that accepts an operation and returns a string key,
   which uniquely names the batch the operation belongs to, defaults to
   returning the same string
 
@@ -71,9 +71,9 @@ The batch http link supports an advanced GraphQL feature called persisted querie
 operation.setContext({
   http: {
     includeExtensions: true,
-    includeQuery: false,
+    includeQuery: false
   }
-})
+});
 ```
 
 The `http` object on context currently supports two keys:
@@ -111,7 +111,9 @@ const link = new BatchHttpLink({ fetch: customFetch });
 
 ```js
 const customFetch = (uri, options) => {
-  const operationNames = JSON.parse(options.body).map(operation => operation.operationName);
+  const operationNames = JSON.parse(options.body).map(
+    operation => operation.operationName
+  );
   return fetch(`${uri}/graph/graphql?opname=${operationNames}`, options);
 };
 
