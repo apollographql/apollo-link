@@ -1,10 +1,13 @@
 # Change log
 
 ### vNEXT
+
+### 1.1.0
+- Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
 - allow context to be a function that accept an operation and returns a context for the resolvers [PR#363](https://github.com/apollographql/apollo-link/pull/363)
 
 ### 1.0.6
-- udate apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
+- update apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
 
 ### 1.0.5
 - Include sourcemap in bundle
@@ -24,4 +27,3 @@
 ### 1.0.0
 - support mocking
 - support server rendering
-

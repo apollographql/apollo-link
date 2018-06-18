@@ -1,6 +1,9 @@
 # Change log
 
 ### vNEXT
+
+### 1.2.2
+- Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
 - export graphql types and add @types/graphql as a regular dependency [PR#576](https://github.com/apollographql/apollo-link/pull/576)
 - moved @types/node to dev dependencies in package.josn to avoid collisions with other projects. [PR#540](https://github.com/apollographql/apollo-link/pull/540)
 

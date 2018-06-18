@@ -1,6 +1,9 @@
 # Change log
 
 ### vNext
+
+### 1.2.2
+- Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
 - Check for signal already present on `fetchOptions` [#584](https://github.com/apollographql/apollo-link/pull/584)
 
 ### 1.2.1

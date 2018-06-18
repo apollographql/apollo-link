@@ -2,8 +2,20 @@
 
 ### vNEXT
 
+### 1.1.0
+- Pass `forward` into error handler for ErrorLink to support retrying a failed request 
+
+### 1.0.9
+- Correct return type to FetchResult [#600](https://github.com/apollographql/apollo-link/pull/600)
+
+### 1.0.8
+- Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
+
+### 1.0.7
+- update apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
+
 ### 1.0.6
-- udate apollo link with zen-observable-ts [PR#515](https://github.com/apollographql/apollo-link/pull/515)
+- ApolloLink upgrade
 
 ### 1.0.5
 - ApolloLink upgrade

@@ -11,7 +11,7 @@ It receives two arguments: the GraphQL request being executed, and the previous 
 import { setContext } from "apollo-link-context";
 
 const setAuthorizationLink = setContext((request, previousContext) => ({
-  authorization: "1234"
+  headers: {authorization: "1234"}
 }));
 
 const asyncAuthLink = setContext(
