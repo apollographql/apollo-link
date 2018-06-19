@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@types/jest": "22.2.2",
-    "browserify": "16.1.1",
+    "browserify": "16.2.2",
     "jest": "22.4.3",
     "rimraf": "2.6.2",
     "rollup": "0.57.1",
