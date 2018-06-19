@@ -92,7 +92,7 @@
     "bundlesize": "0.17.0",
     "check-if-folder-contents-changed-in-git-commit-range": "1.0.0",
     "codecov": "3.0.2",
-    "danger": "3.3.2",
+    "danger": "3.7.18",
     "jest-junit": "3.7.0",
     "lerna": "2.9.0",
     "lint-staged": "7.2.0",
