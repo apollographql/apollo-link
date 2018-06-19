@@ -178,6 +178,9 @@ Get the results for a GraphQL query over HTTP.
 [`apollo-link-state`](https://github.com/apollographql/apollo-link-state)
 Allows you to manage your application's non-data state and interact with it via GraphQL.
 
+[`apollo-link-rest`](https://github.com/apollographql/apollo-link-rest)
+Allows you to use existing REST endpoints with GraphQL.
+
 [`apollo-link-error`](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-error)
 Handle and inspect errors within your GraphQL stack.
 
