@@ -52,7 +52,7 @@
     "browserify": "16.2.2",
     "fetch-mock": "6.4.4",
     "graphql": "0.13.2",
-    "graphql-tag": "2.8.0",
+    "graphql-tag": "2.9.2",
     "jest": "22.4.3",
     "object-to-querystring": "1.0.8",
     "rimraf": "2.6.1",
