@@ -94,15 +94,15 @@
     "codecov": "3.0.2",
     "danger": "3.7.18",
     "jest-junit": "3.7.0",
-    "lerna": "2.9.0",
+    "lerna": "2.11.0",
     "lint-staged": "7.2.0",
     "pre-commit": "1.2.2",
     "pre-push": "0.1.1",
-    "prettier": "1.11.1",
+    "prettier": "1.13.5",
     "prettier-check": "2.0.0",
-    "rollup": "0.57.1",
+    "rollup": "0.61.0",
     "rollup-plugin-sourcemaps": "0.4.2",
-    "ts-jest": "21.2.4",
+    "ts-jest": "22.4.6",
     "typescript": "2.9.2"
   }
 }
