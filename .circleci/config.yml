@@ -69,7 +69,7 @@ jobs:
           key: dependency-cache-{{ checksum "./docs/package.json" }}
           paths:
             - ./docs/node_modules
-      - run: cd docs && npm run ci
+      - run: cd docs && npm run build
 
   Filesize:
     docker: [ { image: 'circleci/node:8' } ]
