@@ -42,7 +42,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { RestLink } from 'apollo-link-rest';
 
 // setup your `RestLink` with your endpoint
-const link = new RestLink({ uri: "https://swapi.co/api/" });
+const restLink = new RestLink({ uri: "https://swapi.co/api/" });
 
 // setup your client
 const client = new ApolloClient({
@@ -347,11 +347,11 @@ An example use-case would be getting a list of users, and hitting a different en
 ```graphql
 const QUERY = gql`
   query RestData($email: String!) {
-    users @rest(path: '/users/email/:email', params: { email: $email }, method: 'GET', type: 'User') {
+    users @rest(path: '/users/email/:email', method: 'GET', type: 'User') {
       id @export(as: "id")
       firstName
       lastName
-      friends @rest(path: '/friends/:id', params: { id: $id }, type: '[User]') {
+      friends @rest(path: '/friends/:id', type: '[User]') {
         firstName
         lastName
       }
