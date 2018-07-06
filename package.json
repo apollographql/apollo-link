@@ -91,7 +91,7 @@
     "@types/zen-observable": "0.8.0",
     "bundlesize": "0.17.0",
     "check-if-folder-contents-changed-in-git-commit-range": "1.0.0",
-    "codecov": "3.0.2",
+    "codecov": "3.0.3",
     "danger": "3.7.19",
     "jest-junit": "3.7.0",
     "lerna": "2.11.0",
