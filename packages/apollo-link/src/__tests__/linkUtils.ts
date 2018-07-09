@@ -31,9 +31,26 @@ describe('Link utilities:', () => {
     };
     const error = new Error('I always error');
 
-    it('return next call as Promise resolution', () => {
+    it('return the value in next call as Promise resolution', () => {
       return makePromise(Observable.of(data)).then(result =>
         expect(data).toEqual(result),
+      );
+    });
+
+    it('resolve Promise in the complete call', () => {
+      let completeTick = false;
+      const observable = new Observable(observer => {
+        Promise.resolve()
+          .then(() => {
+            observer.next(null);
+          })
+          .then(() => {
+            completeTick = true;
+            observer.complete();
+          });
+      });
+      return makePromise(observable).then(result =>
+        expect(completeTick).toEqual(true),
       );
     });
 
