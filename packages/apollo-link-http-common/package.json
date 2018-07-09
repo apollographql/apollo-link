@@ -45,6 +45,7 @@
     "object-to-querystring": "1.0.8",
     "rimraf": "2.6.1",
     "rollup": "0.62.0",
+    "rollup-plugin-sourcemaps": "0.4.2",
     "ts-jest": "22.4.6",
     "tslint": "5.10.0",
     "typescript": "2.9.2",
