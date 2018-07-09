@@ -1,6 +1,8 @@
 # Change log
 
 ### vNEXT
+- Resolve the promise returned by `toPromise` only when the `complete` method of the observer is called.
+  [PR#707](https://github.com/apollographql/apollo-link/pull/707).
 
 ### 1.2.2
 - Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
