@@ -58,4 +58,4 @@ Using `split` allows for per operation based control flow for things like sendin
 
 <h2 id="usage">Usage</h2>
 
-`split`, `from`, and `concat` are all exported as part of the ApolloLink interface as well as individual functions which can be uses. Both are great ways to build link chains and they are identical in functionality.
+`split`, `from`, and `concat` are all exported as part of the ApolloLink interface as well as individual functions which can be used. Both are great ways to build link chains and they are identical in functionality.
