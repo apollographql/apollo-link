@@ -1,4 +1,10 @@
-import { ApolloLink, Observable, RequestHandler, fromError } from 'apollo-link';
+import {
+  ApolloLink,
+  Observable,
+  RequestHandler,
+  fromError,
+  FetchResult,
+} from 'apollo-link';
 import {
   serializeFetchParameter,
   selectURI,
@@ -115,12 +121,39 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
           operation.setContext({ response });
           return response;
         })
-        .then(parseAndCheckHttpResponse(operation))
-        .then(result => {
-          // we have data and can send it to back up the link chain
-          observer.next(result);
-          observer.complete();
-          return result;
+        .then(response => {
+          const header = response.headers;
+          const contentType = header.get('Content-Type');
+
+          // @defer uses multipart responses to stream patches over HTTP
+          if (contentType.indexOf('multipart/mixed') >= 0) {
+            const reader = response.body.getReader();
+            const textDecoder = new TextDecoder();
+            // TODO: Missing response checks here!
+            reader.read().then(function sendNext({ value, done }) {
+              if (!done) {
+                const plaintext = textDecoder.decode(value);
+                // Split plaintext using encapsulation boundary
+                // See: https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
+                const payloads = plaintext.split('\r\n---\r\n');
+                for (const payload of payloads) {
+                  if (payload.length && payload !== '\r\n---') {
+                    // Terminator
+                    observer.next(JSON.parse(payload) as FetchResult);
+                  }
+                }
+                reader.read().then(sendNext);
+              } else {
+                observer.complete();
+              }
+            });
+          } else {
+            parseAndCheckHttpResponse(operation)(response).then(result => {
+              // we have data and can send it to back up the link chain
+              observer.next(result);
+              observer.complete();
+            });
+          }
         })
         .catch(err => {
           // fetch was cancelled so its already been cleaned up in the unsubscribe
