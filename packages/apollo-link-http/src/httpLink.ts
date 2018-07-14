@@ -18,6 +18,7 @@ import {
   UriFunction as _UriFunction,
 } from 'apollo-link-http-common';
 import { DefinitionNode } from 'graphql';
+import { TextDecoder } from 'text-encoding';
 
 export namespace HttpLink {
   //TODO Would much rather be able to export directly
