@@ -36,7 +36,7 @@ export namespace HttpLink {
 // For backwards compatibility.
 export import FetchOptions = HttpLink.Options;
 export import UriFunction = HttpLink.UriFunction;
-import { ServerParseError } from '../../apollo-link-http-common/src';
+import { ServerParseError } from 'apollo-link-http-common';
 
 export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
   let {
