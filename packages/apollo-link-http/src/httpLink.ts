@@ -36,6 +36,7 @@ export namespace HttpLink {
 // For backwards compatibility.
 export import FetchOptions = HttpLink.Options;
 export import UriFunction = HttpLink.UriFunction;
+import { ServerParseError } from '../../apollo-link-http-common/src';
 
 export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
   let {
@@ -123,25 +124,35 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
           return response;
         })
         .then(response => {
-          const header = response.headers;
-          const contentType = header.get('Content-Type');
-
           // @defer uses multipart responses to stream patches over HTTP
-          if (contentType.indexOf('multipart/mixed') >= 0) {
+          if (
+            response.status < 300 &&
+            response.headers &&
+            response.headers.get('Content-Type') &&
+            response.headers.get('Content-Type').indexOf('multipart/mixed') >= 0
+          ) {
             const reader = response.body.getReader();
             const textDecoder = new TextDecoder();
-            // TODO: Missing response checks here!
             reader.read().then(function sendNext({ value, done }) {
               if (!done) {
-                const plaintext = textDecoder.decode(value);
-                // Split plaintext using encapsulation boundary
-                // See: https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
-                const payloads = plaintext.split('\r\n---\r\n');
-                for (const payload of payloads) {
-                  if (payload.length && payload !== '\r\n---') {
-                    // Terminator
-                    observer.next(JSON.parse(payload) as FetchResult);
+                let plaintext;
+                try {
+                  plaintext = textDecoder.decode(value);
+                  // Split plaintext using encapsulation boundary
+                  // See: https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
+                  const payloads = plaintext.split('\r\n---\r\n');
+                  for (const payload of payloads) {
+                    if (payload.length && payload !== '\r\n---') {
+                      // Terminator
+                      observer.next(JSON.parse(payload) as FetchResult);
+                    }
                   }
+                } catch (err) {
+                  const parseError = err as ServerParseError;
+                  parseError.response = response;
+                  parseError.statusCode = response.status;
+                  parseError.bodyText = plaintext;
+                  throw parseError;
                 }
                 reader.read().then(sendNext);
               } else {
@@ -149,11 +160,13 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
               }
             });
           } else {
-            parseAndCheckHttpResponse(operation)(response).then(result => {
-              // we have data and can send it to back up the link chain
-              observer.next(result);
-              observer.complete();
-            });
+            return parseAndCheckHttpResponse(operation)(response).then(
+              result => {
+                // we have data and can send it to back up the link chain
+                observer.next(result);
+                observer.complete();
+              },
+            );
           }
         })
         .catch(err => {
