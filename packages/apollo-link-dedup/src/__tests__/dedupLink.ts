@@ -180,6 +180,7 @@ describe('DedupLink', () => {
         return new Observable(observer => {
           called += 1;
           observer.next({ data: { test: 1 } });
+          observer.complete();
         });
       }),
     ]);
