@@ -37,11 +37,11 @@
     "browserify": "16.2.2",
     "jest": "22.4.4",
     "rimraf": "2.6.2",
-    "rollup": "0.61.1",
+    "rollup": "0.62.0",
     "ts-jest": "22.4.6",
     "tslint": "5.10.0",
     "typescript": "2.9.2",
-    "uglify-js": "3.4.1"
+    "uglify-js": "3.4.4"
   },
   "jest": {
     "transform": {

@@ -4,7 +4,7 @@ description: Manage your local data with Apollo Client
 ---
 
 [**Read the announcement post!
-🎉**](https://dev-blog.apollodata.com/the-future-of-state-management-dd410864cae2) |
+🎉**](https://blog.apollographql.com/the-future-of-state-management-dd410864cae2) |
 [**Video tutorial by Sara Vieira**](https://youtu.be/2RvRcnD8wHY) |
 [**apollo-link-state on GitHub**](https://github.com/apollographql/apollo-link-state)
 
