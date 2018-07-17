@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-http",
-  "version": "1.5.4",
+  "version": "0.0.0-alpha.0",
   "description": "HTTP transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -47,9 +47,9 @@
     "graphql": "^0.11.0 || ^0.12.0 || ^0.13.0"
   },
   "devDependencies": {
-    "@types/text-encoding": "0.0.33",
     "@types/graphql": "0.12.6",
     "@types/jest": "22.2.3",
+    "@types/text-encoding": "0.0.33",
     "apollo-fetch": "0.7.0",
     "browserify": "16.2.2",
     "fetch-mock": "6.5.2",
