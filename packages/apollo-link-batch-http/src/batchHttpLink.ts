@@ -37,6 +37,11 @@ export namespace BatchHttpLink {
      * Sets the key for an Operation, which specifies the batch an operation is included in
      */
     batchKey?: (operation: Operation) => string;
+
+    /**
+     * Provides a way to override the default batching behavior by receiving BatchLink options and returning an ApolloLink.
+     */
+    createBatchLink?: (options: BatchLink.Options) => ApolloLink;
   }
 }
 
@@ -60,6 +65,7 @@ export class BatchHttpLink extends ApolloLink {
       batchInterval,
       batchMax,
       batchKey,
+      createBatchLink,
       ...requestOptions
     } = fetchParams;
 
@@ -71,6 +77,10 @@ export class BatchHttpLink extends ApolloLink {
     //a ReferenceError
     if (!fetcher) {
       fetcher = fetch;
+    }
+
+    if (!createBatchLink) {
+      createBatchLink = options => new BatchLink(options);
     }
 
     const linkConfig = {
@@ -204,7 +214,7 @@ export class BatchHttpLink extends ApolloLink {
         return selectURI(operation, uri) + JSON.stringify(contextConfig);
       });
 
-    this.batcher = new BatchLink({
+    this.batcher = createBatchLink({
       batchInterval: this.batchInterval,
       batchMax: this.batchMax,
       batchKey,
