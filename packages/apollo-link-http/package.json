@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-http",
-  "version": "0.0.0-alpha.0",
+  "version": "1.6.0-alpha.0",
   "description": "HTTP transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
