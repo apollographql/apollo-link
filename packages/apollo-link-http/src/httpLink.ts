@@ -140,11 +140,30 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
                   plaintext = textDecoder.decode(value);
                   // Split plaintext using encapsulation boundary
                   // See: https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
-                  const payloads = plaintext.split('\r\n---\r\n');
-                  for (const payload of payloads) {
-                    if (payload.length && payload !== '\r\n---') {
-                      // Terminator
-                      observer.next(JSON.parse(payload) as FetchResult);
+                  const boundary = '\r\n---\r\n';
+                  const terminatingBoundary = '\r\n-----\r\n';
+
+                  const parts = plaintext.split(boundary);
+                  for (const part of parts) {
+                    // Get the body of the part, we don't need the headers for
+                    // each part, but it is sent anyway as per the spec.
+                    if (part.length) {
+                      let partArr = part.split('\r\n\r\n');
+                      if (!partArr || partArr.length !== 2) {
+                        throw new Error(
+                          'Invalid multipart response from GraphQL server',
+                        );
+                      }
+                      let body = partArr[1];
+                      if (body && body.length) {
+                        // Strip out the terminating boundary
+                        body = body.replace(terminatingBoundary, '');
+                        observer.next(JSON.parse(body) as FetchResult);
+                      } else {
+                        throw new Error(
+                          'Invalid multipart response from GraphQL server',
+                        );
+                      }
                     }
                   }
                 } catch (err) {
@@ -156,6 +175,7 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
                 }
                 reader.read().then(sendNext);
               } else {
+                reader.releaseLock();
                 observer.complete();
               }
             });
