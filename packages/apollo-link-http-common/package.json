@@ -38,17 +38,17 @@
     "@types/graphql": "0.12.6",
     "@types/jest": "22.2.3",
     "browserify": "16.2.2",
-    "fetch-mock": "6.5.0",
+    "fetch-mock": "6.5.2",
     "graphql": "0.13.2",
     "graphql-tag": "2.9.2",
     "jest": "22.4.4",
     "object-to-querystring": "1.0.8",
     "rimraf": "2.6.1",
-    "rollup": "0.62.0",
+    "rollup": "0.63.4",
     "ts-jest": "22.4.6",
-    "tslint": "5.10.0",
+    "tslint": "5.11.0",
     "typescript": "2.9.2",
-    "uglify-js": "3.4.3"
+    "uglify-js": "3.4.5"
   },
   "repository": {
     "type": "git",
