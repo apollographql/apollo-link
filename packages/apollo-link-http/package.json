@@ -40,8 +40,7 @@
   },
   "dependencies": {
     "apollo-link": "^1.2.2",
-    "apollo-link-http-common": "^0.2.4",
-    "text-encoding": "^0.6.4"
+    "apollo-link-http-common": "^0.2.4"
   },
   "peerDependencies": {
     "graphql": "^0.11.0 || ^0.12.0 || ^0.13.0"
@@ -49,7 +48,6 @@
   "devDependencies": {
     "@types/graphql": "0.12.6",
     "@types/jest": "22.2.3",
-    "@types/text-encoding": "0.0.33",
     "apollo-fetch": "0.7.0",
     "browserify": "16.2.2",
     "fetch-mock": "6.5.2",
