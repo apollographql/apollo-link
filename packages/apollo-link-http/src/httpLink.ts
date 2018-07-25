@@ -18,7 +18,6 @@ import {
   UriFunction as _UriFunction,
 } from 'apollo-link-http-common';
 import { DefinitionNode } from 'graphql';
-import { TextDecoder } from 'text-encoding';
 
 export namespace HttpLink {
   //TODO Would much rather be able to export directly
@@ -31,6 +30,46 @@ export namespace HttpLink {
      */
     useGETForQueries?: boolean;
   }
+}
+
+const MESSAGE_NO_READABLE_STREAM = `Your browser does not support the ReadableStream API, which is needed to read streaming multipart HTTP responses for deferred queries.
+Apollo Client will only parse the response when all the parts arrive.`;
+
+/**
+ * Given the plaintext of a HTTP response body that follows the Multipart
+ * protocol (see: https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html),
+ * break it up along the encapsulation boundaries and parse each patch for a
+ * deferred query.
+ * @param plaintext
+ */
+function parseMultipartHTTP(plaintext: string): FetchResult[] {
+  const results: FetchResult[] = [];
+
+  // Split plaintext using encapsulation boundary
+  // See:
+  const boundary = '\r\n---\r\n';
+  const terminatingBoundary = '\r\n-----\r\n';
+
+  const parts = plaintext.split(boundary);
+  for (const part of parts) {
+    // Get the body of the part, we don't need the headers for
+    // each part, but it is sent anyway as per the spec.
+    if (part.length) {
+      let partArr = part.split('\r\n\r\n');
+      if (!partArr || partArr.length !== 2) {
+        throw new Error('Invalid multipart response from GraphQL server');
+      }
+      let body = partArr[1];
+      if (body && body.length) {
+        // Strip out the terminating boundary
+        body = body.replace(terminatingBoundary, '');
+        results.push(JSON.parse(body) as FetchResult);
+      } else {
+        throw new Error('Invalid multipart response from GraphQL server');
+      }
+    }
+  }
+  return results;
 }
 
 // For backwards compatibility.
@@ -131,54 +170,43 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
             response.headers.get('Content-Type') &&
             response.headers.get('Content-Type').indexOf('multipart/mixed') >= 0
           ) {
-            const reader = response.body.getReader();
-            const textDecoder = new TextDecoder();
-            reader.read().then(function sendNext({ value, done }) {
-              if (!done) {
-                let plaintext;
-                try {
-                  plaintext = textDecoder.decode(value);
-                  // Split plaintext using encapsulation boundary
-                  // See: https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
-                  const boundary = '\r\n---\r\n';
-                  const terminatingBoundary = '\r\n-----\r\n';
-
-                  const parts = plaintext.split(boundary);
-                  for (const part of parts) {
-                    // Get the body of the part, we don't need the headers for
-                    // each part, but it is sent anyway as per the spec.
-                    if (part.length) {
-                      let partArr = part.split('\r\n\r\n');
-                      if (!partArr || partArr.length !== 2) {
-                        throw new Error(
-                          'Invalid multipart response from GraphQL server',
-                        );
-                      }
-                      let body = partArr[1];
-                      if (body && body.length) {
-                        // Strip out the terminating boundary
-                        body = body.replace(terminatingBoundary, '');
-                        observer.next(JSON.parse(body) as FetchResult);
-                      } else {
-                        throw new Error(
-                          'Invalid multipart response from GraphQL server',
-                        );
-                      }
+            if (response.body !== undefined) {
+              // For the majority of browsers with support for ReadableStream
+              const reader = response.body.getReader();
+              const textDecoder = new TextDecoder();
+              reader.read().then(function sendNext({ value, done }) {
+                if (!done) {
+                  let plaintext;
+                  try {
+                    plaintext = textDecoder.decode(value);
+                    const parts = parseMultipartHTTP(plaintext);
+                    for (const part of parts) {
+                      observer.next(part);
                     }
+                  } catch (err) {
+                    const parseError = err as ServerParseError;
+                    parseError.response = response;
+                    parseError.statusCode = response.status;
+                    parseError.bodyText = plaintext;
+                    throw parseError;
                   }
-                } catch (err) {
-                  const parseError = err as ServerParseError;
-                  parseError.response = response;
-                  parseError.statusCode = response.status;
-                  parseError.bodyText = plaintext;
-                  throw parseError;
+                  reader.read().then(sendNext);
+                } else {
+                  reader.releaseLock();
+                  observer.complete();
                 }
-                reader.read().then(sendNext);
-              } else {
-                reader.releaseLock();
+              });
+            } else {
+              // Browser does not expose ReadableStreams on the response
+              console.warn(MESSAGE_NO_READABLE_STREAM);
+              response.text().then(plaintext => {
+                const parts = parseMultipartHTTP(plaintext);
+                for (const part of parts) {
+                  observer.next(part);
+                }
                 observer.complete();
-              }
-            });
+              });
+            }
           } else {
             return parseAndCheckHttpResponse(operation)(response).then(
               result => {
