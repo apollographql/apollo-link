@@ -38,7 +38,6 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "@types/graphql": "0.12.6",
     "apollo-utilities": "^1.0.0",
     "zen-observable-ts": "^0.8.9"
   },
@@ -46,6 +45,7 @@
     "graphql": "^0.11.3 || ^0.12.3 || ^0.13.0"
   },
   "devDependencies": {
+    "@types/graphql": "0.12.6",
     "@types/jest": "22.2.3",
     "@types/node": "9.6.23",
     "browserify": "16.2.2",
