@@ -35,37 +35,68 @@ export namespace HttpLink {
 const MESSAGE_NO_READABLE_STREAM = `Your browser does not support the ReadableStream API, which is needed to read streaming multipart HTTP responses for deferred queries.
 Apollo Client will only parse the response when all the parts arrive.`;
 
+function throwParseError() {
+  throw new Error('Invalid multipart response from GraphQL server');
+}
+
 /**
  * Given the plaintext of a HTTP response body that follows the Multipart
  * protocol (see: https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html),
  * break it up along the encapsulation boundaries and parse each patch for a
  * deferred query.
+ *
+ * Returns null if a part is incomplete, i.e. the length of the body does not
+ * match the Content-Length header. This occurs on large payloads that get
+ * transferred in multiple chunks.
  * @param plaintext
  */
-function parseMultipartHTTP(plaintext: string): FetchResult[] {
+function parseMultipartHTTP(plaintext: string): FetchResult[] | null {
   const results: FetchResult[] = [];
 
   // Split plaintext using encapsulation boundary
-  // See:
   const boundary = '\r\n---\r\n';
   const terminatingBoundary = '\r\n-----\r\n';
 
   const parts = plaintext.split(boundary);
   for (const part of parts) {
-    // Get the body of the part, we don't need the headers for
-    // each part, but it is sent anyway as per the spec.
+    // Split part into header and body
     if (part.length) {
       let partArr = part.split('\r\n\r\n');
       if (!partArr || partArr.length !== 2) {
-        throw new Error('Invalid multipart response from GraphQL server');
       }
+
+      // Read the Content-Length header, which must be included in the response
+      let headers = partArr[0];
+      const headersArr = headers.split('\r\n');
+      const contentLengthHeader = headersArr.find(
+        headerLine => headerLine.toLowerCase().indexOf('content-length:') >= 0,
+      );
+      if (contentLengthHeader === undefined) {
+        throwParseError();
+      }
+      const contentLengthArr = contentLengthHeader.split(':');
+      let contentLength: number;
+      if (
+        contentLengthArr.length === 2 &&
+        !isNaN(parseInt(contentLengthArr[1]))
+      ) {
+        contentLength = parseInt(contentLengthArr[1]);
+      } else {
+        throwParseError();
+      }
+
       let body = partArr[1];
+      // Check that length of body matches the Content-Length
+      if (Buffer.byteLength(body, 'UTF-8') !== contentLength) {
+        return null;
+      }
+
       if (body && body.length) {
         // Strip out the terminating boundary
         body = body.replace(terminatingBoundary, '');
         results.push(JSON.parse(body) as FetchResult);
       } else {
-        throw new Error('Invalid multipart response from GraphQL server');
+        throwParseError();
       }
     }
   }
@@ -174,14 +205,24 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
               // For the majority of browsers with support for ReadableStream
               const reader = response.body.getReader();
               const textDecoder = new TextDecoder();
+              let chunkBuffer: string = '';
               reader.read().then(function sendNext({ value, done }) {
                 if (!done) {
                   let plaintext;
                   try {
                     plaintext = textDecoder.decode(value);
-                    const parts = parseMultipartHTTP(plaintext);
-                    for (const part of parts) {
-                      observer.next(part);
+                    // Read the header to get the Content-Length
+
+                    const parts = parseMultipartHTTP(chunkBuffer + plaintext);
+                    if (parts === null) {
+                      // The part is not complete yet, add it to the buffer
+                      // and wait for the next chunk to arrive
+                      chunkBuffer += plaintext;
+                    } else {
+                      chunkBuffer = ''; // Reset
+                      for (const part of parts) {
+                        observer.next(part);
+                      }
                     }
                   } catch (err) {
                     const parseError = err as ServerParseError;
