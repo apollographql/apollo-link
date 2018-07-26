@@ -86,14 +86,14 @@ function parseMultipartHTTP(plaintext: string): FetchResult[] | null {
       }
 
       let body = partArr[1];
-      // Check that length of body matches the Content-Length
-      if (Buffer.byteLength(body, 'UTF-8') !== contentLength) {
-        return null;
-      }
 
       if (body && body.length) {
         // Strip out the terminating boundary
         body = body.replace(terminatingBoundary, '');
+        // Check that length of body matches the Content-Length
+        if (new TextEncoder().encode(body).length !== contentLength) {
+          return null;
+        }
         results.push(JSON.parse(body) as FetchResult);
       } else {
         throwParseError();
@@ -201,8 +201,12 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
             response.headers.get('Content-Type') &&
             response.headers.get('Content-Type').indexOf('multipart/mixed') >= 0
           ) {
-            if (response.body !== undefined) {
-              // For the majority of browsers with support for ReadableStream
+            if (
+              response.body !== undefined &&
+              typeof TextDecoder !== 'undefined' &&
+              typeof TextEncoder !== 'undefined'
+            ) {
+              // For the majority of browsers with support for ReadableStream and TextDecoder
               const reader = response.body.getReader();
               const textDecoder = new TextDecoder();
               let chunkBuffer: string = '';
