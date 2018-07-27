@@ -86,14 +86,14 @@ function parseMultipartHTTP(plaintext: string): FetchResult[] | null {
       }
 
       let body = partArr[1];
-      // Check that length of body matches the Content-Length
-      if (new TextEncoder().encode(body).length !== contentLength) {
-        return null;
-      }
 
       if (body && body.length) {
         // Strip out the terminating boundary
         body = body.replace(terminatingBoundary, '');
+        // Check that length of body matches the Content-Length
+        if (new TextEncoder().encode(body).length !== contentLength) {
+          return null;
+        }
         results.push(JSON.parse(body) as FetchResult);
       } else {
         throwParseError();
