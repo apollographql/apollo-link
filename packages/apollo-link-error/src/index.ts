@@ -8,7 +8,7 @@ import {
 import { GraphQLError, ExecutionResult } from 'graphql';
 
 export interface ErrorResponse {
-  graphQLErrors?: GraphQLError[];
+  graphQLErrors?: ReadonlyArray<GraphQLError>;
   networkError?: Error;
   response?: ExecutionResult;
   operation: Operation;
