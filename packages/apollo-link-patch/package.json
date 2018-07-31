@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-patch",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0-alpha.1",
   "description": "Merge patches sent back from partial query responses",
   "author": "Clarence Ngoh <clarencenpy@meteor.com>",
   "contributors": [],
