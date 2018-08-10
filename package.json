@@ -103,6 +103,6 @@
     "rollup": "0.63.4",
     "rollup-plugin-sourcemaps": "0.4.2",
     "ts-jest": "22.4.6",
-    "typescript": "2.9.2"
+    "typescript": "3.0.1"
   }
 }
