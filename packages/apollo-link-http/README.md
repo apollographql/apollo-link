@@ -33,7 +33,7 @@ HTTP Link takes an object with some options on it to customize the behavior of t
 * `includeExtensions`: allow passing the extensions field to your graphql server, defaults to false
 * `fetch`: a `fetch` compatible API for making a request
 * `headers`: an object representing values to be sent as headers on the request
-* `credentials`: a string representing the credentials policy you want for the fetch call
+* `credentials`: a string representing the credentials policy you want for the fetch call. Possible values are: `omit`, `include` and `same-origin`
 * `fetchOptions`: any overrides of the fetch options argument to pass to the fetch call
 * `useGETForQueries`: set to `true` to use the HTTP `GET` method for queries (but not for mutations)
 
@@ -50,7 +50,7 @@ Note that if you set `fetchOptions.method` to `GET`, the http link will follow t
 This link also attaches the response from the `fetch` operation on the context as `response` so you can access it from within another link.
 
 * `headers`: an object representing values to be sent as headers on the request
-* `credentials`: a string representing the credentials policy you want for the fetch call
+* `credentials`: a string representing the credentials policy you want for the fetch call. Possible values are: `omit`, `include` and `same-origin`
 * `uri`: a string of the endpoint you want to fetch from
 * `fetchOptions`: any overrides of the fetch options argument to pass to the fetch call
 * `response`: this is the raw response from the fetch request after it is made.
