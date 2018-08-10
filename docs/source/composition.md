@@ -20,7 +20,7 @@ import MyAuthLink from '../auth';
 
 const link = ApolloLink.from([
   new Retry(),
-  new AuthLink(),
+  new MyAuthLink(),
   new HttpLink({ uri: '/graphql' })
 ]);
 ```
