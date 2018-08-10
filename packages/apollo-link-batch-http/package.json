@@ -54,7 +54,7 @@
     "graphql-tag": "2.9.2",
     "jest": "22.4.4",
     "object-to-querystring": "1.0.8",
-    "proxyquire": "1.8.0",
+    "proxyquire": "2.0.1",
     "rimraf": "2.6.1",
     "rollup": "0.63.4",
     "ts-jest": "22.4.6",
