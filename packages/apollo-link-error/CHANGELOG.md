@@ -1,6 +1,7 @@
 # Change log
 
 ### vNEXT
+- Update types to be compatible with `@types/graphql@0.13.3`
 
 ### 1.1.0
 - Pass `forward` into error handler for ErrorLink to support retrying a failed request 
