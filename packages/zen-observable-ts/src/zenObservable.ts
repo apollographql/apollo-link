@@ -1,5 +1,3 @@
-import zenObservable from 'zen-observable';
-
 namespace Observable {
 
 }
@@ -12,36 +10,36 @@ export type Observer<T> = ZenObservable.Observer<T>;
 export type Subscriber<T> = ZenObservable.Subscriber<T>;
 export type ObservableLike<T> = ZenObservable.ObservableLike<T>;
 
-export const Observable: {
-  new <T>(subscriber: Subscriber<T>): Observable<T>;
-  from<R>(
-    observable: Observable<R> | ZenObservable.ObservableLike<R> | ArrayLike<R>,
-  ): Observable<R>;
-  of<R>(...args: Array<R>): Observable<R>;
-} = <any>zenObservable;
+export declare class Observable<T> {
+  constructor(subscriber: ZenObservable.Subscriber<T>);
 
-export interface Observable<T> {
-  subscribe(
-    observerOrNext: ((value: T) => void) | ZenObservable.Observer<T>,
-    error?: (error: any) => void,
-    complete?: () => void,
+  public subscribe(
+    observer: ZenObservable.Observer<T>,
+  ): ZenObservable.Subscription;
+  public subscribe(
+    onNext: (value: T) => void,
+    onError?: (error: any) => void,
+    onComplete?: () => void,
   ): ZenObservable.Subscription;
 
-  forEach(fn: (value: T) => void): Promise<void>;
+  public forEach(callback: (value: T) => void): Promise<void>;
+  public map<R>(callback: (value: T) => R): Observable<R>;
+  public filter(callback: (value: T) => boolean): Observable<T>;
+  public reduce(
+    callback: (previousValue: T, currentValue: T) => T,
+    initialValue?: T,
+  ): Observable<T>;
+  public reduce<R>(
+    callback: (previousValue: R, currentValue: T) => R,
+    initialValue?: R,
+  ): Observable<R>;
+  public flatMap<R>(
+    callback: (value: T) => ZenObservable.ObservableLike<R>,
+  ): Observable<R>;
+  public concat<R>(...observable: Array<Observable<R>>): Observable<R>;
 
-  map<R>(fn: (value: T) => R): Observable<R>;
-
-  filter(fn: (value: T) => boolean): Observable<T>;
-
-  reduce<R = T>(
-    fn: (previousValue: R | T, currentValue: T) => R | T,
-    initialValue?: R | T,
-  ): Observable<R | T>;
-
-  flatMap<R>(fn: (value: T) => ZenObservable.ObservableLike<R>): Observable<R>;
-
-  from<R>(
+  public static from<R>(
     observable: Observable<R> | ZenObservable.ObservableLike<R> | ArrayLike<R>,
   ): Observable<R>;
-  of<R>(...args: Array<R>): Observable<R>;
+  public static of<R>(...items: R[]): Observable<R>;
 }
