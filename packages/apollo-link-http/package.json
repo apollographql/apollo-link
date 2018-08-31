@@ -46,7 +46,7 @@
     "graphql": "^0.11.0 || ^0.12.0 || ^0.13.0"
   },
   "devDependencies": {
-    "@types/graphql": "0.12.6",
+    "@types/graphql": "0.13.4",
     "@types/jest": "22.2.3",
     "apollo-fetch": "0.7.0",
     "browserify": "16.2.2",
@@ -60,7 +60,7 @@
     "ts-jest": "22.4.6",
     "tslint": "5.11.0",
     "typescript": "2.9.2",
-    "uglify-js": "3.4.5"
+    "uglify-js": "3.4.8"
   },
   "jest": {
     "transform": {

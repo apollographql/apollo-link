@@ -84,6 +84,32 @@ const client = new ApolloClient({
 });
 ```
 
+<h2 id="local-development">With Apollo Boost</h2>
+
+If you are using `apollo-boost`, it already includes `apollo-link-state` underneath the hood for you.
+Instead of passing the `link` property when instantiating Apollo Client, you pass in `clientState`.
+
+```js
+import ApolloClient from 'apollo-boost';
+
+const client = new ApolloClient({
+  clientState: {
+    defaults: {
+      isConnected: true
+    },
+    resolvers: {
+      Mutation: {
+        updateNetworkStatus: (_, { isConnected }, { cache }) => {
+          cache.writeData({ data: { isConnected }});
+          return null;
+        }
+      }
+    }
+  }
+});
+
+```
+
 How do we differentiate a request for local data from a request that hits our
 server? In our query or mutation, we specify which fields are client-only with a
 `@client` directive. This tells our network stack to retrieve or update the data
