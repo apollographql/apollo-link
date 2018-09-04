@@ -1,4 +1,5 @@
 # Change log
+- Added Defensive check on the retriedResult condition to avoid retriedResult.subscribe function breaking in local env.
 
 ### vNEXT
 - Update types to be compatible with `@types/graphql@0.13.3`
