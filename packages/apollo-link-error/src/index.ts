@@ -45,7 +45,7 @@ export const onError = (errorHandler: ErrorHandler): ApolloLink => {
                 forward,
               });
 
-              if (retriedResult) {
+              if (typeof retriedResult !== 'undefined' && typeof retriedResult.subscribe === 'function') {
                 retriedSub = retriedResult.subscribe({
                   next: observer.next.bind(observer),
                   error: observer.error.bind(observer),
@@ -64,7 +64,7 @@ export const onError = (errorHandler: ErrorHandler): ApolloLink => {
               graphQLErrors: networkError.result && networkError.result.errors,
               forward,
             });
-            if (retriedResult) {
+            if (typeof retriedResult !== 'undefined' && typeof retriedResult.subscribe === 'function') {
               retriedSub = retriedResult.subscribe({
                 next: observer.next.bind(observer),
                 error: observer.error.bind(observer),
