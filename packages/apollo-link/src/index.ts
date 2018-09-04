@@ -5,6 +5,7 @@ export {
   toPromise,
   fromPromise,
   fromError,
+  isTerminating,
 } from './linkUtils';
 export * from './types';
 
