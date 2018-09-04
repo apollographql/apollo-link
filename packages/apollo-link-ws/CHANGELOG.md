@@ -1,6 +1,9 @@
 
 ### vNext
 
+### 1.1.0
+- Exposed `SubscriptionClient#close` in order to be able to close the connection without setting up the client
+
 ### 1.0.8
 - Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
 
