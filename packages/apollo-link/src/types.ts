@@ -21,9 +21,11 @@ export interface Operation {
 }
 
 export type FetchResult<
+  T = Record<string, any>,
   C = Record<string, any>,
   E = Record<string, any>
 > = ExecutionResult & {
+  data?: T;
   extensions?: E;
   context?: C;
 };

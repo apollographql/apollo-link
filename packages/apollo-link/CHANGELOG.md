@@ -1,6 +1,7 @@
 # Change log
 
 ### vNEXT
+- Fix the typing of data attribute in FetchResult [PR#783](https://github.com/apollographql/apollo-link/pull/783)
 
 ### 1.2.2
 - Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
