@@ -42,14 +42,14 @@
     "zen-observable-ts": "^0.8.9"
   },
   "peerDependencies": {
-    "graphql": "^0.11.3 || ^0.12.3 || ^0.13.0"
+    "graphql": "^0.11.3 || ^0.12.3 || ^0.13.0 || ^14.0.0"
   },
   "devDependencies": {
-    "@types/graphql": "0.13.4",
+    "@types/graphql": "14.0.0",
     "@types/jest": "22.2.3",
     "@types/node": "9.6.31",
     "browserify": "16.2.2",
-    "graphql": "0.13.2",
+    "graphql": "14.0.2",
     "graphql-tag": "2.9.2",
     "jest": "22.4.4",
     "rimraf": "2.6.1",
