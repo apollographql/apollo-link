@@ -72,7 +72,8 @@
   "jest": {
     "transform": {
       ".(ts|tsx)": "ts-jest"
-    }
+    },
+    "testURL": "http://localhost"
   },
   "lint-staged": {
     "*.{ts, tsx, js, jsx}": [
