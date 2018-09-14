@@ -53,7 +53,8 @@
       "tsx",
       "js",
       "json"
-    ]
+    ],
+    "testURL": "http://localhost"
   },
   "dependencies": {
     "zen-observable": "^0.8.0"
