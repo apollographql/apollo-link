@@ -1,4 +1,10 @@
-import { ApolloLink, Observable, RequestHandler, fromError } from 'apollo-link';
+import {
+  ApolloLink,
+  Observable,
+  RequestHandler,
+  fromError,
+  FetchResult,
+} from 'apollo-link';
 import {
   serializeFetchParameter,
   selectURI,
@@ -26,9 +32,84 @@ export namespace HttpLink {
   }
 }
 
+const MESSAGE_NO_READABLE_STREAM =
+  window === undefined
+    ? `Support for the ReadableStream API is needed to read streaming multipart HTTP responses for deferred queries. If your GraphQL client is running in a Node.js environment, please install the 'node-fetch-polyfill' that supports the ReadableStream API. You also need to polyfill for TextEncoder and TextDecoder on the 'global' object. Otherwise, the response will only be parsed when all the parts arrive.`
+    : `Your browser does not support the ReadableStream API, which is needed to read streaming multipart HTTP responses for deferred queries. Apollo Client will only parse the response when all the parts arrive.
+`;
+
+function throwParseError() {
+  throw new Error('Invalid multipart response from GraphQL server');
+}
+
+/**
+ * Given the plaintext of a HTTP response body that follows the Multipart
+ * protocol (see: https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html),
+ * break it up along the encapsulation boundaries and parse each patch for a
+ * deferred query.
+ *
+ * Returns null if a part is incomplete, i.e. the length of the body does not
+ * match the Content-Length header. This occurs on large payloads that get
+ * transferred in multiple chunks.
+ * @param plaintext
+ */
+function parseMultipartHTTP(plaintext: string): FetchResult[] | null {
+  const results: FetchResult[] = [];
+
+  // Split plaintext using encapsulation boundary
+  const boundary = '\r\n---\r\n';
+  const terminatingBoundary = '\r\n-----\r\n';
+
+  const parts = plaintext.split(boundary);
+  for (const part of parts) {
+    // Split part into header and body
+    if (part.length) {
+      let partArr = part.split('\r\n\r\n');
+      if (!partArr || partArr.length !== 2) {
+      }
+
+      // Read the Content-Length header, which must be included in the response
+      let headers = partArr[0];
+      const headersArr = headers.split('\r\n');
+      const contentLengthHeader = headersArr.find(
+        headerLine => headerLine.toLowerCase().indexOf('content-length:') >= 0,
+      );
+      if (contentLengthHeader === undefined) {
+        throwParseError();
+      }
+      const contentLengthArr = contentLengthHeader.split(':');
+      let contentLength: number;
+      if (
+        contentLengthArr.length === 2 &&
+        !isNaN(parseInt(contentLengthArr[1]))
+      ) {
+        contentLength = parseInt(contentLengthArr[1]);
+      } else {
+        throwParseError();
+      }
+
+      let body = partArr[1];
+
+      if (body && body.length) {
+        // Strip out the terminating boundary
+        body = body.replace(terminatingBoundary, '');
+        // Check that length of body matches the Content-Length
+        if (new TextEncoder().encode(body).length !== contentLength) {
+          return null;
+        }
+        results.push(JSON.parse(body) as FetchResult);
+      } else {
+        throwParseError();
+      }
+    }
+  }
+  return results;
+}
+
 // For backwards compatibility.
 export import FetchOptions = HttpLink.Options;
 export import UriFunction = HttpLink.UriFunction;
+import { ServerParseError } from 'apollo-link-http-common';
 
 export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
   let {
@@ -115,12 +196,75 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
           operation.setContext({ response });
           return response;
         })
-        .then(parseAndCheckHttpResponse(operation))
-        .then(result => {
-          // we have data and can send it to back up the link chain
-          observer.next(result);
-          observer.complete();
-          return result;
+        .then(response => {
+          // @defer uses multipart responses to stream patches over HTTP
+          if (
+            response.status < 300 &&
+            response.headers &&
+            response.headers.get('Content-Type') &&
+            response.headers.get('Content-Type').indexOf('multipart/mixed') >= 0
+          ) {
+            if (
+              response.body !== undefined &&
+              typeof response.body.getReader === 'function' &&
+              typeof TextDecoder !== 'undefined' &&
+              typeof TextEncoder !== 'undefined'
+            ) {
+              // For the majority of browsers with support for ReadableStream and TextDecoder
+              const reader = response.body.getReader();
+              const textDecoder = new TextDecoder();
+              let chunkBuffer: string = '';
+              reader.read().then(function sendNext({ value, done }) {
+                if (!done) {
+                  let plaintext;
+                  try {
+                    plaintext = textDecoder.decode(value);
+                    // Read the header to get the Content-Length
+
+                    const parts = parseMultipartHTTP(chunkBuffer + plaintext);
+                    if (parts === null) {
+                      // The part is not complete yet, add it to the buffer
+                      // and wait for the next chunk to arrive
+                      chunkBuffer += plaintext;
+                    } else {
+                      chunkBuffer = ''; // Reset
+                      for (const part of parts) {
+                        observer.next(part);
+                      }
+                    }
+                  } catch (err) {
+                    const parseError = err as ServerParseError;
+                    parseError.response = response;
+                    parseError.statusCode = response.status;
+                    parseError.bodyText = plaintext;
+                    throw parseError;
+                  }
+                  reader.read().then(sendNext);
+                } else {
+                  reader.releaseLock();
+                  observer.complete();
+                }
+              });
+            } else {
+              // Browser does not expose ReadableStreams on the response
+              console.warn(MESSAGE_NO_READABLE_STREAM);
+              response.text().then(plaintext => {
+                const parts = parseMultipartHTTP(plaintext);
+                for (const part of parts) {
+                  observer.next(part);
+                }
+                observer.complete();
+              });
+            }
+          } else {
+            return parseAndCheckHttpResponse(operation)(response).then(
+              result => {
+                // we have data and can send it to back up the link chain
+                observer.next(result);
+                observer.complete();
+              },
+            );
+          }
         })
         .catch(err => {
           // fetch was cancelled so its already been cleaned up in the unsubscribe

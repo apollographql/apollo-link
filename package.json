@@ -19,7 +19,8 @@
     "coverage:upload": "codecov",
     "danger": "danger run --verbose",
     "predeploy": "npm run bootstrap",
-    "deploy": "lerna publish -m \"chore: Publish\" --independent",
+    "deploy": "lerna publish -m \"chore: Publish\" --independent --exact",
+    "deploy-alpha": "lerna publish -m \"chore: Publish\" --independent --exact --scope={apollo-link-http,apollo-link-dedup} --npm-tag alpha",
     "watch": "trap \"kill 0\" SIGINT; for f in `ls packages`; do (cd `pwd`/packages/$f && [[ -e package.json ]] && npm run watch) & done; "
   },
   "bundlesize": [

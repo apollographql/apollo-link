@@ -25,6 +25,13 @@ export class DedupLink extends ApolloLink {
       return forward(operation);
     }
 
+    // Do not dedup deferred queries - it gets tricky when we have to keep track
+    // of the stream of patches to replay it for deduped subscribers. Perhaps
+    // it is better to set watchQuery on the cache directly to get those updates
+    if (operation.getContext().isDeferred) {
+      return forward(operation);
+    }
+
     const key = operation.toKey();
 
     const cleanup = key => {
@@ -58,7 +65,7 @@ export class DedupLink extends ApolloLink {
               this.subscribers.delete(key);
               if (prev) {
                 prev.next.forEach(next => next(result));
-                prev.complete.forEach(complete => complete());
+                prev.complete.forEach(complete => complete(result));
               }
             },
             error: error => {

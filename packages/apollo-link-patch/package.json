@@ -1,15 +1,9 @@
 {
-  "name": "apollo-link-http",
-  "version": "1.6.0-alpha.5",
-  "description": "HTTP transport layer for GraphQL",
-  "author": "Evans Hauser <evanshauser@gmail.com>",
-  "contributors": [
-    "James Baxley <james@meteor.com>",
-    "Jonas Helfer <jonas@helfer.email>",
-    "jon wong <j@jnwng.com>",
-    "Sashko Stubailo <sashko@stubailo.com>",
-    "Stephen Kao <stephen.yuchen.kao@gmail.com>"
-  ],
+  "name": "apollo-link-patch",
+  "version": "0.1.0-alpha.1",
+  "description": "Merge patches sent back from partial query responses",
+  "author": "Clarence Ngoh <clarencenpy@meteor.com>",
+  "contributors": [],
   "license": "MIT",
   "main": "./lib/bundle.umd.js",
   "module": "./lib/index.js",
@@ -39,33 +33,27 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-link": "^1.2.2",
-    "apollo-link-http-common": "^0.2.4"
-  },
-  "peerDependencies": {
-    "graphql": "^0.11.0 || ^0.12.0 || ^0.13.0"
+    "apollo-link": "^1.2.2"
   },
   "devDependencies": {
-    "@types/graphql": "0.13.4",
+    "@types/graphql": "0.12.6",
     "@types/jest": "22.2.3",
-    "apollo-fetch": "0.7.0",
     "browserify": "16.2.2",
-    "fetch-mock": "6.5.2",
     "graphql": "0.13.2",
     "graphql-tag": "2.9.2",
     "jest": "22.4.4",
-    "object-to-querystring": "1.0.8",
     "rimraf": "2.6.1",
-    "rollup": "0.65.2",
+    "rollup": "0.63.4",
     "ts-jest": "22.4.6",
     "tslint": "5.11.0",
     "typescript": "2.9.2",
-    "uglify-js": "3.4.9"
+    "uglify-js": "3.4.5"
   },
   "jest": {
     "transform": {
       ".(ts|tsx)": "ts-jest"
     },
+    "testEnvironment": "node",
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
     "moduleFileExtensions": [
       "ts",
@@ -73,11 +61,6 @@
       "js",
       "json"
     ],
-    "mapCoverage": true,
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "sharedHttpTests.ts"
-    ],
-    "testURL": "http://localhost"
+    "mapCoverage": true
   }
 }
