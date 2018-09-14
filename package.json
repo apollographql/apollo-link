@@ -101,7 +101,7 @@
     "pre-push": "0.1.1",
     "prettier": "1.13.7",
     "prettier-check": "2.0.0",
-    "rollup": "0.63.4",
+    "rollup": "0.65.2",
     "rollup-plugin-sourcemaps": "0.4.2",
     "ts-jest": "22.4.6",
     "typescript": "2.9.2"
