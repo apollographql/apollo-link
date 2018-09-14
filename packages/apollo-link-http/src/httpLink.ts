@@ -1,3 +1,5 @@
+/* tslint:disable */
+
 import { ApolloLink, Observable, RequestHandler, fromError } from 'apollo-link';
 import {
   serializeFetchParameter,

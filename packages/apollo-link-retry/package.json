@@ -42,7 +42,7 @@
     "apollo-link": "^1.2.2"
   },
   "devDependencies": {
-    "@types/graphql": "0.13.4",
+    "@types/graphql": "14.0.0",
     "@types/jest": "22.2.3",
     "browserify": "16.2.2",
     "graphql": "14.0.2",
@@ -52,7 +52,7 @@
     "rollup": "0.63.4",
     "ts-jest": "22.4.6",
     "tslint": "5.11.0",
-    "typescript": "2.9.2",
+    "typescript": "3.0.3",
     "uglify-js": "3.4.9",
     "wait-for-observables": "1.0.3"
   },

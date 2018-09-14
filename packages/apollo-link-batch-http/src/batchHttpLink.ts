@@ -105,7 +105,7 @@ export class BatchHttpLink extends ApolloLink {
         ),
       );
 
-      const body = optsAndBody.map(({ body }) => body);
+      const loadedBody = optsAndBody.map(({ body }) => body);
       const options = optsAndBody[0].options;
 
       // There's no spec for using GET with batches.
@@ -116,7 +116,7 @@ export class BatchHttpLink extends ApolloLink {
       }
 
       try {
-        (options as any).body = serializeFetchParameter(body, 'Payload');
+        (options as any).body = serializeFetchParameter(loadedBody, 'Payload');
       } catch (parseError) {
         return fromError<FetchResult[]>(parseError);
       }

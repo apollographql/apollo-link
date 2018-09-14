@@ -1,3 +1,5 @@
+/* tslint:disable */
+
 import zenObservable from 'zen-observable';
 
 namespace Observable {
