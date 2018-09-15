@@ -36,6 +36,7 @@ export function isTerminating(link: ApolloLink): boolean {
 
 export function toPromise<R>(observable: Observable<R>): Promise<R> {
   let completed = false;
+  let result: R;
   return new Promise<R>((resolve, reject) => {
     observable.subscribe({
       next: data => {
@@ -45,8 +46,11 @@ export function toPromise<R>(observable: Observable<R>): Promise<R> {
           );
         } else {
           completed = true;
-          resolve(data);
+          result = data;
         }
+      },
+      complete: () => {
+        resolve(result);
       },
       error: reject,
     });
