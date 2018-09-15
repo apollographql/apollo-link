@@ -1,6 +1,7 @@
 # Change log
 
 ### vNEXT
+- Fix double callback if request result has `http_code > 300` AND `result.data` [PR#606](https://github.com/apollographql/apollo-link/pull/606)
 
 ### 1.5.4
 - Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
