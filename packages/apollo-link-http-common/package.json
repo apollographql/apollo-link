@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-http-common",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Http utilities for Apollo Link shared across all links using http",
   "main": "./lib/bundle.umd.js",
   "module": "./lib/index.js",
@@ -29,25 +29,25 @@
   "author": "Evans Hauser",
   "license": "MIT",
   "dependencies": {
-    "apollo-link": "^1.2.2"
+    "apollo-link": "^1.2.3"
   },
   "peerDependencies": {
-    "graphql": "^0.11.0 || ^0.12.0 || ^0.13.0"
+    "graphql": "^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0"
   },
   "devDependencies": {
-    "@types/graphql": "0.13.4",
+    "@types/graphql": "14.0.0",
     "@types/jest": "22.2.3",
     "browserify": "16.2.2",
     "fetch-mock": "6.5.2",
-    "graphql": "0.13.2",
+    "graphql": "14.0.2",
     "graphql-tag": "2.9.2",
     "jest": "22.4.4",
     "object-to-querystring": "1.0.8",
     "rimraf": "2.6.1",
-    "rollup": "0.63.4",
+    "rollup": "0.66.0",
     "ts-jest": "22.4.6",
     "tslint": "5.11.0",
-    "typescript": "2.9.2",
+    "typescript": "3.0.3",
     "uglify-js": "3.4.9"
   },
   "repository": {
@@ -69,6 +69,7 @@
       "js",
       "json"
     ],
-    "mapCoverage": true
+    "mapCoverage": true,
+    "testURL": "http://localhost"
   }
 }

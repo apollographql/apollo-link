@@ -1,6 +1,8 @@
 # Change log
 
-### vNEXT
+### 0.8.10
+- Added `graphql` 14 to peer and dev deps; Updated `@types/graphql` to 14  <br/>
+  [@hwillson](http://github.com/hwillson) in [#789](https://github.com/apollographql/apollo-link/pull/789)
 
 ### 0.8.9
 - fix to stop combining require and export [PR#559](https://github.com/apollographql/apollo-link/pull/559)

@@ -1,10 +1,14 @@
 # Change log
 
+### 1.1.1
+- Added `graphql` 14 to peer and dev deps; Updated `@types/graphql` to 14  <br/>
+  [@hwillson](http://github.com/hwillson) in [#789](https://github.com/apollographql/apollo-link/pull/789)
+
 ### vNEXT
 - Update types to be compatible with `@types/graphql@0.13.3`
 
 ### 1.1.0
-- Pass `forward` into error handler for ErrorLink to support retrying a failed request 
+- Pass `forward` into error handler for ErrorLink to support retrying a failed request
 
 ### 1.0.9
 - Correct return type to FetchResult [#600](https://github.com/apollographql/apollo-link/pull/600)
