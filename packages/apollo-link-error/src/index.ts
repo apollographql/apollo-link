@@ -9,9 +9,13 @@ import {
 } from 'apollo-link';
 import { GraphQLError, ExecutionResult } from 'graphql';
 
+export interface NetworkError extends Error {
+  statusCode?: number;
+}
+
 export interface ErrorResponse {
   graphQLErrors?: ReadonlyArray<GraphQLError>;
-  networkError?: Error;
+  networkError?: NetworkError;
   response?: ExecutionResult;
   operation: Operation;
   forward: NextLink;
