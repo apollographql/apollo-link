@@ -23,7 +23,7 @@ export interface Operation {
 export type FetchResult<
   C = Record<string, any>,
   E = Record<string, any>
-> = ExecutionResult & {
+> = ExecutionResult<C> & {
   extensions?: E;
   context?: C;
 };
