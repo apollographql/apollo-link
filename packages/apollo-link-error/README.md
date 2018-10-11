@@ -107,7 +107,7 @@ onError(({ graphQLErrors, networkError, operation, forward }) => {
             const oldHeaders = operation.getContext().headers;
             const promise = getNewTokenPromise();
 
-            return promiseToObservable(promise).flatMap(newToken) => {
+            return promiseToObservable(promise).flatMap((newToken) => {
               operation.setContext({
                 headers: {
                   ...oldHeaders,
