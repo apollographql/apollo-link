@@ -35,14 +35,14 @@ export class WebSocketLink extends ApolloLink {
   ) {
     super();
 
-    if (paramsOrClient instanceof SubscriptionClient) {
-      this.subscriptionClient = paramsOrClient;
-    } else {
+    if ((<WebSocketLink.Configuration>paramsOrClient).uri !== undefined) {
       this.subscriptionClient = new SubscriptionClient(
-        paramsOrClient.uri,
-        paramsOrClient.options,
-        paramsOrClient.webSocketImpl,
+        (<WebSocketLink.Configuration>paramsOrClient).uri,
+        (<WebSocketLink.Configuration>paramsOrClient).options,
+        (<WebSocketLink.Configuration>paramsOrClient).webSocketImpl,
       );
+    } else {
+      this.subscriptionClient = (<SubscriptionClient>paramsOrClient);
     }
   }
 
