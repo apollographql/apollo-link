@@ -50,7 +50,7 @@
     "@types/jest": "22.2.3",
     "apollo-fetch": "0.7.0",
     "browserify": "16.2.3",
-    "fetch-mock": "6.5.2",
+    "fetch-mock": "7.2.0",
     "graphql": "14.0.2",
     "graphql-tag": "2.10.0",
     "jest": "22.4.4",
