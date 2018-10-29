@@ -11,7 +11,7 @@ import { GraphQLError, ExecutionResult } from 'graphql';
 
 export interface ErrorResponse {
   graphQLErrors?: ReadonlyArray<GraphQLError>;
-  networkError?: Error;
+  networkError?: Response;
   response?: ExecutionResult;
   operation: Operation;
   forward: NextLink;
