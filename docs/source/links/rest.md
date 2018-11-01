@@ -28,10 +28,10 @@ For an apollo client to work, you need a link and a cache, [more info here](/doc
 npm install --save apollo-cache-inmemory
 ```
 
-Then it is time to install our link:
+Then it is time to install our link and its `peerDependencies`:
 
 ```bash
-npm install apollo-link-rest --save
+npm install apollo-link-rest apollo-link graphql graphql-anywhere--save
 ```
 
 After this, you are ready to setup your apollo client:
