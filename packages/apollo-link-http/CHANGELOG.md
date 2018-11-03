@@ -1,5 +1,8 @@
 # Change log
 
+### 1.5.6
+- Moved setting of response on context into apollo-link-batch-http
+
 ### 1.5.5
 - Added `graphql` 14 to peer and dev deps; Updated `@types/graphql` to 14  <br/>
   [@hwillson](http://github.com/hwillson) in [#789](https://github.com/apollographql/apollo-link/pull/789)

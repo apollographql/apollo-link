@@ -1,5 +1,8 @@
 # Change log
 
+### 1.2.4
+- Fixed raw response not being set on context. Headers can now be retrieved
+
 ### 1.2.3
 - Added `graphql` 14 to peer and dev deps; Updated `@types/graphql` to 14  <br/>
   [@hwillson](http://github.com/hwillson) in [#789](https://github.com/apollographql/apollo-link/pull/789)

@@ -42,12 +42,20 @@ describe('BatchHttpLink', () => {
     jest.resetModules();
   });
 
+  const headers = { cookie: 'monster' };
   const data = { data: { hello: 'world' } };
   const data2 = { data: { hello: 'everyone' } };
   const roflData = { data: { haha: 'hehe' } };
   const lawlData = { data: { tehe: 'haaa' } };
   const makePromise = res =>
-    new Promise((resolve, reject) => setTimeout(() => resolve(res)));
+      new Promise((resolve, reject) =>
+          setTimeout(() =>
+              resolve({
+                  headers,
+                  body: res,
+              }),
+          ),
+      );
 
   let subscriber;
 

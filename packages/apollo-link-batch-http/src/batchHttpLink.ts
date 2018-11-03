@@ -131,6 +131,11 @@ export class BatchHttpLink extends ApolloLink {
       return new Observable<FetchResult[]>(observer => {
         // the raw response is attached to the context in the BatchingLink
         fetcher(chosenURI, options)
+          .then(response => {
+              // attach the raw response to the contexts for usage
+              operations.forEach(operation => operation.setContext({ response }));
+              return response;
+          })
           .then(parseAndCheckHttpResponse(operations))
           .then(result => {
             // we have data and can send it to back up the link chain
