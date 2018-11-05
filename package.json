@@ -1,5 +1,6 @@
 {
   "private": true,
+  "name": "chrispage1 apollo-link clone",
   "license": "MIT",
   "scripts": {
     "bootstrap": "lerna bootstrap",
