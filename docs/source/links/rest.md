@@ -31,7 +31,7 @@ npm install --save apollo-cache-inmemory
 Then it is time to install our link and its `peerDependencies`:
 
 ```bash
-npm install apollo-link-rest apollo-link graphql graphql-anywhere--save
+npm install --save apollo-link-rest apollo-link graphql graphql-anywhere
 ```
 
 After this, you are ready to setup your apollo client:
