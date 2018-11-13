@@ -28,10 +28,10 @@ For an apollo client to work, you need a link and a cache, [more info here](/doc
 npm install --save apollo-cache-inmemory
 ```
 
-Then it is time to install our link and its `peerDependencies`:
+Then it is time to install `apollo-link-rest` and its `peerDependencies`:
 
 ```bash
-npm install apollo-link-rest apollo-link graphql graphql-anywhere--save
+npm install apollo-link-rest apollo-link graphql graphql-anywhere qs --save
 ```
 
 After this, you are ready to setup your apollo client:
@@ -60,6 +60,8 @@ npm install graphql-tag --save
 Defining a query is straightforward:
 
 ```js
+import gql from "graphql-tag";
+
 const query = gql`
   query luke {
     person @rest(type: "Person", path: "people/1/") {
@@ -74,8 +76,17 @@ You can then fetch your data:
 ```js
 // Invoke the query and log the person's name
 client.query({ query }).then(response => {
-  console.log(response.data.name);
+  console.log(response.data.person.name);
 });
+```
+
+Note: If you are running this in a node environment, you might also need to setup `node-fetch`:
+
+```js
+import fetch from "node-fetch";
+
+global.fetch = fetch;
+global.Headers = fetch.Headers;
 ```
 
 <h2 id="options">Options</h2>
