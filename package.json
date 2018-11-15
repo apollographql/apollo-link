@@ -99,7 +99,7 @@
     "lint-staged": "7.3.0",
     "pre-commit": "1.2.2",
     "pre-push": "0.1.1",
-    "prettier": "1.15.1",
+    "prettier": "1.15.2",
     "prettier-check": "2.0.0",
     "rollup": "0.67.0",
     "rollup-plugin-sourcemaps": "0.4.2",
