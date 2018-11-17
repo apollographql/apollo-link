@@ -11,6 +11,7 @@ export namespace WebSocketLink {
      * The endpoint to connect to.
      */
     uri: string;
+    url: string;
 
     /**
      * Options to pass when constructing the subscription client.
@@ -39,7 +40,7 @@ export class WebSocketLink extends ApolloLink {
       this.subscriptionClient = paramsOrClient;
     } else {
       this.subscriptionClient = new SubscriptionClient(
-        paramsOrClient.uri,
+        paramsOrClient.uri || paramsOrClient.url,
         paramsOrClient.options,
         paramsOrClient.webSocketImpl,
       );
