@@ -63,12 +63,19 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
     let chosenURI = selectURI(operation, uri);
 
     const context = operation.getContext();
+    const contextHeaders = { ...context.headers };
+
+    if (context.clientAwareness) {
+      const { name, version } = context.clientAwareness;
+      contextHeaders['apollographql-client-name'] = name;
+      contextHeaders['apollographql-client-version'] = version;
+    }
 
     const contextConfig = {
       http: context.http,
       options: context.fetchOptions,
       credentials: context.credentials,
-      headers: context.headers,
+      headers: contextHeaders,
     };
 
     //uses fallback, link, and then context to build options
