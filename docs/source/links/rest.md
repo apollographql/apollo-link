@@ -80,15 +80,6 @@ client.query({ query }).then(response => {
 });
 ```
 
-Note: If you are running this in a node environment, you might also need to setup `node-fetch`:
-
-```js
-import fetch from "node-fetch";
-
-global.fetch = fetch;
-global.Headers = fetch.Headers;
-```
-
 <h2 id="options">Options</h2>
 
 Construction of `RestLink` takes an options object to customize the behavior of the link. The options you can pass are outlined below:
