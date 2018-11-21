@@ -7,7 +7,7 @@
   to all outgoing requests. The header names used (`apollographql-client-name`
   and `apollographql-client-version`) line up with the associated Apollo Server
   changes made in https://github.com/apollographql/apollo-server/pull/1960.  <br/>
-  [@hwillson](http://github.com/hwillson) in [#TODO](https://github.com/apollographql/apollo-link/pull/)
+  [@hwillson](http://github.com/hwillson) in [#872](https://github.com/apollographql/apollo-link/pull/872)
 
 ### 1.5.5
 - Added `graphql` 14 to peer and dev deps; Updated `@types/graphql` to 14  <br/>
