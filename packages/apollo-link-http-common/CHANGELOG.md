@@ -1,5 +1,9 @@
 # Change log
 
+### 0.2.6
+
+- No changes
+
 ### 0.2.5
 - Added `graphql` 14 to peer and dev deps; Updated `@types/graphql` to 14  <br/>
   [@hwillson](http://github.com/hwillson) in [#789](https://github.com/apollographql/apollo-link/pull/789)

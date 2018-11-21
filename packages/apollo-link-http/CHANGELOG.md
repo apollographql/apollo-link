@@ -1,6 +1,6 @@
 # Change log
 
-### vNext
+### 1.5.6
 
 - If `name` or `version` client awareness settings are found in the
   incoming `operation` `context`, they'll be extracted and added as headers
