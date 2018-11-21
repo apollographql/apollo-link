@@ -64,11 +64,26 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
 
     const context = operation.getContext();
 
+    // `apollographql-client-*` headers are automatically set if a
+    // `clientAwareness` object is found in the context. These headers are
+    // set first, followed by the rest of the headers pulled from
+    // `context.headers`. If desired, `apollographql-client-*` headers set by
+    // the `clientAwareness` object can be overridden by
+    // `apollographql-client-*` headers set in `context.headers`.
+    const clientAwarenessHeaders = {};
+    if (context.clientAwareness) {
+      const { name, version } = context.clientAwareness;
+      clientAwarenessHeaders['apollographql-client-name'] = name;
+      clientAwarenessHeaders['apollographql-client-version'] = version;
+    }
+
+    const contextHeaders = { ...clientAwarenessHeaders, ...context.headers };
+
     const contextConfig = {
       http: context.http,
       options: context.fetchOptions,
       credentials: context.credentials,
-      headers: context.headers,
+      headers: contextHeaders,
     };
 
     //uses fallback, link, and then context to build options
