@@ -216,6 +216,32 @@ describe('HttpLink', () => {
         }),
       );
     });
+
+    it('should not add empty client awareness settings to request headers', done => {
+      const variables = { params: 'stub' };
+      const link = createHttpLink({
+        uri: 'http://data/',
+      });
+
+      const hasOwn = Object.prototype.hasOwnProperty;
+      const clientAwareness = {};
+      execute(link, {
+        query: sampleQuery,
+        variables,
+        context: {
+          clientAwareness,
+        },
+      }).subscribe(
+        makeCallback(done, result => {
+          const [uri, options] = fetchMock.lastCall();
+          const { headers } = options;
+          expect(hasOwn.call(headers, 'apollographql-client-name')).toBe(false);
+          expect(hasOwn.call(headers, 'apollographql-client-version')).toBe(
+            false,
+          );
+        }),
+      );
+    });
   });
 
   it("throws for GET if the variables can't be stringified", done => {

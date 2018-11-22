@@ -73,8 +73,12 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
     const clientAwarenessHeaders = {};
     if (context.clientAwareness) {
       const { name, version } = context.clientAwareness;
-      clientAwarenessHeaders['apollographql-client-name'] = name;
-      clientAwarenessHeaders['apollographql-client-version'] = version;
+      if (name) {
+        clientAwarenessHeaders['apollographql-client-name'] = name;
+      }
+      if (version) {
+        clientAwarenessHeaders['apollographql-client-version'] = version;
+      }
     }
 
     const contextHeaders = { ...clientAwarenessHeaders, ...context.headers };
