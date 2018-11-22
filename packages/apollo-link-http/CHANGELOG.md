@@ -1,5 +1,12 @@
 # Change log
 
+### 1.5.7
+
+- Fix a bug where empty `apollographql-client-name` and
+  `apollographql-client-version` headers were being included with requests
+  when they weren't set in the `context` based `clientAwareness` object.  <br/>
+  [@hwillson](http://github.com/hwillson) in [#872](https://github.com/apollographql/apollo-link/pull/872)
+
 ### 1.5.6
 
 - If `name` or `version` client awareness settings are found in the
