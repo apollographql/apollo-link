@@ -1,4 +1,6 @@
-declare function require(name: string);
+/* tslint:disable */
+
+import zenObservable from 'zen-observable';
 
 namespace Observable {
 
@@ -18,7 +20,7 @@ export const Observable: {
     observable: Observable<R> | ZenObservable.ObservableLike<R> | ArrayLike<R>,
   ): Observable<R>;
   of<R>(...args: Array<R>): Observable<R>;
-} = require('zen-observable');
+} = <any>zenObservable;
 
 export interface Observable<T> {
   subscribe(

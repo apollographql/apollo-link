@@ -1,5 +1,5 @@
 {
-  "pinVersions": true,
+  "extends": [":pinOnlyDevDependencies"],
   "semanticCommits": true,
   "depTypes": [{ "depType": "dependencies", "pinVersions": false }],
   "timezone": "America/Los_Angeles",
@@ -8,6 +8,12 @@
   "prCreation": "not-pending",
   "automerge": "minor",
   "labels": ["tooling", "dependencies"],
-  "assignees": ["@jbaxleyiii"],
-  "reviewers": ["@jbaxleyiii"]
+  "assignees": ["@hwillson"],
+  "reviewers": ["@hwillson"],
+  "pathRules": [
+    {
+      "paths": ["docs/package.json"],
+      "extends": ["apollo-docs"]
+    }
+  ]
 }

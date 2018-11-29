@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-http-common",
-  "version": "0.2.3",
+  "version": "0.2.6",
   "description": "Http utilities for Apollo Link shared across all links using http",
   "main": "./lib/bundle.umd.js",
   "module": "./lib/index.js",
@@ -29,26 +29,26 @@
   "author": "Evans Hauser",
   "license": "MIT",
   "dependencies": {
-    "apollo-link": "^1.2.1"
+    "apollo-link": "^1.2.4"
   },
   "peerDependencies": {
-    "graphql": "^0.11.0 || ^0.12.0 || ^0.13.0"
+    "graphql": "^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0"
   },
   "devDependencies": {
-    "@types/graphql": "0.12.4",
-    "@types/jest": "21.1.10",
-    "browserify": "14.5.0",
-    "fetch-mock": "5.13.1",
-    "graphql": "0.13.1",
-    "graphql-tag": "2.7.3",
-    "jest": "21.2.1",
+    "@types/graphql": "14.0.3",
+    "@types/jest": "22.2.3",
+    "browserify": "16.2.3",
+    "fetch-mock": "6.5.2",
+    "graphql": "14.0.2",
+    "graphql-tag": "2.10.0",
+    "jest": "22.4.4",
     "object-to-querystring": "1.0.8",
     "rimraf": "2.6.1",
-    "rollup": "0.56.2",
-    "ts-jest": "21.2.4",
-    "tslint": "5.9.1",
-    "typescript": "2.7.2",
-    "uglify-js": "3.3.11"
+    "rollup": "0.67.3",
+    "ts-jest": "22.4.6",
+    "tslint": "5.11.0",
+    "typescript": "3.0.3",
+    "uglify-js": "3.4.9"
   },
   "repository": {
     "type": "git",
@@ -60,7 +60,7 @@
   "homepage": "https://github.com/apollographql/apollo-link#readme",
   "jest": {
     "transform": {
-      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+      ".(ts|tsx)": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
     "moduleFileExtensions": [
@@ -69,6 +69,7 @@
       "js",
       "json"
     ],
-    "mapCoverage": true
+    "mapCoverage": true,
+    "testURL": "http://localhost"
   }
 }

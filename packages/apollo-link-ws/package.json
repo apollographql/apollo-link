@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-ws",
-  "version": "1.0.7",
+  "version": "1.0.10",
   "description": "WebSocket transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -38,29 +38,29 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-link": "^1.2.1"
+    "apollo-link": "^1.2.4"
   },
   "peerDependencies": {
     "subscriptions-transport-ws": "^0.9.0"
   },
   "devDependencies": {
-    "@types/graphql": "0.12.4",
-    "@types/jest": "21.1.10",
-    "browserify": "16.1.0",
-    "graphql": "0.13.1",
-    "graphql-tag": "2.7.3",
-    "jest": "21.2.1",
+    "@types/graphql": "14.0.3",
+    "@types/jest": "22.2.3",
+    "browserify": "16.2.3",
+    "graphql": "14.0.2",
+    "graphql-tag": "2.10.0",
+    "jest": "22.4.4",
     "rimraf": "2.6.1",
-    "rollup": "0.56.2",
-    "subscriptions-transport-ws": "0.9.5",
-    "ts-jest": "21.2.4",
-    "tslint": "5.9.1",
-    "typescript": "2.7.2",
-    "uglify-js": "3.3.11"
+    "rollup": "0.67.3",
+    "subscriptions-transport-ws": "0.9.15",
+    "ts-jest": "22.4.6",
+    "tslint": "5.11.0",
+    "typescript": "3.0.3",
+    "uglify-js": "3.4.9"
   },
   "jest": {
     "transform": {
-      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+      ".(ts|tsx)": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
     "moduleFileExtensions": [
@@ -69,6 +69,7 @@
       "js",
       "json"
     ],
-    "mapCoverage": true
+    "mapCoverage": true,
+    "testURL": "http://localhost"
   }
 }

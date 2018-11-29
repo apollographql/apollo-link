@@ -20,7 +20,7 @@ import MyAuthLink from '../auth';
 
 const link = ApolloLink.from([
   new Retry(),
-  new AuthLink(),
+  new MyAuthLink(),
   new HttpLink({ uri: '/graphql' })
 ]);
 ```
@@ -30,10 +30,10 @@ const link = ApolloLink.from([
 
 ```js
 import { ApolloLink } from 'apollo-link';
-import Retry from 'apollo-link-retry';
+import { RetryLink } from 'apollo-link-retry';
 import HttpLink from 'apollo-link-http';
 
-const link = ApolloLink.concat(new Retry(), new HttpLink({ uri: '/graphql' }));
+const link = ApolloLink.concat(new RetryLink(), new HttpLink({ uri: '/graphql' }));
 ```
 
 <h2 id="directional">Directional Composition</h2>
@@ -42,10 +42,10 @@ Given that links are a way of implementing custom control flow for your GraphQL 
 
 ```js
 import { ApolloLink } from 'apollo-link';
-import Retry from 'apollo-link-retry';
+import { RetryLink } from 'apollo-link-retry';
 import HttpLink from 'apollo-link-http';
 
-const link = new Retry().split(
+const link = new RetryLink().split(
   (operation) => operation.getContext().version === 1,
   new HttpLink({ uri: "/v1/graphql" }),
   new HttpLink({ uri: "/v2/graphql" })
@@ -58,4 +58,4 @@ Using `split` allows for per operation based control flow for things like sendin
 
 <h2 id="usage">Usage</h2>
 
-`split`, `from`, and `concat` are all exported as part of the ApolloLink interface as well as individual functions which can be uses. Both are great ways to build link chains and they are identical in functionality.
+`split`, `from`, and `concat` are all exported as part of the ApolloLink interface as well as individual functions which can be used. Both are great ways to build link chains and they are identical in functionality.

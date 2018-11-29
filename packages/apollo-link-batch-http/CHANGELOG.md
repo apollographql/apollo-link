@@ -1,6 +1,23 @@
 # Change log
 
-### vNext
+----
+
+**NOTE:** This changelog is no longer maintained. Changes are now tracked in
+the top level [`CHANGELOG.md`](https://github.com/apollographql/apollo-link/blob/master/CHANGELOG.md).
+
+----
+
+### 1.2.4
+
+- No changes
+
+### 1.2.3
+- Added `graphql` 14 to peer and dev deps; Updated `@types/graphql` to 14  <br/>
+  [@hwillson](http://github.com/hwillson) in [#789](https://github.com/apollographql/apollo-link/pull/789)
+
+### 1.2.2
+- Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
+- Check for signal already present on `fetchOptions` [#584](https://github.com/apollographql/apollo-link/pull/584)
 
 ### 1.2.1
 - Fix typing of Operation parameters [PR#525](https://github.com/apollographql/apollo-link/pull/525)

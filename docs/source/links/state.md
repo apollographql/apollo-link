@@ -4,7 +4,7 @@ description: Manage your local data with Apollo Client
 ---
 
 [**Read the announcement post!
-🎉**](https://dev-blog.apollodata.com/the-future-of-state-management-dd410864cae2) |
+🎉**](https://blog.apollographql.com/the-future-of-state-management-dd410864cae2) |
 [**Video tutorial by Sara Vieira**](https://youtu.be/2RvRcnD8wHY) |
 [**apollo-link-state on GitHub**](https://github.com/apollographql/apollo-link-state)
 
@@ -84,6 +84,32 @@ const client = new ApolloClient({
 });
 ```
 
+<h2 id="local-development">With Apollo Boost</h2>
+
+If you are using `apollo-boost`, it already includes `apollo-link-state` underneath the hood for you.
+Instead of passing the `link` property when instantiating Apollo Client, you pass in `clientState`.
+
+```js
+import ApolloClient from 'apollo-boost';
+
+const client = new ApolloClient({
+  clientState: {
+    defaults: {
+      isConnected: true
+    },
+    resolvers: {
+      Mutation: {
+        updateNetworkStatus: (_, { isConnected }, { cache }) => {
+          cache.writeData({ data: { isConnected }});
+          return null;
+        }
+      }
+    }
+  }
+});
+
+```
+
 How do we differentiate a request for local data from a request that hits our
 server? In our query or mutation, we specify which fields are client-only with a
 `@client` directive. This tells our network stack to retrieve or update the data
@@ -136,9 +162,11 @@ This is the same as calling `writeData` yourself with an initial value:
 ```js
 // Same as passing defaults above
 cache.writeData({
-  networkStatus: {
-    __typename: 'NetworkStatus',
-    isConnected: true,
+  data: {
+    networkStatus: {
+      __typename: 'NetworkStatus',
+     isConnected: true,
+    },
   },
 });
 ```
@@ -224,7 +252,7 @@ const stateLink = withClientState({
 });
 ```
 
-Sometimes you may need to [reset the store](docs/react/features/cache-updates.html#reset-store) in your application, for example when a user logs out. If you call `client.resetStore` anywhere in your application, you will need to write your defaults to the store again. `apollo-link-state` exposes a `writeDefaults` function for you. To register your callback to Apollo Client, call `client.onResetStore` and pass in `writeDefaults`.
+Sometimes you may need to [reset the store](/docs/react/features/cache-updates.html#reset-store) in your application, for example when a user logs out. If you call `client.resetStore` anywhere in your application, you will need to write your defaults to the store again. `apollo-link-state` exposes a `writeDefaults` function for you. To register your callback to Apollo Client, call `client.onResetStore` and pass in `writeDefaults`.
 
 ```js
 const cache = new InMemoryCache();
@@ -312,7 +340,7 @@ fieldName: (obj, args, context, info) => result;
    Apollo cache to the context for you, so you can manipulate the cache with
    `cache.writeData({})`. If you want to set additional values on the context,
    you can set them from [within your
-   component](docs/react/basics/queries.html#graphql-config-options-context) or
+   component](/docs/react/basics/queries.html#graphql-config-options-context) or
    by [using `apollo-link-context`](/docs/link/links/context.html).
 4. `info`: Information about the execution state of the query. You will probably
    never have to use this one.
@@ -404,7 +432,7 @@ import { withClientState } from 'apollo-link-state';
 
 import currentUser from './resolvers/user';
 import cameraRoll from './resolvers/camera';
-import networkStatus from './resolvers/camera';
+import networkStatus from './resolvers/network';
 
 const stateLink = withClientState({
   cache,
@@ -437,7 +465,7 @@ the single source of truth for all your local and remote data. To update and
 read from the cache, you access it via the `context`, which is the third
 argument passed to your resolver function.
 
-The [Apollo cache API](docs/react/features/caching.html) has several methods to assist you with updating and retrieving data. Let's walk through each of the methods and some common use cases for each one!
+The [Apollo cache API](/docs/react/features/caching.html) has several methods to assist you with updating and retrieving data. Let's walk through each of the methods and some common use cases for each one!
 
 <h3 id="write-data">writeData</h3>
 
@@ -510,7 +538,7 @@ const todos = {
         `;
 
         const previous = cache.readQuery({ query });
-        const newTodo = { id: nextTodoId++, text, completed: false, __typename: 'TodoItem' },
+        const newTodo = { id: nextTodoId++, text, completed: false, __typename: 'TodoItem' };
         const data = {
           todos: previous.todos.concat([newTodo]),
         };

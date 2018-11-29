@@ -66,7 +66,7 @@ The `attempts` function should return a boolean indicating whether the response 
 ```js
 import { RetryLink } from "apollo-link-retry";
 
-const link = new RetryLink(
+const link = new RetryLink({
   attempts: (count, operation, error) => {
     return !!error && operation.operationName != 'specialCase';
   },

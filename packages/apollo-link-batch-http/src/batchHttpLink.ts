@@ -54,7 +54,7 @@ export class BatchHttpLink extends ApolloLink {
 
     let {
       uri = '/graphql',
-      // use default global fetch is nothing passed in
+      // use default global fetch if nothing is passed in
       fetch: fetcher,
       includeExtensions,
       batchInterval,
@@ -105,7 +105,7 @@ export class BatchHttpLink extends ApolloLink {
         ),
       );
 
-      const body = optsAndBody.map(({ body }) => body);
+      const loadedBody = optsAndBody.map(({ body }) => body);
       const options = optsAndBody[0].options;
 
       // There's no spec for using GET with batches.
@@ -116,13 +116,17 @@ export class BatchHttpLink extends ApolloLink {
       }
 
       try {
-        (options as any).body = serializeFetchParameter(body, 'Payload');
+        (options as any).body = serializeFetchParameter(loadedBody, 'Payload');
       } catch (parseError) {
         return fromError<FetchResult[]>(parseError);
       }
 
-      const { controller, signal } = createSignalIfSupported();
-      if (controller) (options as any).signal = signal;
+      let controller;
+      if (!(options as any).signal) {
+        const { controller: _controller, signal } = createSignalIfSupported();
+        controller = _controller;
+        if (controller) (options as any).signal = signal;
+      }
 
       return new Observable<FetchResult[]>(observer => {
         // the raw response is attached to the context in the BatchingLink
