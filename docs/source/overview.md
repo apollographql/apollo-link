@@ -33,11 +33,11 @@ At the core of a link is the `request` method. It takes the following arguments:
 - `operation`: The operation being passed through the link.
 - `forward`: (optional) Specifies the next link in the chain of links.
 
-A link's `request` method is called every time `execute` is run on that link chain, which typically occurs for every operation passed through the link chain. When the `request` method is called, the link "receives" an operation and has to return back data of some kind in the form of an `Observable`. Depending on where the link is in the chain (i.e. whether or it is at the end of the chain), it will either use the `forward`, the second parameter specifying the next link in the chain, or return back an `ExecutionResult` on its own.
+A link's `request` method is called every time `execute` is run on that link chain, which typically occurs for every operation passed through the link chain. When the `request` method is called, the link "receives" an operation and has to return back data of some kind in the form of an `Observable`. Depending on where the link is in the chain (i.e. whether or not it is at the end of the chain), it will either use the `forward`, the second parameter specifying the next link in the chain, or return back an `ExecutionResult` on its own.
 
 The full description of a link's request looks like this:
 - `NextLink`: A function that takes an `Operation` and returns an Observable of an `ExecutionResult`
-- `RequestHandler`: A function which receives an `Operation` and a `NextLink` and returns and Observable of an `ExecutionResult`
+- `RequestHandler`: A function which receives an `Operation` and a `NextLink` and returns an Observable of an `ExecutionResult`
 
 As you can see from these types, the next link is a way to continue the chain of events until data is fetched from some data source (typically a server).
 

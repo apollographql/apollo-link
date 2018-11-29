@@ -1,5 +1,6 @@
 import Observable from 'zen-observable-ts';
 import { ExecutionResult, DocumentNode } from 'graphql';
+export { ExecutionResult, DocumentNode };
 
 export interface GraphQLRequest {
   query: DocumentNode;

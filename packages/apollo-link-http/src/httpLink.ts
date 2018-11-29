@@ -1,3 +1,5 @@
+/* tslint:disable */
+
 import { ApolloLink, Observable, RequestHandler, fromError } from 'apollo-link';
 import {
   serializeFetchParameter,
@@ -62,11 +64,30 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
 
     const context = operation.getContext();
 
+    // `apollographql-client-*` headers are automatically set if a
+    // `clientAwareness` object is found in the context. These headers are
+    // set first, followed by the rest of the headers pulled from
+    // `context.headers`. If desired, `apollographql-client-*` headers set by
+    // the `clientAwareness` object can be overridden by
+    // `apollographql-client-*` headers set in `context.headers`.
+    const clientAwarenessHeaders = {};
+    if (context.clientAwareness) {
+      const { name, version } = context.clientAwareness;
+      if (name) {
+        clientAwarenessHeaders['apollographql-client-name'] = name;
+      }
+      if (version) {
+        clientAwarenessHeaders['apollographql-client-version'] = version;
+      }
+    }
+
+    const contextHeaders = { ...clientAwarenessHeaders, ...context.headers };
+
     const contextConfig = {
       http: context.http,
       options: context.fetchOptions,
       credentials: context.credentials,
-      headers: context.headers,
+      headers: contextHeaders,
     };
 
     //uses fallback, link, and then context to build options
@@ -77,8 +98,12 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
       contextConfig,
     );
 
-    const { controller, signal } = createSignalIfSupported();
-    if (controller) (options as any).signal = signal;
+    let controller;
+    if (!(options as any).signal) {
+      const { controller: _controller, signal } = createSignalIfSupported();
+      controller = _controller;
+      if (controller) (options as any).signal = signal;
+    }
 
     // If requested, set method to GET if there are no mutations.
     const definitionIsMutation = (d: DefinitionNode) => {

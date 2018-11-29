@@ -170,7 +170,6 @@ describe('RetryLink', () => {
     ]);
   });
 
-
   it('supports custom attempt functions that return either Promises or booleans', async () => {
     const attemptStub = jest.fn();
     attemptStub.mockReturnValueOnce(true);
@@ -193,3 +192,4 @@ describe('RetryLink', () => {
       [3, operation, standardError],
     ]);
   });
+});
