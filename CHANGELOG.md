@@ -12,3 +12,8 @@
 
 - Set an error `name` on errors being thrown.  <br/>
   [@ikhoon](https://github.com/ikhoon) in [#530](https://github.com/apollographql/apollo-link/pull/530)
+
+### Docs
+
+- Replace deprecated `Retry` link references with `RetryLink`.  <br/>
+  [@fredericgermain](https://github.com/fredericgermain) in [#555](https://github.com/apollographql/apollo-link/pull/555)
