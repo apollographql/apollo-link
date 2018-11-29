@@ -1,6 +1,18 @@
 import gql from 'graphql-tag';
 import { ApolloLink, execute, Observable } from 'apollo-link';
 import { onError, ErrorLink } from '../';
+import * as fetchMock from 'fetch-mock';
+
+const makeCallback = (done, body) => {
+  return (...args) => {
+    try {
+      body(...args);
+      done();
+    } catch (error) {
+      done.fail(error);
+    }
+  };
+};
 
 describe('error handling', () => {
   it('has an easy way to handle GraphQL errors', done => {
@@ -388,6 +400,76 @@ describe('error handling with class', () => {
     sub.unsubscribe();
 
     setTimeout(done, 10);
+  });
+  it('has network error status code', done => {
+    let responseBody;
+    const text = jest.fn(() => {
+      const responseBodyText = '{}';
+      responseBody = JSON.parse(responseBodyText);
+      return Promise.resolve(responseBodyText);
+    });
+    const textWithData = jest.fn(() => {
+      responseBody = {
+        data: { stub: { id: 1 } },
+        errors: [{ message: 'dangit' }],
+      };
+
+      return Promise.resolve(JSON.stringify(responseBody));
+    });
+
+    const textWithErrors = jest.fn(() => {
+      responseBody = {
+        errors: [{ message: 'dangit' }],
+      };
+
+      return Promise.resolve(JSON.stringify(responseBody));
+    });
+    const fetch = jest.fn((uri, options) => {
+      return Promise.resolve({ text });
+    });
+
+    const mockLink = new ApolloLink((operation, forward) => {
+      return new Observable(ob => {
+        fetch.mockReturnValueOnce(Promise.resolve({ status: 401, text }));
+        const op = forward(operation);
+        const sub = op.subscribe({
+          next: ob.next.bind(ob),
+          error: makeCallback(done, e => {
+            expect(e.message).toMatch(/Received status code 401/);
+            expect(e.statusCode).toEqual(401);
+            ob.error(e);
+          }),
+          complete: ob.complete.bind(ob),
+        });
+
+        return () => {
+          sub.unsubscribe();
+        };
+      });
+    });
+
+    const query = gql`
+      {
+        foo {
+          bar
+        }
+      }
+    `;
+
+    let called;
+    const errorLink = new ErrorLink(({ networkError }) => {
+      expect(networkError.statusCode).toEqual(401);
+      called = true;
+    });
+
+    const link = errorLink.concat(mockLink);
+
+    execute(link, { query }).subscribe(
+      result => {
+        done.fail('next should have been thrown from the network');
+      },
+      () => {},
+    );
   });
 });
 
