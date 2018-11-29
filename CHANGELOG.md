@@ -2,8 +2,13 @@
 
 ## YYYY-MM-DD
 
-### package1
+### apollo-link-error
 
-### package2
+- Changed `networkError` type to union type
+  `Error | ServerError | ServerParseError`.  <br/>
+  [@ikhoon](https://github.com/ikhoon) in [#530](https://github.com/apollographql/apollo-link/pull/530)
 
-...
+### apollo-link-http-common
+
+- Set an error `name` on errors being thrown.  <br/>
+  [@ikhoon](https://github.com/ikhoon) in [#530](https://github.com/apollographql/apollo-link/pull/530)
