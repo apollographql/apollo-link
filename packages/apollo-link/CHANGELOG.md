@@ -1,5 +1,12 @@
 # Change log
 
+----
+
+**NOTE:** This changelog is no longer maintained. Changes are now tracked in
+the top level [`CHANGELOG.md`](https://github.com/apollographql/apollo-link/blob/master/CHANGELOG.md).
+
+----
+
 ### 1.2.4
 
 - No changes
