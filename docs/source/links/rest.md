@@ -269,7 +269,7 @@ Here is one way you might customize `RestLink`:
       "Content-Type": "application/json"
     },
     credentials: "same-origin",
-    fieldNameNormalizer: (key: string) => camelCase(name),
+    fieldNameNormalizer: (key: string) => camelCase(key),
     fieldNameDenormalizer: (key: string) => snake_case(key),
     typePatcher: {
       Post: ()=> {
