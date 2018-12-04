@@ -1,5 +1,28 @@
 # Change log
 
+----
+
+**NOTE:** This changelog is no longer maintained. Changes are now tracked in
+the top level [`CHANGELOG.md`](https://github.com/apollographql/apollo-link/blob/master/CHANGELOG.md).
+
+----
+
+### 1.5.7
+
+- Fix a bug where empty `apollographql-client-name` and
+  `apollographql-client-version` headers were being included with requests
+  when they weren't set in the `context` based `clientAwareness` object.  <br/>
+  [@hwillson](http://github.com/hwillson) in [#872](https://github.com/apollographql/apollo-link/pull/872)
+
+### 1.5.6
+
+- If `name` or `version` client awareness settings are found in the
+  incoming `operation` `context`, they'll be extracted and added as headers
+  to all outgoing requests. The header names used (`apollographql-client-name`
+  and `apollographql-client-version`) line up with the associated Apollo Server
+  changes made in https://github.com/apollographql/apollo-server/pull/1960.  <br/>
+  [@hwillson](http://github.com/hwillson) in [#872](https://github.com/apollographql/apollo-link/pull/872)
+
 ### 1.5.5
 - Added `graphql` 14 to peer and dev deps; Updated `@types/graphql` to 14  <br/>
   [@hwillson](http://github.com/hwillson) in [#789](https://github.com/apollographql/apollo-link/pull/789)

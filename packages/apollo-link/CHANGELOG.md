@@ -1,8 +1,13 @@
 # Change log
 
-### next
+**NOTE:** This changelog is no longer maintained. Changes are now tracked in
+the top level [`CHANGELOG.md`](https://github.com/apollographql/apollo-link/blob/master/CHANGELOG.md).
 
-- Update the generic signature on `FetchResult` to expose strong data typing added to [`@types/graphql`](https://github.com/DefinitelyTyped/DefinitelyTyped/commit/deb7d8beaff5d43da749c5bc0f2020cdcaaabb6b#diff-1a92e4f388a3da0eb35da5e193f02172)
+----
+
+### 1.2.4
+
+- No changes
 
 ### 1.2.3
 
