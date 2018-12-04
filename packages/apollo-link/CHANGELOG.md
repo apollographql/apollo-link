@@ -12,7 +12,7 @@ the top level [`CHANGELOG.md`](https://github.com/apollographql/apollo-link/blob
 - No changes
 
 ### 1.2.3
-- Added `graphql` 14 to peer and dev deps; Updated `@types/graphql` to 14 <br/>
+- Added `graphql` 14 to peer and dev deps; Updated `@types/graphql` to 14<br/>
   [@hwillson](http://github.com/hwillson) in [#789](https://github.com/apollographql/apollo-link/pull/789)
 
 ### 1.2.2
