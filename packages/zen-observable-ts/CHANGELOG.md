@@ -1,5 +1,16 @@
 # Change log
 
+----
+
+**NOTE:** This changelog is no longer maintained. Changes are now tracked in
+the top level [`CHANGELOG.md`](https://github.com/apollographql/apollo-link/blob/master/CHANGELOG.md).
+
+----
+
+### 0.8.11
+
+- No changes
+
 ### 0.8.10
 - Added `graphql` 14 to peer and dev deps; Updated `@types/graphql` to 14  <br/>
   [@hwillson](http://github.com/hwillson) in [#789](https://github.com/apollographql/apollo-link/pull/789)

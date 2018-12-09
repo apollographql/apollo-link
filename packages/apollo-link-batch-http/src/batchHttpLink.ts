@@ -54,7 +54,7 @@ export class BatchHttpLink extends ApolloLink {
 
     let {
       uri = '/graphql',
-      // use default global fetch is nothing passed in
+      // use default global fetch if nothing is passed in
       fetch: fetcher,
       includeExtensions,
       batchInterval,

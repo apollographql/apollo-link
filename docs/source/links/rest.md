@@ -28,10 +28,10 @@ For an apollo client to work, you need a link and a cache, [more info here](/doc
 npm install --save apollo-cache-inmemory
 ```
 
-Then it is time to install our link:
+Then it is time to install our link and its `peerDependencies`:
 
 ```bash
-npm install apollo-link-rest --save
+npm install apollo-link-rest apollo-link graphql graphql-anywhere--save
 ```
 
 After this, you are ready to setup your apollo client:
@@ -42,7 +42,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { RestLink } from 'apollo-link-rest';
 
 // setup your `RestLink` with your endpoint
-const link = new RestLink({ uri: "https://swapi.co/api/" });
+const restLink = new RestLink({ uri: "https://swapi.co/api/" });
 
 // setup your client
 const client = new ApolloClient({
@@ -363,7 +363,7 @@ The rest directive could be used at any depth in a query, but once it is used, n
 An `@rest(…)` directive takes two required and several optional arguments:
 
 * `type: string`: The GraphQL type this will return
-* `path: string`: uri-path to the REST API. This could be a path or a full url. If a path, the endpoint given on link creation or from the context is concatenated with it to produce a full `URI`. See also: `pathBuilder
+* `path: string`: uri-path to the REST API. This could be a path or a full url. If a path, the endpoint given on link creation or from the context is concatenated with it to produce a full `URI`. See also: `pathBuilder`
 * _optional_ `method?: "GET" | "PUT" | "POST" | "DELETE"`: the HTTP method to send the request via (i.e GET, PUT, POST)
 * _optional_ `endpoint?: string` key to use when looking up the endpoint in the (optional) `endpoints` table if provided to RestLink at creation time.
 * _optional_ `pathBuilder?: /function/`: If provided, this function gets to control what path is produced for this request.

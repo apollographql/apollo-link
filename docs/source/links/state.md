@@ -538,7 +538,7 @@ const todos = {
         `;
 
         const previous = cache.readQuery({ query });
-        const newTodo = { id: nextTodoId++, text, completed: false, __typename: 'TodoItem' },
+        const newTodo = { id: nextTodoId++, text, completed: false, __typename: 'TodoItem' };
         const data = {
           todos: previous.todos.concat([newTodo]),
         };
