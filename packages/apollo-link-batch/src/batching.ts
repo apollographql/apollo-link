@@ -160,8 +160,6 @@ export class OperationBatcher {
         }
 
         results.forEach((result, index) => {
-          // attach the raw response to the context for usage
-          requests[index].setContext({ response: result });
           if (nexts[index]) {
             nexts[index].forEach(next => next(result));
           }
