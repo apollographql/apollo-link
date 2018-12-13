@@ -2,6 +2,17 @@
 
 ## YYYY-MM-DD
 
+### apollo-link-batch
+
+- Move the setting of the raw response in the `context` to 
+  `apollo-link-batch-http`.  <br/>
+  [@03eltond](https://github.com/03eltond) in [#814](https://github.com/apollographql/apollo-link/pull/814)
+
+### apollo-link-batch-http
+
+- Make the raw response available in the `context`.  <br/>
+  [@03eltond](https://github.com/03eltond) in [#814](https://github.com/apollographql/apollo-link/pull/814)
+
 ### apollo-link-error
 
 - Changed `networkError` type to union type
