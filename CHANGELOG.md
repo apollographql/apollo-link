@@ -2,6 +2,11 @@
 
 ## YYYY-MM-DD
 
+### apollo-link
+
+- Expose generics from graphql `ExecutionResult` on `FetchResult`.  <br/>
+  [@rosskevin](https://github.com/rosskevin) in [#804](https://github.com/apollographql/apollo-link/pull/804)
+
 ### apollo-link-batch
 
 - Move the setting of the raw response in the `context` to 
