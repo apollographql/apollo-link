@@ -1,5 +1,13 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
+## 2018-12-14
+
+### General
+
+- Adjusted `.npmignore` settings to make sure all non essential files are
+  excluded when published, for all child packages.  <br />
+  [@hwillson](https://github.com/hwillson) in [#890](https://github.com/apollographql/apollo-link/pull/890)
+
 ## 2018-12-13
 
 ### apollo-link 1.2.5
