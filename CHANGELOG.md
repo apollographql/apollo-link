@@ -2,6 +2,15 @@
 
 ## 2018-12-14
 
+### apollo-link-error 1.1.5
+
+- [#530](https://github.com/apollographql/apollo-link/pull/530) added
+  `apollo-link-http-common` as a dev dependency, when it should have been
+  added as a normal dependency (since it's referenced by the production
+  version of `apollo-link-error`). `apollo-link-http-common` has been switched
+  around to be a production dependency.  <br/>
+  [@hwillson](https://github.com/hwillson) in [#891](https://github.com/apollographql/apollo-link/pull/891)
+
 ### General
 
 - Adjusted `.npmignore` settings to make sure all non essential files are
