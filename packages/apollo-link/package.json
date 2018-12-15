@@ -1,6 +1,6 @@
 {
   "name": "apollo-link",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Flexible, lightweight transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "apollo-utilities": "^1.0.0",
-    "zen-observable-ts": "^0.8.12"
+    "zen-observable-ts": "^0.8.13"
   },
   "peerDependencies": {
     "graphql": "^0.11.3 || ^0.12.3 || ^0.13.0 || ^14.0.0"
