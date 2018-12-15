@@ -6,7 +6,7 @@
 
 - Adjusted `.npmignore` settings to make sure all non essential files are
   excluded when published, for all child packages.  <br />
-  [@hwillson](https://github.com/hwillson) in [#]()
+  [@hwillson](https://github.com/hwillson) in [#890](https://github.com/apollographql/apollo-link/pull/890)
 
 ## 2018-12-13
 
