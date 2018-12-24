@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-retry",
-  "version": "2.2.6",
+  "version": "2.2.8",
   "description": "Retry Apollo Link for GraphQL Network Stack",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@types/zen-observable": "0.8.0",
-    "apollo-link": "^1.2.4"
+    "apollo-link": "^1.2.6"
   },
   "devDependencies": {
     "@types/graphql": "14.0.3",
@@ -49,9 +49,9 @@
     "graphql-tag": "2.10.0",
     "jest": "22.4.4",
     "rimraf": "2.6.1",
-    "rollup": "0.67.4",
+    "rollup": "0.68.1",
     "ts-jest": "22.4.6",
-    "tslint": "5.11.0",
+    "tslint": "5.12.0",
     "typescript": "3.0.3",
     "uglify-js": "3.4.9",
     "wait-for-observables": "1.0.3"
