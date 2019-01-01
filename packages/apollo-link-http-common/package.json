@@ -35,7 +35,7 @@
     "graphql": "^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0"
   },
   "devDependencies": {
-    "@types/graphql": "14.0.3",
+    "@types/graphql": "14.0.4",
     "@types/jest": "22.2.3",
     "browserify": "16.2.3",
     "fetch-mock": "6.5.2",
