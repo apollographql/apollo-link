@@ -56,7 +56,7 @@
     "object-to-querystring": "1.0.8",
     "proxyquire": "1.8.0",
     "rimraf": "2.6.1",
-    "rollup": "0.68.1",
+    "rollup": "0.68.2",
     "ts-jest": "22.4.6",
     "tslint": "5.12.0",
     "typescript": "3.0.3",

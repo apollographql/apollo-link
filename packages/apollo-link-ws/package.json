@@ -51,7 +51,7 @@
     "graphql-tag": "2.10.0",
     "jest": "22.4.4",
     "rimraf": "2.6.1",
-    "rollup": "0.68.1",
+    "rollup": "0.68.2",
     "subscriptions-transport-ws": "0.9.15",
     "ts-jest": "22.4.6",
     "tslint": "5.12.0",
