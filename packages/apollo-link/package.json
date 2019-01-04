@@ -45,15 +45,15 @@
     "graphql": "^0.11.3 || ^0.12.3 || ^0.13.0 || ^14.0.0"
   },
   "devDependencies": {
-    "@types/graphql": "14.0.3",
+    "@types/graphql": "14.0.4",
     "@types/jest": "22.2.3",
     "@types/node": "9.6.41",
     "browserify": "16.2.3",
     "graphql": "14.0.2",
     "graphql-tag": "2.10.0",
     "jest": "22.4.4",
-    "rimraf": "2.6.1",
-    "rollup": "0.68.1",
+    "rimraf": "2.6.3",
+    "rollup": "0.68.2",
     "ts-jest": "22.4.6",
     "tslint": "5.12.0",
     "typescript": "3.0.3",
