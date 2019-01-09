@@ -66,6 +66,7 @@ function parseMultipartHTTP(plaintext: string): FetchResult[] | null {
     if (part.length) {
       let partArr = part.split('\r\n\r\n');
       if (!partArr || partArr.length !== 2) {
+        return null;
       }
 
       // Read the Content-Length header, which must be included in the response
