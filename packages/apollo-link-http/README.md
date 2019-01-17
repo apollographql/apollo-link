@@ -11,7 +11,7 @@ graphql-tools, or as a standalone client.
 
 The http link is a terminating link that fetches GraphQL results from a GraphQL
 endpoint over an http connection. The http link supports both POST and GET
-requests with the ability change the http options on a per query basis. This
+requests with the ability to change the http options on a per query basis. This
 can be used for authentication, persisted queries, dynamic uris, and other
 granular updates.
 
