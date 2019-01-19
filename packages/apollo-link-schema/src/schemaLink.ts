@@ -1,5 +1,14 @@
 import { ApolloLink, Operation, FetchResult, Observable } from 'apollo-link';
-import { execute, GraphQLSchema } from 'graphql';
+import { createAsyncIterator, forAwaitEach, isAsyncIterable } from 'iterall';
+import { execute, subscribe, GraphQLSchema, DocumentNode } from 'graphql';
+import { getMainDefinition } from 'apollo-utilities';
+
+const isSubscription = (query: DocumentNode) => {
+  const main = getMainDefinition(query);
+  return (
+    main.kind === 'OperationDefinition' && main.operation === 'subscription'
+  );
+};
 
 export namespace SchemaLink {
   export type ResolverContextFunction = (
@@ -39,29 +48,35 @@ export class SchemaLink extends ApolloLink {
 
   public request(operation: Operation): Observable<FetchResult> | null {
     return new Observable<FetchResult>(observer => {
-      Promise.resolve(
-        execute(
-          this.schema,
-          operation.query,
-          this.rootValue,
-          typeof this.context === 'function'
-            ? this.context(operation)
-            : this.context,
-          operation.variables,
-          operation.operationName,
-        ),
-      )
+      const executor: any = isSubscription(operation.query)
+        ? subscribe
+        : execute;
+
+      const context =
+        typeof this.context === 'function'
+          ? this.context(operation)
+          : this.context;
+
+      const result = executor(
+        this.schema,
+        operation.query,
+        this.rootValue,
+        context,
+        operation.variables,
+        operation.operationName,
+      );
+
+      Promise.resolve(result)
         .then(data => {
-          if (!observer.closed) {
-            observer.next(data);
-            observer.complete();
-          }
+          const iterable = isAsyncIterable(data)
+            ? data
+            : createAsyncIterator([data]);
+
+          forAwaitEach(iterable as any, value => observer.next(value))
+            .then(() => observer.complete())
+            .catch(error => observer.error(error));
         })
-        .catch(error => {
-          if (!observer.closed) {
-            observer.error(error);
-          }
-        });
+        .catch(error => observer.error(error));
     });
   }
 }

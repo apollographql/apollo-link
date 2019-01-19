@@ -40,7 +40,9 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-link": "^1.2.6"
+    "apollo-link": "^1.2.6",
+    "apollo-utilities": "^1.1.2",
+    "iterall": "^1.2.2"
   },
   "peerDependencies": {
     "graphql": "^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0"
