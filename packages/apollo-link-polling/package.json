@@ -11,8 +11,9 @@
     "Sashko Stubailo <sashko@stubailo.com>"
   ],
   "license": "MIT",
-  "main": "./lib/bundle.umd.js",
-  "module": "./lib/index.js",
+  "browser": "./lib/bundle.umd.js",
+  "main": "./lib/bundle.cjs.js",
+  "module": "./lib/bundle.esm.js",
   "jsnext:main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "repository": {

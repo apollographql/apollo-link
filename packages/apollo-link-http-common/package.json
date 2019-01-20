@@ -2,8 +2,9 @@
   "name": "apollo-link-http-common",
   "version": "0.2.8",
   "description": "Http utilities for Apollo Link shared across all links using http",
-  "main": "./lib/bundle.umd.js",
-  "module": "./lib/index.js",
+  "browser": "./lib/bundle.umd.js",
+  "main": "./lib/bundle.cjs.js",
+  "module": "./lib/bundle.esm.js",
   "jsnext:main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "scripts": {
