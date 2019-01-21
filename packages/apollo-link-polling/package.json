@@ -25,7 +25,7 @@
   "homepage": "https://github.com/apollographql/apollo-link#readme",
   "scripts": {
     "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-link && npm run minify:browser",
-    "build": "tsc -p .",
+    "build": "tsc -p ./tsconfig.cjs.json",
     "bundle": "rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
     "coverage": "jest --coverage",
