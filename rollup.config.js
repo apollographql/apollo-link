@@ -1,5 +1,7 @@
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import node from 'rollup-plugin-node-resolve';
+import typescript from 'typescript';
+import typescriptPlugin from 'rollup-plugin-typescript2';
 
 export const globals = {
   // Apollo
@@ -18,7 +20,7 @@ export const globals = {
 
 export default name => [
   {
-    input: 'lib/index.js',
+    input: 'src/index.ts',
     output: {
       file: 'lib/bundle.umd.js',
       format: 'umd',
@@ -34,27 +36,11 @@ export default name => [
         module: true,
         only: ['tslib']
       }),
+      typescriptPlugin({ typescript, tsconfig: './tsconfig.json' }),
       sourcemaps()
     ],
   }, {
-    input: 'lib/index.js',
-    output: {
-      file: 'lib/bundle.cjs.js',
-      format: 'cjs',
-      globals,
-      sourcemap: true,
-    },
-    external: Object.keys(globals),
-    onwarn,
-    plugins: [
-      node({
-        module: true,
-        only: ['tslib']
-      }),
-      sourcemaps()
-    ],
-  }, {
-    input: 'lib/index.js',
+    input: 'src/index.ts',
     output: {
       file: 'lib/bundle.esm.js',
       format: 'esm',
@@ -68,6 +54,7 @@ export default name => [
         module: true,
         only: ['tslib']
       }),
+      typescriptPlugin({ typescript, tsconfig: './tsconfig.json' }),
       sourcemaps()
     ],
   }
