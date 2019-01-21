@@ -5,7 +5,8 @@
 version: 2
 jobs:
   Build:
-    docker: [ { image: 'circleci/node:8' } ]
+    docker:
+      - image: circleci/node:10
     steps:
       - checkout
       - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
@@ -40,21 +41,24 @@ jobs:
             - .
 
   Danger:
-    docker: [ { image: 'circleci/node:8' } ]
+    docker:
+      - image: circleci/node:10
     steps:
       - attach_workspace:
           at: .
       - run: npm run danger
 
   Prettier Check:
-    docker: [ { image: 'circleci/node:8' } ]
+    docker:
+      - circleci/node:10
     steps:
       - attach_workspace:
           at: .
       - run: npm run lint-check
 
   Docs:
-    docker: [ { image: 'circleci/node:8' } ]
+    docker:
+      - circleci/node:10
     steps:
       - attach_workspace:
           at: .
@@ -72,14 +76,16 @@ jobs:
       - run: cd docs && npm run build
 
   Filesize:
-    docker: [ { image: 'circleci/node:8' } ]
+    docker:
+      - circleci/node:10
     steps:
       - attach_workspace:
           at: .
       - run: npm run filesize
 
   Apollo Link:
-    docker: [ { image: 'circleci/node:8' } ]
+    docker:
+      - circleci/node:10
     steps:
       - attach_workspace:
           at: .
@@ -94,7 +100,8 @@ jobs:
           path: reports/junit
 
   Apollo Link Batch Http:
-    docker: [ { image: 'circleci/node:8' } ]
+    docker:
+      - circleci/node:10
     steps:
       - attach_workspace:
           at: .
@@ -109,7 +116,8 @@ jobs:
           path: reports/junit
 
   Apollo Link Batch:
-    docker: [ { image: 'circleci/node:8' } ]
+    docker:
+      - circleci/node:10
     steps:
       - attach_workspace:
           at: .
@@ -124,7 +132,8 @@ jobs:
           path: reports/junit
 
   Apollo Link Context:
-    docker: [ { image: 'circleci/node:8' } ]
+    docker:
+      - circleci/node:10
     steps:
       - attach_workspace:
           at: .
@@ -139,7 +148,8 @@ jobs:
           path: reports/junit
 
   Apollo Link Dedup:
-    docker: [ { image: 'circleci/node:8' } ]
+    docker:
+      - circleci/node:10
     steps:
       - attach_workspace:
           at: .
@@ -154,7 +164,8 @@ jobs:
           path: reports/junit
 
   Apollo Link Error:
-    docker: [ { image: 'circleci/node:8' } ]
+    docker:
+      - circleci/node:10
     steps:
       - attach_workspace:
           at: .
@@ -169,7 +180,8 @@ jobs:
           path: reports/junit
 
   Apollo Link Http Common:
-    docker: [ { image: 'circleci/node:8' } ]
+    docker:
+      - circleci/node:10
     steps:
       - attach_workspace:
           at: .
@@ -184,7 +196,8 @@ jobs:
           path: reports/junit
 
   Apollo Link Http:
-    docker: [ { image: 'circleci/node:8' } ]
+    docker:
+      - circleci/node:10
     steps:
       - attach_workspace:
           at: .
@@ -199,7 +212,8 @@ jobs:
           path: reports/junit
 
   Apollo Link Polling:
-    docker: [ { image: 'circleci/node:8' } ]
+    docker:
+      - circleci/node:10
     steps:
       - attach_workspace:
           at: .
@@ -214,7 +228,8 @@ jobs:
           path: reports/junit
 
   Apollo Link Retry:
-    docker: [ { image: 'circleci/node:8' } ]
+    docker:
+      - circleci/node:10
     steps:
       - attach_workspace:
           at: .
@@ -229,7 +244,8 @@ jobs:
           path: reports/junit
 
   Apollo Link Schema:
-    docker: [ { image: 'circleci/node:8' } ]
+    docker:
+      - circleci/node:10
     steps:
       - attach_workspace:
           at: .
@@ -244,7 +260,8 @@ jobs:
           path: reports/junit
 
   Apollo Link Web Socket:
-    docker: [ { image: 'circleci/node:8' } ]
+    docker:
+      - circleci/node:10
     steps:
       - attach_workspace:
           at: .
@@ -259,7 +276,8 @@ jobs:
           path: reports/junit
 
   Zen Observable Typescript:
-    docker: [ { image: 'circleci/node:8' } ]
+    docker:
+      - circleci/node:10
     steps:
       - attach_workspace:
           at: .
