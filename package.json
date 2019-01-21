@@ -19,6 +19,7 @@
     "coverage:upload": "codecov",
     "danger": "danger run --verbose",
     "predeploy": "npm run bootstrap",
+    "test-ci": "npm run coverage -- --ci --maxWorkers=2 --reporters=default --reporters=jest-junit",
     "deploy": "lerna publish -m \"chore: Publish\" --independent",
     "watch": "trap \"kill 0\" SIGINT; for f in `ls packages`; do (cd `pwd`/packages/$f && [[ -e package.json ]] && npm run watch) & done; "
   },

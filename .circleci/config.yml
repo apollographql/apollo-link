@@ -3,13 +3,21 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 version: 2
+
+defaults: &defaults
+  working_directory: ~/project
+  docker:
+    - image: circleci/node:10
+
+attach: &attach
+  attach_workspace:
+    at: ~/project
+
 jobs:
   Build:
-    docker:
-      - image: circleci/node:10
+    <<: *defaults
     steps:
       - checkout
-      - run: cat ./packages/apollo-link/package.json ./packages/apollo-link-batch/package.json ./packages/apollo-link-batch-http/package.json ./packages/apollo-link-context/package.json ./packages/apollo-link-dedup/package.json ./packages/apollo-link-error/package.json ./packages/apollo-link-http/package.json ./packages/apollo-link-http-common/package.json ./packages/apollo-link-polling/package.json ./packages/apollo-link-retry/package.json ./packages/apollo-link-schema/package.json ./packages/apollo-link-ws/package.json ./packages/zen-observable-ts/package.json > package-checksum
       - restore_cache:
           keys:
             - npm-v2-{{ checksum "package-lock.json" }}-{{ checksum "package-checksum" }}
@@ -17,7 +25,6 @@ jobs:
       - run:
           name: install-npm
           command: npm install
-      - run: git checkout package.json
       - save_cache:
           key: npm-v2-{{ checksum "package-lock.json" }}-{{ checksum "package-checksum" }}
           paths:
@@ -41,27 +48,21 @@ jobs:
             - .
 
   Danger:
-    docker:
-      - image: circleci/node:10
+    <<: *defaults
     steps:
-      - attach_workspace:
-          at: .
+      - <<: *attach
       - run: npm run danger
 
   Prettier Check:
-    docker:
-      - image: circleci/node:10
+    <<: *defaults
     steps:
-      - attach_workspace:
-          at: .
+      - <<: *attach
       - run: npm run lint-check
 
   Docs:
-    docker:
-      - image: circleci/node:10
+    <<: *defaults
     steps:
-      - attach_workspace:
-          at: .
+      - <<: *attach
       - restore_cache:
           keys:
             - npm-v2-{{ checksum "./docs/package-lock.json" }}
@@ -76,47 +77,43 @@ jobs:
       - run: cd docs && npm run build
 
   Filesize:
-    docker:
-      - image: circleci/node:10
+    <<: *defaults
     steps:
-      - attach_workspace:
-          at: .
+      - <<: *attach
       - run: npm run filesize
 
   Monorepo:
-    docker:
-      - image: circleci/node:10
+    <<: *defaults
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - npm-v2-{{ .branch }}-{{ checksum "package-lock.json" }}
-            - npm-v2-{{ .branch }}-
-            - npm-v2-
-      - run: npm--version
-      - run: npm ci
-      - save_cache:
-          key: npm-v2-{{ .branch }}-{{ checksum "package-lock.json" }}
-          paths:
-            - ~/.npm
+      - <<: *attach
+      - run:
+          name: Jest suite with coverage
+          command: npm run test-ci && npm run coverage:upload
+          environment:
+            JEST_JUNIT_OUTPUT: 'reports/junit/js-test-results.xml'
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit
+
 
 workflows:
   version: 2
   Build and Test:
     jobs:
-      - Build
+      - Prepare
       - Danger:
           requires:
-            - Build
+            - Prepare
       - Docs:
           requires:
-            - Build
+            - Prepare
       - Prettier Check:
           requires:
-            - Build
+            - Prepare
       - Filesize:
           requires:
-            - Build
+            - Prepare
       - Monorepo:
           requires:
-            - Build
+            - Prepare
