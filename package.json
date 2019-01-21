@@ -2,7 +2,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "bootstrap": "lerna run prepare",
+    "bootstrap": "lerna exec -- npm install && lerna run prepare",
     "diff": "check-if-folder-contents-changed-in-git-commit-range",
     "postinstall": "npm run bootstrap",
     "postbootstrap": "npm run build",
