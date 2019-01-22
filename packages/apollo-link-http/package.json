@@ -74,7 +74,6 @@
       "js",
       "json"
     ],
-    "mapCoverage": true,
     "testPathIgnorePatterns": [
       "/node_modules/",
       "sharedHttpTests.ts"

@@ -78,7 +78,6 @@
       "/node_modules/",
       "sharedHttpTests.ts"
     ],
-    "mapCoverage": true,
     "testURL": "http://localhost"
   }
 }

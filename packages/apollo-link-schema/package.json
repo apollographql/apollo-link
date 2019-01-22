@@ -72,7 +72,6 @@
       "js",
       "json"
     ],
-    "mapCoverage": true,
     "testURL": "http://localhost"
   }
 }

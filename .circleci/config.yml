@@ -1,7 +1,3 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
 version: 2
 
 defaults: &defaults
@@ -28,20 +24,7 @@ jobs:
       - save_cache:
           key: npm-v2-{{ checksum "package-lock.json" }}-{{ checksum "package-checksum" }}
           paths:
-            - ./node_modules
-            - ./packages/apollo-link/node_modules
-            - ./packages/apollo-link-batch/node_modules
-            - ./packages/apollo-link-batch-http/node_modules
-            - ./packages/apollo-link-context/node_modules
-            - ./packages/apollo-link-dedup/node_modules
-            - ./packages/apollo-link-error/node_modules
-            - ./packages/apollo-link-http/node_modules
-            - ./packages/apollo-link-http-common/node_modules
-            - ./packages/apollo-link-polling/node_modules
-            - ./packages/apollo-link-retry/node_modules
-            - ./packages/apollo-link-schema/node_modules
-            - ./packages/apollo-link-ws/node_modules
-            - ./packages/zen-observable-ts/node_modules
+            - ~/.npm
       - persist_to_workspace:
           root: .
           paths:
@@ -101,19 +84,19 @@ workflows:
   version: 2
   Build and Test:
     jobs:
-      - Prepare
+      - Build
       - Danger:
           requires:
-            - Prepare
+            - Build
       - Docs:
           requires:
-            - Prepare
+            - Build
       - Prettier Check:
           requires:
-            - Prepare
+            - Build
       - Filesize:
           requires:
-            - Prepare
+            - Build
       - Monorepo:
           requires:
-            - Prepare
+            - Build
