@@ -37,11 +37,11 @@
     "apollo-link-http-common": "^0.2.8"
   },
   "devDependencies": {
-    "@types/graphql": "14.0.4",
+    "@types/graphql": "14.0.5",
     "@types/jest": "22.2.3",
     "browserify": "16.2.3",
-    "graphql": "14.0.2",
-    "graphql-tag": "2.10.0",
+    "graphql": "14.1.1",
+    "graphql-tag": "2.10.1",
     "jest": "22.4.4",
     "rimraf": "2.6.3",
     "rollup": "0.68.2",
