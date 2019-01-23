@@ -29,10 +29,11 @@
     "coverage": "jest --coverage",
     "clean": "rimraf lib/* && rimraf coverage/*",
     "filesize": "npm run build && npm run build:browser",
-    "lint": "tslint --type-check -p tsconfig.json -c ../../tslint.json src/*.ts",
+    "lint": "tslint -c \"../../tslint.json\" -p tsconfig.json -c ../../tslint.json src/*.ts",
     "minify:browser": "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
     "postbuild": "npm run bundle",
     "prebuild": "npm run clean",
+    "prepare": "npm run lint && npm run build",
     "prepublishOnly": "npm run clean && npm run build",
     "test": "jest",
     "watch": "tsc -w -p . & rollup -c -w"
@@ -77,7 +78,6 @@
       "/node_modules/",
       "sharedHttpTests.ts"
     ],
-    "mapCoverage": true,
     "testURL": "http://localhost"
   }
 }
