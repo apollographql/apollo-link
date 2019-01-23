@@ -4,7 +4,6 @@
   "description": "An easy way to set and cache context changes for Apollo Link",
   "author": "James Baxley <james@meteor.com>",
   "license": "MIT",
-  "browser": "./lib/bundle.umd.js",
   "main": "./lib/index.js",
   "module": "./lib/bundle.esm.js",
   "typings": "./lib/index.d.ts",

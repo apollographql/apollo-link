@@ -12,7 +12,6 @@
     "Zephraph <zephraph@gmail.com>"
   ],
   "license": "MIT",
-  "browser": "./lib/bundle.umd.js",
   "main": "./lib/index.js",
   "module": "./lib/bundle.esm.js",
   "typings": "./lib/index.d.ts",

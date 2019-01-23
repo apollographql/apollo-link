@@ -10,7 +10,6 @@
     "Sashko Stubailo <sashko@stubailo.com>"
   ],
   "license": "MIT",
-  "browser": "./lib/bundle.umd.js",
   "main": "./lib/index.js",
   "module": "./lib/bundle.esm.js",
   "typings": "./lib/index.d.ts",
