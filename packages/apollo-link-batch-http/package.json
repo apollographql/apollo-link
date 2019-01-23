@@ -28,10 +28,11 @@
     "coverage": "jest --coverage",
     "clean": "rimraf lib/* && rimraf coverage/*",
     "filesize": "npm run build && npm run build:browser",
-    "lint": "tslint --type-check -p tsconfig.json -c ../../tslint.json src/*.ts",
+    "lint": "tslint -c \"../../tslint.json\" -p tsconfig.json -c ../../tslint.json src/*.ts",
     "minify:browser": "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
     "postbuild": "npm run bundle",
     "prebuild": "npm run clean",
+    "prepare": "npm run lint && npm run build",
     "prepublishOnly": "npm run clean && npm run build",
     "test": "jest",
     "watch": "tsc -w -p . & rollup -c -w"
@@ -45,12 +46,12 @@
     "graphql": "^0.11.0 || ^0.12.3 || ^0.13.0 || ^14.0.0"
   },
   "devDependencies": {
-    "@types/graphql": "14.0.4",
+    "@types/graphql": "14.0.5",
     "@types/jest": "22.2.3",
     "browserify": "16.2.3",
     "fetch-mock": "6.5.2",
-    "graphql": "14.0.2",
-    "graphql-tag": "2.10.0",
+    "graphql": "14.1.1",
+    "graphql-tag": "2.10.1",
     "jest": "22.4.4",
     "object-to-querystring": "1.0.8",
     "proxyquire": "1.8.0",
@@ -76,7 +77,6 @@
       "/node_modules/",
       "sharedHttpTests.ts"
     ],
-    "mapCoverage": true,
     "testURL": "http://localhost"
   }
 }

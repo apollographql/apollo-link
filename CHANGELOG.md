@@ -1,5 +1,12 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
+## vNext
+
+### General
+
+- Numerous CI updates/enhancements.  <br/>
+  [@JoviDeCroock](https://github.com/JoviDeCroock) in [#919](https://github.com/apollographql/apollo-link/pull/919)
+
 ## 2018-12-14
 
 ### apollo-link-error 1.1.5
