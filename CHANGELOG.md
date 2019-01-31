@@ -13,7 +13,7 @@
 ### apollo-link 1.2.7
 
 - Remove dependency on `apollo-utilities`.  <br/>
-  [@hwillson](https://github.com/hwillson) in [#TODO](https://github.com/apollographql/apollo-link/pull/X)
+  [@hwillson](https://github.com/hwillson) in [#926](https://github.com/apollographql/apollo-link/pull/926)
 
 ## 2018-12-14
 
