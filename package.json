@@ -2,7 +2,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "bootstrap": "lerna exec -- npm install && lerna run prepare",
+    "bootstrap": "lerna exec -- npm install && lerna run prepare && lerna link",
     "diff": "check-if-folder-contents-changed-in-git-commit-range",
     "postinstall": "npm run bootstrap",
     "postbootstrap": "npm run build",
@@ -96,7 +96,7 @@
     "codecov": "3.1.0",
     "danger": "3.9.0",
     "jest-junit": "3.7.0",
-    "lerna": "2.11.0",
+    "lerna": "3.10.7",
     "lint-staged": "7.3.0",
     "pre-commit": "1.2.2",
     "pre-push": "0.1.1",
