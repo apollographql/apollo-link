@@ -6,9 +6,14 @@
 
 - Numerous CI updates/enhancements.  <br/>
   [@JoviDeCroock](https://github.com/JoviDeCroock) in [#919](https://github.com/apollographql/apollo-link/pull/919)
-- Updates to the Apollo Link package bundling process, to generate valid 
+- Updates to the Apollo Link package bundling process, to generate valid
   ESM/UMD bundles.  <br/>
   [@JoviDeCroock](https://github.com/JoviDeCroock) in [#918](https://github.com/apollographql/apollo-link/pull/918)
+
+### apollo-link 1.2.7
+
+- Remove dependency on `apollo-utilities`.  <br/>
+  [@hwillson](https://github.com/hwillson) in [#TODO](https://github.com/apollographql/apollo-link/pull/X)
 
 ## 2018-12-14
 
