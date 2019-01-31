@@ -8,7 +8,6 @@ export const globals = {
   'apollo-client': 'apollo.core',
   'apollo-link': 'apolloLink.core',
   'apollo-link-batch': 'apolloLink.batch',
-  'apollo-utilities': 'apollo.utilities',
   'apollo-link-http-common': 'apolloLink.httpCommon',
   'zen-observable-ts': 'apolloLink.zenObservable',
 

@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/apollographql/apollo-link#readme",
   "scripts": {
-    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-utilities --i graphql --i zen-observable-ts && npm run minify:browser",
+    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i graphql --i zen-observable-ts && npm run minify:browser",
     "build": "tsc -p ./tsconfig.cjs.json",
     "bundle": "rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
@@ -38,7 +38,6 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-utilities": "^1.0.0",
     "zen-observable-ts": "^0.8.13"
   },
   "peerDependencies": {
