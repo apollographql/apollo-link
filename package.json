@@ -81,7 +81,11 @@
       "js",
       "json"
     ],
-    "testURL": "http://localhost"
+    "testURL": "http://localhost",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "sharedHttpTests.ts"
+    ]
   },
   "lint-staged": {
     "*.{ts, tsx, js, jsx}": [
