@@ -5,9 +5,8 @@
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [],
   "license": "MIT",
-  "main": "./lib/bundle.umd.js",
-  "module": "./lib/index.js",
-  "jsnext:main": "./lib/index.js",
+  "main": "./lib/index.js",
+  "module": "./lib/bundle.esm.js",
   "typings": "./lib/index.d.ts",
   "repository": {
     "type": "git",
@@ -19,7 +18,7 @@
   "homepage": "https://github.com/zenparsing/zen-observable",
   "scripts": {
     "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i zen-observable && npm run minify:browser",
-    "build": "tsc -p .",
+    "build": "tsc -p ./tsconfig.cjs.json",
     "bundle": "rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
     "coverage": "jest --coverage",
