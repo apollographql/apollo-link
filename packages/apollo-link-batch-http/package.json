@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-batch-http",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "description": "Batch HTTP transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -38,9 +38,9 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-link": "^1.2.7",
-    "apollo-link-batch": "^1.1.8",
-    "apollo-link-http-common": "^0.2.9"
+    "apollo-link": "^1.2.8",
+    "apollo-link-batch": "^1.1.9",
+    "apollo-link-http-common": "^0.2.10"
   },
   "peerDependencies": {
     "graphql": "^0.11.0 || ^0.12.3 || ^0.13.0 || ^14.0.0"
