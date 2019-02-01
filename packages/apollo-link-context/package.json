@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-context",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "An easy way to set and cache context changes for Apollo Link",
   "author": "James Baxley <james@meteor.com>",
   "license": "MIT",
@@ -32,7 +32,7 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-link": "^1.2.6"
+    "apollo-link": "^1.2.7"
   },
   "devDependencies": {
     "@types/graphql": "14.0.5",
