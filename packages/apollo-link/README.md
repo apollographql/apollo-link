@@ -66,3 +66,4 @@ export class CustomApolloLink extends ApolloLink {
 ## Installation
 
 `npm install apollo-link --save`
+

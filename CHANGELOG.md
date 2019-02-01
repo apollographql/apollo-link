@@ -1,6 +1,6 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
-## vNext
+## 2019-02-01
 
 ### General
 
@@ -10,7 +10,7 @@
   ESM/UMD bundles.  <br/>
   [@JoviDeCroock](https://github.com/JoviDeCroock) in [#918](https://github.com/apollographql/apollo-link/pull/918)
 
-### apollo-link 1.2.7
+### apollo-link 1.2.8
 
 - Remove dependency on `apollo-utilities`.  <br/>
   [@hwillson](https://github.com/hwillson) in [#926](https://github.com/apollographql/apollo-link/pull/926)
