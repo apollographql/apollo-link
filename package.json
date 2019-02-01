@@ -2,7 +2,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "bootstrap": "lerna exec -- npm install && lerna run prepare",
+    "bootstrap": "lerna exec -- npm install && lerna run prepare && lerna link",
     "diff": "check-if-folder-contents-changed-in-git-commit-range",
     "postinstall": "npm run bootstrap",
     "postbootstrap": "npm run build",
@@ -15,7 +15,7 @@
     "lint-check": "prettier-check --single-quote --trailing-comma all \"packages/*/{src,__tests__}/**/*.ts\"",
     "filesize": "lerna run filesize && bundlesize",
     "type-check": "lerna run type-check",
-    "coverage": "lerna run coverage",
+    "coverage": "jest --verbose --coverage",
     "coverage:upload": "codecov",
     "danger": "danger run --verbose",
     "predeploy": "npm run bootstrap",
@@ -74,7 +74,18 @@
     "transform": {
       ".(ts|tsx)": "ts-jest"
     },
-    "testURL": "http://localhost"
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ],
+    "testURL": "http://localhost",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "sharedHttpTests.ts"
+    ]
   },
   "lint-staged": {
     "*.{ts, tsx, js, jsx}": [
@@ -95,8 +106,9 @@
     "check-if-folder-contents-changed-in-git-commit-range": "1.0.0",
     "codecov": "3.1.0",
     "danger": "3.9.0",
-    "jest-junit": "3.7.0",
-    "lerna": "2.11.0",
+    "jest": "^24.0.0",
+    "jest-junit": "6.2.1",
+    "lerna": "3.10.7",
     "lint-staged": "7.3.0",
     "pre-commit": "1.2.2",
     "pre-push": "0.1.1",
