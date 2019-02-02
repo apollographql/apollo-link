@@ -54,7 +54,7 @@ const client = new ApolloClient({
 Now it is time to write our first query, for this you need to install the `graphql-tag` package:
 
 ```bash
-npm install graphql-tag
+npm install --save graphql-tag
 ```
 
 Defining a query is straightforward:
