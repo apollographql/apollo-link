@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "@types/graphql": "14.0.5",
-    "@types/jest": "22.2.3",
+    "@types/jest": "23.3.14",
     "@types/node": "9.6.41",
     "browserify": "16.2.3",
     "graphql": "14.1.1",
