@@ -2,7 +2,12 @@
 
 ## vNext
 
-### apollo-link vNext
+### docs
+
+- Documentation updates.  <br/>
+  [@tomazy](https://github.com/tomazy) in [#933](https://github.com/apollographql/apollo-link/pull/933)  <br />
+
+### apollo-link
 
 - Documentation updates.  <br/>
   [@capaj](https://github.com/capaj) in [#937](https://github.com/apollographql/apollo-link/pull/937)  <br />
