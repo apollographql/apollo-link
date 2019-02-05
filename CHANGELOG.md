@@ -1,5 +1,12 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
+## 2019-02-05
+
+### apollo-link vNext
+
+- Documentation updates.  <br/>
+  [@capaj](https://github.com/capaj) in [#937](https://github.com/apollographql/apollo-link/pull/937)  <br />
+
 ## 2019-02-01
 
 ### General
