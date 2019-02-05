@@ -2,6 +2,11 @@
 
 ## vNext
 
+### General
+
+- Remove the docs CI step. <br/>
+  [@JoviDeCroock](https://github.com/JoviDeCroock) in [#938](https://github.com/apollographql/apollo-link/pull/938)
+
 ### docs
 
 - Documentation updates.  <br/>
