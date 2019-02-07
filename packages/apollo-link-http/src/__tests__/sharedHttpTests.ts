@@ -1,7 +1,7 @@
 import { Observable, ApolloLink, execute } from 'apollo-link';
 import { print } from 'graphql';
 import gql from 'graphql-tag';
-import * as fetchMock from 'fetch-mock';
+import fetchMock from 'fetch-mock';
 
 const sampleQuery = gql`
   query SampleQuery {
@@ -565,6 +565,35 @@ export const sharedHttpTest = (
           expect(body.extensions).toEqual({ persistedQuery: { hash: '1234' } });
           done();
         }),
+      );
+    });
+
+    it('sets the raw response on context', done => {
+      const middleware = new ApolloLink((operation, forward) => {
+        return new Observable(ob => {
+          const op = forward(operation);
+          const sub = op.subscribe({
+            next: ob.next.bind(ob),
+            error: ob.error.bind(ob),
+            complete: makeCallback(done, e => {
+              expect(operation.getContext().response.headers.toBeDefined);
+              ob.complete();
+            }),
+          });
+
+          return () => {
+            sub.unsubscribe();
+          };
+        });
+      });
+
+      const link = middleware.concat(createLink({ uri: 'data', fetch }));
+
+      execute(link, { query: sampleQuery }).subscribe(
+        result => {
+          done();
+        },
+        () => {},
       );
     });
   });
