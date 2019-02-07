@@ -43,23 +43,6 @@ jobs:
       - <<: *attach
       - run: npm run lint-check
 
-  Docs:
-    <<: *defaults
-    steps:
-      - <<: *attach
-      - restore_cache:
-          keys:
-            - npm-v2-{{ .Branch }}-{{ checksum "./docs/package-lock.json" }}
-      - run:
-          name: install-docs-npm
-          command: cd docs && npm i
-      - run: git checkout ./docs/package.json
-      - save_cache:
-          key: npm-v2-{{ .Branch }}-{{ checksum "./docs/package-lock.json" }}
-          paths:
-            - ./docs/node_modules
-      - run: cd docs && npm run build
-
   Filesize:
     <<: *defaults
     steps:
@@ -87,9 +70,6 @@ workflows:
     jobs:
       - Build
       - Danger:
-          requires:
-            - Build
-      - Docs:
           requires:
             - Build
       - Prettier Check:
