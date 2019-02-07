@@ -34,7 +34,7 @@ forward(operation).subscribe({
 ## Implementing a basic custom transport
 
 ```js
-class import { ApolloLink, Observable } from 'apollo-link';
+import { ApolloLink, Observable } from 'apollo-link';
 
 export class CustomApolloLink extends ApolloLink {
   request(operation /*, forward*/) {

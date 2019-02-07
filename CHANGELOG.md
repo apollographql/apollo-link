@@ -1,5 +1,19 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
+## vNext
+
+### docs
+
+- Documentation updates.  <br/>
+  [@tomazy](https://github.com/tomazy) in [#933](https://github.com/apollographql/apollo-link/pull/933)  <br />
+  [@hobochild](https://github.com/hobochild) in [#935](https://github.com/apollographql/apollo-link/pull/935)  <br />
+  [@bkoltai](https://github.com/bkoltai) in [#925](https://github.com/apollographql/apollo-link/pull/925)  <br />
+
+### apollo-link
+
+- Documentation updates.  <br/>
+  [@capaj](https://github.com/capaj) in [#937](https://github.com/apollographql/apollo-link/pull/937)  <br />
+
 ## 2019-02-01
 
 ### General

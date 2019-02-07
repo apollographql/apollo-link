@@ -81,12 +81,12 @@ One way to use persisted queries is with [apollo-link-persisted-queries](https:/
 Apollo Client supports passing context separately for every query, so you can do things like pass a special header for a single query invocation if you need to.
 
 ```js
-import HttpLink from "apollo-link-http";
+import { createHttpLink } from "apollo-link-http";
 import ApolloClient from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 
 const client = new ApolloClient({
-  link: new HttpLink({ uri: "/graphql" }),
+  link: createHttpLink({ uri: "/graphql" }),
   cache: new InMemoryCache()
 });
 
