@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-batch-http",
-  "version": "1.2.6",
+  "version": "1.2.8",
   "description": "Batch HTTP transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -10,9 +10,8 @@
     "Sashko Stubailo <sashko@stubailo.com>"
   ],
   "license": "MIT",
-  "main": "./lib/bundle.umd.js",
-  "module": "./lib/index.js",
-  "jsnext:main": "./lib/index.js",
+  "main": "./lib/index.js",
+  "module": "./lib/bundle.esm.js",
   "typings": "./lib/index.d.ts",
   "repository": {
     "type": "git",
@@ -24,7 +23,7 @@
   "homepage": "https://github.com/apollographql/apollo-link#readme",
   "scripts": {
     "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-link && npm run minify:browser",
-    "build": "tsc -p .",
+    "build": "tsc -p ./tsconfig.cjs.json",
     "bundle": "rollup -c",
     "coverage": "jest --coverage",
     "clean": "rimraf lib/* && rimraf coverage/*",
@@ -39,9 +38,9 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-link": "^1.2.6",
-    "apollo-link-batch": "^1.1.7",
-    "apollo-link-http-common": "^0.2.8"
+    "apollo-link": "^1.2.8",
+    "apollo-link-batch": "^1.1.9",
+    "apollo-link-http-common": "^0.2.10"
   },
   "peerDependencies": {
     "graphql": "^0.11.0 || ^0.12.3 || ^0.13.0 || ^14.0.0"

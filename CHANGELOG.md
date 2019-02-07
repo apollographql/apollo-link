@@ -2,10 +2,31 @@
 
 ## vNext
 
+### docs
+
+- Documentation updates.  <br/>
+  [@tomazy](https://github.com/tomazy) in [#933](https://github.com/apollographql/apollo-link/pull/933)  <br />
+  [@hobochild](https://github.com/hobochild) in [#935](https://github.com/apollographql/apollo-link/pull/935)  <br />
+
+### apollo-link
+
+- Documentation updates.  <br/>
+  [@capaj](https://github.com/capaj) in [#937](https://github.com/apollographql/apollo-link/pull/937)  <br />
+
+## 2019-02-01
+
 ### General
 
 - Numerous CI updates/enhancements.  <br/>
   [@JoviDeCroock](https://github.com/JoviDeCroock) in [#919](https://github.com/apollographql/apollo-link/pull/919)
+- Updates to the Apollo Link package bundling process, to generate valid
+  ESM/UMD bundles.  <br/>
+  [@JoviDeCroock](https://github.com/JoviDeCroock) in [#918](https://github.com/apollographql/apollo-link/pull/918)
+
+### apollo-link 1.2.8
+
+- Remove dependency on `apollo-utilities`.  <br/>
+  [@hwillson](https://github.com/hwillson) in [#926](https://github.com/apollographql/apollo-link/pull/926)
 
 ## 2018-12-14
 
