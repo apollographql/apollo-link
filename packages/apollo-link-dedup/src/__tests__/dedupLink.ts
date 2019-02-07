@@ -1,24 +1,14 @@
 import {
   ApolloLink,
   execute,
-  Operation,
   GraphQLRequest,
   Observable,
+  getOperationName,
 } from 'apollo-link';
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 
 import { DedupLink } from '../dedupLink';
-
-function getOperationName(doc: DocumentNode): string | null {
-  let res: string | null = null;
-  doc.definitions.forEach(definition => {
-    if (definition.kind === 'OperationDefinition' && definition.name) {
-      res = definition.name.value;
-    }
-  });
-  return res;
-}
 
 describe('DedupLink', () => {
   it(`does not affect different queries`, () => {
