@@ -6,6 +6,7 @@
 
 - Documentation updates.  <br/>
   [@tomazy](https://github.com/tomazy) in [#933](https://github.com/apollographql/apollo-link/pull/933)  <br />
+  [@hobochild](https://github.com/hobochild) in [#935](https://github.com/apollographql/apollo-link/pull/935)  <br />
 
 ### apollo-link
 
