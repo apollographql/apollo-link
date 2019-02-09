@@ -1,6 +1,6 @@
 {
   "name": "apollo-link",
-  "version": "1.2.6",
+  "version": "1.2.8",
   "description": "Flexible, lightweight transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -10,9 +10,8 @@
     "Sashko Stubailo <sashko@stubailo.com>"
   ],
   "license": "MIT",
-  "main": "./lib/bundle.umd.js",
-  "module": "./lib/index.js",
-  "jsnext:main": "./lib/index.js",
+  "main": "./lib/index.js",
+  "module": "./lib/bundle.esm.js",
   "typings": "./lib/index.d.ts",
   "repository": {
     "type": "git",
@@ -23,8 +22,8 @@
   },
   "homepage": "https://github.com/apollographql/apollo-link#readme",
   "scripts": {
-    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-utilities --i graphql --i zen-observable-ts && npm run minify:browser",
-    "build": "tsc -p .",
+    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i graphql --i zen-observable-ts && npm run minify:browser",
+    "build": "tsc -p ./tsconfig.cjs.json",
     "bundle": "rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
     "coverage": "jest --coverage",
@@ -39,8 +38,7 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-utilities": "^1.0.0",
-    "zen-observable-ts": "^0.8.13"
+    "zen-observable-ts": "^0.8.15"
   },
   "peerDependencies": {
     "graphql": "^0.11.3 || ^0.12.3 || ^0.13.0 || ^14.0.0"
@@ -48,7 +46,7 @@
   "devDependencies": {
     "@types/graphql": "14.0.5",
     "@types/jest": "22.2.3",
-    "@types/node": "9.6.41",
+    "@types/node": "9.6.42",
     "browserify": "16.2.3",
     "graphql": "14.1.1",
     "graphql-tag": "2.10.1",
