@@ -14,6 +14,7 @@
   [@hobochild](https://github.com/hobochild) in [#935](https://github.com/apollographql/apollo-link/pull/935)  <br />
   [@bkoltai](https://github.com/bkoltai) in [#925](https://github.com/apollographql/apollo-link/pull/925)  <br />
   [@NickTomlin](https://github.com/NickTomlin) in [#923](https://github.com/apollographql/apollo-link/pull/923)  <br />
+  [@thekogmo](https://github.com/thekogmo) in [#913](https://github.com/apollographql/apollo-link/pull/913)  <br />
   [@thekogmo](https://github.com/thekogmo) in [#912](https://github.com/apollographql/apollo-link/pull/912)  <br />
 
 ### apollo-link
