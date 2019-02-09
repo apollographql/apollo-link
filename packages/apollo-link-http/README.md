@@ -11,7 +11,7 @@ graphql-tools, or as a standalone client.
 
 The http link is a terminating link that fetches GraphQL results from a GraphQL
 endpoint over an http connection. The http link supports both POST and GET
-requests with the ability change the http options on a per query basis. This
+requests with the ability to change the http options on a per query basis. This
 can be used for authentication, persisted queries, dynamic uris, and other
 granular updates.
 
@@ -33,7 +33,7 @@ HTTP Link takes an object with some options on it to customize the behavior of t
 * `includeExtensions`: allow passing the extensions field to your graphql server, defaults to false
 * `fetch`: a `fetch` compatible API for making a request
 * `headers`: an object representing values to be sent as headers on the request
-* `credentials`: a string representing the credentials policy you want for the fetch call
+* `credentials`: a string representing the credentials policy you want for the fetch call. Possible values are: `omit`, `include` and `same-origin`
 * `fetchOptions`: any overrides of the fetch options argument to pass to the fetch call
 * `useGETForQueries`: set to `true` to use the HTTP `GET` method for queries (but not for mutations)
 
@@ -50,7 +50,7 @@ Note that if you set `fetchOptions.method` to `GET`, the http link will follow t
 This link also attaches the response from the `fetch` operation on the context as `response` so you can access it from within another link.
 
 * `headers`: an object representing values to be sent as headers on the request
-* `credentials`: a string representing the credentials policy you want for the fetch call
+* `credentials`: a string representing the credentials policy you want for the fetch call. Possible values are: `omit`, `include` and `same-origin`
 * `uri`: a string of the endpoint you want to fetch from
 * `fetchOptions`: any overrides of the fetch options argument to pass to the fetch call
 * `response`: this is the raw response from the fetch request after it is made.
@@ -81,12 +81,12 @@ One way to use persisted queries is with [apollo-link-persisted-queries](https:/
 Apollo Client supports passing context separately for every query, so you can do things like pass a special header for a single query invocation if you need to.
 
 ```js
-import HttpLink from "apollo-link-http";
+import { createHttpLink } from "apollo-link-http";
 import ApolloClient from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 
 const client = new ApolloClient({
-  link: new HttpLink({ uri: "/graphql" }),
+  link: createHttpLink({ uri: "/graphql" }),
   cache: new InMemoryCache()
 });
 
@@ -260,7 +260,7 @@ import { logout } from "./logout";
 
 const httpLink = createHttpLink({ uri: "/graphql" });
 const errorLink = onError(({ networkError }) => {
-  if (networkError.status === 401) {
+  if (networkError.statusCode === 401) {
     logout();
   }
 });

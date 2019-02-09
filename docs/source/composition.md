@@ -14,13 +14,13 @@ Apollo Link ships with two ways to compose links. The first is a method called `
 
 ```js
 import { ApolloLink } from 'apollo-link';
-import Retry from 'apollo-link-retry';
+import { RetryLink } from 'apollo-link-retry';
 import HttpLink from 'apollo-link-http';
 import MyAuthLink from '../auth';
 
 const link = ApolloLink.from([
-  new Retry(),
-  new AuthLink(),
+  new RetryLink(),
+  new MyAuthLink(),
   new HttpLink({ uri: '/graphql' })
 ]);
 ```
@@ -58,4 +58,4 @@ Using `split` allows for per operation based control flow for things like sendin
 
 <h2 id="usage">Usage</h2>
 
-`split`, `from`, and `concat` are all exported as part of the ApolloLink interface as well as individual functions which can be uses. Both are great ways to build link chains and they are identical in functionality.
+`split`, `from`, and `concat` are all exported as part of the ApolloLink interface as well as individual functions which can be used. Both are great ways to build link chains and they are identical in functionality.

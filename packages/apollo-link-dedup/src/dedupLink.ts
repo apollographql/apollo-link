@@ -27,9 +27,9 @@ export class DedupLink extends ApolloLink {
 
     const key = operation.toKey();
 
-    const cleanup = key => {
-      this.inFlightRequestObservables.delete(key);
-      const prev = this.subscribers.get(key);
+    const cleanup = operationKey => {
+      this.inFlightRequestObservables.delete(operationKey);
+      const prev = this.subscribers.get(operationKey);
       return prev;
     };
 
@@ -54,17 +54,17 @@ export class DedupLink extends ApolloLink {
         if (!subscription) {
           subscription = singleObserver.subscribe({
             next: result => {
-              const prev = cleanup(key);
+              const previous = cleanup(key);
               this.subscribers.delete(key);
-              if (prev) {
-                prev.next.forEach(next => next(result));
-                prev.complete.forEach(complete => complete());
+              if (previous) {
+                previous.next.forEach(next => next(result));
+                previous.complete.forEach(complete => complete());
               }
             },
             error: error => {
-              const prev = cleanup(key);
+              const previous = cleanup(key);
               this.subscribers.delete(key);
-              if (prev) prev.error.forEach(err => err(error));
+              if (previous) previous.error.forEach(err => err(error));
             },
           });
         }

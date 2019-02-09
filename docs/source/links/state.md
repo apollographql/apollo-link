@@ -4,7 +4,7 @@ description: Manage your local data with Apollo Client
 ---
 
 [**Read the announcement post!
-🎉**](https://dev-blog.apollodata.com/the-future-of-state-management-dd410864cae2) |
+🎉**](https://blog.apollographql.com/the-future-of-state-management-dd410864cae2) |
 [**Video tutorial by Sara Vieira**](https://youtu.be/2RvRcnD8wHY) |
 [**apollo-link-state on GitHub**](https://github.com/apollographql/apollo-link-state)
 
@@ -82,6 +82,32 @@ const client = new ApolloClient({
   cache,
   link: ApolloLink.from([stateLink, new HttpLink()]),
 });
+```
+
+<h2 id="local-development">With Apollo Boost</h2>
+
+If you are using `apollo-boost`, it already includes `apollo-link-state` underneath the hood for you.
+Instead of passing the `link` property when instantiating Apollo Client, you pass in `clientState`.
+
+```js
+import ApolloClient from 'apollo-boost';
+
+const client = new ApolloClient({
+  clientState: {
+    defaults: {
+      isConnected: true
+    },
+    resolvers: {
+      Mutation: {
+        updateNetworkStatus: (_, { isConnected }, { cache }) => {
+          cache.writeData({ data: { isConnected }});
+          return null;
+        }
+      }
+    }
+  }
+});
+
 ```
 
 How do we differentiate a request for local data from a request that hits our
@@ -512,7 +538,7 @@ const todos = {
         `;
 
         const previous = cache.readQuery({ query });
-        const newTodo = { id: nextTodoId++, text, completed: false, __typename: 'TodoItem' },
+        const newTodo = { id: nextTodoId++, text, completed: false, __typename: 'TodoItem' };
         const data = {
           todos: previous.todos.concat([newTodo]),
         };
