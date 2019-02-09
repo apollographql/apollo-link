@@ -57,7 +57,7 @@ class RetryableOperation<TValue = any> {
    * If the operation has previously emitted other events, they will be
    * immediately triggered for the observer.
    */
-  subscribe(observer: ZenObservable.Observer<TValue>) {
+  public subscribe(observer: ZenObservable.Observer<TValue>) {
     if (this.canceled) {
       throw new Error(
         `Subscribing to a retryable link that was canceled is not supported`,
@@ -83,7 +83,7 @@ class RetryableOperation<TValue = any> {
    * If no observers remain, the operation will stop retrying, and unsubscribe
    * from its downstream link.
    */
-  unsubscribe(observer: ZenObservable.Observer<TValue>) {
+  public unsubscribe(observer: ZenObservable.Observer<TValue>) {
     const index = this.observers.indexOf(observer);
     if (index < 0) {
       throw new Error(
@@ -103,7 +103,7 @@ class RetryableOperation<TValue = any> {
   /**
    * Start the initial request.
    */
-  start() {
+  public start() {
     if (this.currentSubscription) return; // Already started.
 
     this.try();
@@ -112,7 +112,7 @@ class RetryableOperation<TValue = any> {
   /**
    * Stop retrying for the operation, and cancel any in-progress requests.
    */
-  cancel() {
+  public cancel() {
     if (this.currentSubscription) {
       this.currentSubscription.unsubscribe();
     }

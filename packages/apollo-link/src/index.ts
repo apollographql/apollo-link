@@ -5,6 +5,7 @@ export {
   toPromise,
   fromPromise,
   fromError,
+  getOperationName,
 } from './linkUtils';
 export * from './types';
 

@@ -1,3 +1,5 @@
+/* tslint:disable */
+
 import {
   ApolloLink,
   Observable,
@@ -6,10 +8,11 @@ import {
   FetchResult,
 } from 'apollo-link';
 import { GraphQLError, ExecutionResult } from 'graphql';
+import { ServerError, ServerParseError } from 'apollo-link-http-common';
 
 export interface ErrorResponse {
   graphQLErrors?: ReadonlyArray<GraphQLError>;
-  networkError?: Error;
+  networkError?: Error | ServerError | ServerParseError;
   response?: ExecutionResult;
   operation: Operation;
   forward: NextLink;

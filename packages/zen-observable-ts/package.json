@@ -1,13 +1,12 @@
 {
   "name": "zen-observable-ts",
-  "version": "0.8.9",
+  "version": "0.8.15",
   "description": "An Implementation of ES Observables in Typescript",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [],
   "license": "MIT",
-  "main": "./lib/bundle.umd.js",
-  "module": "./lib/index.js",
-  "jsnext:main": "./lib/index.js",
+  "main": "./lib/index.js",
+  "module": "./lib/bundle.esm.js",
   "typings": "./lib/index.d.ts",
   "repository": {
     "type": "git",
@@ -19,29 +18,30 @@
   "homepage": "https://github.com/zenparsing/zen-observable",
   "scripts": {
     "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i zen-observable && npm run minify:browser",
-    "build": "tsc -p .",
+    "build": "tsc -p ./tsconfig.cjs.json",
     "bundle": "rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
     "coverage": "jest --coverage",
     "filesize": "npm run build && npm run build:browser",
-    "lint": "tslint --type-check -p tsconfig.json -c ../../tslint.json src/*.ts",
+    "lint": "tslint -c \"../../tslint.json\" -p tsconfig.json -c ../../tslint.json src/*.ts",
     "minify:browser": "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
     "postbuild": "npm run bundle",
     "prebuild": "npm run clean",
+    "prepare": "npm run lint && npm run build",
     "prepublishOnly": "npm run clean && npm run build",
     "test": "jest",
     "watch": "tsc -w -p ."
   },
   "devDependencies": {
     "@types/jest": "22.2.3",
-    "browserify": "16.2.2",
+    "browserify": "16.2.3",
     "jest": "22.4.4",
-    "rimraf": "2.6.2",
-    "rollup": "0.63.4",
+    "rimraf": "2.6.3",
+    "rollup": "0.68.2",
     "ts-jest": "22.4.6",
-    "tslint": "5.11.0",
-    "typescript": "2.9.2",
-    "uglify-js": "3.4.7"
+    "tslint": "5.12.1",
+    "typescript": "3.0.3",
+    "uglify-js": "3.4.9"
   },
   "jest": {
     "transform": {
@@ -53,7 +53,8 @@
       "tsx",
       "js",
       "json"
-    ]
+    ],
+    "testURL": "http://localhost"
   },
   "dependencies": {
     "zen-observable": "^0.8.0"
