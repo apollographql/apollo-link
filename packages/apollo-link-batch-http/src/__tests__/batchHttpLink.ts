@@ -1,6 +1,6 @@
 import { ApolloLink, execute, Observable, makePromise } from 'apollo-link';
 import { print } from 'graphql';
-import * as fetchMock from 'fetch-mock';
+import fetchMock from 'fetch-mock';
 import gql from 'graphql-tag';
 
 import { sharedHttpTest } from './sharedHttpTests';
@@ -42,12 +42,20 @@ describe('BatchHttpLink', () => {
     jest.resetModules();
   });
 
+  const headers = { cookie: 'monster' };
   const data = { data: { hello: 'world' } };
   const data2 = { data: { hello: 'everyone' } };
   const roflData = { data: { haha: 'hehe' } };
   const lawlData = { data: { tehe: 'haaa' } };
   const makePromise = res =>
-    new Promise((resolve, reject) => setTimeout(() => resolve(res)));
+    new Promise((resolve, reject) =>
+      setTimeout(() =>
+        resolve({
+          headers,
+          body: res,
+        }),
+      ),
+    );
 
   let subscriber;
 

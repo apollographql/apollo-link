@@ -1,6 +1,7 @@
 import gql from 'graphql-tag';
 import { ApolloLink, execute, Observable } from 'apollo-link';
 import { onError, ErrorLink } from '../';
+import { ServerError, throwServerError } from 'apollo-link-http-common';
 
 describe('error handling', () => {
   it('has an easy way to handle GraphQL errors', done => {
@@ -85,6 +86,42 @@ describe('error handling', () => {
     const mockLink = new ApolloLink(operation => {
       return new Observable(obs => {
         throw new Error('app is crashing');
+      });
+    });
+
+    const link = errorLink.concat(mockLink);
+
+    execute(link, { query }).subscribe({
+      error: e => {
+        expect(e.message).toBe('app is crashing');
+        expect(called).toBe(true);
+        done();
+      },
+    });
+  });
+  it('captures networkError.statusCode within links', done => {
+    const query = gql`
+      query Foo {
+        foo {
+          bar
+        }
+      }
+    `;
+
+    let called;
+    const errorLink = onError(({ operation, networkError }) => {
+      expect(networkError.message).toBe('app is crashing');
+      expect(networkError.name).toBe('ServerError');
+      expect((networkError as ServerError).statusCode).toBe(500);
+      expect((networkError as ServerError).response.ok).toBe(false);
+      expect(operation.operationName).toBe('Foo');
+      called = true;
+    });
+
+    const mockLink = new ApolloLink(operation => {
+      return new Observable(obs => {
+        const response = { status: 500, ok: false } as Response;
+        throwServerError(response, 'ServerError', 'app is crashing');
       });
     });
 

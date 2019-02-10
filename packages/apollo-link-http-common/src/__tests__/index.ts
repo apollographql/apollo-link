@@ -1,6 +1,6 @@
 import { createOperation, Observable, ApolloLink, execute } from 'apollo-link';
 import gql from 'graphql-tag';
-import * as fetchMock from 'fetch-mock';
+import fetchMock from 'fetch-mock';
 
 import {
   parseAndCheckHttpResponse,
@@ -35,6 +35,7 @@ describe('Common Http functions', () => {
         .then(done.fail)
         .catch(e => {
           expect(e.statusCode).toBe(status);
+          expect(e.name).toBe('ServerParseError');
           expect(e).toHaveProperty('response');
           expect(e).toHaveProperty('bodyText');
           done();
@@ -44,7 +45,7 @@ describe('Common Http functions', () => {
 
     it('throws a network error with a status code and result', done => {
       const status = 403;
-      const body = { data: 'fail' }; //does not contain data or erros
+      const body = { data: 'fail' }; //does not contain data or errors
       fetchMock.mock('begin:error', {
         body,
         status,
@@ -54,6 +55,7 @@ describe('Common Http functions', () => {
         .then(done.fail)
         .catch(e => {
           expect(e.statusCode).toBe(status);
+          expect(e.name).toBe('ServerError');
           expect(e).toHaveProperty('response');
           expect(e).toHaveProperty('result');
           done();
@@ -69,6 +71,7 @@ describe('Common Http functions', () => {
         .then(done.fail)
         .catch(e => {
           expect(e.statusCode).toBe(200);
+          expect(e.name).toBe('ServerError');
           expect(e).toHaveProperty('response');
           expect(e.result).toEqual(data);
           done();

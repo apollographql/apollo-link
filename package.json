@@ -2,24 +2,25 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "bootstrap": "lerna bootstrap",
+    "bootstrap": "lerna exec -- npm install && lerna run prepare && lerna link",
     "diff": "check-if-folder-contents-changed-in-git-commit-range",
     "postinstall": "npm run bootstrap",
     "postbootstrap": "npm run build",
-    "build": "lerna run -- build",
-    "test": "lerna run -- test",
+    "build": "lerna run build",
+    "test": "lerna run test",
     "prelint": "npm run lint-fix",
-    "lint": "lerna run -- lint",
+    "lint": "lerna run lint",
     "lint-fix": "prettier --trailing-comma all --single-quote --write \"packages/*/{src,tests,test,benchmark}/**/*.{j,t}s*\"",
     "lint-staged": "lint-staged",
     "lint-check": "prettier-check --single-quote --trailing-comma all \"packages/*/{src,__tests__}/**/*.ts\"",
-    "filesize": "lerna run -- filesize && bundlesize",
-    "type-check": "lerna run -- type-check",
-    "coverage": "lerna run -- coverage",
+    "filesize": "lerna run filesize && bundlesize",
+    "type-check": "lerna run type-check",
+    "coverage": "jest --verbose --coverage",
     "coverage:upload": "codecov",
     "danger": "danger run --verbose",
     "predeploy": "npm run bootstrap",
-    "deploy": "lerna publish -m \"chore: Publish\" --independent",
+    "test-ci": "npm run coverage -- --ci --maxWorkers=2 --reporters=default --reporters=jest-junit",
+    "deploy": "lerna publish -m \"chore: Publish\"",
     "watch": "trap \"kill 0\" SIGINT; for f in `ls packages`; do (cd `pwd`/packages/$f && [[ -e package.json ]] && npm run watch) & done; "
   },
   "bundlesize": [
@@ -72,7 +73,19 @@
   "jest": {
     "transform": {
       ".(ts|tsx)": "ts-jest"
-    }
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ],
+    "testURL": "http://localhost",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "sharedHttpTests.ts"
+    ]
   },
   "lint-staged": {
     "*.{ts, tsx, js, jsx}": [
@@ -89,20 +102,24 @@
   "dependencies": {},
   "devDependencies": {
     "@types/zen-observable": "0.8.0",
-    "bundlesize": "0.17.0",
+    "bundlesize": "0.17.1",
     "check-if-folder-contents-changed-in-git-commit-range": "1.0.0",
-    "codecov": "3.0.4",
-    "danger": "3.8.0",
-    "jest-junit": "3.7.0",
-    "lerna": "2.11.0",
-    "lint-staged": "7.2.0",
+    "codecov": "3.1.0",
+    "danger": "3.9.0",
+    "jest": "^24.0.0",
+    "jest-junit": "6.2.1",
+    "lerna": "3.11.0",
+    "lint-staged": "7.3.0",
     "pre-commit": "1.2.2",
     "pre-push": "0.1.1",
-    "prettier": "1.13.7",
+    "prettier": "1.15.2",
     "prettier-check": "2.0.0",
-    "rollup": "0.63.4",
+    "rollup": "0.68.2",
+    "rollup-plugin-node-resolve": "3.4.0",
     "rollup-plugin-sourcemaps": "0.4.2",
+    "rollup-plugin-typescript2": "0.19.2",
     "ts-jest": "22.4.6",
-    "typescript": "2.9.2"
+    "tslib": "1.9.3",
+    "typescript": "3.0.3"
   }
 }

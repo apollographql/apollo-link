@@ -1,6 +1,6 @@
 {
   "name": "apollo-link",
-  "version": "1.2.2",
+  "version": "1.2.8",
   "description": "Flexible, lightweight transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -10,9 +10,8 @@
     "Sashko Stubailo <sashko@stubailo.com>"
   ],
   "license": "MIT",
-  "main": "./lib/bundle.umd.js",
-  "module": "./lib/index.js",
-  "jsnext:main": "./lib/index.js",
+  "main": "./lib/index.js",
+  "module": "./lib/bundle.esm.js",
   "typings": "./lib/index.d.ts",
   "repository": {
     "type": "git",
@@ -23,40 +22,40 @@
   },
   "homepage": "https://github.com/apollographql/apollo-link#readme",
   "scripts": {
-    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-utilities --i graphql --i zen-observable-ts && npm run minify:browser",
-    "build": "tsc -p .",
+    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i graphql --i zen-observable-ts && npm run minify:browser",
+    "build": "tsc -p ./tsconfig.cjs.json",
     "bundle": "rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
     "coverage": "jest --coverage",
     "filesize": "npm run build && npm run build:browser",
-    "lint": "tslint --type-check -p tsconfig.json -c ../../tslint.json src/*.ts",
+    "lint": "tslint -c \"../../tslint.json\" -p tsconfig.json -c ../../tslint.json src/*.ts",
     "minify:browser": "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
     "postbuild": "npm run bundle",
     "prebuild": "npm run clean",
+    "prepare": "npm run lint && npm run build",
     "prepublishOnly": "npm run clean && npm run build",
     "test": "jest",
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-utilities": "^1.0.0",
-    "zen-observable-ts": "^0.8.9"
+    "zen-observable-ts": "^0.8.15"
   },
   "peerDependencies": {
-    "graphql": "^0.11.3 || ^0.12.3 || ^0.13.0"
+    "graphql": "^0.11.3 || ^0.12.3 || ^0.13.0 || ^14.0.0"
   },
   "devDependencies": {
-    "@types/graphql": "0.13.4",
+    "@types/graphql": "14.0.5",
     "@types/jest": "22.2.3",
-    "@types/node": "9.6.31",
-    "browserify": "16.2.2",
-    "graphql": "0.13.2",
-    "graphql-tag": "2.9.2",
+    "@types/node": "9.6.42",
+    "browserify": "16.2.3",
+    "graphql": "14.1.1",
+    "graphql-tag": "2.10.1",
     "jest": "22.4.4",
-    "rimraf": "2.6.1",
-    "rollup": "0.63.4",
+    "rimraf": "2.6.3",
+    "rollup": "0.68.2",
     "ts-jest": "22.4.6",
-    "tslint": "5.11.0",
-    "typescript": "2.9.2",
+    "tslint": "5.12.1",
+    "typescript": "3.0.3",
     "uglify-js": "3.4.9"
   },
   "jest": {
@@ -70,6 +69,6 @@
       "js",
       "json"
     ],
-    "mapCoverage": true
+    "testURL": "http://localhost"
   }
 }
