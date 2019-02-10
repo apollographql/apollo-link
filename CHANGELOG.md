@@ -19,7 +19,7 @@
   [@ciwchris](https://github.com/ciwchris) in [#652](https://github.com/apollographql/apollo-link/pull/652)  <br />
   [@jasonmerino](https://github.com/jasonmerino) in [#759](https://github.com/apollographql/apollo-link/pull/759)  <br />
   [@JoviDeCroock](https://github.com/JoviDeCroock) in [#942](https://github.com/apollographql/apollo-link/pull/942)  <br />
-g
+
 ### apollo-link
 
 - Documentation updates.  <br/>
