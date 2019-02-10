@@ -29,6 +29,11 @@
 - Add undefined check. <br/>
   [@JoviDeCroock](https://github.com/JoviDeCroock) in [#943](https://github.com/apollographql/apollo-link/pull/943)  <br />
 
+### apollo-link-http
+
+- Correct code comment. <br/>
+  [@mouafa](https://github.com/mouafa) in [#921](https://github.com/apollographql/apollo-link/pull/921)  <br />
+
 ## 2019-02-01
 
 ### General
