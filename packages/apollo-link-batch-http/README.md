@@ -50,7 +50,7 @@ The batch http link relies on having `fetch` present in your runtime environment
 The Batch Http Link currently uses the context in two different ways, per batch
 and per query. The context fields below are used per batch and taken from the first
 operation in the batch. They are applied to the fetch options in a similar
-manner as [apollo-link-http](http.html#context).
+manner as [apollo-link-http](https://www.apollographql.com/docs/link/links/http.html).
 
 * `headers`: an object representing values to be sent as headers on the request
 * `credentials`: a string representing the credentials policy you want for the
