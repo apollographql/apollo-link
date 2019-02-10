@@ -24,6 +24,11 @@
 - Documentation updates.  <br/>
   [@capaj](https://github.com/capaj) in [#937](https://github.com/apollographql/apollo-link/pull/937)  <br />
 
+### apollo-link-error
+
+- Add undefined check. <br/>
+  [@JoviDeCroock](https://github.com/JoviDeCroock) in [#943](https://github.com/apollographql/apollo-link/pull/943)  <br />
+
 ## 2019-02-01
 
 ### General
