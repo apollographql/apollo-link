@@ -42,7 +42,7 @@ export class WebSocketLink extends ApolloLink {
         (<WebSocketLink.Configuration>paramsOrClient).webSocketImpl,
       );
     } else {
-      this.subscriptionClient = (<SubscriptionClient>paramsOrClient);
+      this.subscriptionClient = <SubscriptionClient>paramsOrClient;
     }
   }
 
