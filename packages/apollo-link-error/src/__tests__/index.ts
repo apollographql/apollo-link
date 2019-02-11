@@ -47,7 +47,7 @@ describe('error handling', () => {
     `;
 
     let called;
-    const errorLink = onError(({ operation, networkError, response }) => {
+    const errorLink = onError(({ operation, networkError }) => {
       expect(networkError.message).toBe('app is crashing');
       expect(operation.operationName).toBe('Foo');
       called = true;
@@ -109,12 +109,13 @@ describe('error handling', () => {
     `;
 
     let called;
-    const errorLink = onError(({ operation, networkError }) => {
+    const errorLink = onError(({ operation, networkError, response }) => {
       expect(networkError.message).toBe('app is crashing');
       expect(networkError.name).toBe('ServerError');
       expect((networkError as ServerError).statusCode).toBe(500);
       expect((networkError as ServerError).response.ok).toBe(false);
       expect(operation.operationName).toBe('Foo');
+      expect(response).toBeDefined()
       called = true;
     });
 
