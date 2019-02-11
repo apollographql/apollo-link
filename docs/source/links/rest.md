@@ -3,7 +3,7 @@ title: apollo-link-rest
 description: Call your REST APIs inside your GraphQL queries.
 ---
 
-Calling REST APIs from a GraphQL client opens the benefits GraphQL for more people, whether:
+Calling REST APIs from a GraphQL client opens the benefits of GraphQL for more people, whether:
 
 * You are in a front-end developer team that wants to try GraphQL without asking for the backend team to implement a GraphQL server.
 * You have no access to change the backend because it's an existing set of APIs, potentially managed by a 3rd party.
@@ -31,7 +31,7 @@ npm install --save apollo-cache-inmemory
 Then it is time to install our link and its `peerDependencies`:
 
 ```bash
-npm install apollo-link-rest apollo-link graphql graphql-anywhere--save
+npm install --save apollo-link-rest apollo-link graphql graphql-anywhere
 ```
 
 After this, you are ready to setup your apollo client:
@@ -54,7 +54,7 @@ const client = new ApolloClient({
 Now it is time to write our first query, for this you need to install the `graphql-tag` package:
 
 ```bash
-npm install graphql-tag --save
+npm install --save graphql-tag
 ```
 
 Defining a query is straightforward:
@@ -165,7 +165,7 @@ const restLink = new RestLink({
       patchDeeper: RestLink.FunctionalTypePatcher,
     ): any => {
       if (data.results != null) {
-        data.results = data.results.map( planet => { __typename: "Planet", ...planet });
+        data.results = data.results.map( planet => ({ __typename: "Planet", ...planet }));
       }
       return data;
     },
@@ -456,7 +456,7 @@ An `@rest(…)` directive takes two required and several optional arguments:
 * _optional_ `pathBuilder?: /function/`: If provided, this function gets to control what path is produced for this request.
 * _optional_ `bodyKey?: string = "input"`: This is the name of the `variable` to use when looking to build a REST request-body for a `PUT` or `POST` request. It defaults to `input` if not supplied.
 * _optional_ `bodyBuilder?: /function/`: If provided, this is the name a `function` that you provided to `variables`, that is called when a request-body needs to be built. This lets you combine arguments or encode the body in some format other than JSON.
-* _optional_ `bodySerializer?: /string | function/`: string key to look up a function in `bodySerializers` or a custom serialization function for the body/headers of this request before it is passed ot the fetch call. Defaults to `JSON.stringify` and setting `Content-Type: application-json`.
+* _optional_ `bodySerializer?: /string | function/`: string key to look up a function in `bodySerializers` or a custom serialization function for the body/headers of this request before it is passed to the fetch call. Defaults to `JSON.stringify` and setting `Content-Type: application-json`.
 
 <h3 id="rest.arguments.variables">Variables</h3>
 

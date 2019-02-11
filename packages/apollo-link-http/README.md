@@ -11,7 +11,7 @@ graphql-tools, or as a standalone client.
 
 The http link is a terminating link that fetches GraphQL results from a GraphQL
 endpoint over an http connection. The http link supports both POST and GET
-requests with the ability change the http options on a per query basis. This
+requests with the ability to change the http options on a per query basis. This
 can be used for authentication, persisted queries, dynamic uris, and other
 granular updates.
 
@@ -81,12 +81,12 @@ One way to use persisted queries is with [apollo-link-persisted-queries](https:/
 Apollo Client supports passing context separately for every query, so you can do things like pass a special header for a single query invocation if you need to.
 
 ```js
-import HttpLink from "apollo-link-http";
+import { createHttpLink } from "apollo-link-http";
 import ApolloClient from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 
 const client = new ApolloClient({
-  link: new HttpLink({ uri: "/graphql" }),
+  link: createHttpLink({ uri: "/graphql" }),
   cache: new InMemoryCache()
 });
 
