@@ -32,7 +32,7 @@
 ### apollo-link-error
 
 - Correct code comment. <br/>
-  [@JoviDeCroock](https://github.com/JoviDeCroock) in [#](https://github.com/apollographql/apollo-link/pull/)  <br />
+  [@JoviDeCroock](https://github.com/JoviDeCroock) in [#944](https://github.com/apollographql/apollo-link/pull/944)  <br />
 
 ## 2019-02-01
 

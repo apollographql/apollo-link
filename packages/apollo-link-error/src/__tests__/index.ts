@@ -47,7 +47,8 @@ describe('error handling', () => {
     `;
 
     let called;
-    const errorLink = onError(({ operation, networkError }) => {
+    const errorLink = onError(({ operation, networkError, response }) => {
+      expect(response).toBeDefined();
       expect(networkError.message).toBe('app is crashing');
       expect(operation.operationName).toBe('Foo');
       called = true;
