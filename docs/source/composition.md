@@ -14,12 +14,12 @@ Apollo Link ships with two ways to compose links. The first is a method called `
 
 ```js
 import { ApolloLink } from 'apollo-link';
-import Retry from 'apollo-link-retry';
+import { RetryLink } from 'apollo-link-retry';
 import HttpLink from 'apollo-link-http';
 import MyAuthLink from '../auth';
 
 const link = ApolloLink.from([
-  new Retry(),
+  new RetryLink(),
   new MyAuthLink(),
   new HttpLink({ uri: '/graphql' })
 ]);

@@ -1,6 +1,6 @@
 import { Observable, ApolloLink, execute } from 'apollo-link';
 import gql from 'graphql-tag';
-import * as fetchMock from 'fetch-mock';
+import fetchMock from 'fetch-mock';
 import objectToQuery from 'object-to-querystring';
 
 import { sharedHttpTest } from './sharedHttpTests';
@@ -180,6 +180,65 @@ describe('HttpLink', () => {
           expect(body).toBeDefined();
           expect(method).toBe('POST');
           expect(uri).toBe('http://data/');
+        }),
+      );
+    });
+
+    it('should add client awareness settings to request headers', done => {
+      const variables = { params: 'stub' };
+      const link = createHttpLink({
+        uri: 'http://data/',
+      });
+
+      const clientAwareness = {
+        name: 'Some Client Name',
+        version: '1.0.1',
+      };
+
+      execute(link, {
+        query: sampleQuery,
+        variables,
+        context: {
+          clientAwareness,
+        },
+      }).subscribe(
+        makeCallback(done, result => {
+          const [uri, options] = fetchMock.lastCall();
+          const { headers } = options;
+          expect(headers['apollographql-client-name']).toBeDefined();
+          expect(headers['apollographql-client-name']).toEqual(
+            clientAwareness.name,
+          );
+          expect(headers['apollographql-client-version']).toBeDefined();
+          expect(headers['apollographql-client-version']).toEqual(
+            clientAwareness.version,
+          );
+        }),
+      );
+    });
+
+    it('should not add empty client awareness settings to request headers', done => {
+      const variables = { params: 'stub' };
+      const link = createHttpLink({
+        uri: 'http://data/',
+      });
+
+      const hasOwn = Object.prototype.hasOwnProperty;
+      const clientAwareness = {};
+      execute(link, {
+        query: sampleQuery,
+        variables,
+        context: {
+          clientAwareness,
+        },
+      }).subscribe(
+        makeCallback(done, result => {
+          const [uri, options] = fetchMock.lastCall();
+          const { headers } = options;
+          expect(hasOwn.call(headers, 'apollographql-client-name')).toBe(false);
+          expect(hasOwn.call(headers, 'apollographql-client-version')).toBe(
+            false,
+          );
         }),
       );
     });
