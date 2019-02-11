@@ -29,6 +29,11 @@
 - Correct code comment. <br/>
   [@mouafa](https://github.com/mouafa) in [#921](https://github.com/apollographql/apollo-link/pull/921)  <br />
 
+### apollo-link-error
+
+- Correct code comment. <br/>
+  [@JoviDeCroock](https://github.com/JoviDeCroock) in [#](https://github.com/apollographql/apollo-link/pull/)  <br />
+
 ## 2019-02-01
 
 ### General
