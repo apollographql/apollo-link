@@ -115,7 +115,7 @@ describe('error handling', () => {
       expect((networkError as ServerError).statusCode).toBe(500);
       expect((networkError as ServerError).response.ok).toBe(false);
       expect(operation.operationName).toBe('Foo');
-      expect(response).toBeDefined()
+      expect(response).toBeDefined();
       called = true;
     });
 
