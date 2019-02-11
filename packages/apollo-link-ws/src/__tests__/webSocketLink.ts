@@ -1,4 +1,5 @@
 import { SubscriptionClient } from 'subscriptions-transport-ws';
+import { SubscriptionClient as SubscriptionClient2 } from 'subscriptions-transport-ws';
 import { Observable, execute } from 'apollo-link';
 import { ExecutionResult } from 'graphql';
 
@@ -29,16 +30,29 @@ const subscription = `
 `;
 
 describe('WebSocketLink', () => {
-  it('constructs', () => {
-    const client: any = {};
-    client.__proto__ = SubscriptionClient.prototype;
-    expect(() => new WebSocketLink(client)).not.toThrow();
+  describe('constructor', () => {
+    it('should constructs by passing a SubscriptionClient', () => {
+      const subscriptionClient = new SubscriptionClient(
+        'ws://localhost/uri',
+        {},
+      );
+      expect(() => new WebSocketLink(subscriptionClient)).not.toThrow();
+    });
+
+    it('should constructs by passing a SubscriptionClient (from other version)', () => {
+      const subscriptionClient = new SubscriptionClient2(
+        'ws://localhost/uri',
+        {},
+      );
+      expect(() => new WebSocketLink(subscriptionClient)).not.toThrow();
+    });
+
+    it('should constructs by passing a WebSocketLink.Configuration', () => {
+      expect(
+        () => new WebSocketLink({ uri: 'ws://localhost/uri', options: {} }),
+      ).not.toThrow();
+    });
   });
-
-  // TODO some sort of dependency injection
-
-  // it('should pass the correct initialization parameters to the Subscription Client', () => {
-  // });
 
   it('should call request on the client for a query', done => {
     const result = { data: { data: 'result' } };
