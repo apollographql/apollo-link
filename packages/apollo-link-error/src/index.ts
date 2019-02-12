@@ -64,7 +64,10 @@ export const onError = (errorHandler: ErrorHandler): ApolloLink => {
               operation,
               networkError,
               //Network errors can return GraphQL errors on for example a 403
-              graphQLErrors: networkError.result && networkError.result.errors,
+              graphQLErrors:
+                networkError &&
+                networkError.result &&
+                networkError.result.errors,
               forward,
             });
             if (retriedResult) {
