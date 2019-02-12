@@ -14,11 +14,21 @@
   [@hobochild](https://github.com/hobochild) in [#935](https://github.com/apollographql/apollo-link/pull/935)  <br />
   [@bkoltai](https://github.com/bkoltai) in [#925](https://github.com/apollographql/apollo-link/pull/925)  <br />
   [@NickTomlin](https://github.com/NickTomlin) in [#923](https://github.com/apollographql/apollo-link/pull/923)  <br />
+  [@thekogmo](https://github.com/thekogmo) in [#913](https://github.com/apollographql/apollo-link/pull/913)  <br />
+  [@thekogmo](https://github.com/thekogmo) in [#912](https://github.com/apollographql/apollo-link/pull/912)  <br />
+  [@ciwchris](https://github.com/ciwchris) in [#652](https://github.com/apollographql/apollo-link/pull/652)  <br />
+  [@jasonmerino](https://github.com/jasonmerino) in [#759](https://github.com/apollographql/apollo-link/pull/759)  <br />
+  [@JoviDeCroock](https://github.com/JoviDeCroock) in [#942](https://github.com/apollographql/apollo-link/pull/942)  <br />
 
 ### apollo-link
 
 - Documentation updates.  <br/>
   [@capaj](https://github.com/capaj) in [#937](https://github.com/apollographql/apollo-link/pull/937)  <br />
+
+### apollo-link-http
+
+- Correct code comment. <br/>
+  [@mouafa](https://github.com/mouafa) in [#921](https://github.com/apollographql/apollo-link/pull/921)  <br />
 
 ## 2019-02-01
 
