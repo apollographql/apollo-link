@@ -25,6 +25,11 @@
 - Documentation updates.  <br/>
   [@capaj](https://github.com/capaj) in [#937](https://github.com/apollographql/apollo-link/pull/937)  <br />
 
+### apollo-link-http
+
+- Correct code comment. <br/>
+  [@mouafa](https://github.com/mouafa) in [#921](https://github.com/apollographql/apollo-link/pull/921)  <br />
+
 ## 2019-02-01
 
 ### General
