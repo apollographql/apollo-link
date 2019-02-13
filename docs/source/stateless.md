@@ -27,7 +27,8 @@ import { ApolloLink } from 'apollo-link';
 
 const authLink = new ApolloLink((operation, forward) => {
   operation.setContext(({ headers }) => ({ headers: {
-    authorization: Meteor.userId() // however you get your token
+    authorization: Meteor.userId(), // however you get your token
+    ...headers
   }}));
   return forward(operation);
 });

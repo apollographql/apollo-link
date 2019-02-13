@@ -3,7 +3,7 @@ title: apollo-link-rest
 description: Call your REST APIs inside your GraphQL queries.
 ---
 
-Calling REST APIs from a GraphQL client opens the benefits GraphQL for more people, whether:
+Calling REST APIs from a GraphQL client opens the benefits of GraphQL for more people, whether:
 
 * You are in a front-end developer team that wants to try GraphQL without asking for the backend team to implement a GraphQL server.
 * You have no access to change the backend because it's an existing set of APIs, potentially managed by a 3rd party.
@@ -165,7 +165,7 @@ const restLink = new RestLink({
       patchDeeper: RestLink.FunctionalTypePatcher,
     ): any => {
       if (data.results != null) {
-        data.results = data.results.map( planet => { __typename: "Planet", ...planet });
+        data.results = data.results.map( planet => ({ __typename: "Planet", ...planet }));
       }
       return data;
     },
