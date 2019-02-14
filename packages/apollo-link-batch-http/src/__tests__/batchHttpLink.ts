@@ -1,21 +1,9 @@
 import { ApolloLink, execute, Observable, makePromise } from 'apollo-link';
-import { print } from 'graphql';
 import fetchMock from 'fetch-mock';
 import gql from 'graphql-tag';
 
 import { sharedHttpTest } from './sharedHttpTests';
 import { BatchHttpLink } from '../batchHttpLink';
-
-const makeCallback = (done, body) => {
-  return (...args) => {
-    try {
-      body(...args);
-      done();
-    } catch (error) {
-      done.fail(error);
-    }
-  };
-};
 
 const sampleQuery = gql`
   query SampleQuery {
