@@ -24,12 +24,12 @@ The Dedup Link can be overridden by using the context on a per operation basis:
 - `forceFetch`: a true or false (defaults to false) to bypass deduplication per request
 
 ```js
-import Link from "apollo-link-http";
+import { createHttpLink } from "apollo-link-http";
 import ApolloClient from "apollo-client";
 import InMemoryCache from "apollo-cache-inmemory";
 
 const client = new ApolloClient({
-  link: new Link({ uri: "/graphql" }),
+  link: createHttpLink({ uri: "/graphql" }),
   cache: new InMemoryCache()
 });
 

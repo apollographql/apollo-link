@@ -35,7 +35,7 @@ export import UriFunction = HttpLink.UriFunction;
 export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
   let {
     uri = '/graphql',
-    // use default global fetch is nothing passed in
+    // use default global fetch if nothing passed in
     fetch: fetcher,
     includeExtensions,
     useGETForQueries,

@@ -4,12 +4,14 @@
     "lib": ["es6", "dom"],
     "module": "es2015",
     "moduleResolution": "node",
-    "removeComments": false,
+    "removeComments": true,
     "sourceMap": true,
     "declaration": true,
+    "declarationMap": true,
     "noImplicitAny": false,
     "noUnusedParameters": false,
     "noUnusedLocals": true,
+    "esModuleInterop": true,
     "skipLibCheck": true
   }
 }
