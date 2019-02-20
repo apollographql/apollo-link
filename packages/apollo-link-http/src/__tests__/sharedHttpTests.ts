@@ -860,5 +860,24 @@ export const sharedHttpTest = (
         }),
       );
     });
+    it('throws an AbortError if aborted while still subscribed', done => {
+      const abortError = new Error('Aborted');
+      abortError.name = 'AbortError';
+
+      fetch.mockImplementation(() => {
+        throw abortError;
+      });
+
+      const link = createLink({ uri: 'data', fetch });
+
+      execute(link, { query: sampleQuery }).subscribe(
+        result => {
+          done.fail('abort error should have been thrown');
+        },
+        makeCallback(done, e => {
+          expect(e.name).toMatch(abortError.name);
+        }),
+      );
+    });
   });
 };
