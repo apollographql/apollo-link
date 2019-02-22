@@ -6,6 +6,8 @@ import {
   Observable,
 } from 'apollo-link';
 
+type Observer<T> = ZenObservable.Observer<T>;
+
 /*
  * Expects context to contain the forceFetch field if no dedup
  */
@@ -14,7 +16,7 @@ export class DedupLink extends ApolloLink {
     string,
     Observable<FetchResult>
   > = new Map();
-  private subscribers: Map<string, any> = new Map();
+  private subscribers: Map<string, Array<Observer<FetchResult>>> = new Map();
 
   public request(
     operation: Operation,
@@ -29,8 +31,9 @@ export class DedupLink extends ApolloLink {
 
     const cleanup = operationKey => {
       this.inFlightRequestObservables.delete(operationKey);
-      const prev = this.subscribers.get(operationKey);
-      return prev;
+      const prevs = this.subscribers.get(operationKey);
+      this.subscribers.delete(operationKey);
+      return prevs;
     };
 
     if (!this.inFlightRequestObservables.get(key)) {
@@ -42,36 +45,38 @@ export class DedupLink extends ApolloLink {
       const sharedObserver = new Observable(observer => {
         // this will still be called by each subscriber regardless of
         // deduplication status
-        let prev = this.subscribers.get(key);
-        if (!prev) prev = { next: [], error: [], complete: [] };
-
-        this.subscribers.set(key, {
-          next: prev.next.concat([observer.next.bind(observer)]),
-          error: prev.error.concat([observer.error.bind(observer)]),
-          complete: prev.complete.concat([observer.complete.bind(observer)]),
-        });
+        const prevs = this.subscribers.get(key) || [];
+        this.subscribers.set(key, prevs.concat(observer));
 
         if (!subscription) {
           subscription = singleObserver.subscribe({
             next: result => {
               const previous = cleanup(key);
-              this.subscribers.delete(key);
               if (previous) {
-                previous.next.forEach(next => next(result));
-                previous.complete.forEach(complete => complete());
+                previous.forEach(prev => {
+                  prev.next(result);
+                  prev.complete();
+                });
               }
             },
             error: error => {
               const previous = cleanup(key);
-              this.subscribers.delete(key);
-              if (previous) previous.error.forEach(err => err(error));
+              if (previous) {
+                previous.forEach(prev => prev.error(error));
+              }
             },
           });
         }
 
         return () => {
-          if (subscription) subscription.unsubscribe();
-          this.inFlightRequestObservables.delete(key);
+          let observers = this.subscribers.get(key);
+          observers = observers.filter(ob => ob !== observer);
+          if (observers.length === 0) {
+            cleanup(key);
+            subscription.unsubscribe();
+          } else {
+            this.subscribers.set(key, observers);
+          }
         };
       });
 
