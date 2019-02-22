@@ -10,6 +10,61 @@ import { DocumentNode } from 'graphql';
 
 import { DedupLink } from '../dedupLink';
 
+function identicalQuerySpec({
+  sameHeaders,
+  useContext,
+  expectedCalls,
+}: {
+  sameHeaders: boolean;
+  useContext: boolean;
+  expectedCalls: number;
+}) {
+  const document: DocumentNode = gql`
+    query test1($x: String) {
+      test(x: $x)
+    }
+  `;
+  const variables1 = { x: 'Hello World' };
+  const variables2 = { x: 'Hello World' };
+
+  const request1: GraphQLRequest = {
+    query: document,
+    variables: variables1,
+    context: {
+      headers: {
+        testing: 'one',
+      },
+    },
+    operationName: getOperationName(document),
+  };
+
+  const request2: GraphQLRequest = {
+    query: document,
+    variables: variables2,
+    context: {
+      headers: {
+        testing: sameHeaders ? 'one' : 'two',
+      },
+    },
+    operationName: getOperationName(document),
+  };
+
+  let called = 0;
+  const deduper = ApolloLink.from([
+    new DedupLink({ useContext }),
+    new ApolloLink(() => {
+      return new Observable(observer => {
+        called += 1;
+        setTimeout(observer.complete.bind(observer));
+      });
+    }),
+  ]);
+
+  execute(deduper, request1).subscribe({});
+  execute(deduper, request2).subscribe({});
+  expect(called).toBe(expectedCalls);
+}
+
 describe('DedupLink', () => {
   it(`does not affect different queries`, () => {
     const document: DocumentNode = gql`
@@ -141,6 +196,20 @@ describe('DedupLink', () => {
     execute(deduper, request1).subscribe({});
     execute(deduper, request2).subscribe({});
     expect(called).toBe(1);
+  });
+  it(`does not deduplicate identical queries for different contexts if useContext=true`, () => {
+    identicalQuerySpec({
+      sameHeaders: false,
+      useContext: true,
+      expectedCalls: 2,
+    });
+  });
+  it(`deduplicates identical queries for different contexts if useContext=false`, () => {
+    identicalQuerySpec({
+      sameHeaders: false,
+      useContext: false,
+      expectedCalls: 1,
+    });
   });
   it(`works for nested queries`, done => {
     const document: DocumentNode = gql`
