@@ -15,6 +15,7 @@ export class DedupLink extends ApolloLink {
     Observable<FetchResult>
   > = new Map();
   private subscribers: Map<string, any> = new Map();
+  private useContextForDedup: boolean;
 
   constructor({ useContext = false }: { useContext?: boolean } = {}) {
     super();
