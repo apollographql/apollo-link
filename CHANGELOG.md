@@ -26,6 +26,12 @@
 - Documentation updates.  <br/>
   [@capaj](https://github.com/capaj) in [#937](https://github.com/apollographql/apollo-link/pull/937)  <br />
 
+### apollo-link-dedup
+
+- Add `useContext` option for `apollo-link-dedup`. Uses context config as part
+  of uniqueness key when deduping requests.  <br/>
+  [@druotic](https://github.com/druotic) in [#957](https://github.com/apollographql/apollo-link/pull/957) <br />
+
 ### apollo-link-error
 
 - Add undefined check. <br/>
