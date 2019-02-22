@@ -268,3 +268,45 @@ describe('DedupLink', () => {
     expect(unsubscribed).toBe(true);
   });
 });
+
+it(`should be wait all observers unsubscribe`, () => {
+  const document: DocumentNode = gql`
+    query test1($x: String) {
+      test(x: $x)
+    }
+  `;
+  const variables1 = { x: 'Hello World' };
+  const variables2 = { x: 'Hello World' };
+
+  const request1: GraphQLRequest = {
+    query: document,
+    variables: variables1,
+    operationName: getOperationName(document),
+  };
+
+  const request2: GraphQLRequest = {
+    query: document,
+    variables: variables2,
+    operationName: getOperationName(document),
+  };
+
+  let unsubscribed = false;
+  const deduper = ApolloLink.from([
+    new DedupLink(),
+    new ApolloLink(() => {
+      return new Observable(() => {
+        return () => {
+          unsubscribed = true;
+        };
+      });
+    }),
+  ]);
+
+  const sub1 = execute(deduper, request1).subscribe({});
+  const sub2 = execute(deduper, request2).subscribe({});
+
+  sub1.unsubscribe();
+  expect(unsubscribed).toBe(false);
+  sub2.unsubscribe();
+  expect(unsubscribed).toBe(true);
+});
