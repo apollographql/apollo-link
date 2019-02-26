@@ -23,7 +23,7 @@ import { SchemaLink } from 'apollo-link-schema';
 import schema from './path/to/your/schema';
 
 const graphqlClient = new ApolloClient({
-  ssr: true,
+  ssrMode: true,
   cache: new InMemoryCache(),
   link: new SchemaLink({ schema })
 });

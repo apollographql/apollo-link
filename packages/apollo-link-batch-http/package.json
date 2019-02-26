@@ -22,15 +22,11 @@
   },
   "homepage": "https://github.com/apollographql/apollo-link#readme",
   "scripts": {
-    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-link && npm run minify:browser",
-    "build": "tsc -p ./tsconfig.cjs.json",
-    "bundle": "rollup -c",
+    "build": "tsc && rollup -c",
     "coverage": "jest --coverage",
     "clean": "rimraf lib/* && rimraf coverage/*",
-    "filesize": "npm run build && npm run build:browser",
+    "filesize": "npm run build",
     "lint": "tslint -c \"../../tslint.json\" -p tsconfig.json -c ../../tslint.json src/*.ts",
-    "minify:browser": "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
-    "postbuild": "npm run bundle",
     "prebuild": "npm run clean",
     "prepare": "npm run lint && npm run build",
     "prepublishOnly": "npm run clean && npm run build",
@@ -40,7 +36,8 @@
   "dependencies": {
     "apollo-link": "^1.2.8",
     "apollo-link-batch": "^1.1.9",
-    "apollo-link-http-common": "^0.2.10"
+    "apollo-link-http-common": "^0.2.10",
+    "tslib": "^1.9.3"
   },
   "peerDependencies": {
     "graphql": "^0.11.0 || ^0.12.3 || ^0.13.0 || ^14.0.0"
@@ -48,7 +45,6 @@
   "devDependencies": {
     "@types/graphql": "14.0.7",
     "@types/jest": "22.2.3",
-    "browserify": "16.2.3",
     "fetch-mock": "6.5.2",
     "graphql": "14.1.1",
     "graphql-tag": "2.10.1",
@@ -58,9 +54,8 @@
     "rimraf": "2.6.3",
     "rollup": "0.68.2",
     "ts-jest": "22.4.6",
-    "tslint": "5.12.1",
-    "typescript": "3.0.3",
-    "uglify-js": "3.4.9"
+    "tslint": "5.13.0",
+    "typescript": "3.0.3"
   },
   "jest": {
     "transform": {
