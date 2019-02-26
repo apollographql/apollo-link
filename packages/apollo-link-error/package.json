@@ -33,7 +33,8 @@
   },
   "dependencies": {
     "apollo-link": "^1.2.8",
-    "apollo-link-http-common": "^0.2.10"
+    "apollo-link-http-common": "^0.2.10",
+    "tslib": "^1.9.3"
   },
   "devDependencies": {
     "@types/graphql": "14.0.7",

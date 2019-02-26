@@ -40,7 +40,8 @@
   },
   "dependencies": {
     "@types/zen-observable": "0.8.0",
-    "apollo-link": "^1.2.8"
+    "apollo-link": "^1.2.8",
+    "tslib": "^1.9.3"
   },
   "devDependencies": {
     "@types/graphql": "14.0.7",

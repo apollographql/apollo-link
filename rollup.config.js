@@ -14,6 +14,9 @@ export const globals = {
   //GraphQL
   'graphql/language/printer': 'printer',
 
+  // TypeScript
+  'tslib': 'tslib',
+
   'zen-observable': 'Observable',
 };
 
@@ -31,10 +34,7 @@ export default name => [
     external: Object.keys(globals),
     onwarn,
     plugins: [
-      node({
-        module: true,
-        only: ['tslib']
-      }),
+      node({ module: true }),
       typescriptPlugin({ typescript, tsconfig: './tsconfig.json' }),
       sourcemaps()
     ],
@@ -49,10 +49,7 @@ export default name => [
     external: Object.keys(globals),
     onwarn,
     plugins: [
-      node({
-        module: true,
-        only: ['tslib']
-      }),
+      node({ module: true }),
       typescriptPlugin({ typescript, tsconfig: './tsconfig.json' }),
       sourcemaps()
     ],
