@@ -10,6 +10,7 @@ export const globals = {
   'apollo-link-batch': 'apolloLink.batch',
   'apollo-link-http-common': 'apolloLink.httpCommon',
   'zen-observable-ts': 'apolloLink.zenObservable',
+  'subscriptions-transport-ws': 'subscriptions-transport-ws',
 
   //GraphQL
   'graphql/language/printer': 'printer',
