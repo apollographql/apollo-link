@@ -54,7 +54,7 @@ export class BatchHttpLink extends ApolloLink {
 
     let {
       uri = '/graphql',
-      // use default global fetch is nothing passed in
+      // use default global fetch if nothing is passed in
       fetch: fetcher,
       includeExtensions,
       batchInterval,
@@ -88,11 +88,22 @@ export class BatchHttpLink extends ApolloLink {
 
       const context = operations[0].getContext();
 
+      const clientAwarenessHeaders = {};
+      if (context.clientAwareness) {
+        const { name, version } = context.clientAwareness;
+        if (name) {
+          clientAwarenessHeaders['apollographql-client-name'] = name;
+        }
+        if (version) {
+          clientAwarenessHeaders['apollographql-client-version'] = version;
+        }
+      }
+
       const contextConfig = {
         http: context.http,
         options: context.fetchOptions,
         credentials: context.credentials,
-        headers: context.headers,
+        headers: { ...clientAwarenessHeaders, ...context.headers },
       };
 
       //uses fallback, link, and then context to build options
@@ -129,8 +140,12 @@ export class BatchHttpLink extends ApolloLink {
       }
 
       return new Observable<FetchResult[]>(observer => {
-        // the raw response is attached to the context in the BatchingLink
         fetcher(chosenURI, options)
+          .then(response => {
+            // Make the raw response available in the context.
+            operations.forEach(operation => operation.setContext({ response }));
+            return response;
+          })
           .then(parseAndCheckHttpResponse(operations))
           .then(result => {
             // we have data and can send it to back up the link chain

@@ -8,10 +8,11 @@ import {
   FetchResult,
 } from 'apollo-link';
 import { GraphQLError, ExecutionResult } from 'graphql';
+import { ServerError, ServerParseError } from 'apollo-link-http-common';
 
 export interface ErrorResponse {
   graphQLErrors?: ReadonlyArray<GraphQLError>;
-  networkError?: Error;
+  networkError?: Error | ServerError | ServerParseError;
   response?: ExecutionResult;
   operation: Operation;
   forward: NextLink;
@@ -63,7 +64,10 @@ export const onError = (errorHandler: ErrorHandler): ApolloLink => {
               operation,
               networkError,
               //Network errors can return GraphQL errors on for example a 403
-              graphQLErrors: networkError.result && networkError.result.errors,
+              graphQLErrors:
+                networkError &&
+                networkError.result &&
+                networkError.result.errors,
               forward,
             });
             if (retriedResult) {

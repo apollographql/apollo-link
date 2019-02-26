@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-ws",
-  "version": "1.0.9",
+  "version": "1.0.14",
   "description": "WebSocket transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -10,9 +10,8 @@
     "Sashko Stubailo <sashko@stubailo.com>"
   ],
   "license": "MIT",
-  "main": "./lib/bundle.umd.js",
-  "module": "./lib/index.js",
-  "jsnext:main": "./lib/index.js",
+  "main": "./lib/index.js",
+  "module": "./lib/bundle.esm.js",
   "typings": "./lib/index.d.ts",
   "repository": {
     "type": "git",
@@ -23,40 +22,36 @@
   },
   "homepage": "https://github.com/apollographql/apollo-link#readme",
   "scripts": {
-    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i apollo-link && npm run minify:browser",
-    "build": "tsc -p .",
-    "bundle": "rollup -c",
+    "build": "tsc && rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
     "coverage": "jest --coverage",
-    "filesize": "npm run build && npm run build:browser",
-    "lint": "tslint --type-check -p tsconfig.json -c ../../tslint.json src/*.ts",
-    "minify:browser": "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
-    "postbuild": "npm run bundle",
+    "filesize": "npm run build",
+    "lint": "tslint -c \"../../tslint.json\" -p tsconfig.json -c ../../tslint.json src/*.ts",
     "prebuild": "npm run clean",
+    "prepare": "npm run lint && npm run build",
     "prepublishOnly": "npm run clean && npm run build",
     "test": "jest",
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-link": "^1.2.3"
+    "apollo-link": "^1.2.8",
+    "tslib": "^1.9.3"
   },
   "peerDependencies": {
     "subscriptions-transport-ws": "^0.9.0"
   },
   "devDependencies": {
-    "@types/graphql": "14.0.3",
+    "@types/graphql": "14.0.7",
     "@types/jest": "22.2.3",
-    "browserify": "16.2.3",
-    "graphql": "14.0.2",
-    "graphql-tag": "2.10.0",
+    "graphql": "14.1.1",
+    "graphql-tag": "2.10.1",
     "jest": "22.4.4",
-    "rimraf": "2.6.1",
-    "rollup": "0.66.6",
+    "rimraf": "2.6.3",
+    "rollup": "0.68.2",
     "subscriptions-transport-ws": "0.9.15",
     "ts-jest": "22.4.6",
-    "tslint": "5.11.0",
-    "typescript": "3.0.3",
-    "uglify-js": "3.4.9"
+    "tslint": "5.13.0",
+    "typescript": "3.0.3"
   },
   "jest": {
     "transform": {
@@ -69,7 +64,6 @@
       "js",
       "json"
     ],
-    "mapCoverage": true,
     "testURL": "http://localhost"
   }
 }

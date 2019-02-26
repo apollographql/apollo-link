@@ -2,14 +2,17 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["es6", "dom"],
-    "module": "es2015",
+    "module": "commonjs",
     "moduleResolution": "node",
-    "removeComments": false,
+    "importHelpers": true,
+    "removeComments": true,
     "sourceMap": true,
     "declaration": true,
+    "declarationMap": true,
     "noImplicitAny": false,
     "noUnusedParameters": false,
     "noUnusedLocals": true,
+    "esModuleInterop": true,
     "skipLibCheck": true
   }
 }

@@ -31,18 +31,17 @@ Apollo Link is easy to use with a variety of GraphQL libraries. It's designed to
 Apollo Client works seamlessly with Apollo Link. A Link is one of the required items when creating an [Apollo Client instance](/docs/react/api/apollo-client.html). For simple HTTP requests, we recommend using [`apollo-link-http`](./links/http.html):
 
 ```js
-import { ApolloLink } from 'apollo-link';
 import { ApolloClient } from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
-import { HttpLink } from 'apollo-link-http';
+import { createHttpLink } from 'apollo-link-http';
 
 const client = new ApolloClient({
-  link: new HttpLink({ uri: 'http://api.githunt.com/graphql' }),
+  link: createHttpLink({ uri: 'http://api.githunt.com/graphql' }),
   cache: new InMemoryCache()
 });
 ```
 
-The `HttpLink` is a replacement for `createNetworkInterface` from Apollo Client 1.0. For more information on how to upgrade from 1.0 to 2.0, including examples for using middleware and setting headers, please check out our [upgrade guide](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-http#upgrading-from-apollo-fetch--apollo-client).
+The `createHttpLink` is a replacement for `createNetworkInterface` from Apollo Client 1.0. For more information on how to upgrade from 1.0 to 2.0, including examples for using middleware and setting headers, please check out our [upgrade guide](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-http#upgrading-from-apollo-fetch--apollo-client).
 
 <h3 id="graphql-tools">graphql-tools</h3>
 
@@ -177,6 +176,9 @@ Get the results for a GraphQL query over HTTP.
 
 [`apollo-link-state`](https://github.com/apollographql/apollo-link-state)
 Allows you to manage your application's non-data state and interact with it via GraphQL.
+
+[`apollo-link-rest`](https://github.com/apollographql/apollo-link-rest)
+Allows you to use existing REST endpoints with GraphQL.
 
 [`apollo-link-error`](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-error)
 Handle and inspect errors within your GraphQL stack.

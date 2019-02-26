@@ -38,3 +38,8 @@ Your feedback and contributions are always welcome.
 4. Built for interactive apps
 4. Small and flexible
 5. Community driven
+
+## Maintainers
+
+- [@hwillson](https://github.com/hwillson) (Apollo)
+- [@benjamn](https://github.com/benjamn) (Apollo)

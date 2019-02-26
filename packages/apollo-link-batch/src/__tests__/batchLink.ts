@@ -326,7 +326,6 @@ describe('OperationBatcher', () => {
     setTimeout(
       terminatingCheck(done, () => {
         expect(batcher.queuedRequests.get('')).toBeUndefined();
-        expect(operation.getContext()).toEqual({ response: { data } });
       }),
       20,
     );
@@ -382,9 +381,6 @@ describe('OperationBatcher', () => {
     setTimeout(
       terminatingCheck(done, () => {
         // The batch should've been fired by now.
-        expect(operation.getContext()).toEqual({ response: { data } });
-        expect(operation2.getContext()).toEqual({ response: { data: data2 } });
-        expect(operation3.getContext()).toEqual({ response: { data } });
         expect(batcher.queuedRequests.get('')).toBeUndefined();
       }),
       20,
