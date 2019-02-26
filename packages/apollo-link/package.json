@@ -22,14 +22,12 @@
   },
   "homepage": "https://github.com/apollographql/apollo-link#readme",
   "scripts": {
-    "build:browser": "browserify ./lib/bundle.umd.js -o=./lib/bundle.js --i graphql --i zen-observable-ts && npm run minify:browser",
     "build": "tsc -p ./tsconfig.cjs.json",
     "bundle": "rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
     "coverage": "jest --coverage",
-    "filesize": "npm run build && npm run build:browser",
+    "filesize": "npm run build",
     "lint": "tslint -c \"../../tslint.json\" -p tsconfig.json -c ../../tslint.json src/*.ts",
-    "minify:browser": "uglifyjs -c -m -o ./lib/bundle.min.js -- ./lib/bundle.js",
     "postbuild": "npm run bundle",
     "prebuild": "npm run clean",
     "prepare": "npm run lint && npm run build",
@@ -48,7 +46,6 @@
     "@types/graphql": "14.0.7",
     "@types/jest": "22.2.3",
     "@types/node": "9.6.42",
-    "browserify": "16.2.3",
     "graphql": "14.1.1",
     "graphql-tag": "2.10.1",
     "jest": "22.4.4",
@@ -56,8 +53,7 @@
     "rollup": "0.68.2",
     "ts-jest": "22.4.6",
     "tslint": "5.13.0",
-    "typescript": "3.0.3",
-    "uglify-js": "3.4.9"
+    "typescript": "3.0.3"
   },
   "jest": {
     "transform": {
