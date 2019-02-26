@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["es6", "dom"],
-    "module": "es2015",
+    "module": "commonjs",
     "moduleResolution": "node",
     "importHelpers": true,
     "removeComments": true,

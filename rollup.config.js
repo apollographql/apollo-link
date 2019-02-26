@@ -37,7 +37,15 @@ export default name => [
     onwarn,
     plugins: [
       node({ module: true }),
-      typescriptPlugin({ typescript, tsconfig: './tsconfig.json' }),
+      typescriptPlugin({
+        typescript,
+        tsconfig: './tsconfig.json',
+        tsconfigOverride: {
+          compilerOptions: {
+            module: "es2015",
+          },
+        },
+      }),
       sourcemaps()
     ],
   },
@@ -53,7 +61,15 @@ export default name => [
     onwarn,
     plugins: [
       node({ module: true }),
-      typescriptPlugin({ typescript, tsconfig: './tsconfig.json' }),
+      typescriptPlugin({
+        typescript,
+        tsconfig: './tsconfig.json',
+        tsconfigOverride: {
+          compilerOptions: {
+            module: "es2015",
+          },
+        },
+      }),
       sourcemaps()
     ],
   },
