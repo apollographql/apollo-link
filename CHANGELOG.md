@@ -19,7 +19,7 @@
   [@ciwchris](https://github.com/ciwchris) in [#652](https://github.com/apollographql/apollo-link/pull/652)  <br />
   [@jasonmerino](https://github.com/jasonmerino) in [#759](https://github.com/apollographql/apollo-link/pull/759)  <br />
   [@JoviDeCroock](https://github.com/JoviDeCroock) in [#942](https://github.com/apollographql/apollo-link/pull/942)  <br />
-  [@goofiw](https://github.com/goofiw) in [#899](https://github.com/apollographql/apollo-link/pull/899) 
+  [@goofiw](https://github.com/goofiw) in [#899](https://github.com/apollographql/apollo-link/pull/899)
 
 ### apollo-link
 
@@ -30,6 +30,11 @@
 
 - Add undefined check. <br/>
   [@JoviDeCroock](https://github.com/JoviDeCroock) in [#943](https://github.com/apollographql/apollo-link/pull/943)  <br />
+
+### apollo-link-batch-http
+
+- Include client-awareness headers. <br/>
+  [@jovidecroock](https://github.com/jovidecroock) in [#950](https://github.com/apollographql/apollo-link/pull/950)  <br />
 
 ### apollo-link-http
 
