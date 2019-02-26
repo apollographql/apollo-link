@@ -1,6 +1,5 @@
 import { ApolloLink, execute, Observable, makePromise } from 'apollo-link';
-import { print } from 'graphql';
-import * as fetchMock from 'fetch-mock';
+import fetchMock from 'fetch-mock';
 import gql from 'graphql-tag';
 
 import { sharedHttpTest } from './sharedHttpTests';
@@ -42,12 +41,20 @@ describe('BatchHttpLink', () => {
     jest.resetModules();
   });
 
+  const headers = { cookie: 'monster' };
   const data = { data: { hello: 'world' } };
   const data2 = { data: { hello: 'everyone' } };
   const roflData = { data: { haha: 'hehe' } };
   const lawlData = { data: { tehe: 'haaa' } };
   const makePromise = res =>
-    new Promise((resolve, reject) => setTimeout(() => resolve(res)));
+    new Promise((resolve, reject) =>
+      setTimeout(() =>
+        resolve({
+          headers,
+          body: res,
+        }),
+      ),
+    );
 
   let subscriber;
 
@@ -102,6 +109,11 @@ describe('BatchHttpLink', () => {
   });
 
   it('handles batched requests', done => {
+    const clientAwareness = {
+      name: 'Some Client Name',
+      version: '1.0.1',
+    };
+
     const link = new BatchHttpLink({
       uri: 'batch',
       batchInterval: 0,
@@ -128,6 +140,16 @@ describe('BatchHttpLink', () => {
         const options = fetchMock.lastOptions('begin:batch');
         expect(options.credentials).toEqual('two');
 
+        const { headers } = options;
+        expect(headers['apollographql-client-name']).toBeDefined();
+        expect(headers['apollographql-client-name']).toEqual(
+          clientAwareness.name,
+        );
+        expect(headers['apollographql-client-version']).toBeDefined();
+        expect(headers['apollographql-client-version']).toEqual(
+          clientAwareness.version,
+        );
+
         completions++;
 
         if (completions === 2) {
@@ -144,7 +166,10 @@ describe('BatchHttpLink', () => {
 
     execute(link, {
       query: sampleQuery,
-      context: { credentials: 'two' },
+      context: {
+        credentials: 'two',
+        clientAwareness,
+      },
     }).subscribe(next(data), error, complete);
 
     execute(link, {

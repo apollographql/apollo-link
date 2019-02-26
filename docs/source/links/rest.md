@@ -3,7 +3,7 @@ title: apollo-link-rest
 description: Call your REST APIs inside your GraphQL queries.
 ---
 
-Calling REST APIs from a GraphQL client opens the benefits GraphQL for more people, whether:
+Calling REST APIs from a GraphQL client opens the benefits of GraphQL for more people, whether:
 
 * You are in a front-end developer team that wants to try GraphQL without asking for the backend team to implement a GraphQL server.
 * You have no access to change the backend because it's an existing set of APIs, potentially managed by a 3rd party.
@@ -28,10 +28,10 @@ For an apollo client to work, you need a link and a cache, [more info here](/doc
 npm install --save apollo-cache-inmemory
 ```
 
-Then it is time to install our link:
+Then it is time to install our link and its `peerDependencies`:
 
 ```bash
-npm install apollo-link-rest --save
+npm install --save apollo-link-rest apollo-link graphql graphql-anywhere
 ```
 
 After this, you are ready to setup your apollo client:
@@ -42,7 +42,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { RestLink } from 'apollo-link-rest';
 
 // setup your `RestLink` with your endpoint
-const link = new RestLink({ uri: "https://swapi.co/api/" });
+const restLink = new RestLink({ uri: "https://swapi.co/api/" });
 
 // setup your client
 const client = new ApolloClient({
@@ -54,7 +54,7 @@ const client = new ApolloClient({
 Now it is time to write our first query, for this you need to install the `graphql-tag` package:
 
 ```bash
-npm install graphql-tag --save
+npm install --save graphql-tag
 ```
 
 Defining a query is straightforward:
@@ -92,7 +92,7 @@ Construction of `RestLink` takes an options object to customize the behavior of 
 * `typePatcher: /map-of-functions/`: _optional_ Structure to allow you to specify the `__typename` when you have nested objects in your REST response!
 * `defaultSerializer /function/`: _optional_ function that will be used by the `RestLink` as the default serializer when no `bodySerializer` is defined for a `@rest` call. The function will also be passed the current `Header` set, which can be updated before the request is sent to `fetch`. Default method uses `JSON.stringify` and sets the `Content-Type` to `application/json`.
 * `bodySerializers: /map-of-functions/`: _optional_ Structure to allow the definition of alternative serializers, which can then be specified by their key.
-
+* `responseTransformer?: /function/`: _optional_ Apollo expects a record response to return a root object, and a collection of records response to return an array of objects. Use this function to structure the response into the format Apollo expects if your response data is structured differently.
 
 
 <h3 id="options.endpoints">Multiple endpoints</h3>
@@ -165,7 +165,7 @@ const restLink = new RestLink({
       patchDeeper: RestLink.FunctionalTypePatcher,
     ): any => {
       if (data.results != null) {
-        data.results = data.results.map( planet => { __typename: "Planet", ...planet });
+        data.results = data.results.map( planet => ({ __typename: "Planet", ...planet }));
       }
       return data;
     },
@@ -252,6 +252,93 @@ To make this work you should try to pick one strategy, and stick with it -- eith
 
 This is tracked in [Issue #112](https://github.com/apollographql/apollo-link-rest/issues/112)
 
+<h3 id="options.responseTransformer">Response transforming</h3>
+
+By default, Apollo expects an object at the root for record requests, and an array of objects at the root for collection requests. For example, if fetching a user by ID (`/users/1`), the following response is expected.
+
+```json
+{
+  "id": 1,
+  "name": "Apollo"
+}
+```
+
+And when fetching for a list of users (`/users`), the following response is expected.
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Apollo"
+  },
+  {
+    "id": 2,
+    "name": "Starman"
+  }
+]
+```
+
+If the structure of your API responses differs than what Apollo expects, you can define a `responseTransformer` in the client. This function receives the response object as the 1st argument, and the current `typeName` as the 2nd argument. It should return a `Promise` as it will be responsible for reading the response stream by calling one of `json()`, `text()` etc.
+
+For instance if the record is not at the root level:
+
+```json
+{
+  "meta": {},
+  "data": [
+    {
+      "id": 1,
+      "name": "Apollo"
+    },
+    {
+      "id": 2,
+      "name": "Starman"
+    }
+  ]
+}
+```
+
+The following transformer could be used to support it:
+
+
+```js
+const link = new RestLink({
+  uri: '/api',
+  responseTransformer: async response => response.json().then(({data}) => data),
+});
+```
+
+Plaintext, or XML, or otherwise-encoded responses can be handled by manually parsing and converting them to JSON (using the previously described format that Apollo expects):
+
+```js
+const link = new RestLink({
+  uri: '/xmlApi',
+  responseTransformer: async response => response.text().then(text => parseXmlResponseToJson(text)),
+});
+
+```
+
+<h3 id="options.responseTransformer.endpoints">Custom endpoint responses</h3>
+
+The client level `responseTransformer` applies for all responses, across all URIs and endpoints. If you need a custom `responseTransformer` per endpoint, you can define an object of options for that specific endpoint.
+
+```js
+const link = new RestLink({
+  endpoints: {
+    v1: {
+      uri: '/v1',
+      responseTransformer: async response => response.data,
+    },
+    v2: {
+      uri: '/v2',
+      responseTransformer: async (response, typeName) => response[typeName],
+    },
+  },
+});
+```
+
+> When using the object form, the `uri` field is required.
+
 <h3 id=options.example>Complete options</h3>
 
 Here is one way you might customize `RestLink`:
@@ -259,7 +346,7 @@ Here is one way you might customize `RestLink`:
 ```js
   import fetch from 'node-fetch';
   import * as camelCase from 'camelcase';
-  import * as snake_case from 'snack-case';
+  import * as snake_case from 'snake-case';
 
   const link = new RestLink({
     endpoints: { github: 'github.com' },
@@ -269,7 +356,7 @@ Here is one way you might customize `RestLink`:
       "Content-Type": "application/json"
     },
     credentials: "same-origin",
-    fieldNameNormalizer: (key: string) => camelCase(name),
+    fieldNameNormalizer: (key: string) => camelCase(key),
     fieldNameDenormalizer: (key: string) => snake_case(key),
     typePatcher: {
       Post: ()=> {
@@ -299,7 +386,7 @@ Here is one way you might customize `RestLink`:
 
 <h3 id="context.headers">Example</h3>
 
-`RestLink` uses the `headers` field on the [`apollo-link-context`](./context.html) so you can compose other links that provide additional & dynamic headers to a given query. 
+`RestLink` uses the `headers` field on the [`apollo-link-context`](./context.html) so you can compose other links that provide additional & dynamic headers to a given query.
 
 Here is one way to add request `headers` to the context and retrieve the response headers of the operation:
 
@@ -319,7 +406,7 @@ const authRestLink = new ApolloLink((operation, forward) => {
     const { restResponses } = operation.getContext();
     const authTokenResponse = restResponses.find(res => res.headers.has("Authorization"));
     // You might also filter on res.url to find the response of a specific API call
-    return authTokenResponse 
+    return authTokenResponse
       ? localStorage.setItem("token", authTokenResponse.headers.get('Authorization')).then(() => result)
       : result;
   });
@@ -363,13 +450,13 @@ The rest directive could be used at any depth in a query, but once it is used, n
 An `@rest(…)` directive takes two required and several optional arguments:
 
 * `type: string`: The GraphQL type this will return
-* `path: string`: uri-path to the REST API. This could be a path or a full url. If a path, the endpoint given on link creation or from the context is concatenated with it to produce a full `URI`. See also: `pathBuilder
+* `path: string`: uri-path to the REST API. This could be a path or a full url. If a path, the endpoint given on link creation or from the context is concatenated with it to produce a full `URI`. See also: `pathBuilder`
 * _optional_ `method?: "GET" | "PUT" | "POST" | "DELETE"`: the HTTP method to send the request via (i.e GET, PUT, POST)
 * _optional_ `endpoint?: string` key to use when looking up the endpoint in the (optional) `endpoints` table if provided to RestLink at creation time.
 * _optional_ `pathBuilder?: /function/`: If provided, this function gets to control what path is produced for this request.
 * _optional_ `bodyKey?: string = "input"`: This is the name of the `variable` to use when looking to build a REST request-body for a `PUT` or `POST` request. It defaults to `input` if not supplied.
 * _optional_ `bodyBuilder?: /function/`: If provided, this is the name a `function` that you provided to `variables`, that is called when a request-body needs to be built. This lets you combine arguments or encode the body in some format other than JSON.
-* _optional_ `bodySerializer?: /string | function/`: string key to look up a function in `bodySerializers` or a custom serialization function for the body/headers of this request before it is passed ot the fetch call. Defaults to `JSON.stringify` and setting `Content-Type: application-json`.
+* _optional_ `bodySerializer?: /string | function/`: string key to look up a function in `bodySerializers` or a custom serialization function for the body/headers of this request before it is passed to the fetch call. Defaults to `JSON.stringify` and setting `Content-Type: application-json`.
 
 <h3 id="rest.arguments.variables">Variables</h3>
 
@@ -384,9 +471,9 @@ query postTitle {
 }
 ```
 
-*Warning*: Variables in the main path will not automatically have `encodeURIComponent` called on them 
+*Warning*: Variables in the main path will not automatically have `encodeURIComponent` called on them
 
-Additionally, you can also control the query-string: 
+Additionally, you can also control the query-string:
 
 ```graphql
 query postTitle {
@@ -400,7 +487,7 @@ query postTitle {
 
 Things to note:
 
-1. This will be converted into `/search?query=some%20key%20words&page_size=5&lang=en` 
+1. This will be converted into `/search?query=some%20key%20words&page_size=5&lang=en`
 2. The `context.language / lang=en` is extracting an object from the Apollo Context, that was added via an `apollo-link-context` Link.
 3. The query string arguments are assembled by npm:qs and have `encodeURIComponent` called on them.
 

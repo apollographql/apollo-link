@@ -1,7 +1,0 @@
-dist/tests/
-src/
-tests/
-.travis.yml
-tsconfig.json
-tslint.json
-typings.d.ts
