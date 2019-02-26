@@ -88,11 +88,22 @@ export class BatchHttpLink extends ApolloLink {
 
       const context = operations[0].getContext();
 
+      const clientAwarenessHeaders = {};
+      if (context.clientAwareness) {
+        const { name, version } = context.clientAwareness;
+        if (name) {
+          clientAwarenessHeaders['apollographql-client-name'] = name;
+        }
+        if (version) {
+          clientAwarenessHeaders['apollographql-client-version'] = version;
+        }
+      }
+
       const contextConfig = {
         http: context.http,
         options: context.fetchOptions,
         credentials: context.credentials,
-        headers: context.headers,
+        headers: { ...clientAwarenessHeaders, ...context.headers },
       };
 
       //uses fallback, link, and then context to build options
