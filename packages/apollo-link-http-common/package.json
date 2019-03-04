@@ -12,7 +12,7 @@
     "filesize": "npm run build",
     "lint": "tslint -c \"../../tslint.json\" -p tsconfig.json -c ../../tslint.json src/*.ts",
     "prebuild": "npm run clean",
-    "prepublishOnly": "npm run clean && npm run build",
+    "prepare": "npm run build",
     "test": "npm run lint && jest",
     "watch": "tsc -w -p . & rollup -c -w"
   },
