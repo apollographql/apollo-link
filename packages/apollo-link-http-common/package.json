@@ -25,7 +25,7 @@
   "author": "Evans Hauser",
   "license": "MIT",
   "dependencies": {
-    "apollo-link": "^1.2.8",
+    "apollo-link": "file:../apollo-link",
     "tslib": "^1.9.3"
   },
   "peerDependencies": {

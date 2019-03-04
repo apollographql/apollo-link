@@ -35,8 +35,8 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-link": "^1.2.8",
-    "apollo-link-http-common": "^0.2.10",
+    "apollo-link": "file:../apollo-link",
+    "apollo-link-http-common": "file:../apollo-link-http-common",
     "tslib": "^1.9.3"
   },
   "peerDependencies": {

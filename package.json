@@ -2,10 +2,8 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "bootstrap": "lerna exec -- npm install && lerna run prepare && lerna link",
     "diff": "check-if-folder-contents-changed-in-git-commit-range",
-    "postinstall": "npm run bootstrap",
-    "postbootstrap": "npm run build",
+    "postinstall": "lerna exec -- npm install",
     "build": "lerna run build",
     "test": "lerna run test",
     "prelint": "npm run lint-fix",
@@ -18,7 +16,7 @@
     "coverage": "jest --verbose --coverage",
     "coverage:upload": "codecov",
     "danger": "danger run --verbose",
-    "predeploy": "npm run bootstrap",
+    "predeploy": "npm install",
     "test-ci": "npm run coverage -- --ci --maxWorkers=2 --reporters=default --reporters=jest-junit",
     "deploy": "lerna publish -m \"chore: Publish\"",
     "watch": "trap \"kill 0\" SIGINT; for f in `ls packages`; do (cd `pwd`/packages/$f && [[ -e package.json ]] && npm run watch) & done; "
