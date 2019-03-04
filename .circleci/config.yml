@@ -47,6 +47,7 @@ jobs:
     <<: *defaults
     steps:
       - <<: *attach
+      - run: npm run build
       - run: npm run filesize
 
   Monorepo:

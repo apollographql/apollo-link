@@ -26,7 +26,7 @@
     "build": "tsc && rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
     "coverage": "jest --coverage",
-    "filesize": "npm run build",
+    "filesize": "../../scripts/minify",
     "lint": "tslint -c \"../../tslint.json\" -p tsconfig.json -c ../../tslint.json src/*.ts",
     "prebuild": "npm run clean",
     "prepare": "npm run build",

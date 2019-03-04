@@ -2,7 +2,6 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 import node from 'rollup-plugin-node-resolve';
 import typescript from 'typescript';
 import typescriptPlugin from 'rollup-plugin-typescript2';
-import { terser as minify } from 'rollup-plugin-terser';
 
 export const globals = {
   // Apollo
@@ -76,25 +75,13 @@ export default name => [
   {
     input: 'lib/bundle.esm.js',
     output: {
-      file: 'lib/bundle.min.js',
+      file: 'lib/bundle.cjs.js',
       format: 'cjs',
       globals,
+      sourcemap: true,
     },
     external: Object.keys(globals),
     onwarn,
-    plugins: [
-      minify({
-        mangle: {
-          toplevel: true,
-        },
-        compress: {
-          dead_code: true,
-          global_defs: {
-            "@process.env.NODE_ENV": JSON.stringify("production"),
-          },
-        },
-      }),
-    ],
   }
 ];
 
