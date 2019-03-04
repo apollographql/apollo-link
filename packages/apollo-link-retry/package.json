@@ -25,17 +25,16 @@
     "build": "tsc && rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
     "coverage": "jest --coverage",
-    "filesize": "npm run build",
+    "filesize": "../../scripts/minify",
     "lint": "tslint -c \"../../tslint.json\" -p tsconfig.json -c ../../tslint.json src/*.ts",
     "prebuild": "npm run clean",
-    "prepare": "npm run lint && npm run build",
-    "prepublishOnly": "npm run clean && npm run build",
-    "test": "jest",
+    "prepare": "npm run build",
+    "test": "npm run lint && jest",
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
     "@types/zen-observable": "0.8.0",
-    "apollo-link": "^1.2.8",
+    "apollo-link": "file:../apollo-link",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
@@ -45,7 +44,7 @@
     "graphql-tag": "2.10.1",
     "jest": "22.4.4",
     "rimraf": "2.6.3",
-    "rollup": "0.68.2",
+    "rollup": "1.4.1",
     "ts-jest": "22.4.6",
     "tslint": "5.13.0",
     "typescript": "3.0.3",

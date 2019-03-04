@@ -2,10 +2,8 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "bootstrap": "lerna exec -- npm install && lerna run prepare && lerna link",
     "diff": "check-if-folder-contents-changed-in-git-commit-range",
-    "postinstall": "npm run bootstrap",
-    "postbootstrap": "npm run build",
+    "postinstall": "lerna exec -- npm install",
     "build": "lerna run build",
     "test": "lerna run test",
     "prelint": "npm run lint-fix",
@@ -18,7 +16,7 @@
     "coverage": "jest --verbose --coverage",
     "coverage:upload": "codecov",
     "danger": "danger run --verbose",
-    "predeploy": "npm run bootstrap",
+    "predeploy": "npm install",
     "test-ci": "npm run coverage -- --ci --maxWorkers=2 --reporters=default --reporters=jest-junit",
     "deploy": "lerna publish -m \"chore: Publish\"",
     "watch": "trap \"kill 0\" SIGINT; for f in `ls packages`; do (cd `pwd`/packages/$f && [[ -e package.json ]] && npm run watch) & done; "
@@ -101,8 +99,8 @@
   "pre-push": "lint-check",
   "dependencies": {},
   "devDependencies": {
+    "@condenast/bundlesize": "^0.18.1",
     "@types/zen-observable": "0.8.0",
-    "bundlesize": "0.17.1",
     "check-if-folder-contents-changed-in-git-commit-range": "1.0.0",
     "codecov": "3.2.0",
     "danger": "3.9.0",
@@ -117,8 +115,8 @@
     "rollup": "1.2.3",
     "rollup-plugin-node-resolve": "4.0.1",
     "rollup-plugin-sourcemaps": "0.4.2",
-    "rollup-plugin-terser": "^4.0.4",
     "rollup-plugin-typescript2": "0.19.3",
+    "terser": "^3.16.1",
     "ts-jest": "22.4.6",
     "tslib": "1.9.3",
     "typescript": "3.0.3"
