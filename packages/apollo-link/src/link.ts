@@ -16,24 +16,28 @@ import {
   createOperation,
 } from './linkUtils';
 
-const passthrough = (op, forward) => (forward ? forward(op) : Observable.of());
+function passthrough(op, forward) {
+  return forward ? forward(op) : Observable.of();
+}
 
-const toLink = (handler: RequestHandler | ApolloLink) =>
-  typeof handler === 'function' ? new ApolloLink(handler) : handler;
+function toLink(handler: RequestHandler | ApolloLink) {
+  return typeof handler === 'function' ? new ApolloLink(handler) : handler;
+}
 
-export const empty = (): ApolloLink => new ApolloLink(() => Observable.of());
+export function empty(): ApolloLink {
+  return new ApolloLink(() => Observable.of());
+}
 
-export const from = (links: ApolloLink[]): ApolloLink => {
+export function from(links: ApolloLink[]): ApolloLink {
   if (links.length === 0) return empty();
-
   return links.map(toLink).reduce((x, y) => x.concat(y));
-};
+}
 
-export const split = (
+export function split(
   test: (op: Operation) => boolean,
   left: ApolloLink | RequestHandler,
   right?: ApolloLink | RequestHandler,
-): ApolloLink => {
+): ApolloLink {
   const leftLink = toLink(left);
   const rightLink = toLink(right || new ApolloLink(passthrough));
 
@@ -50,7 +54,7 @@ export const split = (
         : rightLink.request(operation, forward) || Observable.of();
     });
   }
-};
+}
 
 // join two Links together
 export const concat = (
