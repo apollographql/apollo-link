@@ -21,8 +21,7 @@ const passthrough = (op, forward) => (forward ? forward(op) : Observable.of());
 const toLink = (handler: RequestHandler | ApolloLink) =>
   typeof handler === 'function' ? new ApolloLink(handler) : handler;
 
-export const empty = (): ApolloLink =>
-  new ApolloLink((op, forward) => Observable.of());
+export const empty = (): ApolloLink => new ApolloLink(() => Observable.of());
 
 export const from = (links: ApolloLink[]): ApolloLink => {
   if (links.length === 0) return empty();
@@ -33,10 +32,10 @@ export const from = (links: ApolloLink[]): ApolloLink => {
 export const split = (
   test: (op: Operation) => boolean,
   left: ApolloLink | RequestHandler,
-  right: ApolloLink | RequestHandler = new ApolloLink(passthrough),
+  right: ApolloLink | RequestHandler,
 ): ApolloLink => {
   const leftLink = toLink(left);
-  const rightLink = toLink(right);
+  const rightLink = toLink(right || new ApolloLink(passthrough));
 
   if (isTerminating(leftLink) && isTerminating(rightLink)) {
     return new ApolloLink(operation => {
@@ -102,9 +101,9 @@ export class ApolloLink {
   public split(
     test: (op: Operation) => boolean,
     left: ApolloLink | RequestHandler,
-    right: ApolloLink | RequestHandler = new ApolloLink(passthrough),
+    right: ApolloLink | RequestHandler,
   ): ApolloLink {
-    return this.concat(split(test, left, right));
+    return this.concat(split(test, left, right || new ApolloLink(passthrough)));
   }
 
   public concat(next: ApolloLink | RequestHandler): ApolloLink {
