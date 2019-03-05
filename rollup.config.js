@@ -2,6 +2,7 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 import node from 'rollup-plugin-node-resolve';
 import typescript from 'typescript';
 import typescriptPlugin from 'rollup-plugin-typescript2';
+import invariantPlugin from 'rollup-plugin-invariant';
 
 export const globals = {
   // Apollo
@@ -9,16 +10,19 @@ export const globals = {
   'apollo-link': 'apolloLink.core',
   'apollo-link-batch': 'apolloLink.batch',
   'apollo-link-http-common': 'apolloLink.httpCommon',
+  'apollo-utilities': 'apolloUtilities',
   'zen-observable-ts': 'apolloLink.zenObservable',
   'subscriptions-transport-ws': 'subscriptions-transport-ws',
 
-  //GraphQL
+  // GraphQL
   'graphql/language/printer': 'graphql.printer',
   'graphql/execution/execute': 'graphql.execute',
 
   // TypeScript
   'tslib': 'tslib',
 
+  // Other
+  'ts-invariant': 'invariant',
   'zen-observable': 'Observable',
 };
 
@@ -46,6 +50,9 @@ export default name => [
           },
         },
       }),
+      invariantPlugin({
+        errorCodes: true,
+      }),
       sourcemaps()
     ],
   },
@@ -69,6 +76,9 @@ export default name => [
             module: "es2015",
           },
         },
+      }),
+      invariantPlugin({
+        errorCodes: true,
       }),
       sourcemaps()
     ],

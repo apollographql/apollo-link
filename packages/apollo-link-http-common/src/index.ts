@@ -1,5 +1,6 @@
 import { Operation } from 'apollo-link';
 import { print } from 'graphql/language/printer';
+import { InvariantError } from 'ts-invariant';
 
 /*
  * Http Utilities: shared across links that make http requests
@@ -24,7 +25,7 @@ export type ServerParseError = Error & {
   bodyText: string;
 };
 
-export type ClientParseError = Error & {
+export type ClientParseError = InvariantError & {
   parseError: Error;
 };
 
@@ -174,7 +175,7 @@ export const checkFetcher = (fetcher: GlobalFetch['fetch']) => {
   if (!fetcher && typeof fetch === 'undefined') {
     let library: string = 'unfetch';
     if (typeof window === 'undefined') library = 'node-fetch';
-    throw new Error(`
+    throw new InvariantError(`
 fetch is not found globally and no fetcher passed, to fix pass a fetch for
 your environment like https://www.npmjs.com/package/${library}.
 
@@ -248,7 +249,7 @@ export const serializeFetchParameter = (p, label) => {
   try {
     serialized = JSON.stringify(p);
   } catch (e) {
-    const parseError = new Error(
+    const parseError = new InvariantError(
       `Network request failed. ${label} is not serializable: ${e.message}`,
     ) as ClientParseError;
     parseError.parseError = e;

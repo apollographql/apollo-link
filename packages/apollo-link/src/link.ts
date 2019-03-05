@@ -1,4 +1,5 @@
 import Observable from 'zen-observable-ts';
+import { invariant, InvariantError } from 'ts-invariant';
 
 import {
   GraphQLRequest,
@@ -60,7 +61,7 @@ export const concat = (
 ) => {
   const firstLink = toLink(first);
   if (isTerminating(firstLink)) {
-    console.warn(
+    invariant.warn(
       new LinkError(
         `You are calling concat on a terminating link, which will have no effect`,
         firstLink,
@@ -115,7 +116,7 @@ export class ApolloLink {
     operation: Operation,
     forward?: NextLink,
   ): Observable<FetchResult> | null {
-    throw new Error('request is not implemented');
+    throw new InvariantError('request is not implemented');
   }
 }
 
