@@ -101,7 +101,7 @@ export class ApolloLink {
   public split(
     test: (op: Operation) => boolean,
     left: ApolloLink | RequestHandler,
-    right: ApolloLink | RequestHandler,
+    right?: ApolloLink | RequestHandler,
   ): ApolloLink {
     return this.concat(split(test, left, right || new ApolloLink(passthrough)));
   }
