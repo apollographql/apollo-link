@@ -49,7 +49,7 @@ export class BatchHttpLink extends ApolloLink {
   private batchMax: number;
   private batcher: ApolloLink;
 
-  constructor(fetchParams: BatchHttpLink.Options = {}) {
+  constructor(fetchParams?: BatchHttpLink.Options) {
     super();
 
     let {
@@ -61,7 +61,7 @@ export class BatchHttpLink extends ApolloLink {
       batchMax,
       batchKey,
       ...requestOptions
-    } = fetchParams;
+    } = fetchParams || ({} as BatchHttpLink.Options);
 
     // dev warnings to ensure fetch is present
     checkFetcher(fetcher);

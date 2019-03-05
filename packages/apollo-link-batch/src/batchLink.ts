@@ -40,7 +40,7 @@ export namespace BatchLink {
 export class BatchLink extends ApolloLink {
   private batcher: OperationBatcher;
 
-  constructor(fetchParams: BatchLink.Options = {}) {
+  constructor(fetchParams?: BatchLink.Options) {
     super();
 
     const {
@@ -48,7 +48,7 @@ export class BatchLink extends ApolloLink {
       batchMax = 0,
       batchHandler = () => null,
       batchKey = () => '',
-    } = fetchParams;
+    } = fetchParams || {};
 
     this.batcher = new OperationBatcher({
       batchInterval,
