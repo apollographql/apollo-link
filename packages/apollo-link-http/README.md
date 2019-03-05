@@ -28,7 +28,7 @@ const link = createHttpLink({ uri: "/graphql" });
 <h2 id="options">Options</h2>
 
 HTTP Link takes an object with some options on it to customize the behavior of the link. If your server supports it, the HTTP link can also send over metadata about the request in the extensions field. To enable this, pass `includeExtensions` as true. The options you can pass are outlined below:
-
+npm run lint
 * `uri`: the URI key is a string endpoint or function resolving to an endpoint -- will default to "/graphql" if not specified
 * `includeExtensions`: allow passing the extensions field to your graphql server, defaults to false
 * `fetch`: a `fetch` compatible API for making a request
