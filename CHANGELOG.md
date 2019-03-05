@@ -1,13 +1,22 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
-## vNext
+## vNEXT
+
+## 2019-03-05
 
 ### General
 
 - Remove the docs CI step. <br/>
   [@JoviDeCroock](https://github.com/JoviDeCroock) in [#938](https://github.com/apollographql/apollo-link/pull/938)
-- Enable tree-shaking in webpack. <br/>
+
+- Enable tree-shaking in Webpack. <br/>
   [@JoviDeCroock](https://github.com/JoviDeCroock) in [#967](https://github.com/apollographql/apollo-link/pull/967)
+
+- Import `tslib` helpers like `__extends` and `__rest` from a shared external package, rather than inlining them. <br/>
+  [@benjamn](https://github.com/benjamn) in [#959](https://github.com/apollographql/apollo-link/pull/959)
+
+- Shrink `apollo-link` and `apollo-link-http-common` packages using [`ts-invariant` and `rollup-plugin-invariant`](https://github.com/apollographql/invariant-packages). <br/>
+  [@benjamn](https://github.com/benjamn) in [#969](https://github.com/apollographql/apollo-link/pull/969)
 
 ### docs
 
@@ -23,25 +32,30 @@
   [@JoviDeCroock](https://github.com/JoviDeCroock) in [#942](https://github.com/apollographql/apollo-link/pull/942)  <br />
   [@goofiw](https://github.com/goofiw) in [#899](https://github.com/apollographql/apollo-link/pull/899)
 
-### apollo-link
+### apollo-link 1.2.9
 
 - Documentation updates.  <br/>
   [@capaj](https://github.com/capaj) in [#937](https://github.com/apollographql/apollo-link/pull/937)  <br />
 
-### apollo-link-error
+### apollo-link-error 1.1.8
 
 - Add undefined check. <br/>
   [@JoviDeCroock](https://github.com/JoviDeCroock) in [#943](https://github.com/apollographql/apollo-link/pull/943)  <br />
 
-### apollo-link-batch-http
+### apollo-link-batch-http 1.2.9
 
 - Include client-awareness headers. <br/>
   [@jovidecroock](https://github.com/jovidecroock) in [#950](https://github.com/apollographql/apollo-link/pull/950)  <br />
 
-### apollo-link-http
+### apollo-link-http 1.5.12
 
 - Correct code comment. <br/>
   [@mouafa](https://github.com/mouafa) in [#921](https://github.com/apollographql/apollo-link/pull/921)  <br />
+
+### apollo-link-schema 1.2.0
+
+- Avoid bundling `graphql/execution/execute` into `apollo-link-schema`. <br/>
+  [@benjamn](https://github.com/benjamn) in [#968](https://github.com/apollographql/apollo-link/pull/968)
 
 ## 2019-02-01
 
