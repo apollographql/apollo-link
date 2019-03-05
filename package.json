@@ -73,6 +73,19 @@
       "maxSize": "300 B"
     }
   ],
+  "renovate": {
+    "extends": [
+      "config:base",
+      "schedule:nonOfficeHours",
+      ":pinOnlyDevDependencies"
+    ],
+    "semanticCommits": true,
+    "timezone": "America/New_York",
+    "automerge": false,
+    "labels": [
+      "dependencies"
+    ]
+  },
   "jest": {
     "transform": {
       ".(ts|tsx)": "ts-jest"
