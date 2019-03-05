@@ -5,6 +5,7 @@ import { GraphQLRequest, Operation } from './types';
 import { ApolloLink } from './link';
 
 import { getOperationName } from 'apollo-utilities';
+import { invariant, InvariantError } from 'ts-invariant';
 export { getOperationName };
 
 export function validateOperation(operation: GraphQLRequest): GraphQLRequest {
@@ -17,7 +18,7 @@ export function validateOperation(operation: GraphQLRequest): GraphQLRequest {
   ];
   for (let key of Object.keys(operation)) {
     if (OPERATION_FIELDS.indexOf(key) < 0) {
-      throw new Error(`illegal argument: ${key}`);
+      throw new InvariantError(`illegal argument: ${key}`);
     }
   }
 
@@ -42,7 +43,7 @@ export function toPromise<R>(observable: Observable<R>): Promise<R> {
     observable.subscribe({
       next: data => {
         if (completed) {
-          console.warn(
+          invariant.warn(
             `Promise Wrapper does not support multiple results from Observable`,
           );
         } else {

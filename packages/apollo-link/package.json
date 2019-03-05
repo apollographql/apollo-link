@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "apollo-utilities": "^1.2.1",
+    "ts-invariant": "^0.3.2",
     "tslib": "^1.9.3",
     "zen-observable-ts": "file:../zen-observable-ts"
   },
