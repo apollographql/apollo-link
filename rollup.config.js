@@ -13,7 +13,8 @@ export const globals = {
   'subscriptions-transport-ws': 'subscriptions-transport-ws',
 
   //GraphQL
-  'graphql/language/printer': 'printer',
+  'graphql/language/printer': 'graphql.printer',
+  'graphql/execution/execute': 'graphql.execute',
 
   // TypeScript
   'tslib': 'tslib',

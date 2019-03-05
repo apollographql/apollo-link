@@ -63,6 +63,11 @@
       "maxSize": "1.15 Kb"
     },
     {
+      "name": "apollo-link-schema",
+      "path": "./packages/apollo-link-schema/lib/bundle.min.js",
+      "maxSize": "400 B"
+    },
+    {
       "name": "apollo-link-ws",
       "path": "./packages/apollo-link-ws/lib/bundle.min.js",
       "maxSize": "300 B"
