@@ -6,6 +6,8 @@
 
 - Remove the docs CI step. <br/>
   [@JoviDeCroock](https://github.com/JoviDeCroock) in [#938](https://github.com/apollographql/apollo-link/pull/938)
+- Enable tree-shaking in webpack. <br/>
+  [@JoviDeCroock](https://github.com/JoviDeCroock) in [#967](https://github.com/apollographql/apollo-link/pull/967)
 
 ### docs
 

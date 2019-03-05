@@ -5,6 +5,7 @@
   "main": "./lib/index.js",
   "module": "./lib/bundle.esm.js",
   "typings": "./lib/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "tsc && rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
