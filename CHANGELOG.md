@@ -2,6 +2,11 @@
 
 ## vNEXT
 
+### General
+
+- Add `.rpt2_cache` to all `packages/*/.npmignore` files. <br/>
+  [@benjamn](https://github.com/benjamn) in [#972](https://github.com/apollographql/apollo-link/pull/972)
+
 ## 2019-03-05
 
 ### General
