@@ -9,6 +9,7 @@ export const globals = {
   'apollo-link': 'apolloLink.core',
   'apollo-link-batch': 'apolloLink.batch',
   'apollo-link-http-common': 'apolloLink.httpCommon',
+  'apollo-utilities': 'apolloUtilities',
   'zen-observable-ts': 'apolloLink.zenObservable',
   'subscriptions-transport-ws': 'subscriptions-transport-ws',
 

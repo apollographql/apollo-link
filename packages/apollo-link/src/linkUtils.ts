@@ -1,20 +1,11 @@
 import Observable from 'zen-observable-ts';
 import { print } from 'graphql/language/printer';
-import { DocumentNode, OperationDefinitionNode } from 'graphql';
 
 import { GraphQLRequest, Operation } from './types';
 import { ApolloLink } from './link';
 
-export function getOperationName(doc: DocumentNode): string | null {
-  return (
-    doc.definitions
-      .filter(
-        definition =>
-          definition.kind === 'OperationDefinition' && definition.name,
-      )
-      .map((x: OperationDefinitionNode) => x.name.value)[0] || null
-  );
-}
+import { getOperationName } from 'apollo-utilities';
+export { getOperationName };
 
 export function validateOperation(operation: GraphQLRequest): GraphQLRequest {
   const OPERATION_FIELDS = [
