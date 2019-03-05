@@ -2,11 +2,6 @@
 
 ## vNEXT
 
-### General
-
-- Add `.rpt2_cache` to all `packages/*/.npmignore` files. <br/>
-  [@benjamn](https://github.com/benjamn) in [#972](https://github.com/apollographql/apollo-link/pull/972)
-
 ## 2019-03-05
 
 ### General
@@ -22,6 +17,9 @@
 
 - Shrink `apollo-link` and `apollo-link-http-common` packages using [`ts-invariant` and `rollup-plugin-invariant`](https://github.com/apollographql/invariant-packages). <br/>
   [@benjamn](https://github.com/benjamn) in [#969](https://github.com/apollographql/apollo-link/pull/969)
+
+- Add `.rpt2_cache` to all `packages/*/.npmignore` files. <br/>
+  [@benjamn](https://github.com/benjamn) in [#972](https://github.com/apollographql/apollo-link/pull/972)
 
 ### docs
 
