@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-http-common",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "description": "Http utilities for Apollo Link shared across all links using http",
   "main": "./lib/index.js",
   "module": "./lib/bundle.esm.js",
