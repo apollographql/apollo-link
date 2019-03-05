@@ -32,7 +32,7 @@ export const from = (links: ApolloLink[]): ApolloLink => {
 export const split = (
   test: (op: Operation) => boolean,
   left: ApolloLink | RequestHandler,
-  right: ApolloLink | RequestHandler,
+  right?: ApolloLink | RequestHandler,
 ): ApolloLink => {
   const leftLink = toLink(left);
   const rightLink = toLink(right || new ApolloLink(passthrough));
