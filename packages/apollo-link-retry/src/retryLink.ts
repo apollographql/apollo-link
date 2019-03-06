@@ -183,8 +183,9 @@ export class RetryLink extends ApolloLink {
   private delayFor: DelayFunction;
   private retryIf: RetryFunction;
 
-  constructor({ delay, attempts }: RetryLink.Options = {}) {
+  constructor(options: RetryLink.Options) {
     super();
+    const { attempts, delay } = options || ({} as RetryLink.Options);
     this.delayFor =
       typeof delay === 'function' ? delay : buildDelayFunction(delay);
     this.retryIf =
