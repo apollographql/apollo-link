@@ -16,7 +16,7 @@ export class DedupLink extends ApolloLink {
     string,
     Observable<FetchResult>
   > = new Map();
-  private subscribers: Map<string, Array<Observer<FetchResult>>> = new Map();
+  private subscribers: Map<string, Set<Observer<FetchResult>>> = new Map();
 
   public request(
     operation: Operation,
@@ -45,8 +45,8 @@ export class DedupLink extends ApolloLink {
       const sharedObserver = new Observable(observer => {
         // this will still be called by each subscriber regardless of
         // deduplication status
-        const prevs = this.subscribers.get(key) || [];
-        this.subscribers.set(key, prevs.concat(observer));
+        const prevs = this.subscribers.get(key) || new Set();
+        this.subscribers.set(key, prevs.add(observer));
 
         if (!subscription) {
           subscription = singleObserver.subscribe({
@@ -69,9 +69,9 @@ export class DedupLink extends ApolloLink {
         }
 
         return () => {
-          let observers = this.subscribers.get(key);
-          observers = observers.filter(ob => ob !== observer);
-          if (observers.length === 0) {
+          const observers = this.subscribers.get(key);
+          observers.delete(observer);
+          if (observers.size === 0) {
             cleanup(key);
             subscription.unsubscribe();
           } else {
