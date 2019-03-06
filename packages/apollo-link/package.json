@@ -44,11 +44,11 @@
   },
   "devDependencies": {
     "@types/graphql": "14.0.7",
-    "@types/jest": "22.2.3",
+    "@types/jest": "24.0.9",
     "@types/node": "9.6.42",
     "graphql": "14.1.1",
     "graphql-tag": "2.10.1",
-    "jest": "22.4.4",
+    "jest": "24.1.0",
     "rimraf": "2.6.3",
     "rollup": "1.4.1",
     "ts-jest": "22.4.6",
