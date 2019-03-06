@@ -30,7 +30,7 @@ export namespace ErrorLink {
 // For backwards compatibility.
 export import ErrorHandler = ErrorLink.ErrorHandler;
 
-export const onError = (errorHandler: ErrorHandler): ApolloLink => {
+export function onError(errorHandler: ErrorHandler): ApolloLink {
   return new ApolloLink((operation, forward) => {
     return new Observable(observer => {
       let sub;
@@ -99,7 +99,7 @@ export const onError = (errorHandler: ErrorHandler): ApolloLink => {
       };
     });
   });
-};
+}
 
 export class ErrorLink extends ApolloLink {
   private link: ApolloLink;
