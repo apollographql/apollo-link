@@ -12,6 +12,12 @@
 - Enable tree-shaking in Webpack. <br/>
   [@JoviDeCroock](https://github.com/JoviDeCroock) in [#967](https://github.com/apollographql/apollo-link/pull/967)
 
+- Cut low hanging fruit in all packages. <br/>
+  [@JoviDeCroock](https://github.com/JoviDeCroock) in [#970](https://github.com/apollographql/apollo-link/pull/970) <br/>
+  [@JoviDeCroock](https://github.com/JoviDeCroock) in [#971](https://github.com/apollographql/apollo-link/pull/971) <br/>
+  [@JoviDeCroock](https://github.com/JoviDeCroock) in [#973](https://github.com/apollographql/apollo-link/pull/973) <br/>
+  [@JoviDeCroock](https://github.com/JoviDeCroock) in [#974](https://github.com/apollographql/apollo-link/pull/974)
+
 - Import `tslib` helpers like `__extends` and `__rest` from a shared external package, rather than inlining them. <br/>
   [@benjamn](https://github.com/benjamn) in [#959](https://github.com/apollographql/apollo-link/pull/959)
 
