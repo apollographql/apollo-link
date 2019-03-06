@@ -49,7 +49,7 @@ export function buildDelayFunction(
   // attempt (and is, on average, the delay we will encounter).
   // If we're not jittering, adjust baseDelay so that the first attempt
   // lines up with initialDelay, for everyone's sanity.
-  let baseDelay = jitter ? initial : initial / 2;
+  const baseDelay = jitter ? initial : initial / 2;
 
   return function delayFunction(count: number) {
     let delay = Math.min(max, baseDelay * 2 ** count);
