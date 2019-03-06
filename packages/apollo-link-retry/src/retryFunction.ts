@@ -5,7 +5,9 @@ import { Operation } from 'apollo-link';
  * response should be retried.
  */
 export interface RetryFunction {
-  (count: number, operation: Operation, error: any): boolean | Promise<boolean>;
+  (count: number, operation: Operation, valueOrError: any):
+    | boolean
+    | Promise<boolean>;
 }
 
 export interface RetryFunctionOptions {
@@ -20,22 +22,27 @@ export interface RetryFunctionOptions {
   max?: number;
 
   /**
-   * Predicate function that determines whether a particular error should
-   * trigger a retry.
+   * Predicate function that determines whether a particular response
+   * value or error should trigger a retry.
    *
    * For example, you may want to not retry 4xx class HTTP errors.
    *
    * By default, all errors are retried.
    */
-  retryIf?: (error: any, operation: Operation) => boolean | Promise<boolean>;
+  retryIf?: (
+    valueOrError: any,
+    operation: Operation,
+  ) => boolean | Promise<boolean>;
 }
 
 export function buildRetryFunction({
   max = 5,
   retryIf,
 }: RetryFunctionOptions = {}): RetryFunction {
-  return function retryFunction(count, operation, error) {
+  return function retryFunction(count, operation, valueOrError) {
     if (count >= max) return false;
-    return retryIf ? retryIf(error, operation) : !!error;
+    return retryIf
+      ? retryIf(valueOrError, operation)
+      : valueOrError instanceof Error;
   };
 }

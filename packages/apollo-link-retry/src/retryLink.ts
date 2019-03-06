@@ -43,6 +43,8 @@ class RetryableOperation<TValue = any> {
   private observers: ZenObservable.Observer<TValue>[] = [];
   private currentSubscription: ZenObservable.Subscription = null;
   private timerId: number;
+  private valueRejected = false;
+  private waitingOnRetryIf = false;
 
   constructor(
     private operation: Operation,
@@ -130,16 +132,45 @@ class RetryableOperation<TValue = any> {
     });
   }
 
-  private onNext = (value: any) => {
+  private onNext = async (value: any) => {
+    this.waitingOnRetryIf = true;
+    const shouldRetry = await this.retryIf(
+      this.retryCount,
+      this.operation,
+      value,
+    );
+    this.waitingOnRetryIf = true;
+
+    if (shouldRetry) {
+      this.valueRejected = true;
+      this.retryCount += 1;
+
+      this.scheduleRetry(this.delayFor(this.retryCount, this.operation, value));
+      return;
+    }
+
+    this.valueRejected = false;
     this.values.push(value);
     for (const observer of this.observers) {
       if (!observer) continue;
       observer.next(value);
     }
+
+    if (this.complete) {
+      for (const observer of this.observers) {
+        if (!observer) continue;
+        observer.complete();
+      }
+    }
   };
 
   private onComplete = () => {
+    if (this.valueRejected) return;
+
     this.complete = true;
+
+    if (this.waitingOnRetryIf) return;
+
     for (const observer of this.observers) {
       if (!observer) continue;
       observer.complete();
@@ -147,6 +178,7 @@ class RetryableOperation<TValue = any> {
   };
 
   private onError = async error => {
+    this.valueRejected = false;
     this.retryCount += 1;
 
     // Should we retry?
