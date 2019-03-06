@@ -41,21 +41,15 @@ export interface DelayFunctionOptions {
   jitter?: boolean;
 }
 
-export function buildDelayFunction({
-  initial = 300,
-  max = Infinity,
-  jitter = true,
-}: DelayFunctionOptions = {}): DelayFunction {
-  let baseDelay;
-  if (jitter) {
-    // If we're jittering, baseDelay is half of the maximum delay for that
-    // attempt (and is, on average, the delay we will encounter).
-    baseDelay = initial;
-  } else {
-    // If we're not jittering, adjust baseDelay so that the first attempt
-    // lines up with initialDelay, for everyone's sanity.
-    baseDelay = initial / 2;
-  }
+export function buildDelayFunction(
+  delayOptions?: DelayFunctionOptions,
+): DelayFunction {
+  const { initial = 300, jitter = true, max = Infinity } = delayOptions || {};
+  // If we're jittering, baseDelay is half of the maximum delay for that
+  // attempt (and is, on average, the delay we will encounter).
+  // If we're not jittering, adjust baseDelay so that the first attempt
+  // lines up with initialDelay, for everyone's sanity.
+  const baseDelay = jitter ? initial : initial / 2;
 
   return function delayFunction(count: number) {
     let delay = Math.min(max, baseDelay * 2 ** count);
