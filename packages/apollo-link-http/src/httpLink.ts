@@ -32,7 +32,7 @@ export namespace HttpLink {
 export import FetchOptions = HttpLink.Options;
 export import UriFunction = HttpLink.UriFunction;
 
-export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
+export function createHttpLink(linkOptions?: HttpLink.Options) {
   let {
     uri = '/graphql',
     // use default global fetch if nothing passed in
@@ -40,7 +40,7 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
     includeExtensions,
     useGETForQueries,
     ...requestOptions
-  } = linkOptions;
+  } = linkOptions || ({} as HttpLink.Options);
 
   // dev warnings to ensure fetch is present
   checkFetcher(fetcher);
@@ -191,7 +191,7 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
       };
     });
   });
-};
+}
 
 // For GET operations, returns the given URI rewritten with parameters, or a
 // parse error.

@@ -110,7 +110,7 @@ export const fallbackHttpConfig = {
   options: defaultOptions,
 };
 
-export const throwServerError = (response, result, message) => {
+export function throwServerError(response, result, message) {
   const error = new Error(message) as ServerError;
 
   error.name = 'ServerError';
@@ -119,59 +119,63 @@ export const throwServerError = (response, result, message) => {
   error.result = result;
 
   throw error;
-};
+}
 
 //TODO: when conditional types come in ts 2.8, operations should be a generic type that extends Operation | Array<Operation>
-export const parseAndCheckHttpResponse = operations => (response: Response) => {
-  return (
-    response
-      .text()
-      .then(bodyText => {
-        try {
-          return JSON.parse(bodyText);
-        } catch (err) {
-          const parseError = err as ServerParseError;
-          parseError.name = 'ServerParseError';
-          parseError.response = response;
-          parseError.statusCode = response.status;
-          parseError.bodyText = bodyText;
-          return Promise.reject(parseError);
-        }
-      })
-      //TODO: when conditional types come out then result should be T extends Array ? Array<FetchResult> : FetchResult
-      .then((result: any) => {
-        if (response.status >= 300) {
-          //Network error
-          throwServerError(
-            response,
-            result,
-            `Response not successful: Received status code ${response.status}`,
-          );
-        }
-        //TODO should really error per response in a Batch based on properties
-        //    - could be done in a validation link
-        if (
-          !Array.isArray(result) &&
-          !result.hasOwnProperty('data') &&
-          !result.hasOwnProperty('errors')
-        ) {
-          //Data error
-          throwServerError(
-            response,
-            result,
-            `Server response was missing for query '${
-              Array.isArray(operations)
-                ? operations.map(op => op.operationName)
-                : operations.operationName
-            }'.`,
-          );
-        }
-        return result;
-      })
-  );
-};
+export function parseAndCheckHttpResponse(operations) {
+  return function(response: Response) {
+    return (
+      response
+        .text()
+        .then(bodyText => {
+          try {
+            return JSON.parse(bodyText);
+          } catch (err) {
+            const parseError = err as ServerParseError;
+            parseError.name = 'ServerParseError';
+            parseError.response = response;
+            parseError.statusCode = response.status;
+            parseError.bodyText = bodyText;
+            return Promise.reject(parseError);
+          }
+        })
+        //TODO: when conditional types come out then result should be T extends Array ? Array<FetchResult> : FetchResult
+        .then((result: any) => {
+          if (response.status >= 300) {
+            //Network error
+            throwServerError(
+              response,
+              result,
+              `Response not successful: Received status code ${
+                response.status
+              }`,
+            );
+          }
+          //TODO should really error per response in a Batch based on properties
+          //    - could be done in a validation link
+          if (
+            !Array.isArray(result) &&
+            !result.hasOwnProperty('data') &&
+            !result.hasOwnProperty('errors')
+          ) {
+            //Data error
+            throwServerError(
+              response,
+              result,
+              `Server response was missing for query '${
+                Array.isArray(operations)
+                  ? operations.map(op => op.operationName)
+                  : operations.operationName
+              }'.`,
+            );
+          }
+          return result;
+        })
+    );
+  };
+}
 
-export const checkFetcher = (fetcher: GlobalFetch['fetch']) => {
+export function checkFetcher(fetcher: GlobalFetch['fetch']) {
   if (!fetcher && typeof fetch === 'undefined') {
     let library: string = 'unfetch';
     if (typeof window === 'undefined') library = 'node-fetch';
@@ -185,7 +189,7 @@ import { createHttpLink } from 'apollo-link-http';
 
 const link = createHttpLink({ uri: '/graphql', fetch: fetch });`);
   }
-};
+}
 
 export const createSignalIfSupported = () => {
   if (typeof AbortController === 'undefined')
@@ -196,11 +200,11 @@ export const createSignalIfSupported = () => {
   return { controller, signal };
 };
 
-export const selectHttpOptionsAndBody = (
+export function selectHttpOptionsAndBody(
   operation: Operation,
   fallbackConfig: HttpConfig,
   ...configs: Array<HttpConfig>
-) => {
+) {
   let options: HttpConfig & Record<string, any> = {
     ...fallbackConfig.options,
     headers: fallbackConfig.headers,
@@ -242,9 +246,9 @@ export const selectHttpOptionsAndBody = (
     options,
     body,
   };
-};
+}
 
-export const serializeFetchParameter = (p, label) => {
+export function serializeFetchParameter(p, label) {
   let serialized;
   try {
     serialized = JSON.stringify(p);
@@ -256,13 +260,13 @@ export const serializeFetchParameter = (p, label) => {
     throw parseError;
   }
   return serialized;
-};
+}
 
 //selects "/graphql" by default
-export const selectURI = (
+export function selectURI(
   operation,
   fallbackURI?: string | ((operation: Operation) => string),
-) => {
+) {
   const context = operation.getContext();
   const contextURI = context.uri;
 
@@ -273,4 +277,4 @@ export const selectURI = (
   } else {
     return (fallbackURI as string) || '/graphql';
   }
-};
+}
