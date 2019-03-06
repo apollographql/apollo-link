@@ -183,7 +183,7 @@ export class RetryLink extends ApolloLink {
   private delayFor: DelayFunction;
   private retryIf: RetryFunction;
 
-  constructor(options: RetryLink.Options) {
+  constructor(options?: RetryLink.Options) {
     super();
     const { attempts, delay } = options || ({} as RetryLink.Options);
     this.delayFor =
