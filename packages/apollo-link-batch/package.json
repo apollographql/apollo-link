@@ -43,7 +43,7 @@
     "fetch-mock": "6.5.2",
     "graphql": "14.1.1",
     "graphql-tag": "2.10.1",
-    "jest": "24.3.1",
+    "jest": "24.5.0",
     "proxyquire": "1.8.0",
     "rimraf": "2.6.3",
     "rollup": "1.6.0",
