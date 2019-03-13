@@ -1,6 +1,6 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
-## vNEXT
+## 2019-03-13
 
 ### apollo-link-dedup 1.0.17
 
