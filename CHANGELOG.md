@@ -2,6 +2,17 @@
 
 ## vNEXT
 
+### apollo-link-dedup 1.0.17
+
+- Fixes an issue caused by the `DedupLink` shared observable returning 
+  cleanup logic that unsubscribes from the real observable, without 
+  checking whether only one of the many (shared) subscribers are 
+  unsubscribing. This caused problems when using `DedupLink` in front of 
+  `HttpLink`, as this lead to `HttpLink` aborting HTTP requests while some 
+  callers were still waiting for a response.  <br/>
+  [@ms](https://github.com/ms) in [#984](https://github.com/apollographql/apollo-link/pull/984)
+
+
 ## 2019-03-05
 
 ### General
