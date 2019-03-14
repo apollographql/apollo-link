@@ -1,5 +1,15 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
+## 2019-03-14
+
+### apollo-link-dedup 1.0.18
+
+- Fixes an issue introduced in [#984](https://github.com/apollographql/apollo-link/pull/984)
+  where subscriber `next` and/or `error` calls might have already deleted the 
+  key the new dedupe changes were intended to help with.  <br/>
+  [@JoviDeCroock](https://github.com/JoviDeCroock) in [#988](https://github.com/apollographql/apollo-link/pull/988)
+ 
+
 ## 2019-03-13
 
 ### apollo-link-dedup 1.0.17
