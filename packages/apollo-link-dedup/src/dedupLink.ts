@@ -63,10 +63,12 @@ export class DedupLink extends ApolloLink {
         }
 
         return () => {
-          this.subscribers.get(key).delete(observer);
-          if (this.subscribers.get(key).size === 0) {
-            this.inFlightRequestObservables.delete(key);
-            if (subscription) subscription.unsubscribe();
+          if (this.subscribers.has(key)) {
+            this.subscribers.get(key).delete(observer);
+            if (this.subscribers.get(key).size === 0) {
+              this.inFlightRequestObservables.delete(key);
+              if (subscription) subscription.unsubscribe();
+            }
           }
         };
       });
