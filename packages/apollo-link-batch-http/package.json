@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-batch-http",
-  "version": "1.2.9",
+  "version": "1.2.10",
   "description": "Batch HTTP transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
