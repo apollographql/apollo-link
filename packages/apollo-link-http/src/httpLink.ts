@@ -200,6 +200,8 @@ function rewriteURIForGET(chosenURI: string, body: Body) {
   // the extra level of JSON serialization!
   const queryParams = [];
   const addQueryParam = (key: string, value: string) => {
+    // trim space characters to reduce the query string length
+    value = value.replace(/ +/g, ' ');
     queryParams.push(`${key}=${encodeURIComponent(value)}`);
   };
 
