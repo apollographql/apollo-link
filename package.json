@@ -3,7 +3,7 @@
   "license": "MIT",
   "scripts": {
     "diff": "check-if-folder-contents-changed-in-git-commit-range",
-    "postinstall": "lerna exec -- npm install",
+    "postinstall": "lerna exec -- npm install --package-lock=false && lerna run prepare",
     "build": "lerna run build",
     "test": "lerna run test",
     "prelint": "npm run lint-fix",
