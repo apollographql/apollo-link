@@ -197,6 +197,7 @@ describe('DedupLink', () => {
     execute(deduper, request2).subscribe({});
     expect(called).toBe(1);
   });
+
   it(`does not deduplicate identical queries for different contexts if useContext=true`, () => {
     identicalQuerySpec({
       sameHeaders: false,
@@ -211,6 +212,7 @@ describe('DedupLink', () => {
       expectedCalls: 1,
     });
   });
+
   it(`works for nested queries`, done => {
     const document: DocumentNode = gql`
       query test1($x: String) {
@@ -295,6 +297,7 @@ describe('DedupLink', () => {
     execute(deduper, request2).subscribe({});
     expect(called).toBe(2);
   });
+
   it(`unsubscribes as needed`, () => {
     const document: DocumentNode = gql`
       query test1($x: String) {
@@ -335,5 +338,47 @@ describe('DedupLink', () => {
     sub1.unsubscribe();
 
     expect(unsubscribed).toBe(true);
+  });
+
+  it(`unsubscribes only when needed`, () => {
+    const document: DocumentNode = gql`
+      query test1($x: String) {
+        test(x: $x)
+      }
+    `;
+    const variables1 = { x: 'Hello World' };
+    const variables2 = { x: 'Hello World' };
+
+    const request1: GraphQLRequest = {
+      query: document,
+      variables: variables1,
+      operationName: getOperationName(document),
+    };
+
+    const request2: GraphQLRequest = {
+      query: document,
+      variables: variables2,
+      operationName: getOperationName(document),
+    };
+
+    let unsubscribed = false;
+    const deduper = ApolloLink.from([
+      new DedupLink(),
+      new ApolloLink(() => {
+        return new Observable(() => {
+          return () => {
+            unsubscribed = true;
+          };
+        });
+      }),
+    ]);
+
+    const sub1 = execute(deduper, request1).subscribe({});
+    const sub2 = execute(deduper, request2).subscribe({});
+
+    sub1.unsubscribe();
+
+    //NOTE: sub2 is still waiting!
+    expect(unsubscribed).toBe(false);
   });
 });

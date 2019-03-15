@@ -38,12 +38,6 @@ export class DedupLink extends ApolloLink {
       key = `${key}-${JSON.stringify(context)}`;
     }
 
-    const cleanup = operationKey => {
-      this.inFlightRequestObservables.delete(operationKey);
-      const prev = this.subscribers.get(operationKey);
-      return prev;
-    };
-
     if (!this.inFlightRequestObservables.get(key)) {
       // this is a new request, i.e. we haven't deduplicated it yet
       // call the next link
@@ -53,36 +47,40 @@ export class DedupLink extends ApolloLink {
       const sharedObserver = new Observable(observer => {
         // this will still be called by each subscriber regardless of
         // deduplication status
-        let prev = this.subscribers.get(key);
-        if (!prev) prev = { next: [], error: [], complete: [] };
+        if (!this.subscribers.has(key)) this.subscribers.set(key, new Set());
 
-        this.subscribers.set(key, {
-          next: prev.next.concat([observer.next.bind(observer)]),
-          error: prev.error.concat([observer.error.bind(observer)]),
-          complete: prev.complete.concat([observer.complete.bind(observer)]),
-        });
+        this.subscribers.get(key).add(observer);
 
         if (!subscription) {
           subscription = singleObserver.subscribe({
             next: result => {
-              const previous = cleanup(key);
+              const subscribers = this.subscribers.get(key);
               this.subscribers.delete(key);
-              if (previous) {
-                previous.next.forEach(next => next(result));
-                previous.complete.forEach(complete => complete());
+              this.inFlightRequestObservables.delete(key);
+              if (subscribers) {
+                subscribers.forEach(obs => obs.next(result));
+                subscribers.forEach(obs => obs.complete());
               }
             },
             error: error => {
-              const previous = cleanup(key);
+              const subscribers = this.subscribers.get(key);
               this.subscribers.delete(key);
-              if (previous) previous.error.forEach(err => err(error));
+              this.inFlightRequestObservables.delete(key);
+              if (subscribers) {
+                subscribers.forEach(obs => obs.error(error));
+              }
             },
           });
         }
 
         return () => {
-          if (subscription) subscription.unsubscribe();
-          this.inFlightRequestObservables.delete(key);
+          if (this.subscribers.has(key)) {
+            this.subscribers.get(key).delete(observer);
+            if (this.subscribers.get(key).size === 0) {
+              this.inFlightRequestObservables.delete(key);
+              if (subscription) subscription.unsubscribe();
+            }
+          }
         };
       });
 

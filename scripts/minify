@@ -1,0 +1,28 @@
+#!/usr/bin/env node
+
+const fs = require("fs");
+const path = require("path");
+const { minify } = require("terser");
+const sourcePath = path.join("lib", "bundle.cjs.js");
+const outputPath = path.join("lib", "bundle.min.js");
+
+const source = fs.readFileSync(sourcePath, "utf8");
+const result = minify(source, {
+  mangle: {
+    toplevel: true
+  },
+  compress: {
+    dead_code: true,
+    global_defs: {
+      "@process.env.NODE_ENV": JSON.stringify("production")
+    }
+  }
+});
+
+if (result.error) {
+  throw result.error;
+}
+
+fs.writeFileSync(outputPath, result.code, "utf8");
+
+console.log("minified", sourcePath, "=>", outputPath);
