@@ -13,11 +13,17 @@ description: Deduplicate matching requests before making a request
 ```js
 import { DedupLink } from "apollo-link-dedup";
 
-const link = new DedupLink();
+const link = new DedupLink({ useContext: true });
 ```
 
 ## Options
-The Dedup Link does not take any options when creating the link.
+
+The Dedup Link takes an optional object with the following options:
+
+* `useContext`: if true, uses the operation context when determining uniqueness
+for deduping requests. This is useful to avoid accidental deduping of identical
+requests that have different per-request headers (e.g. auth headers). Defaults
+to false.
 
 ## Context
 The Dedup Link can be overridden by using the context on a per operation basis:

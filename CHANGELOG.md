@@ -1,5 +1,14 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
+## vNext
+
+### apollo-link-dedup
+
+- Add `useContext` option for `apollo-link-dedup`. Uses context config as part
+  of uniqueness key when deduping requests.  <br/>
+  [@druotic](https://github.com/druotic) in [#957](https://github.com/apollographql/apollo-link/pull/957) <br />
+
+
 ## 2019-03-14
 
 ### apollo-link-dedup 1.0.18

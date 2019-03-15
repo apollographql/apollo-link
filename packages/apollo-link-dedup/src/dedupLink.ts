@@ -15,17 +15,28 @@ export class DedupLink extends ApolloLink {
     Observable<FetchResult>
   > = new Map();
   private subscribers: Map<string, any> = new Map();
+  private useContextForDedup: boolean;
+
+  constructor({ useContext = false }: { useContext?: boolean } = {}) {
+    super();
+    this.useContextForDedup = useContext;
+  }
 
   public request(
     operation: Operation,
     forward: NextLink,
   ): Observable<FetchResult> {
+    const context = operation.getContext();
     // sometimes we might not want to deduplicate a request, for example when we want to force fetch it.
-    if (operation.getContext().forceFetch) {
+    if (context.forceFetch) {
       return forward(operation);
     }
 
-    const key = operation.toKey();
+    let key = operation.toKey();
+    if (this.useContextForDedup) {
+      //may throw error if config not serializable
+      key = `${key}-${JSON.stringify(context)}`;
+    }
 
     if (!this.inFlightRequestObservables.get(key)) {
       // this is a new request, i.e. we haven't deduplicated it yet
