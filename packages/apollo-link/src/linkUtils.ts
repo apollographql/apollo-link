@@ -1,5 +1,4 @@
 import Observable from 'zen-observable-ts';
-import { print } from 'graphql/language/printer';
 
 import { GraphQLRequest, Operation } from './types';
 import { ApolloLink } from './link';
@@ -128,9 +127,8 @@ export function createOperation(
 }
 
 export function getKey(operation: GraphQLRequest) {
-  // XXX we're assuming here that variables will be serialized in the same order.
-  // that might not always be true
-  return `${print(operation.query)}|${JSON.stringify(operation.variables)}|${
-    operation.operationName
-  }`;
+  // XXX We're assuming here that query and variables will be serialized in
+  // the same order, which might not always be true.
+  const { query, variables, operationName } = operation;
+  return JSON.stringify([operationName, query, variables]);
 }
