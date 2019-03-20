@@ -25,15 +25,25 @@ const link = ApolloLink.from([
 ]);
 ```
 
-`from` is typically used when you have many links to join together all at once. The alternative way to join links is the `concat` method which joins two links together into one.
+`from` is typically used when you have many links to join together all at once. The alternative way to join links is the `concat` method, that can be found on any instance of `ApolloLink` or imported as a standalone function, which joins two links together into one.
 
 
 ```js
-import { ApolloLink } from 'apollo-link';
 import { RetryLink } from 'apollo-link-retry';
 import HttpLink from 'apollo-link-http';
 
-const link = ApolloLink.concat(new RetryLink(), new HttpLink({ uri: '/graphql' }));
+const retryLink = new RetryLink();
+const httpLink = new HttpLink({ uri: '/graphql' });
+
+const link = retryLink.concat(httpLink);
+```
+or
+```js
+import { concat } from 'apollo-link';
+import { RetryLink } from 'apollo-link-retry';
+import HttpLink from 'apollo-link-http';
+
+const link = concat(new RetryLink(), new HttpLink({ uri: '/graphql' }));
 ```
 
 <h2 id="directional">Directional Composition</h2>
