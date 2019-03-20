@@ -3,9 +3,9 @@ import { DocumentNode } from 'graphql/language/ast';
 import { ExecutionResult } from 'graphql/execution/execute';
 export { ExecutionResult, DocumentNode };
 
-export interface GraphQLRequest {
+export interface GraphQLRequest<Variables = Record<string, any>> {
   query: DocumentNode;
-  variables?: Record<string, any>;
+  variables?: Variables;
   operationName?: string;
   context?: Record<string, any>;
   extensions?: Record<string, any>;
@@ -31,7 +31,7 @@ export type FetchResult<
 };
 
 export type NextLink = (operation: Operation) => Observable<FetchResult>;
-export type RequestHandler = (
+export type RequestHandler<ResultData = Record<string, any>> = (
   operation: Operation,
   forward?: NextLink,
-) => Observable<FetchResult> | null;
+) => Observable<FetchResult<ResultData>> | null;

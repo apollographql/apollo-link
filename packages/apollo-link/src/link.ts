@@ -93,13 +93,13 @@ export const concat = (
   }
 };
 
-export class ApolloLink {
+export class ApolloLink<ResultData = Record<string, any>> {
   public static empty = empty;
   public static from = from;
   public static split = split;
   public static execute = execute;
 
-  constructor(request?: RequestHandler) {
+  constructor(request?: RequestHandler<ResultData>) {
     if (request) this.request = request;
   }
 
@@ -118,15 +118,18 @@ export class ApolloLink {
   public request(
     operation: Operation,
     forward?: NextLink,
-  ): Observable<FetchResult> | null {
+  ): Observable<FetchResult<ResultData>> | null {
     throw new InvariantError('request is not implemented');
   }
 }
 
-export function execute(
-  link: ApolloLink,
-  operation: GraphQLRequest,
-): Observable<FetchResult> {
+export function execute<
+  ResultData = Record<string, any>,
+  Variables = Record<string, any>
+>(
+  link: ApolloLink<ResultData>,
+  operation: GraphQLRequest<Variables>,
+): Observable<FetchResult<ResultData>> {
   return (
     link.request(
       createOperation(
