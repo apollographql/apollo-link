@@ -15,13 +15,13 @@ Apollo Link ships with two ways to compose links. The first is a method called `
 ```js
 import { ApolloLink } from 'apollo-link';
 import { RetryLink } from 'apollo-link-retry';
-import HttpLink from 'apollo-link-http';
+import { HttpLink } from 'apollo-link-http';
 import MyAuthLink from '../auth';
 
 const link = ApolloLink.from([
   new RetryLink(),
   new MyAuthLink(),
-  new HttpLink({ uri: '/graphql' })
+  new HttpLink({ uri: 'http://localhost:4000/graphql' })
 ]);
 ```
 
@@ -31,9 +31,9 @@ const link = ApolloLink.from([
 ```js
 import { ApolloLink } from 'apollo-link';
 import { RetryLink } from 'apollo-link-retry';
-import HttpLink from 'apollo-link-http';
+import { HttpLink } from 'apollo-link-http';
 
-const link = ApolloLink.concat(new RetryLink(), new HttpLink({ uri: '/graphql' }));
+const link = ApolloLink.concat(new RetryLink(), new HttpLink({ uri: 'http://localhost:4000/graphql' }));
 ```
 
 <h2 id="directional">Directional Composition</h2>
@@ -43,12 +43,12 @@ Given that links are a way of implementing custom control flow for your GraphQL 
 ```js
 import { ApolloLink } from 'apollo-link';
 import { RetryLink } from 'apollo-link-retry';
-import HttpLink from 'apollo-link-http';
+import { HttpLink } from 'apollo-link-http';
 
 const link = new RetryLink().split(
   (operation) => operation.getContext().version === 1,
-  new HttpLink({ uri: "/v1/graphql" }),
-  new HttpLink({ uri: "/v2/graphql" })
+  new HttpLink({ uri: "http://localhost:4000/v1/graphql" }),
+  new HttpLink({ uri: "http://localhost:4000/v2/graphql" })
 );
 ```
 
