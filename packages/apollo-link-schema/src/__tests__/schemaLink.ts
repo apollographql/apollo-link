@@ -3,7 +3,7 @@ import { print, graphql } from 'graphql';
 import { makeExecutableSchema } from 'graphql-tools';
 import gql from 'graphql-tag';
 
-import { SchemaLink } from '../schemaLink';
+import { SchemaLink } from '../';
 
 const sampleQuery = gql`
   query SampleQuery {

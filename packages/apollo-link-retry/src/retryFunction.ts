@@ -30,10 +30,10 @@ export interface RetryFunctionOptions {
   retryIf?: (error: any, operation: Operation) => boolean | Promise<boolean>;
 }
 
-export function buildRetryFunction({
-  max = 5,
-  retryIf,
-}: RetryFunctionOptions = {}): RetryFunction {
+export function buildRetryFunction(
+  retryOptions?: RetryFunctionOptions,
+): RetryFunction {
+  const { retryIf, max = 5 } = retryOptions || ({} as RetryFunctionOptions);
   return function retryFunction(count, operation, error) {
     if (count >= max) return false;
     return retryIf ? retryIf(error, operation) : !!error;

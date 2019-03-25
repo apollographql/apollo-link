@@ -35,20 +35,20 @@ export class OperationBatcher {
 
   constructor({
     batchInterval,
-    batchMax = 0,
+    batchMax,
     batchHandler,
-    batchKey = () => '',
+    batchKey,
   }: {
-    batchInterval: number;
+    batchInterval?: number;
     batchMax?: number;
     batchHandler: BatchHandler;
     batchKey?: (operation: Operation) => string;
   }) {
     this.queuedRequests = new Map();
     this.batchInterval = batchInterval;
-    this.batchMax = batchMax;
+    this.batchMax = batchMax || 0;
     this.batchHandler = batchHandler;
-    this.batchKey = batchKey;
+    this.batchKey = batchKey || (() => '');
   }
 
   public enqueueRequest(request: BatchableRequest): Observable<FetchResult> {
@@ -100,15 +100,16 @@ export class OperationBatcher {
   // Consumes the queue.
   // Returns a list of promises (one for each query).
   public consumeQueue(
-    key: string = '',
+    key?: string,
   ): (Observable<FetchResult> | undefined)[] | undefined {
-    const queuedRequests = this.queuedRequests.get(key);
+    const requestKey = key || '';
+    const queuedRequests = this.queuedRequests.get(requestKey);
 
     if (!queuedRequests) {
       return;
     }
 
-    this.queuedRequests.delete(key);
+    this.queuedRequests.delete(requestKey);
 
     const requests: Operation[] = queuedRequests.map(
       queuedRequest => queuedRequest.operation,
@@ -179,10 +180,14 @@ export class OperationBatcher {
     return observables;
   }
 
-  private scheduleQueueConsumption(key: string = ''): void {
+  private scheduleQueueConsumption(key?: string): void {
+    const requestKey = key || '';
     setTimeout(() => {
-      if (this.queuedRequests.get(key) && this.queuedRequests.get(key).length) {
-        this.consumeQueue(key);
+      if (
+        this.queuedRequests.get(requestKey) &&
+        this.queuedRequests.get(requestKey).length
+      ) {
+        this.consumeQueue(requestKey);
       }
     }, this.batchInterval);
   }

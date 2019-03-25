@@ -1,20 +1,20 @@
 {
   "name": "apollo-link-http-common",
-  "version": "0.2.10",
+  "version": "0.2.13",
   "description": "Http utilities for Apollo Link shared across all links using http",
   "main": "./lib/index.js",
   "module": "./lib/bundle.esm.js",
   "typings": "./lib/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "tsc && rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
     "coverage": "jest --coverage",
-    "filesize": "npm run build",
+    "filesize": "../../scripts/minify",
     "lint": "tslint -c \"../../tslint.json\" -p tsconfig.json -c ../../tslint.json src/*.ts",
     "prebuild": "npm run clean",
-    "prepare": "npm run lint && npm run build",
-    "prepublishOnly": "npm run clean && npm run build",
-    "test": "jest",
+    "prepare": "npm run build",
+    "test": "npm run lint && jest",
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "keywords": [
@@ -25,7 +25,8 @@
   "author": "Evans Hauser",
   "license": "MIT",
   "dependencies": {
-    "apollo-link": "^1.2.8",
+    "apollo-link": "file:../apollo-link",
+    "ts-invariant": "^0.3.2",
     "tslib": "^1.9.3"
   },
   "peerDependencies": {
@@ -33,16 +34,16 @@
   },
   "devDependencies": {
     "@types/graphql": "14.0.7",
-    "@types/jest": "22.2.3",
+    "@types/jest": "24.0.11",
     "fetch-mock": "6.5.2",
     "graphql": "14.1.1",
     "graphql-tag": "2.10.1",
-    "jest": "22.4.4",
+    "jest": "24.5.0",
     "object-to-querystring": "1.0.8",
     "rimraf": "2.6.3",
-    "rollup": "0.68.2",
+    "rollup": "1.7.3",
     "ts-jest": "22.4.6",
-    "tslint": "5.13.0",
+    "tslint": "5.14.0",
     "typescript": "3.0.3"
   },
   "repository": {

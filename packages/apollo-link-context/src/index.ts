@@ -11,8 +11,8 @@ export type ContextSetter = (
   prevContext: any,
 ) => Promise<any> | any;
 
-export const setContext = (setter: ContextSetter): ApolloLink =>
-  new ApolloLink((operation: Operation, forward: NextLink) => {
+export function setContext(setter: ContextSetter): ApolloLink {
+  return new ApolloLink((operation: Operation, forward: NextLink) => {
     const { ...request } = operation;
 
     return new Observable(observer => {
@@ -34,3 +34,4 @@ export const setContext = (setter: ContextSetter): ApolloLink =>
       };
     });
   });
+}

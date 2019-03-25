@@ -1,11 +1,54 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
-## vNext
+## vNEXT
+
+### apollo-link
+
+- Avoid importing `graphql/language/printer` for `getKey`. <br/>
+  [@benjamn](https://github.com/benjamn) in [#992](https://github.com/apollographql/apollo-link/pull/992)
+
+
+## 2019-03-14
+
+### apollo-link-dedup 1.0.18
+
+- Fixes an issue introduced in [#984](https://github.com/apollographql/apollo-link/pull/984)
+  where subscriber `next` and/or `error` calls might have already deleted the 
+  key the new dedupe changes were intended to help with.  <br/>
+  [@JoviDeCroock](https://github.com/JoviDeCroock) in [#988](https://github.com/apollographql/apollo-link/pull/988)
+ 
+
+## 2019-03-13
+
+### apollo-link-dedup 1.0.17
+
+- Fixes an issue caused by the `DedupLink` shared observable returning 
+  cleanup logic that unsubscribes from the real observable, without 
+  checking whether only one of the many (shared) subscribers are 
+  unsubscribing. This caused problems when using `DedupLink` in front of 
+  `HttpLink`, as this lead to `HttpLink` aborting HTTP requests while some 
+  callers were still waiting for a response.  <br/>
+  [@ms](https://github.com/ms) in [#984](https://github.com/apollographql/apollo-link/pull/984)
+
+
+## 2019-03-05
 
 ### General
 
 - Remove the docs CI step. <br/>
   [@JoviDeCroock](https://github.com/JoviDeCroock) in [#938](https://github.com/apollographql/apollo-link/pull/938)
+
+- Enable tree-shaking in Webpack. <br/>
+  [@JoviDeCroock](https://github.com/JoviDeCroock) in [#967](https://github.com/apollographql/apollo-link/pull/967)
+
+- Import `tslib` helpers like `__extends` and `__rest` from a shared external package, rather than inlining them. <br/>
+  [@benjamn](https://github.com/benjamn) in [#959](https://github.com/apollographql/apollo-link/pull/959)
+
+- Shrink `apollo-link` and `apollo-link-http-common` packages using [`ts-invariant` and `rollup-plugin-invariant`](https://github.com/apollographql/invariant-packages). <br/>
+  [@benjamn](https://github.com/benjamn) in [#969](https://github.com/apollographql/apollo-link/pull/969)
+
+- Add `.rpt2_cache` to all `packages/*/.npmignore` files. <br/>
+  [@benjamn](https://github.com/benjamn) in [#972](https://github.com/apollographql/apollo-link/pull/972)
 
 ### docs
 
@@ -21,25 +64,30 @@
   [@JoviDeCroock](https://github.com/JoviDeCroock) in [#942](https://github.com/apollographql/apollo-link/pull/942)  <br />
   [@goofiw](https://github.com/goofiw) in [#899](https://github.com/apollographql/apollo-link/pull/899)
 
-### apollo-link
+### apollo-link 1.2.9
 
 - Documentation updates.  <br/>
   [@capaj](https://github.com/capaj) in [#937](https://github.com/apollographql/apollo-link/pull/937)  <br />
 
-### apollo-link-error
+### apollo-link-error 1.1.8
 
 - Add undefined check. <br/>
   [@JoviDeCroock](https://github.com/JoviDeCroock) in [#943](https://github.com/apollographql/apollo-link/pull/943)  <br />
 
-### apollo-link-batch-http
+### apollo-link-batch-http 1.2.9
 
 - Include client-awareness headers. <br/>
   [@jovidecroock](https://github.com/jovidecroock) in [#950](https://github.com/apollographql/apollo-link/pull/950)  <br />
 
-### apollo-link-http
+### apollo-link-http 1.5.12
 
 - Correct code comment. <br/>
   [@mouafa](https://github.com/mouafa) in [#921](https://github.com/apollographql/apollo-link/pull/921)  <br />
+
+### apollo-link-schema 1.2.0
+
+- Avoid bundling `graphql/execution/execute` into `apollo-link-schema`. <br/>
+  [@benjamn](https://github.com/benjamn) in [#968](https://github.com/apollographql/apollo-link/pull/968)
 
 ## 2019-02-01
 

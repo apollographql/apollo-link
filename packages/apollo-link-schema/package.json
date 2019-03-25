@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-schema",
-  "version": "1.1.6",
+  "version": "1.2.2",
   "description": "Use a GraphQL Schema to request data",
   "author": "Tomas Trescak <tomi.trescak@gmail.com>",
   "contributors": [
@@ -15,6 +15,7 @@
   "main": "./lib/index.js",
   "module": "./lib/bundle.esm.js",
   "typings": "./lib/index.d.ts",
+  "sideEffects": false,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-link.git"
@@ -27,16 +28,15 @@
     "build": "tsc && rollup -c",
     "clean": "rimraf lib/* && rimraf coverage/*",
     "coverage": "jest --coverage",
-    "filesize": "npm run build",
+    "filesize": "../../scripts/minify",
     "lint": "tslint -c \"../../tslint.json\" -p tsconfig.json -c ../../tslint.json src/*.ts",
     "prebuild": "npm run clean",
-    "prepare": "npm run lint && npm run build",
-    "prepublishOnly": "npm run clean && npm run build",
-    "test": "jest",
+    "prepare": "npm run build",
+    "test": "npm run lint && jest",
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-link": "^1.2.8",
+    "apollo-link": "file:../apollo-link",
     "tslib": "^1.9.3"
   },
   "peerDependencies": {
@@ -44,15 +44,15 @@
   },
   "devDependencies": {
     "@types/graphql": "14.0.7",
-    "@types/jest": "22.2.3",
+    "@types/jest": "24.0.11",
     "graphql": "14.1.1",
     "graphql-tag": "2.10.1",
     "graphql-tools": "2.24.0",
-    "jest": "22.4.4",
+    "jest": "24.5.0",
     "rimraf": "2.6.3",
-    "rollup": "0.68.2",
+    "rollup": "1.7.3",
     "ts-jest": "22.4.6",
-    "tslint": "5.13.0",
+    "tslint": "5.14.0",
     "typescript": "3.0.3"
   },
   "jest": {
