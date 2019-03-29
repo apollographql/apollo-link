@@ -149,8 +149,19 @@ class RetryableOperation<TValue = any> {
   private onError = async error => {
     this.retryCount += 1;
     // Retry if the server tells us to.
-    if (error && error.response && error.response.status === 429 && error.response.headers['Retry-After']) {
-      this.scheduleRetry(this.delayFor(this.retryCount, error.response.headers['Retry-After'], error))
+    if (
+      error &&
+      error.response &&
+      error.response.status === 429 &&
+      error.response.headers['Retry-After']
+    ) {
+      this.scheduleRetry(
+        this.delayFor(
+          this.retryCount,
+          error.response.headers['Retry-After'],
+          error,
+        ),
+      );
     }
     // Should we retry?
     const shouldRetry = await this.retryIf(
