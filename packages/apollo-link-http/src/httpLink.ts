@@ -25,6 +25,7 @@ export namespace HttpLink {
      * to POST).
      */
     useGETForQueries?: boolean;
+    timeout?: number;
   }
 }
 
@@ -131,6 +132,12 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
     }
 
     return new Observable(observer => {
+      if (linkOptions.timeout && controller) {
+        this.timeout = setTimeout(() => {
+          controller.abort();
+        }, linkOptions.timeout);
+      }
+
       fetcher(chosenURI, options)
         .then(response => {
           operation.setContext({ response });
@@ -138,6 +145,10 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
         })
         .then(parseAndCheckHttpResponse(operation))
         .then(result => {
+          if (this.timeout) {
+            clearTimeout(this.timeout);
+            this.timeout = null;
+          }
           // we have data and can send it to back up the link chain
           observer.next(result);
           observer.complete();
