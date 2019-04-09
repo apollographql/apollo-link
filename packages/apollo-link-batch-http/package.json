@@ -48,7 +48,7 @@
     "fetch-mock": "6.5.2",
     "graphql": "14.2.1",
     "graphql-tag": "2.10.1",
-    "jest": "24.5.0",
+    "jest": "24.7.1",
     "object-to-querystring": "1.0.8",
     "proxyquire": "1.8.0",
     "rimraf": "2.6.3",
