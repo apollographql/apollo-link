@@ -46,7 +46,7 @@
     "jest": "24.7.1",
     "proxyquire": "1.8.0",
     "rimraf": "2.6.3",
-    "rollup": "1.7.3",
+    "rollup": "1.9.3",
     "ts-jest": "22.4.6",
     "tslint": "5.14.0",
     "typescript": "3.0.3"
