@@ -842,9 +842,30 @@ export const sharedHttpTest = (
 
     const body = '{';
     const unparsableJson = jest.fn(() => Promise.resolve(body));
-    it('throws an error if response is unparsable', done => {
+    it('throws an error if response is unparsable and status >= 300', done => {
       fetch.mockReturnValueOnce(
-        Promise.resolve({ status: 400, text: unparsableJson }),
+        Promise.resolve({ status: 503, text: () => Promise.resolve('foo') }),
+      );
+
+      const link = createLink({ uri: 'data', fetch });
+
+      execute(link, { query: sampleQuery }).subscribe(
+        result => {
+          done.fail('should not have called result');
+        },
+        e => {
+          expect(e.name).toEqual('ServerError');
+          expect(e.message).toMatch(
+            /Response not successful: Received status code 503/,
+          );
+          expect(e.statusCode).toBe(503);
+          done();
+        },
+      );
+    });
+    it('throws an error if response is unparsable and status is < 300', done => {
+      fetch.mockReturnValueOnce(
+        Promise.resolve({ status: 200, text: unparsableJson }),
       );
       const link = createLink({ uri: 'data', fetch });
 
@@ -854,7 +875,7 @@ export const sharedHttpTest = (
         },
         makeCallback(done, e => {
           expect(e.message).toMatch(/JSON/);
-          expect(e.statusCode).toBe(400);
+          expect(e.statusCode).toBe(200);
           expect(e.response).toBeDefined();
           expect(e.bodyText).toBe(body);
         }),

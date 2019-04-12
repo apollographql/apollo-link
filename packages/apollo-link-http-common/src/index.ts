@@ -139,35 +139,53 @@ export const parseAndCheckHttpResponse = operations => (response: Response) => {
         }
       })
       //TODO: when conditional types come out then result should be T extends Array ? Array<FetchResult> : FetchResult
-      .then((result: any) => {
-        if (response.status >= 300) {
-          //Network error
-          throwServerError(
-            response,
-            result,
-            `Response not successful: Received status code ${response.status}`,
-          );
-        }
-        //TODO should really error per response in a Batch based on properties
-        //    - could be done in a validation link
-        if (
-          !Array.isArray(result) &&
-          !result.hasOwnProperty('data') &&
-          !result.hasOwnProperty('errors')
-        ) {
-          //Data error
-          throwServerError(
-            response,
-            result,
-            `Server response was missing for query '${
-              Array.isArray(operations)
-                ? operations.map(op => op.operationName)
-                : operations.operationName
-            }'.`,
-          );
-        }
-        return result;
-      })
+      .then(
+        (result: any) => {
+          if (response.status >= 300) {
+            //Network error
+            throwServerError(
+              response,
+              result,
+              `Response not successful: Received status code ${
+                response.status
+              }`,
+            );
+          }
+          //TODO should really error per response in a Batch based on properties
+          //    - could be done in a validation link
+          if (
+            !Array.isArray(result) &&
+            !result.hasOwnProperty('data') &&
+            !result.hasOwnProperty('errors')
+          ) {
+            //Data error
+            throwServerError(
+              response,
+              result,
+              `Server response was missing for query '${
+                Array.isArray(operations)
+                  ? operations.map(op => op.operationName)
+                  : operations.operationName
+              }'.`,
+            );
+          }
+          return result;
+        },
+        (parseError: any) => {
+          if (response.status >= 300) {
+            //Network error
+            throwServerError(
+              response,
+              parseError.bodyText,
+              `Response not successful: Received status code ${
+                response.status
+              }`,
+            );
+          }
+
+          return Promise.reject(parseError);
+        },
+      )
   );
 };
 
