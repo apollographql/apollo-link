@@ -339,6 +339,39 @@ const link = new RestLink({
 
 > When using the object form, the `uri` field is required.
 
+<h3 id=options.example.customFetch>Custom Fetch</h3>
+
+By default, Apollo uses the browsers `fetch` method to handle `REST` requests to your domain/endpoint. The `customFetch` option allows you to specify _your own_ request handler by defining a function that returns a `Promise` with a fetch-response-like object:
+```js
+const link = new RestLink({
+  endpoints: "/api",
+  customFetch: (uri, options) => new Promise((resolve, reject) => {
+    // Your own (asynchronous) request handler
+    resolve(responseObject)
+  }),
+});
+```
+
+To resolve your GraphQL queries quickly, Apollo will issue requests to relevant endpoints as soon as possible. This is generally ok, but can lead to large numbers of `REST` requests to be fired at once; especially for deeply nested queries [(see `@export` directive)](#export). 
+
+> Some endpoints (like public APIs) might enforce _rate limits_, leading to failed responses and unresolved queries in such cases.
+
+By example, `customFetch` is a good place to manage your apps fetch operations. The following implementation makes sure to only issue 2 requests at a time (concurrency) while waiting at least 500ms until the next batch of requests is fired. 
+```js
+import pThrottle from "p-throttle";
+
+const link = new RestLink({
+  endpoints: "/api",
+  customFetch: pThrottle((uri, config) => {
+      return fetch(uri, config);
+    },
+    2, // Max. concurrent Requests
+    500 // Min. delay between calls
+  ),
+});
+```
+> Since Apollo issues `Promise` based requests, we can resolve them as we see fit. This example uses [`pThrottle`](https://github.com/sindresorhus/p-throttle); part of the popular [promise-fun](https://github.com/sindresorhus/promise-fun) collection.
+
 <h3 id=options.example>Complete options</h3>
 
 Here is one way you might customize `RestLink`:
@@ -392,8 +425,8 @@ Here is one way to add request `headers` to the context and retrieve the respons
 
 ```js
 const authRestLink = new ApolloLink((operation, forward) => {
-  operation.setContext(async ({headers}) => {
-    const token = await localStorage.getItem("token");
+  operation.setContext(({headers}) => {
+    const token = localStorage.getItem("token");
     return {
       headers: {
         ...headers,
@@ -406,9 +439,10 @@ const authRestLink = new ApolloLink((operation, forward) => {
     const { restResponses } = operation.getContext();
     const authTokenResponse = restResponses.find(res => res.headers.has("Authorization"));
     // You might also filter on res.url to find the response of a specific API call
-    return authTokenResponse
-      ? localStorage.setItem("token", authTokenResponse.headers.get('Authorization')).then(() => result)
-      : result;
+    if (authTokenResponse) {
+      localStorage.setItem("token", authTokenResponse.headers.get("Authorization"));
+    }
+    return result;
   });
 });
 
