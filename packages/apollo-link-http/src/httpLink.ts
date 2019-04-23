@@ -144,8 +144,8 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
           return result;
         })
         .catch(err => {
-          // fetch was cancelled so its already been cleaned up in the unsubscribe
-          if (err.name === 'AbortError') return;
+          // exit if fetch was cancelled from the observer unsubscribing
+          if (err.name === 'AbortError' && observer.closed) return;
           // if it is a network error, BUT there is graphql result info
           // fire the next observer before calling error
           // this gives apollo-client (and react-apollo) the `graphqlErrors` and `networErrors`
