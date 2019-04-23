@@ -27,6 +27,22 @@ describe('Common Http functions', () => {
 
     const operations = [createOperation({}, { query })];
 
+    it('throws a server error with a status code on not successful response', done => {
+      const status = 400;
+      fetchMock.mock('begin:error', status);
+      fetch('error')
+        .then(parseAndCheckHttpResponse(operations))
+        .then(done.fail)
+        .catch(e => {
+          expect(e.statusCode).toBe(status);
+          expect(e.name).toBe('ServerError');
+          expect(e).toHaveProperty('response');
+          expect(e).toHaveProperty('result');
+          done();
+        })
+        .catch(done.fail);
+    });
+
     it('throws a parse error with a status code on unparsable response', done => {
       const status = 200;
       fetchMock.mock('begin:error', status);
