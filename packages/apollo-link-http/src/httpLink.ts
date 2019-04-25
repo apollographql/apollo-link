@@ -144,7 +144,7 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
           return result;
         })
         .catch(err => {
-          // fetch was cancelled so its already been cleaned up in the unsubscribe
+          // fetch was cancelled so it's already been cleaned up in the unsubscribe
           if (err.name === 'AbortError') return;
           // if it is a network error, BUT there is graphql result info
           // fire the next observer before calling error
@@ -153,8 +153,8 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
           // this should only happen if we *also* have data as part of the response key per
           // the spec
           if (err.result && err.result.errors && err.result.data) {
-            // if we dont' call next, the UI can only show networkError because AC didn't
-            // get andy graphqlErrors
+            // if we don't call next, the UI can only show networkError because AC didn't
+            // get any graphqlErrors
             // this is graphql execution result info (i.e errors and possibly data)
             // this is because there is no formal spec how errors should translate to
             // http status codes. So an auth error (401) could have both data
