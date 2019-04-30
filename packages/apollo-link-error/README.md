@@ -41,7 +41,7 @@ A `networkError` can contain additional fields, such as a GraphQL object in the 
 
 <h2 id="retry-request">Retrying failed requests</h2>
 
-An error handler might want to do more than just logging errors. You can check for a certain failure condition or error code, and retry the request if rectifying the error is possible. For example, when using some form of token based authentication, there is a need to handle re-authentication when the token expires. Here is an example of how to do this using `forward()`.
+An error handler might want to do more than just log errors. You can check for a certain failure condition or error code, and retry the request if rectifying the error is possible. For example, when using some form of token based authentication, there is a need to handle re-authentication when the token expires. Here is an example of how to do this using `forward()`.
 ```js
 onError(({ graphQLErrors, networkError, operation, forward }) => {
     if (graphQLErrors) {
