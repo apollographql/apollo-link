@@ -60,7 +60,7 @@
     {
       "name": "apollo-link-retry",
       "path": "./packages/apollo-link-retry/lib/bundle.min.js",
-      "maxSize": "1.15 Kb"
+      "maxSize": "1.25 Kb"
     },
     {
       "name": "apollo-link-schema",
