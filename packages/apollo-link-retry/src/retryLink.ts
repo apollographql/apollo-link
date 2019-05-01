@@ -162,6 +162,7 @@ class RetryableOperation<TValue = any> {
           error,
         ),
       );
+      return;
     }
     // Should we retry?
     const shouldRetry = await this.retryIf(
