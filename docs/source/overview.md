@@ -6,7 +6,7 @@ description: What you need to know to create your own Links.
 Apollo Link is designed to be a powerful way to compose actions around data handling with GraphQL. Each link represents a subset of functionality that can be composed with other links to create complex control flows of data.
 
 <div style="text-align:center">
-![Figure 1](https://i.imgur.com/YvS5Enu.png)
+  <img alt="Figure 1" src="https://i.imgur.com/YvS5Enu.png" />
 </div>
 
 At a basic level, a link is a function that takes an operation and returns an observable. An operation is an object with the following information:
@@ -21,7 +21,7 @@ At a basic level, a link is a function that takes an operation and returns an ob
 We can chain these links together so that the first link operates on an operation object and each subsequent link operates on the result of the previous link. This allows us to "compose" actions and implement complex data handling logic in an elegant manner. We can visualize them like this:
 
 <div style="text-align:center;">
-![Figure 2](https://imgur.com/YmiOwJj.png)
+  <img alt="Figure 2" src="https://imgur.com/YmiOwJj.png" />
 </div>
 
 Note that although we have the terminating link requesting GraphQL results from a server in this figure, this doesn't necessarily have to be the case: your GraphQL results can come from anywhere. For example, `apollo-link-state` allows to use GraphQL operations to query client state. 
