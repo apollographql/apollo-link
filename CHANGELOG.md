@@ -1,5 +1,12 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
+## 2019-05-13
+
+### apollo-link
+
+- Documentation updates.  <br/>
+  [@jsjoeio](https://github.com/jsjoeio) in [#1044](https://github.com/apollographql/apollo-link/pull/1044)  <br />
+
 ## vNEXT
 
 ### apollo-link
