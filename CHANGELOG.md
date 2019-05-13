@@ -1,18 +1,13 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
-## 2019-05-13
-
-### apollo-link
-
-- Documentation updates.  <br/>
-  [@jsjoeio](https://github.com/jsjoeio) in [#1044](https://github.com/apollographql/apollo-link/pull/1044)  <br />
-
 ## vNEXT
 
 ### apollo-link
 
 - Avoid importing `graphql/language/printer` for `getKey`. <br/>
   [@benjamn](https://github.com/benjamn) in [#992](https://github.com/apollographql/apollo-link/pull/992)
+- Documentation updates.  <br/>
+  [@jsjoeio](https://github.com/jsjoeio) in [#1044](https://github.com/apollographql/apollo-link/pull/1044)  <br />
 
 
 ## 2019-03-14
