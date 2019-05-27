@@ -41,7 +41,7 @@
     "jest": "24.8.0",
     "object-to-querystring": "1.0.8",
     "rimraf": "2.6.3",
-    "rollup": "1.12.3",
+    "rollup": "1.12.4",
     "ts-jest": "22.4.6",
     "tslint": "5.16.0",
     "typescript": "3.0.3"
