@@ -5,9 +5,11 @@
 ### apollo-link
 
 - Avoid importing `graphql/language/printer` for `getKey`. <br/>
-  [@benjamn](https://github.com/benjamn) in [#992](https://github.com/apollographql/apollo-link/pull/992)
+  [@benjamn](https://github.com/benjamn) in [#992](https://github.com/apollographql/apollo-link/pull/992)  <br />
 - Documentation updates.  <br/>
   [@jsjoeio](https://github.com/jsjoeio) in [#1044](https://github.com/apollographql/apollo-link/pull/1044)  <br />
+- Bump apollo-utilities to reduce total bundle size of apollo applications.  <br/>
+  [@salzhrani](https://github.com/salzhrani) in [#1044](https://github.com/apollographql/apollo-link/pull/1058)  <br />
 
 
 ## 2019-03-14
@@ -15,20 +17,20 @@
 ### apollo-link-dedup 1.0.18
 
 - Fixes an issue introduced in [#984](https://github.com/apollographql/apollo-link/pull/984)
-  where subscriber `next` and/or `error` calls might have already deleted the 
+  where subscriber `next` and/or `error` calls might have already deleted the
   key the new dedupe changes were intended to help with.  <br/>
   [@JoviDeCroock](https://github.com/JoviDeCroock) in [#988](https://github.com/apollographql/apollo-link/pull/988)
- 
+
 
 ## 2019-03-13
 
 ### apollo-link-dedup 1.0.17
 
-- Fixes an issue caused by the `DedupLink` shared observable returning 
-  cleanup logic that unsubscribes from the real observable, without 
-  checking whether only one of the many (shared) subscribers are 
-  unsubscribing. This caused problems when using `DedupLink` in front of 
-  `HttpLink`, as this lead to `HttpLink` aborting HTTP requests while some 
+- Fixes an issue caused by the `DedupLink` shared observable returning
+  cleanup logic that unsubscribes from the real observable, without
+  checking whether only one of the many (shared) subscribers are
+  unsubscribing. This caused problems when using `DedupLink` in front of
+  `HttpLink`, as this lead to `HttpLink` aborting HTTP requests while some
   callers were still waiting for a response.  <br/>
   [@ms](https://github.com/ms) in [#984](https://github.com/apollographql/apollo-link/pull/984)
 
