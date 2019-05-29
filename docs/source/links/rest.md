@@ -14,7 +14,7 @@ With `apollo-link-rest`, you can now call your endpoints inside your GraphQL que
 
 You can start using ApolloClient in your app today, let's see how!
 
-<h2 id="start">Quick start</h2>
+## Quick start
 
 To get started, you need first to install apollo-client:
 
@@ -78,7 +78,7 @@ client.query({ query }).then(response => {
 });
 ```
 
-<h2 id="options">Options</h2>
+## Options
 
 Construction of `RestLink` takes an options object to customize the behavior of the link. The options you can pass are outlined below:
 
@@ -94,8 +94,7 @@ Construction of `RestLink` takes an options object to customize the behavior of 
 * `bodySerializers: /map-of-functions/`: _optional_ Structure to allow the definition of alternative serializers, which can then be specified by their key.
 * `responseTransformer?: /function/`: _optional_ Apollo expects a record response to return a root object, and a collection of records response to return an array of objects. Use this function to structure the response into the format Apollo expects if your response data is structured differently.
 
-
-<h3 id="options.endpoints">Multiple endpoints</h3>
+### Multiple endpoints
 
 If you want to be able to use multiple endpoints, you should create your link like so:
 
@@ -135,7 +134,7 @@ If you have a default endpoint, you can create your link like so:
 
 Then if you do not specify an endpoint in your query the default endpoint (the one you specify in the `uri` option.) will be used.
 
-<h3 id="options.typePatcher">Typename patching</h3>
+### Typename patching
 
 When sending such a query:
 
@@ -226,7 +225,7 @@ const restLink = new RestLink({
 })
 ```
 
-<h4 id="options.typePatcher.caveat">Warning</h4>
+#### Warning
 
 However, you should know that at the moment the `typePatcher` is not able to act on nested objects within annotated `@type` objects. For instance, `failingResults` will not be patched if you define it on the `typePatcher`.
 
@@ -252,7 +251,7 @@ To make this work you should try to pick one strategy, and stick with it -- eith
 
 This is tracked in [Issue #112](https://github.com/apollographql/apollo-link-rest/issues/112)
 
-<h3 id="options.responseTransformer">Response transforming</h3>
+### Response transforming
 
 By default, Apollo expects an object at the root for record requests, and an array of objects at the root for collection requests. For example, if fetching a user by ID (`/users/1`), the following response is expected.
 
@@ -318,7 +317,7 @@ const link = new RestLink({
 
 ```
 
-<h3 id="options.responseTransformer.endpoints">Custom endpoint responses</h3>
+### Custom endpoint responses
 
 The client level `responseTransformer` applies for all responses, across all URIs and endpoints. If you need a custom `responseTransformer` per endpoint, you can define an object of options for that specific endpoint.
 
@@ -339,7 +338,7 @@ const link = new RestLink({
 
 > When using the object form, the `uri` field is required.
 
-<h3 id=options.example.customFetch>Custom Fetch</h3>
+### Custom Fetch
 
 By default, Apollo uses the browsers `fetch` method to handle `REST` requests to your domain/endpoint. The `customFetch` option allows you to specify _your own_ request handler by defining a function that returns a `Promise` with a fetch-response-like object:
 ```js
@@ -356,7 +355,8 @@ To resolve your GraphQL queries quickly, Apollo will issue requests to relevant 
 
 > Some endpoints (like public APIs) might enforce _rate limits_, leading to failed responses and unresolved queries in such cases.
 
-By example, `customFetch` is a good place to manage your apps fetch operations. The following implementation makes sure to only issue 2 requests at a time (concurrency) while waiting at least 500ms until the next batch of requests is fired. 
+By example, `customFetch` is a good place to manage your apps fetch operations. The following implementation makes sure to only issue 2 requests at a time (concurrency) while waiting at least 500ms until the next batch of requests is fired.
+
 ```js
 import pThrottle from "p-throttle";
 
@@ -372,7 +372,7 @@ const link = new RestLink({
 ```
 > Since Apollo issues `Promise` based requests, we can resolve them as we see fit. This example uses [`pThrottle`](https://github.com/sindresorhus/p-throttle); part of the popular [promise-fun](https://github.com/sindresorhus/promise-fun) collection.
 
-<h3 id=options.example>Complete options</h3>
+### Complete options
 
 Here is one way you might customize `RestLink`:
 
@@ -407,7 +407,7 @@ Here is one way you might customize `RestLink`:
   });
 ```
 
-<h2 id="context">Link Context</h2>
+## Link Context
 
 `RestLink` has an [interface `LinkChainContext`](https://github.com/apollographql/apollo-link-rest/blob/1824da47d5db77a2259f770d9c9dd60054c4bb1c/src/restLink.ts#L557-L570) which it uses as the structure of things that it will look for in the `context`, as it decides how to fulfill a specific `RestLink` request. (Please see the [`apollo-link-context`](./context.html) page for a discussion of why you might want this).
 
@@ -417,7 +417,7 @@ Here is one way you might customize `RestLink`:
 * `headersMergePolicy?: RestLink.HeadersMergePolicy`: This is a function that decide how the headers returned in this `contextLink` are merged with headers defined at the `RestLink`-level. If you don't provide this, the headers will be simply appended. To use this option, you can provide your own function that decides how to process the headers. [Code references](https://github.com/apollographql/apollo-link-rest/blob/8e57cabb5344209d9cfa391c1614fe8880efa5d9/src/restLink.ts#L462-L510)
 * `restResponses?: Response[]`: This will be populated after the operation has completed with the [Responses](https://developer.mozilla.org/en-US/docs/Web/API/Response) of every REST url fetched during the operation. This can be useful if you need to access the response headers to grab an authorization token for example.
 
-<h3 id="context.headers">Example</h3>
+### Example
 
 `RestLink` uses the `headers` field on the [`apollo-link-context`](./context.html) so you can compose other links that provide additional & dynamic headers to a given query.
 
@@ -454,7 +454,7 @@ const client = new ApolloClient({
 });
 ```
 
-<h2 id="order">Link order</h2>
+## Link order
 
 If you are using multiple link types, `restLink` should go before `httpLink`, as `httpLink` will swallow any calls that should be routed through `apollo-link-rest`!
 
@@ -472,14 +472,14 @@ const client = new ApolloClient({
 });
 ```
 
- _Note: you should also consider this if you're using [`apollo-link-context`](#context) to set `Headers`, you need that link to be before `restLink` as well._
+_Note: you should also consider this if you're using [`apollo-link-context`](#context) to set `Headers`, you need that link to be before `restLink` as well._
 
-<h2 id="rest">@rest directive</h2>
+## @rest directive
 
 This is where you setup the endpoint you want to fetch.
 The rest directive could be used at any depth in a query, but once it is used, nothing nested in it can be GraphQL data, it has to be from the `RestLink` or other resource (like the [`@client` directive](./state.html))
 
-<h3 id="rest.arguments">Arguments</h3>
+### Arguments
 
 An `@rest(…)` directive takes two required and several optional arguments:
 
@@ -492,7 +492,7 @@ An `@rest(…)` directive takes two required and several optional arguments:
 * _optional_ `bodyBuilder?: /function/`: If provided, this is the name a `function` that you provided to `variables`, that is called when a request-body needs to be built. This lets you combine arguments or encode the body in some format other than JSON.
 * _optional_ `bodySerializer?: /string | function/`: string key to look up a function in `bodySerializers` or a custom serialization function for the body/headers of this request before it is passed to the fetch call. Defaults to `JSON.stringify` and setting `Content-Type: application-json`.
 
-<h3 id="rest.arguments.variables">Variables</h3>
+### Variables
 
 You can use query `variables` inside nested queries, or in the the path argument of your directive:
 
@@ -532,15 +532,15 @@ The available variable sources are:
 * `context` these are the apollo-context, so you can have globals set up via `apollo-link-context`
 * `@rest` these include any other parameters you pass to the `@rest()` directive. This is probably more useful when working with `pathBuilder`, documented below.
 
-<h4 id="rest.arguments.pathBuilder">`pathBuilder`</h4>
+#### `pathBuilder`
 
 If the variable-replacement options described above aren't enough, you can provide a `pathBuilder` to your query. This will be called to dynamically construct the path. This is considered an advanced feature, and is documented in the source -- it also should be considered syntactically unstable, and we're looking for feedback!
 
-<h4 id="rest.arguments.body">`bodyKey` / `bodyBuilder`</h4>
+#### `bodyKey` / `bodyBuilder`
 
 When making a `POST` or `PUT` HTTP request, you often need to provide a request body. By [convention](https://graphql.org/graphql-js/mutations-and-input-types/), GraphQL recommends you name your input-types as `input`, so by default that's where we'll look to find a JSON object for your body.
 
-<h5 id="rest.arguments.body.key">`bodyKey`</h5>
+##### `bodyKey`
 
 If you need/want to name it something different, you can pass `bodyKey`, and we'll look at that variable instead.
 
@@ -565,7 +565,7 @@ mutation publishPost(
 
 [Unit Test](https://github.com/apollographql/apollo-link-rest/blob/c9d81ae308e5f61b5ae992061de7abc6cb2f78e0/src/__tests__/restLink.ts#L1803-L1846)
 
-<h5 id="rest.arguments.body.builder">`bodyBuilder`</h5>
+##### `bodyBuilder`
 
 If you need to structure your data differently, or you need to custom encode your body (say as form-encoded), you can instead provide `bodyBuilder`
 
@@ -589,7 +589,7 @@ mutation encryptedPost(
 
 [Unit Test](https://github.com/apollographql/apollo-link-rest/blob/c9d81ae308e5f61b5ae992061de7abc6cb2f78e0/src/__tests__/restLink.ts#L1847-L1904)
 
-<h5 id="rest.arguments.body.serializer">`bodySerializer`</h5>
+##### `bodySerializer`
 
 If you need to serialize your data differently (say as form-encoded), you can provide a `bodySerializer` instead of relying on the default JSON serialization.
 `bodySerializer` can be either a function of the form `(data: any, headers: Headers) => {body: any, header: Headers}` or a string key. When using the string key
@@ -650,18 +650,17 @@ const restLink = new RestLink({
 })
 ```
 
-
-<h2 id="export">@export directive</h2>
+## @export directive
 
 The export directive re-exposes a field for use in a later (nested) query. These are the same semantics that will be supported on the server, but when used in a `RestLink` you can use the exported variables for further calls (i.e. waterfall requests from nested fields)
 
- _Note: If you're constantly using @export you may prefer to take a look at [`apollo-server`](/docs/apollo-server/) which you can try out at [launchpad.graphql.com](https://launchpad.graphql.com/)_
+_Note: If you're constantly using @export you may prefer to take a look at [`apollo-server`](/docs/apollo-server/) which you can try out at [launchpad.graphql.com](https://launchpad.graphql.com/)_
 
-<h3 id="export.arguments">Arguments</h3>
+### Arguments
 
 * `as: string`: name to create this as a variable to be used down the selection set
 
-<h3 id="export.example">Example</h3>
+### Example
 
 An example use-case would be getting a list of users, and hitting a different endpoint to fetch more data using the exported field in the REST query args.
 
@@ -681,7 +680,7 @@ const QUERY = gql`
 `;
 ```
 
-<h2 id="mutation">Mutations</h2>
+## Mutations
 
 You can write also mutations with the apollo-link-rest, for example:
 
@@ -694,14 +693,14 @@ You can write also mutations with the apollo-link-rest, for example:
   }
 ```
 
-<h2 id="troubleshooting">Troubleshooting</h2>
+## Troubleshooting
 
 As you start using `apollo-link-rest` you may run into some standard issues that we thought we could help you solve.
 
 * `Missing field __typename in ...` -- If you see this, it's possible you haven't provided `type:` to the [`@rest(...)`](#rest)-directive. Alternately you need to set up a [`typePatcher`](#options.typePatcher)
 * `Headers is undefined` -- If you see something like this, you're running in a browser or other Javascript environment that does not yet support the full specification for the `Headers` API.
 
-<h2 id="examples">Example apps</h2>
+## Example apps
 
 To get you started, here are some example apps:
 
@@ -710,7 +709,7 @@ To get you started, here are some example apps:
 * [Advanced](https://github.com/apollographql/apollo-link-rest/tree/master/examples/advanced):
   A more complex app that demonstrate how to use an export directive.
 
-<h1 id="contributing">Contributing</h1>
+## Contributing
 
 Please join us on github: [apollographql/apollo-link-rest](https://github.com/apollographql/apollo-link-rest/) and in the ApolloGraphQL Slack in the `#apollo-link-rest` chat room.
 

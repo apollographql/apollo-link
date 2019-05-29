@@ -26,7 +26,7 @@ to set these features up yourself. 🎉 On top of that, you also benefit from th
 [Apollo DevTools](https://github.com/apollographql/apollo-client-devtools) for
 debugging and visibility into your store.
 
-<h2 id="start">Quick start</h2>
+## Quick start
 
 To get started, install `apollo-link-state` from npm:
 
@@ -84,7 +84,7 @@ const client = new ApolloClient({
 });
 ```
 
-<h2 id="local-development">With Apollo Boost</h2>
+## With Apollo Boost
 
 If you are using `apollo-boost`, it already includes `apollo-link-state` underneath the hood for you.
 Instead of passing the `link` property when instantiating Apollo Client, you pass in `clientState`.
@@ -225,7 +225,7 @@ const WrappedComponent = graphql(GET_ARTICLES, {
 Now that you've seen how easy it is to manage your local state in Apollo Client,
 let's dive deeper into how `apollo-link-state` updates and queries your local data with defaults and resolvers.
 
-<h2 id="defaults">Defaults</h2>
+## Defaults
 
 Often, you'll need to write an initial state to the cache so any components querying data before a mutation is triggered don't error out. To accomplish this, use the `defaults` property for the default values you'd like to write to the cache and pass in your cache to `withClientState`. Upon initialization, `apollo-link-state` will immediately write those values to the cache with `cache.writeData` before any operations have occurred.
 
@@ -268,7 +268,7 @@ const unsubscribe = client.onResetStore(stateLink.writeDefaults);
 
 If you would like to unsubscribe this callback, `client.onResetStore` returns an unsubscribe function. However, we don't recommend calling unsubscribe on your state link's `writeDefaults` function unless you are planning on writing a new set of defaults to the cache.
 
-<h2 id="resolver">Resolvers</h2>
+## Resolvers
 
 Your resolvers are where all the magic happens to retrieve and update your
 local data in the Apollo cache. The resolver map is an object with resolver
@@ -294,7 +294,7 @@ The four most important things to keep in mind about resolvers in
 If any of that sounds confusing, I promise it will be cleared up by the end of
 this section. Keep on reading! 😀
 
-<h3 id="default">Default resolvers</h3>
+### Default resolvers
 
 You don't have to specify resolver functions for every field, however. If the
 return value from the parent object has the same property names as the fields
@@ -319,7 +319,7 @@ resolver map. If `Query.user` returns an object with a name property that
 corresponds to an object with last and first properties, you do not need to
 specify any additional resolvers. GraphQL takes care of that for you!
 
-<h3 id="resolver-signature">Resolver signature</h3>
+### Resolver signature
 
 The signature of a resolver function is the exact same as resolver functions on
 the server built with `graphql-tools`. Let's quickly recap the four parameters
@@ -348,7 +348,7 @@ fieldName: (obj, args, context, info) => result;
 For further exploration, check out the [`graphql-tools`
 docs](/docs/graphql-tools/resolvers.html#Resolver-function-signature).
 
-<h3 id="async">Async resolvers</h3>
+### Async resolvers
 
 `apollo-link-state` supports asynchronous resolver functions. These functions
 can either be `async` functions or ordinary functions that return a Promise.
@@ -416,7 +416,7 @@ const GET_PHOTOS = gql`
 `;
 ```
 
-<h3 id="organize">Organizing your resolvers</h3>
+### Organizing your resolvers
 
 For most applications, your map of resolvers will probably be too large to fit in
 one file. To organize your resolver map, we recommend splitting it up by
@@ -458,7 +458,7 @@ const stateLink = withClientState({
 });
 ```
 
-<h2 id="cache">Updating the cache</h2>
+## Updating the cache
 
 When you manage your local data with Apollo Client, your Apollo cache becomes
 the single source of truth for all your local and remote data. To update and
@@ -467,7 +467,7 @@ argument passed to your resolver function.
 
 The [Apollo cache API](/docs/react/features/caching.html) has several methods to assist you with updating and retrieving data. Let's walk through each of the methods and some common use cases for each one!
 
-<h3 id="write-data">writeData</h3>
+### writeData
 
 The easiest way to update the cache is with `cache.writeData`, which allows you
 to write data directly to the cache without passing in a query. Here's how
@@ -509,7 +509,7 @@ there. In that scenario, you should use `readQuery` or `readFragment`, which
 allows you to pass in a query or a fragment to read data from the cache. If you'd like to validate the shape of your data that you're writing to the cache, use `writeQuery` or `writeFragment`. We'll explain some of those use
 cases below.
 
-<h3 id="write-query">writeQuery and readQuery</h3>
+### writeQuery and readQuery
 
 Sometimes, the data you're writing to the cache depends on data that's already
 in the cache; for example, you're adding an item to a list or setting a property
@@ -566,7 +566,7 @@ required by the query. Under the hood, `cache.writeData` automatically
 constructs a query from the `data` object you pass in and calls
 `cache.writeQuery`.
 
-<h3 id="write-fragment">writeFragment and readFragment</h3>
+### writeFragment and readFragment
 
 `cache.readFragment` is similar to `cache.readQuery` except you pass in a
 fragment. This allows for greater flexibility because you can read from any
@@ -613,7 +613,7 @@ the data required by the fragment. Under the hood, `cache.writeData`
 automatically constructs a fragment from the `data` object and `id` you pass in
 and calls `cache.writeFragment`.
 
-<h2 id="directive">@client directive</h2>
+## @client directive
 
 Adding the `@client` directive to a field is how Apollo Link knows to resolve
 your data from the Apollo cache instead of making a network request. This
@@ -623,7 +623,7 @@ uses the `@rest` directive to specify fields that should be fetched from a REST
 endpoint. To clarify, the `@client` and `@rest` directives never modify the
 shape of the result; rather, they specify where the data is coming from.
 
-<h3 id="combine">Combining local and remote data</h3>
+### Combining local and remote data
 
 What's really cool about using a `@client` directive to specify client-side only
 fields is that you can actually combine local and remote data in one query. In
@@ -652,7 +652,7 @@ Thanks to the power of directives and Apollo Link, you'll soon be able to
 request `@client` data, `@rest` data, and data from your GraphQL server all in
 one query! 🎉
 
-<h2 id="examples">Example apps</h2>
+## Example apps
 
 To get you started, here are some example apps:
 
@@ -664,7 +664,7 @@ To get you started, here are some example apps:
 If you have an example app that you'd like to be featured, please send us a PR!
 😊 We'd love to hear how you're using `apollo-link-state`.
 
-<h2 id="roadmap">Roadmap</h2>
+## Roadmap
 
 While `apollo-link-state` is ready to use in your Apollo application today,
 there are a few enhancements we're looking to implement soon before a v1.0
@@ -675,7 +675,7 @@ as possible, so please get in touch if there's a feature you're looking for
 that's not on this list. Additionally, if any of these topics interest you, we'd
 love to have you on board as a contributor!
 
-<h3 id="type-checking">Type checking</h3>
+### Type checking
 
 You may have noticed we haven't mentioned a client-side schema yet or any type
 validation. That's because we haven't settled on how to approach this piece of
@@ -698,7 +698,7 @@ feature we'd like to build before the v1.0 release. If you have any ideas on how
 to achieve this, please open up an issue for discussion on the
 `apollo-link-state` repo.
 
-<h3 id="helper-components">Helper components</h3>
+### Helper components
 
 Our goal for `apollo-link-state` is to make your experience managing local data
 in Apollo Client as seamless as possible. To accomplish this, we want to

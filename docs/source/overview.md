@@ -5,9 +5,7 @@ description: What you need to know to create your own Links.
 
 Apollo Link is designed to be a powerful way to compose actions around data handling with GraphQL. Each link represents a subset of functionality that can be composed with other links to create complex control flows of data.
 
-<div style="text-align:center">
-  <img alt="Figure 1" src="https://i.imgur.com/YvS5Enu.png" />
-</div>
+![Figure 1](https://i.imgur.com/YvS5Enu.png)
 
 At a basic level, a link is a function that takes an operation and returns an observable. An operation is an object with the following information:
 - `query`: A `DocumentNode` (parsed GraphQL Operation) describing the operation taking place
@@ -20,13 +18,11 @@ At a basic level, a link is a function that takes an operation and returns an ob
 
 We can chain these links together so that the first link operates on an operation object and each subsequent link operates on the result of the previous link. This allows us to "compose" actions and implement complex data handling logic in an elegant manner. We can visualize them like this:
 
-<div style="text-align:center;">
-  <img alt="Figure 2" src="https://imgur.com/YmiOwJj.png" />
-</div>
+![Figure 2](https://imgur.com/YmiOwJj.png)
 
 Note that although we have the terminating link requesting GraphQL results from a server in this figure, this doesn't necessarily have to be the case: your GraphQL results can come from anywhere. For example, `apollo-link-state` allows to use GraphQL operations to query client state. 
 
-<h2 id="request">Request</h2>
+## Request
 
 At the core of a link is the `request` method. It takes the following arguments:
 
@@ -41,11 +37,11 @@ The full description of a link's request looks like this:
 
 As you can see from these types, the next link is a way to continue the chain of events until data is fetched from some data source (typically a server).
 
-<h2 id="terminating">Terminating Links</h2>
+## Terminating Links
 
 Since link chains have to fetch data at some point, they have the concept of a `terminating` link and `non-terminating` links. Simply enough, the `terminating` link is the one that doesn't use the `forward` argument, but instead turns the operation into the result directly. Typically, this is done with a network request, but there are endless ways of delivering an `ExecutionResult.` The terminating link is the last link in the composed chain.
 
-<h2 id="composition">Composition</h2>
+## Composition
 
 Links are designed to be composed together to form control flow chains to manage a GraphQL operation request. They can be used as middleware to perform side effects, modify the operation, or even just provide developer tools like logging. They can be afterware which process the result of an operation, handle errors, or even save the data to multiple locations. Links can make network requests including HTTP, WebSockets, and even across the react-native bridge to the native thread for resolution of some kind.
 
@@ -53,7 +49,7 @@ When writing a `RequestHandler`, the second argument is the way to call the next
 
 The helper functions exported from the `apollo-link` package can be used to perform composition of links. These functions are also conveniently located on the `ApolloLink` class itself. They are explained in further detail [here](./composition.html). 
 
-<h2 id="context">Context</h2>
+## Context
 
 Since links are meant to be composed, they need an easy way to send metadata about the request down the chain of links. They also need a way for the operation to send specific information to a link no matter where it was added to the chain. To accomplish this, each `Operation` has a `context` object which can be set from the operation while being written and read by each link. The context is read by using `operation.getContext()` and written using `operation.setContext(newContext)` or `operation.setContext((prevContext) => newContext)`. The `context` is *not* sent to the server, but is used for link to link communication. The API of `setContext` is meant to be similar to React's `setState`. For example:
 

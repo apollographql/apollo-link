@@ -8,7 +8,7 @@ It's important to note that no matter how many links you have in your chain, you
 
 *NOTE Future composition mechanisms like `race` are being considered. If you have ideas please submit an issue or PR for the style you need!*
 
-<h2 id="additive">Additive Composition</h2>
+## Additive Composition
 
 Apollo Link ships with two ways to compose links. The first is a method called `from` which is both exported, and is on the `ApolloLink` interface. `from` takes an array of links and combines them all into a single link. For example:
 
@@ -36,7 +36,7 @@ import { HttpLink } from 'apollo-link-http';
 const link = ApolloLink.concat(new RetryLink(), new HttpLink({ uri: 'http://localhost:4000/graphql' }));
 ```
 
-<h2 id="directional">Directional Composition</h2>
+## Directional Composition
 
 Given that links are a way of implementing custom control flow for your GraphQL operation, Apollo Link provides an easy way to use different links depending on the operation itself (or any other global state). This is done using the `split` method which is exported as a function and is on the `ApolloLink` interface. Using the `split` function can be done like this:
 
@@ -56,6 +56,6 @@ const link = new RetryLink().split(
 
 Using `split` allows for per operation based control flow for things like sending mutations to a different server or giving them more retry attempts, for using a WS link for subscriptions and Http for everything else, it can even be used to customize which links are used for an authenticated user vs a public client.
 
-<h2 id="usage">Usage</h2>
+## Usage
 
 `split`, `from`, and `concat` are all exported as part of the ApolloLink interface as well as individual functions which can be used. Both are great ways to build link chains and they are identical in functionality.

@@ -8,13 +8,13 @@ This is the official guide for getting started with Apollo Link in your applicat
 
 You can use Apollo Link with Apollo Client, `graphql-tools` schema stitching, GraphiQL, and even as a standalone client, allowing you to reuse the same authorization, error handling, and control flow across all of your GraphQL fetching.
 
-<h2 id="introduction">Introduction</h2>
+## Introduction
 
 In a few words, Apollo Links are chainable "units" that you can snap together to define how each GraphQL request is handled by your GraphQL client. When you fire a GraphQL request, each Link's functionality is applied one after another. This allows you to control the request lifecycle in a way that makes sense for your application. For example, Links can provide [retrying](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-retry), [polling](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-polling), [batching](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-batch), and more!
 
 If you're new to Apollo Link, you should read the [concepts guide](https://www.apollographql.com/docs/link/overview.html) which explains the motivation behind the package and its different pieces. The original [blog post](https://blog.apollographql.com/apollo-link-the-modular-graphql-network-stack-3b6d5fcf9244) for the project is also a great first resource.
 
-<h2 id="installation">Installation</h2>
+## Installation
 
 ```bash
 npm install apollo-link
@@ -22,11 +22,11 @@ npm install apollo-link
 
 Apollo Link has two main exports, the `ApolloLink` interface and the `execute` function. The `ApolloLink` interface is used to create custom links, compose multiple links together, and can be extended to support more powerful use cases. The `execute` function allows you to create a request with a link and an operation. For a deeper dive on how to use links in your application, check out our Apollo Link [concepts guide](./overview.html).
 
-<h2 id="usage">Usage</h2>
+## Usage
 
 Apollo Link is easy to use with a variety of GraphQL libraries. It's designed to go anywhere you need to fetch GraphQL results.
 
-<h3 id="apollo-client">Apollo Client</h3>
+### Apollo Client
 
 Apollo Client works seamlessly with Apollo Link. A Link is one of the required items when creating an [Apollo Client instance](/docs/react/api/apollo-client.html). For simple HTTP requests, we recommend using [`apollo-link-http`](./links/http.html):
 
@@ -43,7 +43,7 @@ const client = new ApolloClient({
 
 The `createHttpLink` is a replacement for `createNetworkInterface` from Apollo Client 1.0. For more information on how to upgrade from 1.0 to 2.0, including examples for using middleware and setting headers, please check out our [upgrade guide](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-http#upgrading-from-apollo-fetch--apollo-client).
 
-<h3 id="graphql-tools">graphql-tools</h3>
+### graphql-tools
 
 You can also use Apollo Link with `graphql-tools` to facilitate schema stitching by using `node-fetch` as your request link's fetcher function and passing it to `makeRemoteExecutableSchema`.
 
@@ -63,7 +63,7 @@ const executableSchema = makeRemoteExecutableSchema({
 
 You can read more about schema stitching with `graphql-tools` [here](https://www.apollographql.com/docs/graphql-tools/schema-stitching.html).
 
-<h3 id="graphiql">GraphiQL</h3>
+### GraphiQL
 
 GraphiQL is a great way to document and explore your GraphQL API. In this example, we're setting up GraphiQL's fetcher function by using the `execute` function exported from Apollo Link. This function takes a link and an operation to create a GraphQL request.
 
@@ -94,7 +94,7 @@ ReactDOM.render(
 
 With this setup, we're able to construct an arbitrarily complicated set of links (e.g. with polling, batching, etc.) and test it out using GraphiQL. This is incredibly useful for debugging as you're building a Link-based application.
 
-<h3 id="relay-modern">Relay Modern</h3>
+### Relay Modern
 
 You can use Apollo Link as a network layer with Relay Modern.
 
@@ -125,7 +125,7 @@ const environment = new Environment({
 });
 ```
 
-<h3 id="standalone">Standalone</h3>
+### Standalone
 
 You can also use Apollo Link as a standalone client. That is, you can use it to fire requests and receive responses from a GraphQL server. However, unlike a full client implementation such as Apollo Client, Apollo Link doesn't come with a reactive cache, UI bindings, etc. To use Apollo Link as a standalone client, we're using the `execute` function exported by Apollo Link in the following code sample:
 
@@ -167,7 +167,7 @@ Links use observables to support GraphQL subscriptions, live queries, and pollin
 
 If you want to control how you handle errors, `next` will receive GraphQL errors, while `error` be called on a network error. We recommend using [`apollo-link-error`](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-error) instead.
 
-<h2 id="linkslist">Available Links</h2>
+## vailable Links
 
 There are a number of useful links that have already been implemented that may be useful for your application.
 
@@ -204,7 +204,7 @@ Assists with mocking and server-side rendering.
 [`apollo-link-ws`](https://github.com/apollographql/apollo-link/tree/master/packages/apollo-link-ws)
 Send GraphQL operations over a WebSocket. Works with GraphQL subscriptions.
 
-<h2 id="customization">Customizing your own links</h2>
+## Customizing your own links
 
 The links documented here and provided by the community have you covered for the most common use cases, but we've designed things so that it's easy to write your own. If you need your own versions of offline support or persisted queries, the `ApolloLink` interface was designed to be as flexible as possible to fit your application's needs.
 
