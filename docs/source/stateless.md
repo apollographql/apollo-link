@@ -4,7 +4,7 @@ title: Stateless Links
 
 ## Stateless Links
 
-Links are created and shared between every request in your application. However, most links do the same thing for each request and don't need any knowledge about other operations being performed. These links are called stateless links because they have no shared execution state between requests. The alternative way to write links is a [stateful link](./stateful.html).
+Links are created and shared between every request in your application. However, most links do the same thing for each request and don't need any knowledge about other operations being performed. These links are called stateless links because they have no shared execution state between requests. The alternative way to write links is a [stateful link](/stateful/).
 
 Stateless links can be written as simple functions wrapped in the `ApolloLink` interface. For example:
 

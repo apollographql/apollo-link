@@ -20,7 +20,7 @@ If you're new to Apollo Link, you should read the [concepts guide](https://www.a
 npm install apollo-link
 ```
 
-Apollo Link has two main exports, the `ApolloLink` interface and the `execute` function. The `ApolloLink` interface is used to create custom links, compose multiple links together, and can be extended to support more powerful use cases. The `execute` function allows you to create a request with a link and an operation. For a deeper dive on how to use links in your application, check out our Apollo Link [concepts guide](./overview.html).
+Apollo Link has two main exports, the `ApolloLink` interface and the `execute` function. The `ApolloLink` interface is used to create custom links, compose multiple links together, and can be extended to support more powerful use cases. The `execute` function allows you to create a request with a link and an operation. For a deeper dive on how to use links in your application, check out our Apollo Link [concepts guide](/overview/).
 
 ## Usage
 
@@ -28,7 +28,7 @@ Apollo Link is easy to use with a variety of GraphQL libraries. It's designed to
 
 ### Apollo Client
 
-Apollo Client works seamlessly with Apollo Link. A Link is one of the required items when creating an [Apollo Client instance](/docs/react/api/apollo-client.html). For simple HTTP requests, we recommend using [`apollo-link-http`](./links/http.html):
+Apollo Client works seamlessly with Apollo Link. A Link is one of the required items when creating an [Apollo Client instance](https://www.apollographql.com/docs/react/api/apollo-client/). For simple HTTP requests, we recommend using [`apollo-link-http`](/links/http/):
 
 ```js
 import { ApolloClient } from 'apollo-client';
@@ -61,7 +61,7 @@ const executableSchema = makeRemoteExecutableSchema({
 });
 ```
 
-You can read more about schema stitching with `graphql-tools` [here](https://www.apollographql.com/docs/graphql-tools/schema-stitching.html).
+You can read more about schema stitching with `graphql-tools` [here](https://www.apollographql.com/docs/graphql-tools/schema-stitching/).
 
 ### GraphiQL
 
@@ -208,4 +208,4 @@ Send GraphQL operations over a WebSocket. Works with GraphQL subscriptions.
 
 The links documented here and provided by the community have you covered for the most common use cases, but we've designed things so that it's easy to write your own. If you need your own versions of offline support or persisted queries, the `ApolloLink` interface was designed to be as flexible as possible to fit your application's needs.
 
-To get started, first read our [concepts guide](./overview.html) and then learn how to write your own [stateless link](./stateless.html).
+To get started, first read our [concepts guide](/overview/) and then learn how to write your own [stateless link](/stateless/).

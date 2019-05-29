@@ -10,7 +10,7 @@ Calling REST APIs from a GraphQL client opens the benefits of GraphQL for more p
 * You have an existing codebase, but you're looking to evaluate whether GraphQL can work for your needs.
 * You have a large codebase, and the GraphQL migration is happening on the backend, but you want to use GraphQL *now* without waiting!
 
-With `apollo-link-rest`, you can now call your endpoints inside your GraphQL queries and have all your data managed by [`ApolloClient`](../../react/basics/setup.html#ApolloClient). `apollo-link-rest` is suitable for just dipping your toes in the water, or doing a full-steam ahead integration, and then later on migrating to a backend-driven GraphQL experience. `apollo-link-rest` combines well with other links such as [`apollo-link-context`](./context.html), [`apollo-link-state`](./state.html), and others! _For complex back-ends, you may want to consider using [`apollo-server`](/docs/apollo-server/) which you can try out at [launchpad.graphql.com](https://launchpad.graphql.com/)_
+With `apollo-link-rest`, you can now call your endpoints inside your GraphQL queries and have all your data managed by [`ApolloClient`](https://www.apollographql.com/react/basics/setup/#ApolloClient). `apollo-link-rest` is suitable for just dipping your toes in the water, or doing a full-steam ahead integration, and then later on migrating to a backend-driven GraphQL experience. `apollo-link-rest` combines well with other links such as [`apollo-link-context`][], [`apollo-link-state`](/links/state/), and others! _For complex back-ends, you may want to consider using [`apollo-server`](https://www.apollographql.com/docs/apollo-server/) which you can try out at [launchpad.graphql.com](https://launchpad.graphql.com/)_
 
 You can start using ApolloClient in your app today, let's see how!
 
@@ -22,7 +22,7 @@ To get started, you need first to install apollo-client:
 npm install --save apollo-client
 ```
 
-For an apollo client to work, you need a link and a cache, [more info here](/docs/react/basics/setup.html#installation). Let's install the default in memory cache:
+For an apollo client to work, you need a link and a cache, [more info here](https://www.apollographql.com/docs/react/basics/setup/#installation). Let's install the default in memory cache:
 
 ```bash
 npm install --save apollo-cache-inmemory
@@ -150,7 +150,7 @@ query MyQuery {
 }
 ```
 
-The outer response object (`data.planets`) gets its `__typename: "PlanetPayload"` from the [`@rest(...)` directive's `type` parameter](#rest). You, however, need to have a way to set the typename of `PlanetPayload.results`. 
+The outer response object (`data.planets`) gets its `__typename: "PlanetPayload"` from the [`@rest(...)` directive's `type` parameter](#rest-directive). You, however, need to have a way to set the typename of `PlanetPayload.results`. 
 
 One way you can do this is by providing a `typePatcher`:
 
@@ -351,7 +351,7 @@ const link = new RestLink({
 });
 ```
 
-To resolve your GraphQL queries quickly, Apollo will issue requests to relevant endpoints as soon as possible. This is generally ok, but can lead to large numbers of `REST` requests to be fired at once; especially for deeply nested queries [(see `@export` directive)](#export). 
+To resolve your GraphQL queries quickly, Apollo will issue requests to relevant endpoints as soon as possible. This is generally ok, but can lead to large numbers of `REST` requests to be fired at once; especially for deeply nested queries [(see `@export` directive)](#export-directive). 
 
 > Some endpoints (like public APIs) might enforce _rate limits_, leading to failed responses and unresolved queries in such cases.
 
@@ -409,7 +409,7 @@ Here is one way you might customize `RestLink`:
 
 ## Link Context
 
-`RestLink` has an [interface `LinkChainContext`](https://github.com/apollographql/apollo-link-rest/blob/1824da47d5db77a2259f770d9c9dd60054c4bb1c/src/restLink.ts#L557-L570) which it uses as the structure of things that it will look for in the `context`, as it decides how to fulfill a specific `RestLink` request. (Please see the [`apollo-link-context`](./context.html) page for a discussion of why you might want this).
+`RestLink` has an [interface `LinkChainContext`](https://github.com/apollographql/apollo-link-rest/blob/1824da47d5db77a2259f770d9c9dd60054c4bb1c/src/restLink.ts#L557-L570) which it uses as the structure of things that it will look for in the `context`, as it decides how to fulfill a specific `RestLink` request. (Please see the [`apollo-link-context`][] page for a discussion of why you might want this).
 
 * `credentials?: RequestCredentials`: overrides the `RestLink`-level setting for `credentials`. [Values documented here](https://developer.mozilla.org/en-US/docs/Web/API/Request/headers)
 * `headers?: Headers`: Additional headers provided in this `context-link` [Values documented here](https://developer.mozilla.org/en-US/docs/Web/API/Request/headers)
@@ -419,7 +419,9 @@ Here is one way you might customize `RestLink`:
 
 ### Example
 
-`RestLink` uses the `headers` field on the [`apollo-link-context`](./context.html) so you can compose other links that provide additional & dynamic headers to a given query.
+`RestLink` uses the `headers` field on the [`apollo-link-context`][] so you can compose other links that provide additional & dynamic headers to a given query.
+
+[`apollo-link-context`]: /links/context/
 
 Here is one way to add request `headers` to the context and retrieve the response headers of the operation:
 
@@ -472,12 +474,12 @@ const client = new ApolloClient({
 });
 ```
 
-_Note: you should also consider this if you're using [`apollo-link-context`](#context) to set `Headers`, you need that link to be before `restLink` as well._
+_Note: you should also consider this if you're using [`apollo-link-context`](#link-context) to set `Headers`, you need that link to be before `restLink` as well._
 
 ## @rest directive
 
 This is where you setup the endpoint you want to fetch.
-The rest directive could be used at any depth in a query, but once it is used, nothing nested in it can be GraphQL data, it has to be from the `RestLink` or other resource (like the [`@client` directive](./state.html))
+The rest directive could be used at any depth in a query, but once it is used, nothing nested in it can be GraphQL data, it has to be from the `RestLink` or other resource (like the [`@client` directive](/links/state/))
 
 ### Arguments
 
@@ -654,7 +656,7 @@ const restLink = new RestLink({
 
 The export directive re-exposes a field for use in a later (nested) query. These are the same semantics that will be supported on the server, but when used in a `RestLink` you can use the exported variables for further calls (i.e. waterfall requests from nested fields)
 
-_Note: If you're constantly using @export you may prefer to take a look at [`apollo-server`](/docs/apollo-server/) which you can try out at [launchpad.graphql.com](https://launchpad.graphql.com/)_
+_Note: If you're constantly using @export you may prefer to take a look at [`apollo-server`](https://www.apollographql.com/docs/apollo-server/) which you can try out at [launchpad.graphql.com](https://launchpad.graphql.com/)_
 
 ### Arguments
 
@@ -697,7 +699,7 @@ You can write also mutations with the apollo-link-rest, for example:
 
 As you start using `apollo-link-rest` you may run into some standard issues that we thought we could help you solve.
 
-* `Missing field __typename in ...` -- If you see this, it's possible you haven't provided `type:` to the [`@rest(...)`](#rest)-directive. Alternately you need to set up a [`typePatcher`](#options.typePatcher)
+* `Missing field __typename in ...` -- If you see this, it's possible you haven't provided `type:` to the [`@rest(...)`](#rest-directive)-directive. Alternately you need to set up a [`typePatcher`](#typename-patching)
 * `Headers is undefined` -- If you see something like this, you're running in a browser or other Javascript environment that does not yet support the full specification for the `Headers` API.
 
 ## Example apps

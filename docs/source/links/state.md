@@ -35,7 +35,7 @@ npm install apollo-link-state --save
 ```
 
 The rest of the instructions assume that you have already [set up Apollo
-Client](/docs/react/basics/setup.html#installation) in your application. After
+Client](https://www.apollographql.com/docs/react/basics/setup/#installation) in your application. After
 you install the package, you can create your state link by calling
 `withClientState` and passing in a resolver map. A resolver map describes how to
 retrieve and update your local data.
@@ -252,7 +252,7 @@ const stateLink = withClientState({
 });
 ```
 
-Sometimes you may need to [reset the store](/docs/react/features/cache-updates.html#reset-store) in your application, for example when a user logs out. If you call `client.resetStore` anywhere in your application, you will need to write your defaults to the store again. `apollo-link-state` exposes a `writeDefaults` function for you. To register your callback to Apollo Client, call `client.onResetStore` and pass in `writeDefaults`.
+Sometimes you may need to [reset the store](https://www.apollographql.com/docs/react/features/cache-updates/#reset-store) in your application, for example when a user logs out. If you call `client.resetStore` anywhere in your application, you will need to write your defaults to the store again. `apollo-link-state` exposes a `writeDefaults` function for you. To register your callback to Apollo Client, call `client.onResetStore` and pass in `writeDefaults`.
 
 ```js
 const cache = new InMemoryCache();
@@ -284,7 +284,7 @@ The four most important things to keep in mind about resolvers in
 2. The resolver should return an object with a `__typename` property unless
    you've overridden the `dataIdFromObject` function to not use `__typename` for
    cache keys. This is necessary for Apollo Client to [normalize the data in the
-   cache](/docs/react/basics/caching.html#normalization) properly.
+   cache](https://www.apollographql.com/docs/react/basics/caching/#normalization) properly.
 3. Resolver functions can return a promise if you need to perform asynchronous
    side effects.
 4. Query resolvers are only called on a cache miss. Since the first time you
@@ -299,7 +299,7 @@ this section. Keep on reading! 😀
 You don't have to specify resolver functions for every field, however. If the
 return value from the parent object has the same property names as the fields
 requested in the child object, you won't need to specify a resolver. This is
-called a [default resolver](/docs/graphql-tools/resolvers.html#Default-resolver).
+called a [default resolver](https://www.apollographql.com/docs/graphql-tools/resolvers/#Default-resolver).
 
 ```js
 const getUser = gql`
@@ -339,14 +339,11 @@ fieldName: (obj, args, context, info) => result;
    Link chain. The most important thing to note here is that we've added the
    Apollo cache to the context for you, so you can manipulate the cache with
    `cache.writeData({})`. If you want to set additional values on the context,
-   you can set them from [within your
-   component](/docs/react/basics/queries.html#graphql-config-options-context) or
-   by [using `apollo-link-context`](/docs/link/links/context.html).
+   you can set them from [within your component](https://www.apollographql.com/docs/react/basics/queries.html#graphql-config-options-context) or by [using `apollo-link-context`](https://www.apollographql.com/docs/link/links/context.html).
 4. `info`: Information about the execution state of the query. You will probably
    never have to use this one.
 
-For further exploration, check out the [`graphql-tools`
-docs](/docs/graphql-tools/resolvers.html#Resolver-function-signature).
+For further exploration, check out the [`graphql-tools` docs](https://www.apollographql.com/docs/graphql-tools/resolvers.html#Resolver-function-signature).
 
 ### Async resolvers
 
@@ -465,7 +462,7 @@ the single source of truth for all your local and remote data. To update and
 read from the cache, you access it via the `context`, which is the third
 argument passed to your resolver function.
 
-The [Apollo cache API](/docs/react/features/caching.html) has several methods to assist you with updating and retrieving data. Let's walk through each of the methods and some common use cases for each one!
+The [Apollo cache API](https://www.apollographql.com/docs/react/features/caching.html) has several methods to assist you with updating and retrieving data. Let's walk through each of the methods and some common use cases for each one!
 
 ### writeData
 
