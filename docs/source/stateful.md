@@ -2,9 +2,9 @@
 title: Stateful Links
 ---
 
-<h2 id="stateful">Stateful Links</h2>
+## Stateful Links
 
-Links are created and shared between every request in your application. Some links may share state between requests to provided added functionality. The links are called stateful links and are written using the `ApolloLink` interface. The alternative way to write links is a [stateless link](./stateless.html).
+Links are created and shared between every request in your application. Some links may share state between requests to provided added functionality. The links are called stateful links and are written using the `ApolloLink` interface. The alternative way to write links is a [stateless link](/stateless/).
 
 Stateful links typically (though are not required to) overwrite the constructor of `ApolloLink` and are required to implement a `request` function with the same signature as a stateless link. For example:
 
