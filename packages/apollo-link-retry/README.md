@@ -3,7 +3,7 @@ title: apollo-link-retry
 description: Attempt an operation multiple times if it fails due to network or server errors.
 ---
 
-Sometimes, you're in an unreliable situation but you would rather wait longer than explicitly fail an operation. `apollo-link-retry` provides exponential backoff, and jitters delays between attempts by default. It does not (currently) handle retries for GraphQL errors in the response, only for network errors.
+Sometimes, you're in an unreliable situation but you would rather wait longer than explicitly fail an operation. `apollo-link-retry` provides exponential backoff, and jitters delays between attempts by default. It supports retries for both network errors and GraphQL errors in the response.
 
 One such use case is to hold on to a request while a network connection is offline and retry until it comes back online.
 
