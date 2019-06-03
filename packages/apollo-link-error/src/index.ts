@@ -112,9 +112,14 @@ export function onError(errorHandler: ErrorHandler): ApolloLink {
       } catch (e) {
         Promise.resolve<Observable<FetchResult> | void>(
           errorHandler({ networkError: e, operation, forward }),
-        ).finally(() => {
-          observer.error(e);
-        });
+        ).then(
+          () => {
+            observer.error(e);
+          },
+          () => {
+            observer.error(e);
+          },
+        );
         // observer.error(e);
       }
 
