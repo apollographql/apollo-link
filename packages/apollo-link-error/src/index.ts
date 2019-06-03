@@ -23,7 +23,7 @@ export namespace ErrorLink {
    * Callback to be triggered when an error occurs within the link stack.
    */
   export interface ErrorHandler {
-    (error: ErrorResponse): Observable<FetchResult> | void;
+    (error: ErrorResponse): Observable<FetchResult> | void | Promise<void>;
   }
 }
 
@@ -36,17 +36,25 @@ export function onError(errorHandler: ErrorHandler): ApolloLink {
       let sub;
       let retriedSub;
       let retriedResult;
+      let handling = false;
+      let completed = false;
 
       try {
         sub = forward(operation).subscribe({
-          next: result => {
+          next: async result => {
             if (result.errors) {
-              retriedResult = errorHandler({
-                graphQLErrors: result.errors,
-                response: result,
-                operation,
-                forward,
-              });
+              handling = true;
+              retriedResult = await Promise.resolve<Observable<
+                FetchResult
+              > | void>(
+                errorHandler({
+                  graphQLErrors: result.errors,
+                  response: result,
+                  operation,
+                  forward,
+                }),
+              );
+              handling = false;
 
               if (retriedResult) {
                 retriedSub = retriedResult.subscribe({
@@ -58,18 +66,27 @@ export function onError(errorHandler: ErrorHandler): ApolloLink {
               }
             }
             observer.next(result);
+            if (completed) {
+              observer.complete();
+            }
           },
-          error: networkError => {
-            retriedResult = errorHandler({
-              operation,
-              networkError,
-              //Network errors can return GraphQL errors on for example a 403
-              graphQLErrors:
-                networkError &&
-                networkError.result &&
-                networkError.result.errors,
-              forward,
-            });
+          error: async networkError => {
+            handling = true;
+            retriedResult = await Promise.resolve<Observable<
+              FetchResult
+            > | void>(
+              errorHandler({
+                operation,
+                networkError,
+                //Network errors can return GraphQL errors on for example a 403
+                graphQLErrors:
+                  networkError &&
+                  networkError.result &&
+                  networkError.result.errors,
+                forward,
+              }),
+            );
+            handling = false;
             if (retriedResult) {
               retriedSub = retriedResult.subscribe({
                 next: observer.next.bind(observer),
@@ -79,18 +96,26 @@ export function onError(errorHandler: ErrorHandler): ApolloLink {
               return;
             }
             observer.error(networkError);
+            if (completed) {
+              observer.complete();
+            }
           },
           complete: () => {
+            completed = true;
             // disable the previous sub from calling complete on observable
             // if retry is in flight.
-            if (!retriedResult) {
+            if (!handling && !retriedResult) {
               observer.complete.bind(observer)();
             }
           },
         });
       } catch (e) {
-        errorHandler({ networkError: e, operation, forward });
-        observer.error(e);
+        Promise.resolve<Observable<FetchResult> | void>(
+          errorHandler({ networkError: e, operation, forward }),
+        ).finally(() => {
+          observer.error(e);
+        });
+        // observer.error(e);
       }
 
       return () => {
