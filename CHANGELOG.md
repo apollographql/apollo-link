@@ -11,6 +11,10 @@
 - Bump apollo-utilities to reduce total bundle size of apollo applications.  <br/>
   [@salzhrani](https://github.com/salzhrani) in [#1044](https://github.com/apollographql/apollo-link/pull/1058)  <br />
 
+### apollo-link-error
+
+- Support for asynchronous error handlers <br/>
+  [@doomsower](https://github.com/doomsower) in [#1066](https://github.com/apollographql/apollo-link/pull/1066)  <br />
 
 ## 2019-03-14
 
