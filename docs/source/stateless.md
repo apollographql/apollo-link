@@ -2,9 +2,9 @@
 title: Stateless Links
 ---
 
-<h2 id="stateless">Stateless Links</h2>
+## Stateless Links
 
-Links are created and shared between every request in your application. However, most links do the same thing for each request and don't need any knowledge about other operations being performed. These links are called stateless links because they have no shared execution state between requests. The alternative way to write links is a [stateful link](./stateful.html).
+Links are created and shared between every request in your application. However, most links do the same thing for each request and don't need any knowledge about other operations being performed. These links are called stateless links because they have no shared execution state between requests. The alternative way to write links is a [stateful link](/stateful/).
 
 Stateless links can be written as simple functions wrapped in the `ApolloLink` interface. For example:
 
@@ -50,7 +50,7 @@ const reportErrors = (errorCallback) => new ApolloLink((operation, forward) => {
 const link = reportErrors(console.error);
 ```
 
-<h3 id="stateless-classes">Extending ApolloLink</h3>
+### Extending ApolloLink
 
 Stateless links can also be written by extending the `ApolloLink` class and overwriting the constructor and request method. This is done as an alternative to the closure method shown directly above to pass details to the link. For example, the same `reportErrors` link written by extending the `ApolloLink` class:
 
