@@ -53,6 +53,9 @@ export interface Body {
   extensions?: Record<string, any>;
 }
 
+export type RequestBodySerializer = (body: any) => BufferSource | string;
+export type ResponseBodyDeserializer = (response: Response) => Promise<any>;
+
 export interface HttpOptions {
   /**
    * The URI to use when fetching operations.
@@ -87,6 +90,16 @@ export interface HttpOptions {
    * Any overrides of the fetch options argument to pass to the fetch call.
    */
   fetchOptions?: any;
+
+  /**
+   * To serialize a request body. `JSON.stringify()` is used by default.
+   */
+  serialize?: RequestBodySerializer;
+
+  /**
+   * To deserialize a response body. `JSON.parse()` is used by default.
+   */
+  deserialize?: ResponseBodyDeserializer;
 }
 
 const defaultHttpOptions: HttpQueryOptions = {
@@ -121,23 +134,38 @@ export const throwServerError = (response, result, message) => {
   throw error;
 };
 
+export const createServerParseError = (
+  response: Response,
+  err: Error,
+  bodyText: string,
+) => {
+  const parseError = err as ServerParseError;
+  parseError.name = 'ServerParseError';
+  parseError.response = response;
+  parseError.statusCode = response.status;
+  parseError.bodyText = bodyText;
+  throw parseError;
+};
+
+export const defaultRequestBodySerializer: RequestBodySerializer = body =>
+  JSON.stringify(body);
+export const defaultResponseBodyDeserializer: ResponseBodyDeserializer = response => {
+  return response.text().then(bodyText => {
+    try {
+      return JSON.parse(bodyText);
+    } catch (err) {
+      return Promise.reject(createServerParseError(response, err, bodyText));
+    }
+  });
+};
+
 //TODO: when conditional types come in ts 2.8, operations should be a generic type that extends Operation | Array<Operation>
-export const parseAndCheckHttpResponse = operations => (response: Response) => {
+export const parseAndCheckHttpResponse = (
+  operations,
+  deserialize: ResponseBodyDeserializer = defaultResponseBodyDeserializer,
+) => (response: Response) => {
   return (
-    response
-      .text()
-      .then(bodyText => {
-        try {
-          return JSON.parse(bodyText);
-        } catch (err) {
-          const parseError = err as ServerParseError;
-          parseError.name = 'ServerParseError';
-          parseError.response = response;
-          parseError.statusCode = response.status;
-          parseError.bodyText = bodyText;
-          return Promise.reject(parseError);
-        }
-      })
+    deserialize(response)
       //TODO: when conditional types come out then result should be T extends Array ? Array<FetchResult> : FetchResult
       .then((result: any) => {
         if (response.status >= 300) {
