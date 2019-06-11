@@ -12,6 +12,7 @@ import {
   Body,
   HttpOptions,
   UriFunction as _UriFunction,
+  serializeFetchBodyPayload,
 } from 'apollo-link-http-common';
 import { DefinitionNode } from 'graphql';
 
@@ -39,6 +40,8 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
     fetch: fetcher,
     includeExtensions,
     useGETForQueries,
+    serialize,
+    deserialize,
     ...requestOptions
   } = linkOptions;
 
@@ -124,7 +127,9 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
       chosenURI = newURI;
     } else {
       try {
-        (options as any).body = serializeFetchParameter(body, 'Payload');
+        const serialized = serializeFetchBodyPayload(body, serialize);
+        options.body = serialized.body;
+        options.headers['content-type'] = serialized.contentType;
       } catch (parseError) {
         return fromError(parseError);
       }
@@ -136,7 +141,7 @@ export const createHttpLink = (linkOptions: HttpLink.Options = {}) => {
           operation.setContext({ response });
           return response;
         })
-        .then(parseAndCheckHttpResponse(operation))
+        .then(parseAndCheckHttpResponse(operation, deserialize))
         .then(result => {
           // we have data and can send it to back up the link chain
           observer.next(result);

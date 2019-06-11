@@ -53,7 +53,13 @@ export interface Body {
   extensions?: Record<string, any>;
 }
 
-export type RequestBodySerializer = (body: any) => BufferSource | string;
+export type RequestBodySerializer = (
+  payload: any,
+) => {
+  contentType: string;
+  body: BufferSource | string;
+};
+
 export type ResponseBodyDeserializer = (response: Response) => Promise<any>;
 
 export interface HttpOptions {
@@ -147,8 +153,13 @@ export const createServerParseError = (
   throw parseError;
 };
 
-export const defaultRequestBodySerializer: RequestBodySerializer = body =>
-  JSON.stringify(body);
+export const defaultRequestBodySerializer: RequestBodySerializer = body => {
+  return {
+    contentType: 'application/json',
+    body: JSON.stringify(body),
+  };
+};
+
 export const defaultResponseBodyDeserializer: ResponseBodyDeserializer = response => {
   return response.text().then(bodyText => {
     try {
@@ -284,6 +295,21 @@ export const serializeFetchParameter = (p, label) => {
     throw parseError;
   }
   return serialized;
+};
+
+export const serializeFetchBodyPayload = (
+  payload: any,
+  serialize = defaultRequestBodySerializer,
+) => {
+  try {
+    return serialize(payload);
+  } catch (e) {
+    const parseError = new InvariantError(
+      `Network request failed. Payload is not serializable: ${e.message}`,
+    ) as ClientParseError;
+    parseError.parseError = e;
+    throw parseError;
+  }
 };
 
 //selects "/graphql" by default

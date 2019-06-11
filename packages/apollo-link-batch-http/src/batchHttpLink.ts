@@ -14,6 +14,7 @@ import {
   createSignalIfSupported,
   fallbackHttpConfig,
   HttpOptions,
+  serializeFetchBodyPayload,
 } from 'apollo-link-http-common';
 import { BatchLink } from 'apollo-link-batch';
 
@@ -60,6 +61,8 @@ export class BatchHttpLink extends ApolloLink {
       batchInterval,
       batchMax,
       batchKey,
+      serialize,
+      deserialize,
       ...requestOptions
     } = fetchParams || ({} as BatchHttpLink.Options);
 
@@ -127,7 +130,9 @@ export class BatchHttpLink extends ApolloLink {
       }
 
       try {
-        (options as any).body = serializeFetchParameter(loadedBody, 'Payload');
+        const serialized = serializeFetchBodyPayload(loadedBody, serialize);
+        options.body = serialized.body;
+        options.headers['content-type'] = serialized.contentType;
       } catch (parseError) {
         return fromError<FetchResult[]>(parseError);
       }
@@ -146,7 +151,7 @@ export class BatchHttpLink extends ApolloLink {
             operations.forEach(operation => operation.setContext({ response }));
             return response;
           })
-          .then(parseAndCheckHttpResponse(operations))
+          .then(parseAndCheckHttpResponse(operations, deserialize))
           .then(result => {
             // we have data and can send it to back up the link chain
             observer.next(result);
