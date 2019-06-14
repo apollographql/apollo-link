@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-context",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "An easy way to set and cache context changes for Apollo Link",
   "author": "James Baxley <james@meteor.com>",
   "license": "MIT",
