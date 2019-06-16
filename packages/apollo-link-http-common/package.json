@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-http-common",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "description": "Http utilities for Apollo Link shared across all links using http",
   "main": "./lib/index.js",
   "module": "./lib/bundle.esm.js",
@@ -34,14 +34,14 @@
   },
   "devDependencies": {
     "@types/graphql": "14.2.0",
-    "@types/jest": "24.0.13",
+    "@types/jest": "24.0.14",
     "fetch-mock": "6.5.2",
     "graphql": "14.3.1",
     "graphql-tag": "2.10.1",
     "jest": "24.8.0",
     "object-to-querystring": "1.0.8",
     "rimraf": "2.6.3",
-    "rollup": "1.14.6",
+    "rollup": "1.15.5",
     "ts-jest": "22.4.6",
     "tslint": "5.17.0",
     "typescript": "3.0.3"

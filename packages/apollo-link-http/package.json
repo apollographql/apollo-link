@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-http",
-  "version": "1.5.14",
+  "version": "1.5.15",
   "description": "HTTP transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@types/graphql": "14.2.0",
-    "@types/jest": "24.0.13",
+    "@types/jest": "24.0.14",
     "apollo-fetch": "0.7.0",
     "fetch-mock": "6.5.2",
     "graphql": "14.3.1",
@@ -52,7 +52,7 @@
     "jest": "24.8.0",
     "object-to-querystring": "1.0.8",
     "rimraf": "2.6.3",
-    "rollup": "1.14.6",
+    "rollup": "1.15.5",
     "ts-jest": "22.4.6",
     "tslint": "5.17.0",
     "typescript": "3.0.3"
