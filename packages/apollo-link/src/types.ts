@@ -33,5 +33,5 @@ export type FetchResult<
 export type NextLink = (operation: Operation) => Observable<FetchResult>;
 export type RequestHandler = (
   operation: Operation,
-  forward?: NextLink,
+  forward: NextLink,
 ) => Observable<FetchResult> | null;
