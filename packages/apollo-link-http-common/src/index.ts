@@ -71,7 +71,7 @@ export interface HttpOptions {
   /**
    * A `fetch`-compatible API to use when making requests.
    */
-  fetch?: GlobalFetch['fetch'];
+  fetch?: WindowOrWorkerGlobalScope['fetch'];
 
   /**
    * An object representing values to be sent as headers on the request.
@@ -171,7 +171,7 @@ export const parseAndCheckHttpResponse = operations => (response: Response) => {
   );
 };
 
-export const checkFetcher = (fetcher: GlobalFetch['fetch']) => {
+export const checkFetcher = (fetcher: WindowOrWorkerGlobalScope['fetch']) => {
   if (!fetcher && typeof fetch === 'undefined') {
     let library: string = 'unfetch';
     if (typeof window === 'undefined') library = 'node-fetch';
