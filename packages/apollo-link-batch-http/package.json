@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-batch-http",
-  "version": "1.2.11",
+  "version": "1.2.12",
   "description": "Batch HTTP transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -43,8 +43,8 @@
     "graphql": "^0.11.0 || ^0.12.3 || ^0.13.0 || ^14.0.0"
   },
   "devDependencies": {
-    "@types/graphql": "14.2.0",
-    "@types/jest": "24.0.13",
+    "@types/graphql": "14.2.1",
+    "@types/jest": "24.0.15",
     "fetch-mock": "6.5.2",
     "graphql": "14.3.1",
     "graphql-tag": "2.10.1",
@@ -52,7 +52,7 @@
     "object-to-querystring": "1.0.8",
     "proxyquire": "1.8.0",
     "rimraf": "2.6.3",
-    "rollup": "1.14.6",
+    "rollup": "1.15.6",
     "ts-jest": "22.4.6",
     "tslint": "5.17.0",
     "typescript": "3.0.3"

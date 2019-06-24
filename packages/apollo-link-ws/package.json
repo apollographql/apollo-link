@@ -1,6 +1,6 @@
 {
   "name": "apollo-link-ws",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "WebSocket transport layer for GraphQL",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
@@ -41,13 +41,13 @@
     "subscriptions-transport-ws": "^0.9.0"
   },
   "devDependencies": {
-    "@types/graphql": "14.2.0",
-    "@types/jest": "24.0.13",
+    "@types/graphql": "14.2.1",
+    "@types/jest": "24.0.15",
     "graphql": "14.3.1",
     "graphql-tag": "2.10.1",
     "jest": "24.8.0",
     "rimraf": "2.6.3",
-    "rollup": "1.14.6",
+    "rollup": "1.15.6",
     "subscriptions-transport-ws": "0.9.15",
     "ts-jest": "22.4.6",
     "tslint": "5.17.0",

@@ -1,16 +1,17 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
-## vNEXT
+## 2019-06-14
 
-### apollo-link
+### apollo-link 1.2.12
 
 - Avoid importing `graphql/language/printer` for `getKey`. <br/>
-  [@benjamn](https://github.com/benjamn) in [#992](https://github.com/apollographql/apollo-link/pull/992)  <br />
-- Documentation updates.  <br/>
-  [@jsjoeio](https://github.com/jsjoeio) in [#1044](https://github.com/apollographql/apollo-link/pull/1044)  <br />
-- Bump apollo-utilities to reduce total bundle size of apollo applications.  <br/>
-  [@salzhrani](https://github.com/salzhrani) in [#1044](https://github.com/apollographql/apollo-link/pull/1058)  <br />
+  [@benjamn](https://github.com/benjamn) in [#992](https://github.com/apollographql/apollo-link/pull/992)
 
+- Documentation updates. <br/>
+  [@jsjoeio](https://github.com/jsjoeio) in [#1044](https://github.com/apollographql/apollo-link/pull/1044)
+
+- Bump `apollo-utilities` to reduce total bundle size. <br/>
+  [@salzhrani](https://github.com/salzhrani) in [#1044](https://github.com/apollographql/apollo-link/pull/1058)
 
 ## 2019-03-14
 
