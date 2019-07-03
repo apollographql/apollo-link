@@ -1,4 +1,4 @@
-# apollo-link [![npm version](https://badge.fury.io/js/apollo-link.svg)](https://badge.fury.io/js/apollo-link) [![Get on Slack](https://img.shields.io/badge/slack-join-orange.svg)](http://www.apollostack.com/#slack)
+# apollo-link [![npm version](https://badge.fury.io/js/apollo-link.svg)](https://badge.fury.io/js/apollo-link) [![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/apollo)
 
 `apollo-link` is a standard interface for modifying control flow of GraphQL requests and fetching GraphQL results, designed to provide a simple GraphQL client that is capable of extensions.
 The high level use cases of `apollo-link` are highlighted below:
