@@ -7,6 +7,7 @@ import {
   Operation,
   RequestHandler,
   FetchResult,
+  OptionalApolloLink,
 } from './types';
 
 import {
@@ -25,13 +26,20 @@ function toLink(handler: RequestHandler | ApolloLink) {
   return typeof handler === 'function' ? new ApolloLink(handler) : handler;
 }
 
+function removeNulls(link: OptionalApolloLink) {
+  return !!link;
+}
+
 export function empty(): ApolloLink {
   return new ApolloLink(() => Observable.of());
 }
 
-export function from(links: ApolloLink[]): ApolloLink {
+export function from(links: OptionalApolloLink[]): ApolloLink {
   if (links.length === 0) return empty();
-  return links.map(toLink).reduce((x, y) => x.concat(y));
+  return links
+    .filter(removeNulls)
+    .map(toLink)
+    .reduce((x, y) => x.concat(y));
 }
 
 export function split(

@@ -1,7 +1,10 @@
 import Observable from 'zen-observable-ts';
 import { DocumentNode } from 'graphql/language/ast';
 import { ExecutionResult } from 'graphql/execution/execute';
+import { ApolloLink } from './link';
 export { ExecutionResult, DocumentNode };
+
+export type OptionalApolloLink = ApolloLink | undefined | null;
 
 export interface GraphQLRequest {
   query: DocumentNode;
