@@ -420,6 +420,31 @@ describe('Link static library', () => {
       ).not.toThrow();
     });
 
+    it('can handle nulls in array', () => {
+      const data: FetchResult = {
+        data: {
+          hello: 'world',
+        },
+      };
+      const chain = ApolloLink.from([
+        null,
+        undefined,
+        new MockLink(() => Observable.of(data)),
+        null,
+      ]);
+      // Smoke tests execute as a static method
+      const observable = ApolloLink.execute(chain, uniqueOperation);
+      observable.subscribe({
+        next: actualData => {
+          expect(data).toEqual(actualData);
+        },
+        error: () => {
+          throw new Error();
+        },
+        complete: () => done(),
+      });
+    });
+
     it('should receive result of one link', done => {
       const data: FetchResult = {
         data: {
