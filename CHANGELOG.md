@@ -1,5 +1,13 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
+## 2019-07-06
+
+### apollo-link vNext
+
+- Add `useContext` option for `apollo-link-dedup`. Uses context config as part
+  of uniqueness key when deduping requests.  <br/>
+  [@BeeeQueue](https://github.com/BeeeQueue) in [#957](https://github.com/apollographql/apollo-link/pull/957) <br />
+
 ## 2019-06-14
 
 ### apollo-link 1.2.12
