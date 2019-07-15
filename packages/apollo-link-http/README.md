@@ -104,7 +104,7 @@ client.query({
 
 <h2 id="error">Errors</h2>
 
-The Http Link draws a distinction between client, server and GraphQL errors. Server errors can occur in three different scenarios: parse, network and data errors. [`apollo-link-error`](error.html) provides an [interface](error.html#Usage) for handling these errors. This list describes the scenarios that cause different errors:
+The Http Link draws a distinction between client, server and GraphQL errors. Server errors can occur in three different scenarios: parse, network and data errors. [`apollo-link-error`](https://www.apollographql.com/docs/link/links/error/) provides an interface for handling these errors. This list describes the scenarios that cause different errors:
 
 * _Client parse error_: the request body is not-serializable due to circular references for example
 * _Server parse error_: the response from the server cannot be parsed ([response.json()](https://developer.mozilla.org/en-US/docs/Web/API/Body/json))
