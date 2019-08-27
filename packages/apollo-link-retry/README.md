@@ -13,11 +13,11 @@ import { RetryLink } from "apollo-link-retry";
 const link = new RetryLink();
 ```
 
-<h2 id="options">Options</h2>
+## Options
 
 The standard retry strategy provides exponential backoff with jittering, and takes the following options, grouped into `delay` and `attempt` strategies:
 
-<h3 id="options.delay">options.delay</h3>
+### options.delay
 
 * `delay.initial`: The number of milliseconds to wait before attempting the first retry.
 
@@ -25,13 +25,13 @@ The standard retry strategy provides exponential backoff with jittering, and tak
 
 * `delay.jitter`: Whether delays between attempts should be randomized.
 
-<h3 id="options.attempts">options.attempts</h3>
+### options.attempts
 
 * `attempts.max`: The max number of times to try a single operation before giving up.
 
 * `attempts.retryIf`: A predicate function that can determine whether a particular response should be retried.
 
-<h3 id="options-default">Default configuration</h3>
+### Default configuration
 
 The default configuration is equivalent to:
 
@@ -49,7 +49,7 @@ new RetryLink({
 });
 ```
 
-<h2 id="backoff">Avoiding thundering herd</h2>
+## Avoiding thundering herd
 
 Starting with `initialDelay`, the delay of each subsequent retry is increased exponentially, meaning it's multiplied by 2 each time. For example, if `initialDelay` is 100, additional retries will occur after delays of 200, 400, 800, etc.
 
@@ -57,7 +57,7 @@ With the `jitter` option enabled, delays are randomized anywhere between 0ms (in
 
 These two features combined help alleviate [the thundering herd problem](https://en.wikipedia.org/wiki/Thundering_herd_problem), by distributing load during major outages. Without these strategies, when your server comes back up it will be hit by all of your clients at once, possibly causing it to go down again.
 
-<h2 id="custom-strategies">Custom Strategies</h2>
+## Custom Strategies
 
 Instead of the options object, you may pass a function for `delay` and/or `attempts`, which implement custom strategies for each. In both cases the function is given the same arguments (`count`, `operation`, `error`).
 
