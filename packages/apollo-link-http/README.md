@@ -15,7 +15,7 @@ requests with the ability to change the http options on a per query basis. This
 can be used for authentication, persisted queries, dynamic uris, and other
 granular updates.
 
-<h2 id="usage">Usage</h2>
+## Usage
 
 Import and initialize this link in just two lines:
 
@@ -25,7 +25,7 @@ import { createHttpLink } from "apollo-link-http";
 const link = createHttpLink({ uri: "/graphql" });
 ```
 
-<h2 id="options">Options</h2>
+## Options
 
 HTTP Link takes an object with some options on it to customize the behavior of the link. If your server supports it, the HTTP link can also send over metadata about the request in the extensions field. To enable this, pass `includeExtensions` as true. The options you can pass are outlined below:
 
@@ -37,11 +37,11 @@ HTTP Link takes an object with some options on it to customize the behavior of t
 * `fetchOptions`: any overrides of the fetch options argument to pass to the fetch call
 * `useGETForQueries`: set to `true` to use the HTTP `GET` method for queries (but not for mutations)
 
-<h2 id="fetch">Fetch polyfill</h2>
+## Fetch polyfill
 
 The HTTP Link relies on having `fetch` present in your runtime environment. If you are running on react-native, or modern browsers, this should be no problem. If you are targeting an environment without `fetch` such as older browsers or the server, you will need to pass your own `fetch` to the link through the options. We recommend [`unfetch`](https://github.com/developit/unfetch) for older browsers and [`node-fetch`](https://github.com/bitinn/node-fetch) for running in Node.
 
-<h2 id="context">Context</h2>
+## Context
 
 The Http Link uses the `headers` field on the context to allow passing headers to the HTTP request. It also supports the `credentials` field for defining credentials policy, `uri` for changing the endpoint dynamically, and `fetchOptions` to allow generic fetch overrides (i.e. `method: "GET"`). These options will override the same key if passed when creating the the link.
 
@@ -56,7 +56,7 @@ This link also attaches the response from the `fetch` operation on the context a
 * `response`: this is the raw response from the fetch request after it is made.
 * `http`: this is an object to control fine grained aspects of the http link itself, such as persisted queries (see below)
 
-<h3 id="persisted-queries">Persisted queries</h3>
+### Persisted queries
 
 The http link supports an advanced GraphQL feature called persisted queries. This allows you to not send the stringified query over the wire, but instead send some kind of identifier of the query. To support this you need to attach the id somewhere to the extensions field and pass the following options to the context:
 
@@ -76,7 +76,7 @@ The `http` object on context currently supports two keys:
 
 One way to use persisted queries is with [apollo-link-persisted-queries](https://github.com/apollographql/apollo-link-persisted-queries) and [Apollo Engine](https://www.apollographql.com/docs/engine/auto-persisted-queries.html).
 
-<h3 id="passing-context">Passing context per query</h3>
+### Passing context per query
 
 Apollo Client supports passing context separately for every query, so you can do things like pass a special header for a single query invocation if you need to.
 
@@ -102,9 +102,9 @@ client.query({
 });
 ```
 
-<h2 id="error">Errors</h2>
+## Errors
 
-The Http Link draws a distinction between client, server and GraphQL errors. Server errors can occur in three different scenarios: parse, network and data errors. [`apollo-link-error`](error.html) provides an [interface](error.html#Usage) for handling these errors. This list describes the scenarios that cause different errors:
+The Http Link draws a distinction between client, server and GraphQL errors. Server errors can occur in three different scenarios: parse, network and data errors. [`apollo-link-error`](error) provides an [interface](error#callback) for handling these errors. This list describes the scenarios that cause different errors:
 
 * _Client parse error_: the request body is not-serializable due to circular references for example
 * _Server parse error_: the response from the server cannot be parsed ([response.json()](https://developer.mozilla.org/en-US/docs/Web/API/Body/json))
@@ -147,11 +147,11 @@ All error types inherit the `name`, `message`, and nullable `stack` properties f
 };
 ```
 
-<h2 id="custom">Custom fetching</h2>
+## Custom fetching
 
 You can use the `fetch` option when creating an http-link to do a lot of custom networking. This is useful if you want to modify the request based on the calculated headers  or calculate the uri based on the operation:
 
-<h3 id="custom-auth">Custom auth</h3>
+### Custom auth
 
 ```js
 const customFetch = (uri, options) => {
@@ -167,7 +167,7 @@ const customFetch = (uri, options) => {
 const link = createHttpLink({ fetch: customFetch });
 ```
 
-<h3 id="dynamic-uri">Dynamic URI</h3>
+### Dynamic URI
 
 ```js
 const customFetch = (uri, options) => {
@@ -178,7 +178,7 @@ const customFetch = (uri, options) => {
 const link = createHttpLink({ fetch: customFetch });
 ```
 
-<h2 id="upgrading">Upgrade: Apollo Client 1.0</h2>
+## Upgrade: Apollo Client 1.0
 
 If you previously used either `apollo-fetch` or `apollo-client`'s `createNetworkInterface`, you will need to change the way `use` and `useAfter` are implemented in your app. Both can be implemented by writing a custom link. It's important to note that regardless of whether you're adding middleware or afterware, your Http link will always be last in the chain since it's a terminating link.
 
