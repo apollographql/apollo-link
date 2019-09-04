@@ -120,7 +120,7 @@
     "@condenast/bundlesize": "0.18.1",
     "@types/zen-observable": "0.8.0",
     "check-if-folder-contents-changed-in-git-commit-range": "1.0.0",
-    "codecov": "3.2.0",
+    "codecov": "3.5.0",
     "danger": "3.9.0",
     "jest": "24.8.0",
     "jest-junit": "6.3.0",
