@@ -13,12 +13,12 @@ import { BatchHttpLink } from "apollo-link-batch-http";
 const link = new BatchHttpLink({ uri: "/graphql" });
 ```
 
-<h2 id="options">Options</h2>
+## Options
 
 The batch http link accepts an object with some options to customize the behavior
 of the link. There are two different categories of options: http and batch. The
 http options follow the same structure as the
-[apollo-link-http](http.html#options):
+[apollo-link-http](http#options):
 
 * `uri`: the URI key is a string endpoint -- will default to "/graphql" if not
   specified
@@ -41,11 +41,11 @@ over the network.
   which uniquely names the batch the operation belongs to, defaults to
   returning the same string
 
-<h2 id="fetch">Fetch polyfill</h2>
+## Fetch polyfill
 
 The batch http link relies on having `fetch` present in your runtime environment. If you are running on react-native, or modern browsers, this should be no problem. If you are targeting an environment without `fetch` such as older browsers or the server, you will need to pass your own `fetch` to the link through the options. We recommend [`unfetch`](https://github.com/developit/unfetch) for older browsers and [`node-fetch`](https://github.com/bitinn/node-fetch) for running in Node.
 
-<h2 id="context">Context</h2>
+## Context
 
 The Batch Http Link currently uses the context in two different ways, per batch
 and per query. The context fields below are used per batch and taken from the first
@@ -63,7 +63,7 @@ manner as [apollo-link-http](https://www.apollographql.com/docs/link/links/http.
 For each query, the `http` field is used to modify each individual query in the
 batch, such as persisted queries (see below)
 
-<h3 id="persisted-queries">Persisted queries</h3>
+### Persisted queries
 
 The batch http link supports an advanced GraphQL feature called persisted queries. This allows you to not send the stringified query over the wire, but instead send some kind of identifier of the query. To support this you need to attach the id somewhere to the extensions field and pass the following options to the context:
 
@@ -83,15 +83,15 @@ The `http` object on context currently supports two keys:
 
 One way to use persisted queries is with [apollo-link-persisted-queries](https://github.com/apollographql/apollo-link-persisted-queries) and [Apollo Engine](https://www.apollographql.com/docs/engine/auto-persisted-queries.html).
 
-<h2 id="error">Errors</h2>
+## Errors
 
-The batch http link handles errors on a per batch basis with the same semantics found in [apollo-link-http](http.html#error):
+The batch http link handles errors on a per batch basis with the same semantics found in [apollo-link-http](http#errors).
 
-<h2 id="custom">Custom fetching</h2>
+## Custom fetching
 
 You can use the `fetch` option when creating an http-link to do a lot of custom networking. This is useful if you want to modify the request based on the calculated headers or calculate the uri based on the operation:
 
-<h3 id="custom-auth">Custom auth</h3>
+### Custom auth
 
 ```js
 const customFetch = (uri, options) => {
@@ -107,7 +107,7 @@ const customFetch = (uri, options) => {
 const link = new BatchHttpLink({ fetch: customFetch });
 ```
 
-<h3 id="dynamic-uri">Dynamic URI</h3>
+### Dynamic URI
 
 ```js
 const customFetch = (uri, options) => {

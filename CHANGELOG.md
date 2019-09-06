@@ -1,5 +1,14 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
+## 2019-09-06
+
+### Improvements
+
+- Several dependency updates
+- Documentation updates. <br/>
+  [@samtheson](https://github.com/samtheson) in [#1130](https://github.com/apollographql/apollo-link/pull/1130)
+
+
 ## 2019-06-14
 
 ### apollo-link 1.2.12

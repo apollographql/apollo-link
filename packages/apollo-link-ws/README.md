@@ -18,7 +18,7 @@ const client = new SubscriptionClient(GRAPHQL_ENDPOINT, {
 const link = new WebSocketLink(client);
 ```
 
-<h2 id="options">Options</h2>
+## Options
 
 WS Link takes either a subscription client or an object with three options on it to customize the behavior of the link. Takes the following possible keys in the configuration object:
 
