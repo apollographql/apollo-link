@@ -41,14 +41,14 @@
     "subscriptions-transport-ws": "^0.9.0"
   },
   "devDependencies": {
-    "@types/graphql": "14.2.1",
-    "@types/jest": "24.0.15",
-    "graphql": "14.3.1",
+    "@types/graphql": "14.2.3",
+    "@types/jest": "24.0.18",
+    "graphql": "14.5.4",
     "graphql-tag": "2.10.1",
-    "jest": "24.8.0",
-    "rimraf": "2.6.3",
-    "rollup": "1.15.6",
-    "subscriptions-transport-ws": "0.9.15",
+    "jest": "24.9.0",
+    "rimraf": "2.7.1",
+    "rollup": "1.20.3",
+    "subscriptions-transport-ws": "0.9.16",
     "ts-jest": "22.4.6",
     "tslint": "5.17.0",
     "typescript": "3.0.3"
