@@ -28,14 +28,26 @@ export interface RetryFunctionOptions {
    * By default, all errors are retried.
    */
   retryIf?: (error: any, operation: Operation) => boolean | Promise<boolean>;
+
+  /**
+   * Called when the max number of retries has been reached for the operation.
+   *
+   * Useful when you want to handle what should happen
+   * when retries has maxed out, for example notify the user
+   */
+  onMaxReached?: () => void;
 }
 
 export function buildRetryFunction(
   retryOptions?: RetryFunctionOptions,
 ): RetryFunction {
-  const { retryIf, max = 5 } = retryOptions || ({} as RetryFunctionOptions);
+  const { retryIf, max = 5, onMaxReached } =
+    retryOptions || ({} as RetryFunctionOptions);
   return function retryFunction(count, operation, error) {
-    if (count >= max) return false;
+    if (count >= max) {
+      if (typeof onMaxReached === 'function') onMaxReached();
+      return false;
+    }
     return retryIf ? retryIf(error, operation) : !!error;
   };
 }
