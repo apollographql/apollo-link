@@ -34,4 +34,19 @@ describe('buildRetryFunction', () => {
     retryFunction(1, operation, error);
     expect(stub).toHaveBeenCalledWith(error, operation);
   });
+
+  it('onMaxReached callback fires when the retry count equals max', () => {
+    const stub = jest.fn();
+    let called = false;
+    const retryFunction = buildRetryFunction({
+      max: 3,
+      retryIf: null,
+      onMaxReached: stub,
+    });
+
+    retryFunction(2, null, {});
+    expect(stub).not.toHaveBeenCalled();
+    retryFunction(3, null, {});
+    expect(stub).toHaveBeenCalled();
+  });
 });
