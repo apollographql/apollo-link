@@ -1,5 +1,12 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
+## 2019-09-17
+
+### apollo-link-retry 2.2.16
+
+- Callback when the max number of retries has been reached added(onMaxReached). <br/>
+  [@mathiastambjergsteengaard](https://github.com/mathiastambjergsteengaard) in [#1146](https://github.com/apollographql/apollo-link/pull/1146)
+
 ## 2019-09-06
 
 ### Improvements
