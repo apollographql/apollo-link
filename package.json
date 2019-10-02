@@ -23,11 +23,6 @@
   },
   "bundlesize": [
     {
-      "name": "apollo-link",
-      "path": "./packages/apollo-link/lib/bundle.min.js",
-      "maxSize": "1.1 Kb"
-    },
-    {
       "name": "apollo-link-batch",
       "path": "./packages/apollo-link-batch/lib/bundle.min.js",
       "maxSize": "1 Kb"
@@ -46,11 +41,6 @@
       "name": "apollo-link-error",
       "path": "./packages/apollo-link-error/lib/bundle.min.js",
       "maxSize": "465 B"
-    },
-    {
-      "name": "apollo-link-http",
-      "path": "./packages/apollo-link-http/lib/bundle.min.js",
-      "maxSize": "1.15 Kb"
     },
     {
       "name": "apollo-link-polling",

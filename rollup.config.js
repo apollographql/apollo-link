@@ -7,10 +7,7 @@ import invariantPlugin from 'rollup-plugin-invariant';
 export const globals = {
   // Apollo
   'apollo-client': 'apollo.core',
-  'apollo-link': 'apolloLink.core',
   'apollo-link-batch': 'apolloLink.batch',
-  'apollo-link-http-common': 'apolloLink.httpCommon',
-  'apollo-utilities': 'apolloUtilities',
   'zen-observable-ts': 'apolloLink.zenObservable',
   'subscriptions-transport-ws': 'subscriptions-transport-ws',
 
