@@ -2,10 +2,7 @@ import {
   ApolloLink,
   Operation,
   FetchResult,
-  Observable,
   fromError,
-} from 'apollo-link';
-import {
   serializeFetchParameter,
   selectURI,
   parseAndCheckHttpResponse,
@@ -14,7 +11,8 @@ import {
   createSignalIfSupported,
   fallbackHttpConfig,
   HttpOptions,
-} from 'apollo-link-http-common';
+  Observable,
+} from '@apollo/client';
 import { BatchLink } from 'apollo-link-batch';
 
 export namespace BatchHttpLink {

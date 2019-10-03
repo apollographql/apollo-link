@@ -1,5 +1,4 @@
-import { Observable, ApolloLink, execute } from 'apollo-link';
-import { print, graphql } from 'graphql';
+import { execute } from '@apollo/client';
 import { makeExecutableSchema } from 'graphql-tools';
 import gql from 'graphql-tag';
 

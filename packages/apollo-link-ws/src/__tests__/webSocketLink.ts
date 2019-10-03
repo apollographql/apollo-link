@@ -1,5 +1,5 @@
 import { SubscriptionClient } from 'subscriptions-transport-ws';
-import { Observable, execute } from 'apollo-link';
+import { execute, Observable } from '@apollo/client';
 import { ExecutionResult } from 'graphql';
 
 import { WebSocketLink } from '../webSocketLink';

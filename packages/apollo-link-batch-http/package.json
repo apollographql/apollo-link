@@ -34,9 +34,8 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-link": "file:../apollo-link",
+    "@apollo/client": "^3.0.0-alpha.6",
     "apollo-link-batch": "file:../apollo-link-batch",
-    "apollo-link-http-common": "file:../apollo-link-http-common",
     "tslib": "^1.9.3"
   },
   "peerDependencies": {
@@ -69,8 +68,7 @@
       "json"
     ],
     "testPathIgnorePatterns": [
-      "/node_modules/",
-      "sharedHttpTests.ts"
+      "/node_modules/"
     ],
     "testURL": "http://localhost"
   }

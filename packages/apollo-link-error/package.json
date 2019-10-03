@@ -28,8 +28,7 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "apollo-link": "file:../apollo-link",
-    "apollo-link-http-common": "file:../apollo-link-http-common",
+    "@apollo/client": "^3.0.0-alpha.6",
     "tslib": "^1.9.3"
   },
   "devDependencies": {

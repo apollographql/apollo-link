@@ -2,9 +2,9 @@ import {
   ApolloLink,
   execute,
   GraphQLRequest,
-  Observable,
   getOperationName,
-} from 'apollo-link';
+  Observable,
+} from '@apollo/client';
 import gql from 'graphql-tag';
 import { DocumentNode } from 'graphql';
 

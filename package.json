@@ -89,8 +89,7 @@
     ],
     "testURL": "http://localhost",
     "testPathIgnorePatterns": [
-      "/node_modules/",
-      "sharedHttpTests.ts"
+      "/node_modules/"
     ]
   },
   "lint-staged": {

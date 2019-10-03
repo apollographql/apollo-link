@@ -4,7 +4,7 @@ import {
   NextLink,
   FetchResult,
   Observable,
-} from 'apollo-link';
+} from '@apollo/client';
 
 /*
  * Expects context to contain the forceFetch field if no dedup

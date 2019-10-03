@@ -1,4 +1,4 @@
-import { Operation } from 'apollo-link';
+import { Operation } from '@apollo/client';
 
 /**
  * Advanced mode: a function that implements the strategy for calculating delays

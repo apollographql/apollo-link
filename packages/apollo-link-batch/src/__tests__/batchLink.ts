@@ -1,12 +1,12 @@
 import {
   ApolloLink,
   execute,
-  Observable,
   Operation,
   FetchResult,
   createOperation,
   GraphQLRequest,
-} from 'apollo-link';
+  Observable,
+} from '@apollo/client';
 import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
 

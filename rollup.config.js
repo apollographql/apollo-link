@@ -21,6 +21,8 @@ export const globals = {
   // Other
   'ts-invariant': 'invariant',
   'zen-observable': 'Observable',
+  'fast-json-stable-stringify': 'stringify',
+  react: 'React',
 };
 
 export default name => [

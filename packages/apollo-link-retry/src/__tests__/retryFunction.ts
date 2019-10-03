@@ -1,5 +1,6 @@
-import { buildRetryFunction, RetryFunction } from '../retryFunction';
-import { Operation } from 'apollo-link';
+import { Operation } from '@apollo/client';
+
+import { buildRetryFunction } from '../retryFunction';
 
 describe('buildRetryFunction', () => {
   it('stops after hitting maxTries', () => {

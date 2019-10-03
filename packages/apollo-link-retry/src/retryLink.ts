@@ -1,10 +1,10 @@
 import {
   ApolloLink,
-  Observable,
   Operation,
   NextLink,
   FetchResult,
-} from 'apollo-link';
+  Observable,
+} from '@apollo/client';
 
 import {
   DelayFunction,

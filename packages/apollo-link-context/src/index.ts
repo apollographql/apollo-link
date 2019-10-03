@@ -1,10 +1,10 @@
 import {
   ApolloLink,
-  Observable,
   Operation,
   NextLink,
   GraphQLRequest,
-} from 'apollo-link';
+  Observable,
+} from '@apollo/client';
 
 export type ContextSetter = (
   operation: GraphQLRequest,

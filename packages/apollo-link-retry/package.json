@@ -34,8 +34,7 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "@types/zen-observable": "0.8.0",
-    "apollo-link": "file:../apollo-link",
+    "@apollo/client": "^3.0.0-alpha.6",
     "tslib": "^1.9.3"
   },
   "devDependencies": {

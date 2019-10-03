@@ -6,9 +6,10 @@ import {
   Operation,
   NextLink,
   FetchResult,
-} from 'apollo-link';
+  ServerError,
+  ServerParseError,
+} from '@apollo/client';
 import { GraphQLError, ExecutionResult } from 'graphql';
-import { ServerError, ServerParseError } from 'apollo-link-http-common';
 
 export interface ErrorResponse {
   graphQLErrors?: ReadonlyArray<GraphQLError>;

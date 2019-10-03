@@ -2,11 +2,11 @@ import {
   ApolloLink,
   Operation,
   FetchResult,
-  Observable,
   NextLink,
-} from 'apollo-link';
-import { OperationBatcher, BatchHandler } from './batching';
+  Observable,
+} from '@apollo/client';
 
+import { OperationBatcher, BatchHandler } from './batching';
 export { OperationBatcher, BatchableRequest, BatchHandler } from './batching';
 
 export namespace BatchLink {
