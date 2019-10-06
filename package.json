@@ -33,11 +33,6 @@
       "maxSize": "1 Kb"
     },
     {
-      "name": "apollo-link-dedup",
-      "path": "./packages/apollo-link-dedup/lib/bundle.min.js",
-      "maxSize": "535 B"
-    },
-    {
       "name": "apollo-link-error",
       "path": "./packages/apollo-link-error/lib/bundle.min.js",
       "maxSize": "465 B"
@@ -107,7 +102,6 @@
   "dependencies": {},
   "devDependencies": {
     "@condenast/bundlesize": "0.18.1",
-    "@types/zen-observable": "0.8.0",
     "check-if-folder-contents-changed-in-git-commit-range": "1.0.0",
     "codecov": "3.6.1",
     "danger": "3.9.0",
