@@ -124,7 +124,7 @@
     "danger": "3.9.0",
     "jest": "24.9.0",
     "jest-junit": "6.4.0",
-    "lerna": "3.18.2",
+    "lerna": "3.18.3",
     "lint-staged": "7.3.0",
     "pre-commit": "1.2.2",
     "pre-push": "0.1.1",
