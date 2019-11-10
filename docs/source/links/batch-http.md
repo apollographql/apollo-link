@@ -1,1 +1,0 @@
-../../../packages/apollo-link-batch-http/README.md

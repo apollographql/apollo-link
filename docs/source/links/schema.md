@@ -1,1 +1,0 @@
-../../../packages/apollo-link-schema/README.md
