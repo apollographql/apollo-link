@@ -34,7 +34,7 @@
     "watch": "tsc -w -p . & rollup -c -w"
   },
   "dependencies": {
-    "@apollo/client": "^3.0.0-alpha.6",
+    "@apollo/client": "^3.0.0-beta.7",
     "apollo-link-batch": "file:../apollo-link-batch",
     "tslib": "^1.9.3"
   },

@@ -57,3 +57,5 @@ lib
 .vscode
 
 .rpt2_cache
+
+packages/*/package-lock.json
