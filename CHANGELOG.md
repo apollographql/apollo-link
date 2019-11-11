@@ -1,5 +1,15 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
+## TBD (to line up with AC 3 release)
+
+### Breaking
+
+- Core Apollo Link functionality is now part of the Apollo Client project. The `apollo-link`, `apollo-link-http`, and `apollo-link-http-common` packages have been removed from this repo. Refer to the [Apollo Client networking docs](https://www.apollographql.com/docs/react/networking/basic-http-networking) for more details.
+
+- The `apollo-link-schema` package no longer has a default export. `SchemaLink` is now only available as a named export.
+
+- The `zen-observable-ts` package no longer has a default export. `Observable` is now only available as a named export.
+
 ## 2019-09-06
 
 ### Improvements
