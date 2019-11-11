@@ -6,14 +6,14 @@ import invariantPlugin from 'rollup-plugin-invariant';
 
 export const globals = {
   // Apollo
-  'apollo-client': 'apollo.core',
-  'apollo-link-batch': 'apolloLink.batch',
+  '@apollo/client': 'apollo.core',
   'zen-observable-ts': 'apolloLink.zenObservable',
   'subscriptions-transport-ws': 'subscriptions-transport-ws',
 
   // GraphQL
   'graphql/language/printer': 'graphql.printer',
   'graphql/execution/execute': 'graphql.execute',
+  'graphql-tag': 'gql',
 
   // TypeScript
   'tslib': 'tslib',
