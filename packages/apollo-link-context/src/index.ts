@@ -4,7 +4,7 @@ import {
   NextLink,
   GraphQLRequest,
   Observable,
-} from '@apollo/client';
+} from '@apollo/client/core';
 
 export type ContextSetter = (
   operation: GraphQLRequest,

@@ -5,7 +5,7 @@ import {
   FetchResult,
   GraphQLRequest,
   Observable,
-} from '@apollo/client';
+} from '@apollo/client/core';
 import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
 

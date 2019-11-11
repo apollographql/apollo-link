@@ -4,7 +4,7 @@ import {
   NextLink,
   FetchResult,
   Observable,
-} from '@apollo/client';
+} from '@apollo/client/core';
 
 import {
   DelayFunction,

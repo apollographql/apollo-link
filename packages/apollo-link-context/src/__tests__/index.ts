@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { ApolloLink, execute, Observable } from '@apollo/client';
+import { ApolloLink, execute, Observable } from '@apollo/client/core';
 
 import { setContext } from '../index';
 

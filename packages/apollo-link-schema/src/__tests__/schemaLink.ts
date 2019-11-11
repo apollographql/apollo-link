@@ -1,4 +1,4 @@
-import { execute } from '@apollo/client';
+import { execute } from '@apollo/client/core';
 import { makeExecutableSchema } from 'graphql-tools';
 import gql from 'graphql-tag';
 

@@ -1,4 +1,9 @@
-import { ApolloLink, Operation, FetchResult, Observable } from '@apollo/client';
+import {
+  ApolloLink,
+  Operation,
+  FetchResult,
+  Observable,
+} from '@apollo/client/core';
 import { execute } from 'graphql/execution/execute';
 import { GraphQLSchema } from 'graphql/type/schema';
 

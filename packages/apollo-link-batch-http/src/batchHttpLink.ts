@@ -12,7 +12,7 @@ import {
   fallbackHttpConfig,
   HttpOptions,
   Observable,
-} from '@apollo/client';
+} from '@apollo/client/core';
 import { BatchLink } from 'apollo-link-batch';
 
 export namespace BatchHttpLink {

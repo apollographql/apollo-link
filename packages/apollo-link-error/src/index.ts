@@ -8,7 +8,7 @@ import {
   FetchResult,
   ServerError,
   ServerParseError,
-} from '@apollo/client';
+} from '@apollo/client/core';
 import { GraphQLError, ExecutionResult } from 'graphql';
 
 export interface ErrorResponse {

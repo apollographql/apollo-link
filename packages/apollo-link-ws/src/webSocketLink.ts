@@ -1,4 +1,9 @@
-import { ApolloLink, Operation, FetchResult, Observable } from '@apollo/client';
+import {
+  ApolloLink,
+  Operation,
+  FetchResult,
+  Observable,
+} from '@apollo/client/core';
 import { SubscriptionClient, ClientOptions } from 'subscriptions-transport-ws';
 
 export namespace WebSocketLink {

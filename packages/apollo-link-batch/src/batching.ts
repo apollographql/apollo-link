@@ -1,4 +1,9 @@
-import { Operation, NextLink, FetchResult, Observable } from '@apollo/client';
+import {
+  Operation,
+  NextLink,
+  FetchResult,
+  Observable,
+} from '@apollo/client/core';
 
 export type BatchHandler = (
   operations: Operation[],

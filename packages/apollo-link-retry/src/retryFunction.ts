@@ -1,4 +1,4 @@
-import { Operation } from '@apollo/client';
+import { Operation } from '@apollo/client/core';
 
 /**
  * Advanced mode: a function that determines both whether a particular

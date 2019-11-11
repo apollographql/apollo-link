@@ -4,7 +4,7 @@ import {
   FetchResult,
   NextLink,
   Observable,
-} from '@apollo/client';
+} from '@apollo/client/core';
 
 import { OperationBatcher, BatchHandler } from './batching';
 export { OperationBatcher, BatchableRequest, BatchHandler } from './batching';

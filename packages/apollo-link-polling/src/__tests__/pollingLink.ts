@@ -1,4 +1,4 @@
-import { execute, Observable } from '@apollo/client';
+import { execute, Observable } from '@apollo/client/core';
 import gql from 'graphql-tag';
 
 import { PollingLink } from '../pollingLink';

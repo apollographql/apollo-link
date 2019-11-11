@@ -1,4 +1,4 @@
-import { ApolloLink, execute, Observable } from '@apollo/client';
+import { ApolloLink, execute, Observable } from '@apollo/client/core';
 import fetchMock from 'fetch-mock';
 import gql from 'graphql-tag';
 import { print } from 'graphql';

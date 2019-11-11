@@ -5,7 +5,7 @@ import {
   ServerError,
   throwServerError,
   Observable,
-} from '@apollo/client';
+} from '@apollo/client/core';
 import { onError, ErrorLink } from '../';
 
 describe('error handling', () => {
