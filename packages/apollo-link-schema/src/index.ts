@@ -66,5 +66,3 @@ export class SchemaLink extends ApolloLink {
     });
   }
 }
-
-export default SchemaLink;
