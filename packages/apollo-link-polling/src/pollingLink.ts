@@ -4,7 +4,7 @@ import {
   NextLink,
   FetchResult,
   Observable,
-} from 'apollo-link';
+} from '@apollo/client';
 
 export namespace PollingLink {
   /**
