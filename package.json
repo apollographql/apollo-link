@@ -18,7 +18,7 @@
     "danger": "danger run --verbose",
     "predeploy": "npm install",
     "test-ci": "npm run coverage -- --ci --maxWorkers=2 --reporters=default --reporters=jest-junit",
-    "deploy": "lerna publish -m \"chore: Publish\"",
+    "deploy": "lerna publish -m \"chore: Publish\" --dist-tag beta",
     "watch": "trap \"kill 0\" SIGINT; for f in `ls packages`; do (cd `pwd`/packages/$f && [[ -e package.json ]] && npm run watch) & done; "
   },
   "bundlesize": [
