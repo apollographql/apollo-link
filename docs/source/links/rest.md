@@ -60,6 +60,8 @@ npm install --save graphql-tag
 Defining a query is straightforward:
 
 ```js
+import gql from 'graphql-tag';
+
 const query = gql`
   query luke {
     person @rest(type: "Person", path: "people/1/") {
@@ -74,7 +76,7 @@ You can then fetch your data:
 ```js
 // Invoke the query and log the person's name
 client.query({ query }).then(response => {
-  console.log(response.data.name);
+  console.log(response.data.person.name);
 });
 ```
 
