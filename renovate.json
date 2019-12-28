@@ -8,8 +8,6 @@
   "prCreation": "not-pending",
   "automerge": "minor",
   "labels": ["tooling", "dependencies"],
-  "assignees": ["@hwillson"],
-  "reviewers": ["@hwillson"],
   "pathRules": [
     {
       "paths": ["docs/package.json"],
