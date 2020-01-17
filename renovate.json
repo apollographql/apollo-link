@@ -7,7 +7,5 @@
   "rebaseStalePrs": true,
   "prCreation": "not-pending",
   "automerge": "minor",
-  "labels": ["tooling", "dependencies"],
-  "assignees": ["@hwillson"],
-  "reviewers": ["@hwillson"]
+  "labels": ["tooling", "dependencies"]
 }
