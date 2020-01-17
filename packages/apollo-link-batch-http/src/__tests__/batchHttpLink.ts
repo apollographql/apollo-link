@@ -76,7 +76,7 @@ describe('BatchHttpLink', () => {
   });
 
   it('should pass batchInterval, batchMax, and batchKey to BatchLink', () => {
-    jest.mock('apollo-link-batch', () => ({
+    jest.mock('@apollo/link-batch', () => ({
       BatchLink: jest.fn(),
     }));
 
