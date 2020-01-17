@@ -1,14 +1,30 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
-## TBD (to line up with AC 3 release)
+## Apollo Link 2.0.0 (TBD - to line up with AC 3 release)
 
-### Breaking
+### Breaking Changes
 
 - Core Apollo Link functionality is now part of the Apollo Client project. The `apollo-link`, `apollo-link-http`, and `apollo-link-http-common` packages have been removed from this repo. Refer to the [Apollo Client networking docs](https://www.apollographql.com/docs/react/networking/basic-http-networking) for more details.
+
+- Links in this project are now published with `@apollo/link-X` naming:
+  - `@apollo/link-batch`
+  - `@apollo/link-batch-http`
+  - `@apollo/link-context`
+  - `@apollo/link-error`
+  - `@apollo/link-polling`
+  - `@apollo/link-retry`
+  - `@apollo/link-schema`
+  - `@apollo/link-ws`
+
+- `@apollo/link-X` packages depend on `@apollo/client`, and should not be used with older `apollo-client` 2.x packages.
 
 - The `apollo-link-schema` package no longer has a default export. `SchemaLink` is now only available as a named export.
 
 - The `zen-observable-ts` package no longer has a default export. `Observable` is now only available as a named export.
+
+- The `apollo-link-dedup` package has been removed. Request deduping is now built into Apollo Client.
+
+- Apollo link documentation is no longer maintained in this repo. It is now part of the [Apollo Client project](https://github.com/apollographql/apollo-client).
 
 ## 2019-09-06
 
