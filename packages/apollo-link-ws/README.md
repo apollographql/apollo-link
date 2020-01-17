@@ -1,29 +1,16 @@
----
-title: apollo-link-ws
-description: Send GraphQL operations over a WebSocket. Works with GraphQL Subscriptions.
----
+# <a href="https://www.apollographql.com/"><img src="https://user-images.githubusercontent.com/841294/53402609-b97a2180-39ba-11e9-8100-812bab86357c.png" height="100" alt="React Apollo"></a>
 
-This link is particularly useful to use GraphQL Subscriptions, but it will also allow you to send GraphQL queries and mutations over WebSockets as well.
+## Apollo WebSocket Link
 
-```js
-import { WebSocketLink } from "apollo-link-ws";
-import { SubscriptionClient } from "subscriptions-transport-ws";
+[![npm version](https://badge.fury.io/js/apollo-link.svg)](https://badge.fury.io/js/apollo-link)
+[![Build Status](https://circleci.com/gh/apollographql/apollo-link.svg?style=svg)](https://circleci.com/gh/apollographql/apollo-link)
+[![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/apollo)
 
-const GRAPHQL_ENDPOINT = "ws://localhost:3000/graphql";
+## Documentation
 
-const client = new SubscriptionClient(GRAPHQL_ENDPOINT, {
-  reconnect: true
-});
+All Apollo Client documentation, including Apollo Link usage articles and helpful recipes, lives on [https://www.apollographql.com/docs/react/](https://www.apollographql.com/docs/react/)
 
-const link = new WebSocketLink(client);
-```
+## Maintainers
 
-## Options
-
-WS Link takes either a subscription client or an object with three options on it to customize the behavior of the link. Takes the following possible keys in the configuration object:
-
-* `uri`: a string endpoint to connect to
-* `options`: a set of options to pass to a new Subscription Client
-* `webSocketImpl`: a custom WebSocket implementation
-
-By default, this link uses the [subscriptions-transport-ws](https://github.com/apollographql/subscriptions-transport-ws) library for the transport.
+- [@benjamn](https://github.com/benjamn) (Apollo)
+- [@hwillson](https://github.com/hwillson) (Apollo)

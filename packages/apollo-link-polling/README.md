@@ -1,17 +1,16 @@
-# Polling Link
+# <a href="https://www.apollographql.com/"><img src="https://user-images.githubusercontent.com/841294/53402609-b97a2180-39ba-11e9-8100-812bab86357c.png" height="100" alt="React Apollo"></a>
 
-## Purpose
-This is a WIP for abstracting the scheduler from apollo-client to allow polling to be handled by a link
+## Apollo Polling Link
 
-## Installation
+[![npm version](https://badge.fury.io/js/apollo-link.svg)](https://badge.fury.io/js/apollo-link)
+[![Build Status](https://circleci.com/gh/apollographql/apollo-link.svg?style=svg)](https://circleci.com/gh/apollographql/apollo-link)
+[![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/apollo)
 
-`npm install apollo-link-polling --save`
+## Documentation
 
+All Apollo Client documentation, including Apollo Link usage articles and helpful recipes, lives on [https://www.apollographql.com/docs/react/](https://www.apollographql.com/docs/react/)
 
-## Usage
+## Maintainers
 
-```js
-import { PollingLink } from "apollo-link-polling";
-
-const pollingLink = new PollingLink(() => 10000);  // time in milliseconds
-```
+- [@benjamn](https://github.com/benjamn) (Apollo)
+- [@hwillson](https://github.com/hwillson) (Apollo)
