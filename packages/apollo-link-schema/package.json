@@ -1,5 +1,5 @@
 {
-  "name": "apollo-link-schema",
+  "name": "@apollo/link-schema",
   "version": "2.0.0-beta.0",
   "description": "Use a GraphQL Schema to request data",
   "author": "Tomas Trescak <tomi.trescak@gmail.com>",
