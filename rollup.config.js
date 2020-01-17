@@ -9,7 +9,7 @@ export const globals = {
   '@apollo/client/core': 'apollo.core',
   'zen-observable-ts': 'apolloLink.zenObservable',
   'subscriptions-transport-ws': 'subscriptions-transport-ws',
-  'apollo-link-batch': 'apollo-link-batch',
+  '@apollo/link-batch': 'apollo-link-batch',
 
   // GraphQL
   'graphql/language/printer': 'graphql.printer',

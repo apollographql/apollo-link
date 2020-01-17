@@ -80,7 +80,7 @@ describe('BatchHttpLink', () => {
       BatchLink: jest.fn(),
     }));
 
-    const BatchLink = require('apollo-link-batch').BatchLink;
+    const BatchLink = require('@apollo/link-batch').BatchLink;
     const LocalScopedLink = require('../batchHttpLink').BatchHttpLink;
 
     const batchKey = () => 'hi';

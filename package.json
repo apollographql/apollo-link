@@ -23,37 +23,37 @@
   },
   "bundlesize": [
     {
-      "name": "apollo-link-batch",
+      "name": "@apollo/link-batch",
       "path": "./packages/apollo-link-batch/lib/bundle.min.js",
       "maxSize": "1.1 Kb"
     },
     {
-      "name": "apollo-link-batch-http",
+      "name": "@apollo/link-batch-http",
       "path": "./packages/apollo-link-batch-http/lib/bundle.min.js",
       "maxSize": "1.1 Kb"
     },
     {
-      "name": "apollo-link-error",
+      "name": "@apollo/link-error",
       "path": "./packages/apollo-link-error/lib/bundle.min.js",
       "maxSize": "470 B"
     },
     {
-      "name": "apollo-link-polling",
+      "name": "@apollo/link-polling",
       "path": "./packages/apollo-link-polling/lib/bundle.min.js",
       "maxSize": "355 B"
     },
     {
-      "name": "apollo-link-retry",
+      "name": "@apollo/link-retry",
       "path": "./packages/apollo-link-retry/lib/bundle.min.js",
       "maxSize": "1.15 Kb"
     },
     {
-      "name": "apollo-link-schema",
+      "name": "@apollo/link-schema",
       "path": "./packages/apollo-link-schema/lib/bundle.min.js",
       "maxSize": "400 B"
     },
     {
-      "name": "apollo-link-ws",
+      "name": "@apollo/link-ws",
       "path": "./packages/apollo-link-ws/lib/bundle.min.js",
       "maxSize": "305 B"
     }
