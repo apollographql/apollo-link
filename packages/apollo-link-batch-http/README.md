@@ -6,6 +6,8 @@
 [![Build Status](https://circleci.com/gh/apollographql/apollo-link.svg?style=svg)](https://circleci.com/gh/apollographql/apollo-link)
 [![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/apollo)
 
+A terminating Apollo Link that combines multiple GraphQL operations into a single HTTP request. This Link batches individual operations into an array that is sent to a single GraphQL endpoint.
+
 ## Documentation
 
 All Apollo Client documentation, including Apollo Link usage articles and helpful recipes, lives on [https://www.apollographql.com/docs/react/](https://www.apollographql.com/docs/react/)

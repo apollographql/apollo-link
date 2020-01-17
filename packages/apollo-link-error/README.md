@@ -6,6 +6,8 @@
 [![Build Status](https://circleci.com/gh/apollographql/apollo-link.svg?style=svg)](https://circleci.com/gh/apollographql/apollo-link)
 [![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/apollo)
 
+Handle and inspect errors in your GraphQL network stack.
+
 ## Documentation
 
 All Apollo Client documentation, including Apollo Link usage articles and helpful recipes, lives on [https://www.apollographql.com/docs/react/](https://www.apollographql.com/docs/react/)
