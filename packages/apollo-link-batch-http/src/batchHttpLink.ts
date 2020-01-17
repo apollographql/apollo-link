@@ -13,7 +13,7 @@ import {
   HttpOptions,
   Observable,
 } from '@apollo/client/core';
-import { BatchLink } from 'apollo-link-batch';
+import { BatchLink } from '@apollo/link-batch';
 
 export namespace BatchHttpLink {
   export interface Options extends HttpOptions {
