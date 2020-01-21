@@ -1,6 +1,6 @@
 {
   "name": "@apollo/link-batch",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "description": "Apollo Link that performs batching and operation on batched Operations",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [
