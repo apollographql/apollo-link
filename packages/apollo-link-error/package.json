@@ -1,6 +1,6 @@
 {
   "name": "@apollo/link-error",
-  "version": "2.0.0-beta.2",
+  "version": "2.0.0-beta.3",
   "description": "Error Apollo Link for GraphQL Network Stack",
   "author": "James Baxley <james@meteor.com>",
   "license": "MIT",
