@@ -123,7 +123,7 @@
     "codecov": "3.6.1",
     "danger": "3.9.0",
     "jest": "24.9.0",
-    "jest-junit": "6.4.0",
+    "jest-junit": "10.0.0",
     "lerna": "3.20.2",
     "lint-staged": "7.3.0",
     "pre-commit": "1.2.2",
