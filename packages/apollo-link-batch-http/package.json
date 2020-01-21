@@ -71,5 +71,8 @@
       "/node_modules/"
     ],
     "testURL": "http://localhost"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -63,5 +63,8 @@
       "json"
     ],
     "testURL": "http://localhost"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
