@@ -81,12 +81,12 @@ One caveat is that the errors from the new response from retrying the request do
 
 ## Ignoring errors
 
-If you want to conditionally ignore errors, you can set `response.errors = null;` within the error handler:
+If you want to conditionally ignore errors, you can set `response.errors = undefined;` within the error handler:
 
 ```js
 onError(({ response, operation }) => {
   if (operation.operationName === "IgnoreErrorsQuery") {
-    response.errors = null;
+    response.errors = undefined;
   }
 });
 ```
