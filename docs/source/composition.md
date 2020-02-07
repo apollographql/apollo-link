@@ -46,13 +46,13 @@ import { RetryLink } from 'apollo-link-retry';
 import { HttpLink } from 'apollo-link-http';
 
 const link = new RetryLink().split(
-  (operation) => operation.getContext().version === 1,
-  new HttpLink({ uri: "http://localhost:4000/v1/graphql" }),
-  new HttpLink({ uri: "http://localhost:4000/v2/graphql" })
+  (operation) => operation.getContext().version === 1,        // condition to evaluate
+  new HttpLink({ uri: "http://localhost:4000/v1/graphql" }),  // control passes to this link when condition is true
+  new HttpLink({ uri: "http://localhost:4000/v2/graphql" })   // control passes to this link when condition is false
 );
 ```
 
-`split` takes two required parameters and one optional one. The first argument to split is a function which receives the operation and returns `true` for the first link and `false` for the second link. The second argument is the first link to be split between. The third argument is an optional second link to send the operation to if it doesn't match.
+`split` takes three parameters.  The first parameter is a function which receives the operation and must return a boolean value. The second parameter is a link that control will pass to if function's return value is `true`.  The third parameter, which is optional, is a link that control will pass to if the function's return value is `false`.
 
 Using `split` allows for per operation based control flow for things like sending mutations to a different server or giving them more retry attempts, for using a WS link for subscriptions and Http for everything else, it can even be used to customize which links are used for an authenticated user vs a public client.
 
