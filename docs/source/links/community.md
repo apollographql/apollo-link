@@ -27,3 +27,4 @@ Thank you to our amazing community members who have created custom Apollo Links!
 * [apollo-link-firebase](https://github.com/Canner/apollo-link-firebase) by [@canner](https://github.com/Canner): Query Firebase with Apollo
 * [apollo-link-computed-property](https://github.com/czystyl/apollo-link-computed-property) by [@czystyl](https://github.com/czystyl): `@computed` directive allows you to create a computed property on the query
 * [apollo-link-segment](https://github.com/hobochild/apollo-link-segment) by [@hobochild](https://github.com/hobochild): Automatically track apollo operations with [segment](https://segment.com/).
+* [apollo-link-mutation-queue](https://github.com/sirugh/apollo-link-mutation-queue) by [@sirugh](http://github.com/sirugh): Queue mutations instead of executing in parallel.
