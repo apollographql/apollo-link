@@ -36,7 +36,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { createHttpLink } from 'apollo-link-http';
 
 const client = new ApolloClient({
-  link: createHttpLink({ uri: 'http://api.githunt.com/graphql' }),
+  link: createHttpLink({ uri: 'http://localhost:4000/graphql' }),
   cache: new InMemoryCache()
 });
 ```
@@ -51,7 +51,7 @@ You can also use Apollo Link with `graphql-tools` to facilitate schema stitching
 import { HttpLink } from 'apollo-link-http';
 import fetch from 'node-fetch';
 
-const link = new HttpLink({ uri: 'http://api.githunt.com/graphql', fetch });
+const link = new HttpLink({ uri: 'http://localhost:4000/graphql', fetch });
 
 const schema = await introspectSchema(link);
 
@@ -78,7 +78,7 @@ import { execute } from 'apollo-link';
 import { HttpLink } from 'apollo-link-http';
 
 const link = new HttpLink({
-  uri: 'http://api.githunt.com/graphql'
+  uri: 'http://localhost:4000/graphql'
 });
 
 const fetcher = (operation) => {
@@ -105,7 +105,7 @@ import {HttpLink} from 'apollo-link-http';
 import {parse} from 'graphql';
 
 const link = new HttpLink({
-  uri: 'http://api.githunt.com/graphql'
+  uri: 'http://localhost:4000/graphql'
 });
 
 const source = new RecordSource();
@@ -134,7 +134,7 @@ import { execute, makePromise } from 'apollo-link';
 import { HttpLink } from 'apollo-link-http';
 import gql from 'graphql-tag';
 
-const uri = 'http://api.githunt.com/graphql';
+const uri = 'http://localhost:4000/graphql';
 const link = new HttpLink({ uri });
 
 const operation = {
