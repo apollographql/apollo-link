@@ -37,6 +37,9 @@
     "apollo-link": "file:../apollo-link",
     "tslib": "^1.9.3"
   },
+  "peerDependencies": {
+    "graphql": "^0.11.3 || ^0.12.3 || ^0.13.0 || ^14.0.0"
+  },
   "devDependencies": {
     "@types/graphql": "14.2.3",
     "@types/jest": "24.9.0",
