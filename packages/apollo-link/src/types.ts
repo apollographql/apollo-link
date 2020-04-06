@@ -22,10 +22,9 @@ export interface Operation {
 }
 
 export type FetchResult<
-  TData = { [key: string]: any },
   C = Record<string, any>,
   E = Record<string, any>
-> = ExecutionResult<TData> & {
+> = ExecutionResult & {
   extensions?: E;
   context?: C;
 };
