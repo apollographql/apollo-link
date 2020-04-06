@@ -9,7 +9,8 @@ the top level [`CHANGELOG.md`](https://github.com/apollographql/apollo-link/blob
 
 ### 1.2.4
 
-- No changes
+- Added `graphql` 15 to peer and dev dependencies; removed `TData` generic parameter from `FetchResult` to bring it into alignment with GraphQL 15 <br />
+  [@zackdotcomputer](https://github.com/zackdotcomputer) in [#1262](https://github.com/apollographql/apollo-link/pull/1262)
 
 ### 1.2.3
 - Added `graphql` 14 to peer and dev deps; Updated `@types/graphql` to 14  <br/>
