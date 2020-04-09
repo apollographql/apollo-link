@@ -4,10 +4,10 @@
 
 ### Improvements
 
+- Support GraphQL v15 [PR #1263](https://github.com/apollographql/apollo-link/pull/1263) [#1261](https://github.com/apollographql/apollo-link/issues/1261)
 - Several dependency updates
 - Documentation updates. <br/>
   [@samtheson](https://github.com/samtheson) in [#1130](https://github.com/apollographql/apollo-link/pull/1130)
-
 
 ## 2019-06-14
 
