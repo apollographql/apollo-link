@@ -1,6 +1,6 @@
 {
   "name": "zen-observable-ts",
-  "version": "0.8.20",
+  "version": "0.8.21",
   "description": "An Implementation of ES Observables in Typescript",
   "author": "Evans Hauser <evanshauser@gmail.com>",
   "contributors": [],
