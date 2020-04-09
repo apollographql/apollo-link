@@ -1,10 +1,16 @@
 **Note:** This is a cumulative changelog that outlines all of the Apollo Link project child package changes that were bundled into a release on a specific day.
 
+## 2020-04-09
+
+### Improvements
+
+- Support GraphQL v15.  <br/>
+  [@kamilkisiela](https://github.com/kamilkisiela) in [#1263](https://github.com/apollographql/apollo-link/pull/1263)
+
 ## 2019-09-06
 
 ### Improvements
 
-- Support GraphQL v15 [PR #1263](https://github.com/apollographql/apollo-link/pull/1263) [#1261](https://github.com/apollographql/apollo-link/issues/1261)
 - Several dependency updates
 - Documentation updates. <br/>
   [@samtheson](https://github.com/samtheson) in [#1130](https://github.com/apollographql/apollo-link/pull/1130)
