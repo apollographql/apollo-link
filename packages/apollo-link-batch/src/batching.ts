@@ -18,6 +18,17 @@ export interface BatchableRequest {
   complete?: Array<() => void>;
 }
 
+/**
+ * Defaults to `Auto`, if you want to expressly specify the timing of dispatching requests,
+ * use `Queue` and `Dispatch`. Queue mode only queues the operation, not dispatching requests.
+ * Dispatch mode dispatches the batched operations for the batch key.
+ */
+export enum BatchingMode {
+  Auto, // Default. The timing is by controlled by `batchInterval` and `batchMax`.
+  Queue, // Only queues the operation, not dispatching any request.
+  Dispatch, // Dispatches a request for the batch key.
+}
+
 // QueryBatcher doesn't fire requests immediately. Requests that were enqueued within
 // a certain amount of time (configurable through `batchInterval`) will be batched together
 // into one query.
@@ -58,6 +69,8 @@ export class OperationBatcher {
     let queued = false;
 
     const key = this.batchKey(request.operation);
+    const batchingMode: BatchingMode =
+      request.operation.getContext()['batchingMode'] || BatchingMode.Auto;
 
     if (!requestCopy.observable) {
       requestCopy.observable = new Observable<FetchResult>(observer => {
@@ -83,12 +96,20 @@ export class OperationBatcher {
           requestCopy.complete.push(observer.complete.bind(observer));
 
         // The first enqueued request triggers the queue consumption after `batchInterval` milliseconds.
-        if (this.queuedRequests.get(key).length === 1) {
+        if (
+          this.queuedRequests.get(key).length === 1 &&
+          batchingMode === BatchingMode.Auto
+        ) {
           this.scheduleQueueConsumption(key);
         }
 
         // When amount of requests reaches `batchMax`, trigger the queue consumption without waiting on the `batchInterval`.
-        if (this.queuedRequests.get(key).length === this.batchMax) {
+        let shouldDispatch =
+          batchingMode === BatchingMode.Auto &&
+          this.queuedRequests.get(key).length === this.batchMax;
+        shouldDispatch =
+          shouldDispatch || batchingMode === BatchingMode.Dispatch;
+        if (shouldDispatch) {
           this.consumeQueue(key);
         }
       });
