@@ -45,11 +45,11 @@ The `createHttpLink` is a replacement for `createNetworkInterface` from Apollo C
 
 ### graphql-tools
 
-You can also use Apollo Link with `graphql-tools` to facilitate schema stitching by using `node-fetch` as your request link's fetcher function and passing it to `makeRemoteExecutableSchema`.
+You can also use Apollo Link with `graphql-tools` to facilitate schema stitching by using `cross-fetch` as your request link's fetcher function and passing it to `makeRemoteExecutableSchema`.
 
 ```js
 import { HttpLink } from 'apollo-link-http';
-import fetch from 'node-fetch';
+import fetch from 'cross-fetch';
 
 const link = new HttpLink({ uri: 'http://localhost:4000/graphql', fetch });
 
