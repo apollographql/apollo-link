@@ -173,7 +173,7 @@ describe('error handling', () => {
     const errorLink = onError(({ graphQLErrors, response }) => {
       expect(graphQLErrors[0].message).toBe('ignore');
       // ignore errors
-      response.errors = null;
+      response.errors = undefined;
       called = true;
     });
 
@@ -188,7 +188,7 @@ describe('error handling', () => {
 
     execute(link, { query }).subscribe({
       next: ({ errors, data }) => {
-        expect(errors).toBe(null);
+        expect(errors).toBe(undefined);
         expect(data).toEqual({ foo: { id: 1 } });
       },
       complete: done,
