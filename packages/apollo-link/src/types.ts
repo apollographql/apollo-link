@@ -1,7 +1,15 @@
 import Observable from 'zen-observable-ts';
 import { DocumentNode } from 'graphql/language/ast';
-import { ExecutionResult } from 'graphql/execution/execute';
-export { ExecutionResult, DocumentNode };
+import { ExecutionResult as GraphQLExecutionResult } from 'graphql';
+export { DocumentNode };
+
+export interface ExecutionResult<
+  TData = {
+    [key: string]: any;
+  }
+> extends GraphQLExecutionResult {
+  data?: TData | null;
+}
 
 export interface GraphQLRequest {
   query: DocumentNode;
