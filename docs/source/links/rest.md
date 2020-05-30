@@ -494,6 +494,7 @@ An `@rest(…)` directive takes two required and several optional arguments:
 * _optional_ `bodyBuilder?: /function/`: If provided, this is the name a `function` that you provided to `variables`, that is called when a request-body needs to be built. This lets you combine arguments or encode the body in some format other than JSON.
 * _optional_ `bodySerializer?: /string | function/`: string key to look up a function in `bodySerializers` or a custom serialization function for the body/headers of this request before it is passed to the fetch call. Defaults to `JSON.stringify` and setting `Content-Type: application-json`.
 * _optional_ `fieldNameDenormalizer?: /function/`: A per-request name denormalizer, this permits special endpoints to have their field names remapped differently from the default.
+* _optional_ `fieldNameNnormalizer?: /function/`: A per-request name normalizer, this permits special endpoints to have their field names remapped differently from the default.
 * _optional_ `typePatcher?: /function/`: A method to allow insertion of __typename deep in response objects
 
 ### Variables
