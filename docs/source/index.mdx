@@ -139,10 +139,10 @@ const link = new HttpLink({ uri });
 
 const operation = {
   query: gql`query { hello }`,
-  variables: {} //optional
-  operationName: {} //optional
-  context: {} //optional
-  extensions: {} //optional
+  variables: {}, //optional
+  operationName: {}, //optional
+  context: {}, //optional
+  extensions: {}, //optional
 };
 
 // execute returns an Observable so it can be subscribed to
