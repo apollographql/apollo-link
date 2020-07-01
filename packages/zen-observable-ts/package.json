@@ -29,7 +29,7 @@
     "watch": "tsc -w -p ."
   },
   "devDependencies": {
-    "@types/jest": "24.9.0",
+    "@types/jest": "24.9.1",
     "jest": "24.9.0",
     "rimraf": "2.7.1",
     "rollup": "1.29.1",
