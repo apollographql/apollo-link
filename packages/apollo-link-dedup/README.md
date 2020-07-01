@@ -20,8 +20,8 @@ const link = new DedupLink();
 The Dedup Link does not take any options when creating the link.
 
 ## Context
-The Dedup Link can be overridden by using the context on a per operation basis:
-- `forceFetch`: a true or false (defaults to false) to bypass deduplication per request
+Deduplication is enabled by default when using apollo-client. It can be disabled globally in the client constructor options, and can be overridden by using the context on a per operation basis:
+- `queryDeduplication`: a boolean to bypass the client-wide deduplication setting per request. If not provided, the client setting is used (defaults to true).
 
 ```js
 import { createHttpLink } from "apollo-link-http";
@@ -37,7 +37,7 @@ const client = new ApolloClient({
 client.query({
   query: MY_QUERY,
   context: {
-    forceFetch: true
+    queryDeduplication: false
   }
 })
 ```
