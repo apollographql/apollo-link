@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@types/graphql": "14.2.3",
-    "@types/jest": "24.9.0",
+    "@types/jest": "24.9.1",
     "fetch-mock": "6.5.2",
     "graphql": "15.0.0",
     "graphql-tag": "2.10.1",
