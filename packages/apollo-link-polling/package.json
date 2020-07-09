@@ -37,16 +37,16 @@
   "dependencies": {
     "@types/zen-observable": "0.8.0",
     "apollo-link": "file:../apollo-link",
-    "tslib": "^1.9.3"
+    "tslib": "1.13.0"
   },
   "devDependencies": {
     "@types/graphql": "14.2.3",
-    "@types/jest": "24.9.0",
-    "graphql": "15.0.0",
+    "@types/jest": "24.9.1",
+    "graphql": "15.2.0",
     "graphql-tag": "2.10.1",
     "jest": "24.9.0",
     "rimraf": "2.7.1",
-    "rollup": "1.29.1",
+    "rollup": "1.32.1",
     "ts-jest": "22.4.6",
     "tslint": "5.20.1",
     "typescript": "3.0.3"
