@@ -39,11 +39,11 @@
   },
   "devDependencies": {
     "@types/graphql": "14.2.3",
-    "@types/jest": "24.9.1",
+    "@types/jest": "26.0.5",
     "fetch-mock": "6.5.2",
     "graphql": "15.3.0",
     "graphql-tag": "2.10.1",
-    "jest": "24.9.0",
+    "jest": "26.1.0",
     "proxyquire": "1.8.0",
     "rimraf": "2.7.1",
     "rollup": "1.32.1",
