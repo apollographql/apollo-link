@@ -27,7 +27,7 @@
   "dependencies": {
     "apollo-link": "file:../apollo-link",
     "ts-invariant": "^0.4.0",
-    "tslib": "^1.9.3"
+    "tslib": "^2.0.0"
   },
   "peerDependencies": {
     "graphql": "^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0"
