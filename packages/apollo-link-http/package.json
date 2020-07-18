@@ -48,7 +48,7 @@
     "apollo-fetch": "0.7.0",
     "fetch-mock": "6.5.2",
     "graphql": "15.3.0",
-    "graphql-tag": "2.10.1",
+    "graphql-tag": "2.10.4",
     "jest": "24.9.0",
     "object-to-querystring": "1.0.8",
     "rimraf": "2.7.1",
