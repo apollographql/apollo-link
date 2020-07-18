@@ -138,6 +138,6 @@
     "terser": "3.17.0",
     "ts-jest": "22.4.6",
     "tslib": "1.13.0",
-    "typescript": "3.0.3"
+    "typescript": "3.9.7"
   }
 }
