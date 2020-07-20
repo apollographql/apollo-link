@@ -2,9 +2,9 @@
 
 ---
 
-> ⚠️ **THIS PROJECT HAS BEEN DEPRECATED** ⚠️
-> 
-> The Links in this repo have been migrated to the [apollo-client](https://github.com/apollographql/apollo-client.git) project (as of >= `@apollo/client@3.0.0`). Please refer to the [Apollo Client migration guide](https://www.apollographql.com/docs/react/migrating/apollo-client-3-migration/) for more details. All Apollo Link issues / pull requests should now be opened in the [apollo-client](https://github.com/apollographql/apollo-client.git) repo.
+⚠️ **THIS PROJECT HAS BEEN DEPRECATED** ⚠️
+ 
+The Links in this repo have been migrated to the [apollo-client](https://github.com/apollographql/apollo-client.git) project (as of >= `@apollo/client@3.0.0`). Please refer to the [Apollo Client migration guide](https://www.apollographql.com/docs/react/migrating/apollo-client-3-migration/) for more details. All Apollo Link issues / pull requests should now be opened in the [apollo-client](https://github.com/apollographql/apollo-client.git) repo.
 
 ---
 
