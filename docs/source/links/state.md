@@ -3,6 +3,9 @@ title: apollo-link-state
 description: Manage your local data with Apollo Client
 ---
 
+> #### ⚠️ DEPRECATED ⚠️
+> This package has been deprecated because since Apollo Client v2.5 local state handling capabilities are already included. Check the [instructions on how to migrate](https://www.apollographql.com/docs/react/essentials/local-state/#migrating-from-apollo-link-state).
+
 [**Read the announcement post!
 🎉**](https://blog.apollographql.com/the-future-of-state-management-dd410864cae2) |
 [**Video tutorial by Sara Vieira**](https://youtu.be/2RvRcnD8wHY) |
