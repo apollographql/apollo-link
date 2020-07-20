@@ -47,7 +47,7 @@
     "@types/jest": "24.9.1",
     "@types/node": "9.6.56",
     "graphql": "15.3.0",
-    "graphql-tag": "2.10.1",
+    "graphql-tag": "2.10.4",
     "jest": "24.9.0",
     "rimraf": "2.7.1",
     "rollup": "1.32.1",
