@@ -125,7 +125,7 @@
     "jest": "24.9.0",
     "jest-junit": "6.4.0",
     "lerna": "3.22.1",
-    "lint-staged": "7.3.0",
+    "lint-staged": "10.2.11",
     "pre-commit": "1.2.2",
     "pre-push": "0.1.1",
     "prettier": "1.15.2",
