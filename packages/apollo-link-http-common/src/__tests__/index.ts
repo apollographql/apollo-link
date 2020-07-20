@@ -124,6 +124,7 @@ describe('Common Http functions', () => {
       };
 
       const defaultOptions = {
+        credentials: 'same-origin',
         method: 'POST',
       };
 
@@ -137,6 +138,7 @@ describe('Common Http functions', () => {
       expect(body).not.toHaveProperty('extensions');
 
       expect(options.headers).toEqual(defaultHeaders);
+      expect(options.credentials).toEqual(defaultOptions.credentials);
       expect(options.method).toEqual(defaultOptions.method);
     });
 

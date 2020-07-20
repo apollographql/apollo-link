@@ -242,6 +242,27 @@ describe('HttpLink', () => {
         }),
       );
     });
+
+    it("defaults to credentials: 'same-origin'", done => {
+      const variables = { params: 'stub' };
+      const link = createHttpLink({
+        uri: 'http://data/',
+      });
+
+      execute(link, {
+        query: sampleMutation,
+        variables,
+      }).subscribe(
+        makeCallback(done, result => {
+          const [uri, options] = fetchMock.lastCall();
+          const { credentials, method, body } = options;
+          expect(body).toBeDefined();
+          expect(credentials).toBe('same-origin');
+          expect(method).toBe('POST');
+          expect(uri).toBe('http://data/');
+        }),
+      );
+    });
   });
 
   it("throws for GET if the variables can't be stringified", done => {
