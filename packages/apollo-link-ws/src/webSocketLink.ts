@@ -21,6 +21,13 @@ export namespace WebSocketLink {
      * A custom WebSocket implementation to use.
      */
     webSocketImpl?: any;
+    
+    
+    /**
+     * Passed in as the second option of the WebSocket implementation.
+     * On the browser it is wsProtocols but in Node it's implementation specific.
+     */
+    webSocketImplOptions?: any;
   }
 }
 
@@ -42,6 +49,7 @@ export class WebSocketLink extends ApolloLink {
         paramsOrClient.uri,
         paramsOrClient.options,
         paramsOrClient.webSocketImpl,
+        paramsOrClient.webSocketImplOptions,
       );
     }
   }
