@@ -86,7 +86,7 @@ Construction of `RestLink` takes an options object to customize the behavior of 
 * `endpoints: /map-of-endpoints/`: _optional_ map of endpoints -- If you use this, you need to provide `endpoint` to the `@rest(...)` directives.
 * `customFetch?`: _optional_ a custom `fetch` to handle `REST` calls
 * `headers?: Headers`: _optional_ an object representing values to be sent as headers with all requests. [Documented here](https://developer.mozilla.org/en-US/docs/Web/API/Request/headers)
-* `credentials?`: _optional_ a string representing the credentials policy the fetch call should operate with. [Document here](https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials)
+* `credentials?`: _optional_ a string representing the credentials policy the fetch call should operate with. [Documented here](https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials)
 * `fieldNameNormalizer?: /function/`: _optional_ function that takes the response field name and converts it into a GraphQL compliant name. -- This is useful if your `REST` API returns fields that aren't representable as GraphQL, or if you want to convert between `snake_case` field names in JSON to `camelCase` keyed fields.
 * `fieldNameDenormalizer?: /function/`: _optional_ function that takes a GraphQL-compliant field name and converts it back into an endpoint-specific name.
 * `typePatcher: /map-of-functions/`: _optional_ Structure to allow you to specify the `__typename` when you have nested objects in your REST response!
