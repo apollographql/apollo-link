@@ -28,7 +28,7 @@ export namespace WebSocketLink {
 export import WebSocketParams = WebSocketLink.Configuration;
 
 export class WebSocketLink extends ApolloLink {
-  private subscriptionClient: SubscriptionClient;
+  public subscriptionClient: SubscriptionClient;
 
   constructor(
     paramsOrClient: WebSocketLink.Configuration | SubscriptionClient,
