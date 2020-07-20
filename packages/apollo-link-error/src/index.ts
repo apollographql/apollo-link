@@ -96,7 +96,7 @@ export function onError(errorHandler: ErrorHandler): ApolloLink {
 
       return () => {
         if (sub) sub.unsubscribe();
-        if (retriedSub) sub.unsubscribe();
+        if (retriedSub) retriedSub.unsubscribe();
       };
     });
   });
