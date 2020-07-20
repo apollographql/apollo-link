@@ -30,6 +30,13 @@
 
 ## 2019-03-14
 
+### apollo-link-http 1.5.13
+
+- Trim the consecutive space and reduce the query string length when using GET requests
+ https://github.com/anucssearshc
+ [@anucssearshc](https://github.com/anucssearshc) in [#989](https://github.com/apollographql/apollo-link/pull/989)
+
+
 ### apollo-link-dedup 1.0.18
 
 - Fixes an issue introduced in [#984](https://github.com/apollographql/apollo-link/pull/984)
