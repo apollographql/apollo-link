@@ -136,7 +136,7 @@
     "rollup-plugin-sourcemaps": "0.6.2",
     "rollup-plugin-typescript2": "0.27.1",
     "terser": "3.17.0",
-    "ts-jest": "22.4.6",
+    "ts-jest": "26.1.3",
     "tslib": "1.13.0",
     "typescript": "3.0.3"
   }
