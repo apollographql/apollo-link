@@ -15,7 +15,7 @@ Thank you to our amazing community members who have created custom Apollo Links!
 * [apollo-link-response-resolver](https://github.com/lionize/apollo-link-response-resolver) by [@lionize](https://github.com/lionize): Automatically format incoming GraphQL data
 * [apollo-link-electron](https://github.com/firede/apollo-link-electron) by [@firede](https://github.com/firede): Get GraphQL results over IPC for Electron apps
 * [link-http-dataloader](https://github.com/graphcool/http-link-dataloader) by [@graphcool](https://github.com/graphcool): Batching and caching provided by dataloader
-* [@absinthe/socker-apollo-link](https://github.com/absinthe-graphql/absinthe-socket/tree/master/packages/socket-apollo-link) by [@absinthe-graphql](https://github.com/absinthe-graphql): Communicate over an Absinthe socket
+* [@absinthe/socket-apollo-link](https://github.com/absinthe-graphql/absinthe-socket/tree/master/packages/socket-apollo-link) by [@absinthe-graphql](https://github.com/absinthe-graphql): Communicate over an Absinthe socket
 * [apollo-absinthe-upload-link](https://github.com/bytewitchcraft/apollo-absinthe-upload-link) by [@bytewitchcraft](https://github.com/bytewitchcraft): Enables file-uploading to Absinth backends
 * [apollo-link-logger](https://github.com/blackxored/apollo-link-logger) by [@blackxored](https://github.com/blackxored): Logger that uses similar format to redux-logger and includes performance infomation
 * [apollo-link-tracer](https://github.com/convoyinc/apollo-link-tracer) by [@convoyinc](https://github.com/convoyinc): Trace Apollo queries and mutations
