@@ -13,7 +13,7 @@ import { ServerError, ServerParseError } from 'apollo-link-http-common';
 
 export interface ErrorResponse {
   graphQLErrors?: ReadonlyArray<GraphQLError>;
-  networkError?: Error | ServerError | ServerParseError;
+  networkError?: ServerError | ServerParseError;
   response?: ExecutionResult;
   operation: Operation;
   forward: NextLink;
