@@ -37,7 +37,7 @@
     "apollo-link": "file:../apollo-link",
     "apollo-link-batch": "file:../apollo-link-batch",
     "apollo-link-http-common": "file:../apollo-link-http-common",
-    "tslib": "^1.9.3"
+    "tslib": "^2.0.0"
   },
   "peerDependencies": {
     "graphql": "^0.11.0 || ^0.12.3 || ^0.13.0 || ^14.0.0 || ^15.0.0"

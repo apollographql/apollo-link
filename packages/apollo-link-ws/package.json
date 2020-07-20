@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "apollo-link": "file:../apollo-link",
-    "tslib": "^1.9.3"
+    "tslib": "^2.0.0"
   },
   "peerDependencies": {
     "subscriptions-transport-ws": "^0.9.0"

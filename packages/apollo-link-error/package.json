@@ -30,7 +30,7 @@
   "dependencies": {
     "apollo-link": "file:../apollo-link",
     "apollo-link-http-common": "file:../apollo-link-http-common",
-    "tslib": "^1.9.3"
+    "tslib": "^2.0.0"
   },
   "devDependencies": {
     "@types/graphql": "14.2.3",
