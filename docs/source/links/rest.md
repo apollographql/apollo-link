@@ -486,13 +486,16 @@ The rest directive could be used at any depth in a query, but once it is used, n
 An `@rest(…)` directive takes two required and several optional arguments:
 
 * `type: string`: The GraphQL type this will return
-* `path: string`: uri-path to the REST API. This could be a path or a full url. If a path, the endpoint given on link creation or from the context is concatenated with it to produce a full `URI`. See also: `pathBuilder`
-* _optional_ `method?: "GET" | "PUT" | "POST" | "DELETE"`: the HTTP method to send the request via (i.e GET, PUT, POST)
+* `path?: string`: uri-path to the REST API. This could be a path or a full url. If a path, the endpoint given on link creation or from the context is concatenated with it to produce a full `URI`. Optional if you provide: `pathBuilder`
+* _optional_ `method?: "GET" | "PUT" | "POST" | "DELETE"`: the HTTP method to send the request via (i.e GET, PUT, POST), Defaults to `GET` if not supplied.
 * _optional_ `endpoint?: string` key to use when looking up the endpoint in the (optional) `endpoints` table if provided to RestLink at creation time.
 * _optional_ `pathBuilder?: /function/`: If provided, this function gets to control what path is produced for this request.
 * _optional_ `bodyKey?: string = "input"`: This is the name of the `variable` to use when looking to build a REST request-body for a `PUT` or `POST` request. It defaults to `input` if not supplied.
 * _optional_ `bodyBuilder?: /function/`: If provided, this is the name a `function` that you provided to `variables`, that is called when a request-body needs to be built. This lets you combine arguments or encode the body in some format other than JSON.
 * _optional_ `bodySerializer?: /string | function/`: string key to look up a function in `bodySerializers` or a custom serialization function for the body/headers of this request before it is passed to the fetch call. Defaults to `JSON.stringify` and setting `Content-Type: application-json`.
+* _optional_ `fieldNameDenormalizer?: /function/`: A per-request name denormalizer, this permits special endpoints to have their field names remapped differently from the default.
+* _optional_ `fieldNameNnormalizer?: /function/`: A per-request name normalizer, this permits special endpoints to have their field names remapped differently from the default.
+* _optional_ `typePatcher?: /function/`: A method to allow insertion of __typename deep in response objects
 
 ### Variables
 
