@@ -7,7 +7,12 @@ import {
 } from 'apollo-link';
 import { OperationBatcher, BatchHandler } from './batching';
 
-export { OperationBatcher, BatchableRequest, BatchHandler } from './batching';
+export {
+  OperationBatcher,
+  BatchableRequest,
+  BatchHandler,
+  BatchingMode,
+} from './batching';
 
 export namespace BatchLink {
   export interface Options {
