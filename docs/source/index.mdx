@@ -49,6 +49,8 @@ You can also use Apollo Link with `graphql-tools` to facilitate schema stitching
 
 ```js
 import { HttpLink } from 'apollo-link-http';
+import { introspectSchema, makeRemoteExecutableSchema } from 'apollo-server';
+
 import fetch from 'node-fetch';
 
 const link = new HttpLink({ uri: 'http://localhost:4000/graphql', fetch });
