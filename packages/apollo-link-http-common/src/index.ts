@@ -1,5 +1,6 @@
 import { Operation } from 'apollo-link';
 import { print } from 'graphql/language/printer';
+import { stripIgnoredCharacters } from 'graphql/utilities/stripIgnoredCharacters';
 import { InvariantError } from 'ts-invariant';
 
 /*
@@ -32,6 +33,7 @@ export type ClientParseError = InvariantError & {
 export interface HttpQueryOptions {
   includeQuery?: boolean;
   includeExtensions?: boolean;
+  minifyQuery?: boolean;
 }
 
 export interface HttpConfig {
@@ -92,6 +94,7 @@ export interface HttpOptions {
 const defaultHttpOptions: HttpQueryOptions = {
   includeQuery: true,
   includeExtensions: false,
+  minifyQuery: false,
 };
 
 const defaultHeaders = {
@@ -236,7 +239,10 @@ export const selectHttpOptionsAndBody = (
   if (http.includeExtensions) (body as any).extensions = extensions;
 
   // not sending the query (i.e persisted queries)
-  if (http.includeQuery) (body as any).query = print(query);
+  if (http.includeQuery)
+    (body as any).query = http.minifyQuery
+      ? stripIgnoredCharacters(print(query))
+      : print(query);
 
   return {
     options,
