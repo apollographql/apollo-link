@@ -1,5 +1,13 @@
 # apollo-link [![npm version](https://badge.fury.io/js/apollo-link.svg)](https://badge.fury.io/js/apollo-link) [![Get on Slack](https://img.shields.io/badge/slack-join-orange.svg)](http://www.apollostack.com/#slack)
 
+---
+
+> ⚠️ **THIS PROJECT HAS BEEN DEPRECATED** ⚠️
+> 
+> The Links in this repo have been migrated to the [apollo-client](https://github.com/apollographql/apollo-client.git) project (as of >= `@apollo/client@3.0.0`). Please refer to the [Apollo Client migration guide](https://www.apollographql.com/docs/react/migrating/apollo-client-3-migration/) for more details. All Apollo Link issues / pull requests should now be opened in the [apollo-client](https://github.com/apollographql/apollo-client.git) repo.
+
+---
+
 `apollo-link` is a standard interface for modifying control flow of GraphQL requests and fetching GraphQL results, designed to provide a simple GraphQL client that is capable of extensions.
 The high level use cases of `apollo-link` are highlighted below:
 
