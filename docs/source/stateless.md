@@ -37,6 +37,8 @@ const authLink = new ApolloLink((operation, forward) => {
 
 This style of link also composes well for customization using a function:
 
+> :warning: Subscribing to an observer **will** cause requests to fire more than once. Consider using `.map` (example above) or [apollo-link-error](/links/error) to achieve similar results.
+
 ```js
 import { ApolloLink } from 'apollo-link';
 
@@ -53,6 +55,8 @@ const link = reportErrors(console.error);
 ### Extending ApolloLink
 
 Stateless links can also be written by extending the `ApolloLink` class and overwriting the constructor and request method. This is done as an alternative to the closure method shown directly above to pass details to the link. For example, the same `reportErrors` link written by extending the `ApolloLink` class:
+
+> :warning: Subscribing **will** cause requests to fire more than once. Consider using `.map` (example above) or [apollo-link-error](/links/error) to achieve similar results.
 
 ```js
 import { ApolloLink } from 'apollo-link';
