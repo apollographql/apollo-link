@@ -1,4 +1,5 @@
 # Change log
+- Added Defensive check on the retriedResult condition to avoid retriedResult.subscribe function breaking in local env.
 
 ----
 

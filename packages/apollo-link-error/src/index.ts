@@ -49,7 +49,7 @@ export function onError(errorHandler: ErrorHandler): ApolloLink {
                 forward,
               });
 
-              if (retriedResult) {
+              if (typeof retriedResult !== 'undefined' && typeof retriedResult.subscribe === 'function') {
                 retriedSub = retriedResult.subscribe({
                   next: observer.next.bind(observer),
                   error: observer.error.bind(observer),
@@ -71,7 +71,7 @@ export function onError(errorHandler: ErrorHandler): ApolloLink {
                 networkError.result.errors,
               forward,
             });
-            if (retriedResult) {
+            if (typeof retriedResult !== 'undefined' && typeof retriedResult.subscribe === 'function') {
               retriedSub = retriedResult.subscribe({
                 next: observer.next.bind(observer),
                 error: observer.error.bind(observer),
