@@ -108,6 +108,22 @@ describe('BatchHttpLink', () => {
     expect(batchKeyArg()).toEqual(batchKey());
   });
 
+  it('can be configured to customize BatchLink creation', () => {
+    const LocalScopedLink = require('../batchHttpLink').BatchHttpLink;
+    const createBatchLink = jest.fn();
+
+    const batch = new LocalScopedLink({
+      batchInterval: 20,
+      batchMax: 20,
+      createBatchLink,
+    });
+
+    const { batchInterval, batchMax } = createBatchLink.mock.calls[0][0];
+
+    expect(batchInterval).toBe(20);
+    expect(batchMax).toBe(20);
+  });
+
   it('handles batched requests', done => {
     const clientAwareness = {
       name: 'Some Client Name',

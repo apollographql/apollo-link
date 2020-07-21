@@ -15,6 +15,8 @@ the top level [`CHANGELOG.md`](https://github.com/apollographql/apollo-link/blob
 - Added `graphql` 14 to peer and dev deps; Updated `@types/graphql` to 14  <br/>
   [@hwillson](http://github.com/hwillson) in [#789](https://github.com/apollographql/apollo-link/pull/789)
 
+- Add `createBatchLink` option to customise link creation.
+
 ### 1.2.2
 - Update apollo-link [#559](https://github.com/apollographql/apollo-link/pull/559)
 - Check for signal already present on `fetchOptions` [#584](https://github.com/apollographql/apollo-link/pull/584)
