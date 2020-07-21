@@ -18,6 +18,7 @@ const link = onError(({ graphQLErrors, networkError }) => {
   if (networkError) console.log(`[Network error]: ${networkError}`);
 });
 ```
+*The Apollo Client can be accessed through `this.client` in the onError function*
 
 Apollo Link is a system of modular components for GraphQL networking. [Read the docs](https://www.apollographql.com/docs/link/#usage) to learn how to use this link with libraries like Apollo Client and graphql-tools, or as a standalone client.
 
