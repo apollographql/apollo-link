@@ -46,7 +46,7 @@ const restLink = new RestLink({ uri: "https://swapi.co/api/" });
 
 // setup your client
 const client = new ApolloClient({
-  link: restLink,
+  link: link,
   cache: new InMemoryCache(),
 });
 ```
