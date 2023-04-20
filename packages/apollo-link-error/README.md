@@ -74,6 +74,58 @@ onError(({ graphQLErrors, networkError, operation, forward }) => {
 );
 ```
 
+<h2 id="async-retry-request">Asynchronous retrying</h2>
+
+Sometimes getting a new token or other data needed to perform a retry is an asynchronous task. In this case you need to return an `Observable` so that `apollo-link-error` can subscribe to its changes and call `forward` when the observable is completed.
+```js
+import { Observable } from 'apollo-link';
+
+const promiseToObservable = (promise) => {
+  return new Observable((subscriber) => {
+    promise.then(
+      (value) => {
+        if (subscriber.closed) {
+          return;
+        }
+
+        subscriber.next(value);
+        subscriber.complete();
+      },
+      (err) => {
+        subscriber.error(err);
+      },
+    );
+  });
+};
+
+onError(({ graphQLErrors, networkError, operation, forward }) => {
+    if (graphQLErrors) {
+      for (let err of graphQLErrors) {
+        switch (err.extensions.code) {
+          case 'UNAUTHENTICATED':
+            // modify the operation context with a new token
+            const oldHeaders = operation.getContext().headers;
+            const promise = getNewTokenPromise();
+
+            return promiseToObservable(promise).flatMap((newToken) => {
+              operation.setContext({
+                headers: {
+                  ...oldHeaders,
+                  authorization: newToken,
+                },
+              });
+
+              // retry the request, returning the new observable
+              return forward(operation);
+            });
+          }
+        }
+      }
+    }
+  }
+);
+```
+
 Here is a diagram of how the request flow looks like now:
 ![Diagram of request flow after retrying in error links](https://i.imgur.com/ncVAdz4.png)
 
