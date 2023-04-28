@@ -69,10 +69,11 @@ operation.setContext({
 })
 ```
 
-The `http` object on context currently supports two keys:
+The `http` object on context currently supports three keys:
 
 * `includeExtensions`: Send the extensions object for this request.
 * `includeQuery`: Don't send the `query` field for this request.
+* `minifyQuery`: Strip unnecessary characters in the `query` field for this request.
 
 One way to use persisted queries is with [apollo-link-persisted-queries](https://github.com/apollographql/apollo-link-persisted-queries) and [Apollo Engine](https://www.apollographql.com/docs/engine/auto-persisted-queries.html).
 

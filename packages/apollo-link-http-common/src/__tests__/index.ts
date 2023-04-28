@@ -172,6 +172,14 @@ describe('Common Http functions', () => {
       expect(options.opt).toEqual('hi');
       expect(options.method).toEqual('POST'); //from default
     });
+
+    it('allows to configure to strip unnecessary characters', () => {
+      const { body } = selectHttpOptionsAndBody(
+        createOperation({}, { query }),
+        { http: { includeQuery: true, minifyQuery: true } },
+      );
+      expect(body.query).toBe('query SampleQuery{stub{id}}');
+    });
   });
 
   describe('selectURI', () => {
