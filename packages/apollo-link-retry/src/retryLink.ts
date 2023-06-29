@@ -92,11 +92,14 @@ class RetryableOperation<TValue = any> {
     }
     // Note that we are careful not to change the order of length of the array,
     // as we are often mid-iteration when calling this method.
-    this.observers[index] = null;
+    // FIXME: This is wrong. onComplete gets called before onNext retries, so
+    //        it needs to be fixed correctly instead.
+    // this.observers[index] = null;
 
     // If this is the last observer, we're done.
     if (this.observers.every(o => o === null)) {
-      this.cancel();
+      // FIXME: This is wrong too.
+      // this.cancel();
     }
   }
 
@@ -130,7 +133,34 @@ class RetryableOperation<TValue = any> {
     });
   }
 
-  private onNext = (value: any) => {
+  private shouldRetry = async (errors: Error | Error[]) => {
+    this.retryCount += 1;
+
+    // Should we retry?
+    const shouldRetry = await this.retryIf(
+      this.retryCount,
+      this.operation,
+      errors,
+    );
+
+    if (shouldRetry) {
+      this.scheduleRetry(
+        this.delayFor(this.retryCount, this.operation, errors),
+      );
+    }
+
+    return shouldRetry;
+  };
+
+  private onNext = async (value: any) => {
+    if (
+      value.errors &&
+      value.errors.length > 0 &&
+      (await this.shouldRetry(value.errors))
+    ) {
+      return;
+    }
+
     this.values.push(value);
     for (const observer of this.observers) {
       if (!observer) continue;
@@ -147,16 +177,7 @@ class RetryableOperation<TValue = any> {
   };
 
   private onError = async error => {
-    this.retryCount += 1;
-
-    // Should we retry?
-    const shouldRetry = await this.retryIf(
-      this.retryCount,
-      this.operation,
-      error,
-    );
-    if (shouldRetry) {
-      this.scheduleRetry(this.delayFor(this.retryCount, this.operation, error));
+    if (await this.shouldRetry(error)) {
       return;
     }
 
