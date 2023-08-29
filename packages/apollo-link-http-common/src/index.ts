@@ -101,6 +101,7 @@ const defaultHeaders = {
 };
 
 const defaultOptions = {
+  credentials: 'same-origin',
   method: 'POST',
 };
 
@@ -206,6 +207,9 @@ export const selectHttpOptionsAndBody = (
     headers: fallbackConfig.headers,
     credentials: fallbackConfig.credentials,
   };
+  if (!options.credentials && fallbackConfig.options)
+    options.credentials = fallbackConfig.options.credentials;
+
   let http: HttpQueryOptions = fallbackConfig.http;
 
   /*
