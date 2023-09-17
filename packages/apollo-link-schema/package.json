@@ -46,7 +46,7 @@
     "@types/graphql": "14.2.3",
     "@types/jest": "24.9.1",
     "graphql": "15.3.0",
-    "graphql-tag": "2.10.1",
+    "graphql-tag": "2.10.4",
     "graphql-tools": "4.0.8",
     "jest": "24.9.0",
     "rimraf": "2.7.1",
